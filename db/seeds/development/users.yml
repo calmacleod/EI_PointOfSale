@@ -1,0 +1,10 @@
+options:
+  find_existing_by: ['email_address']
+
+records:
+  - sprig_id: admin
+    type: Admin
+    active: true
+    name: <%= ENV.fetch("DEV_ADMIN_NAME", "Admin") %>
+    email_address: <%= ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com") %>
+    password_digest: <%= BCrypt::Password.create(ENV.fetch("DEV_ADMIN_PASSWORD", "password123!")) %>

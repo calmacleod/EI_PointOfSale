@@ -1,9 +1,20 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
+# Seeds are managed with Sprig.
 #
-# Example:
+# - Environment entrypoint: `db/seeds/<env>.rb`
+# - Data files: `db/seeds/<env>/*.yml` (also supports json/csv)
 #
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# Usage:
+#   bin/rails db:seed
+#
+
+begin
+  require "sprig"
+rescue LoadError
+  warn "Sprig is not installed. Run `bundle install`."
+  return
+end
+
+env_seed = Rails.root.join("db", "seeds", "#{Rails.env}.rb")
+load env_seed if env_seed.exist?
+
+puts "Sprig seeded #{Rails.env} data"
