@@ -19,5 +19,3 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal true, user.active
   end
 end
-
-
