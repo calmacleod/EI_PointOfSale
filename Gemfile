@@ -73,3 +73,6 @@ group :test do
 end
 
 gem "tailwindcss-rails", "~> 4.4"
+
+# Authorization
+gem "cancancan", "~> 3.6"

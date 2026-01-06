@@ -8,3 +8,24 @@ records:
     name: <%= ENV.fetch("DEV_ADMIN_NAME", "Admin") %>
     email_address: <%= ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com") %>
     password_digest: <%= BCrypt::Password.create(ENV.fetch("DEV_ADMIN_PASSWORD", "password123!")) %>
+
+  - sprig_id: common_1
+    type: Common
+    active: true
+    name: "Alice Common"
+    email_address: "alice@example.com"
+    password_digest: <%= BCrypt::Password.create("password123!") %>
+
+  - sprig_id: common_2
+    type: Common
+    active: true
+    name: "Bob Common"
+    email_address: "bob@example.com"
+    password_digest: <%= BCrypt::Password.create("password123!") %>
+
+  - sprig_id: common_3
+    type: Common
+    active: true
+    name: "Charlie Common"
+    email_address: "charlie@example.com"
+    password_digest: <%= BCrypt::Password.create("password123!") %>

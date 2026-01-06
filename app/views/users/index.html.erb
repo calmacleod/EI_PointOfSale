@@ -1,0 +1,42 @@
+<% content_for :breadcrumbs do %>
+  <li>
+    <%= link_to "Dashboard", root_path, class: "font-medium text-slate-700 hover:text-slate-900" %>
+  </li>
+  <li class="text-slate-400">/</li>
+  <li class="font-medium text-slate-900">Users</li>
+<% end %>
+
+<div class="mx-auto max-w-5xl">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Users</h1>
+  </div>
+
+  <div class="mt-6 overflow-hidden rounded-lg border border-gray-200 bg-white">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Name</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Email</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Type</th>
+          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Active</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white">
+        <% @users.each do |user| %>
+          <tr>
+            <td class="px-4 py-3 text-sm text-gray-900"><%= user.name.presence || "—" %></td>
+            <td class="px-4 py-3 text-sm text-gray-900"><%= user.email_address %></td>
+            <td class="px-4 py-3 text-sm text-gray-900"><%= user.type %></td>
+            <td class="px-4 py-3 text-sm text-gray-900"><%= user.active? ? "Yes" : "No" %></td>
+            <td class="px-4 py-3 text-right text-sm">
+              <% if Current.user.is_a?(Admin) %>
+                <%= link_to "Edit", edit_user_path(user), class: "text-indigo-600 hover:text-indigo-900" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -6,8 +6,10 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Ei Point Of Sale">
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="view-transition" content="same-origin">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
 
     <%= yield :head %>
 
@@ -24,10 +26,26 @@
   </head>
 
   <body class="bg-slate-50 text-slate-900">
-    <main class="min-h-screen w-full px-4 py-8 sm:px-6 lg:px-8">
-      <div class="mx-auto w-full max-w-screen-2xl">
-        <%= yield %>
+    <% if authenticated? %>
+      <div class="min-h-screen w-full lg:flex">
+        <%= render "shared/sidebar" %>
+
+        <main class="flex-1 px-4 py-8 sm:px-6 lg:px-8">
+          <div class="mx-auto w-full max-w-screen-2xl">
+            <%= render "shared/breadcrumbs" %>
+            <%= render "shared/flash" %>
+            <%= yield %>
+          </div>
+        </main>
       </div>
-    </main>
+    <% else %>
+      <main class="min-h-screen w-full px-4 py-8 sm:px-6 lg:px-8">
+        <div class="mx-auto w-full max-w-screen-2xl">
+          <%= render "shared/breadcrumbs" %>
+          <%= render "shared/flash" %>
+          <%= yield %>
+        </div>
+      </main>
+    <% end %>
   </body>
 </html>
