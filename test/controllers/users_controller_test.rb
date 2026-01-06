@@ -59,7 +59,8 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     patch user_path(user), params: { user: { name: "Updated Name", type: "Admin" } }
 
     assert_redirected_to users_path
-    assert_equal "Updated Name", user.reload.name
-    assert_equal "Admin", user.reload.type
+    updated_user = User.find(user.id)
+    assert_equal "Updated Name", updated_user.name
+    assert_equal "Admin", updated_user.type
   end
 end
