@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  audited except: [ :password_digest, :theme, :font_size, :sidebar_collapsed ]
+  audited except: [ :password_digest, :theme, :font_size, :sidebar_collapsed, :dashboard_metric_keys ]
 
   include PgSearch::Model
 
@@ -13,4 +13,15 @@ class User < ApplicationRecord
 
   validates :theme, inclusion: { in: %w[light dark dim] }, allow_nil: false
   validates :font_size, inclusion: { in: %w[default large xlarge] }, allow_nil: false
+
+  def visible_dashboard_metric_keys
+    return DashboardMetrics.available_keys if dashboard_metric_keys.blank?
+
+    dashboard_metric_keys & DashboardMetrics.available_keys
+  end
+
+  # For profile form: when user has never set preferences, show all as selected.
+  def dashboard_metric_keys_for_form
+    dashboard_metric_keys.presence || DashboardMetrics.available_keys
+  end
 end

@@ -2,6 +2,8 @@
 <% content_for :breadcrumbs do %>
   <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
   <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
   <li aria-current="page" class="text-muted">Users</li>
 <% end %>
 
@@ -10,7 +12,7 @@
 
   <div class="mt-6 flex flex-col gap-4">
     <%= render "shared/table_filters",
-        search_path: users_path,
+        search_path: admin_users_path,
         turbo_frame: "users_table",
         label: "Search users",
         placeholder: "Search users…" %>
@@ -32,28 +34,18 @@
         <% @users.each do |user| %>
           <tr>
             <td class="px-4 py-3 text-base text-body">
-              <% if can? :read, user %>
-                <%= link_to (user.name.presence || "—"), user_path(user), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
-              <% else %>
-                <%= user.name.presence || "—" %>
-              <% end %>
+              <%= link_to (user.name.presence || "—"), admin_user_path(user), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
             </td>
             <td class="px-4 py-3 text-base text-body">
-              <% if can? :read, user %>
-                <%= link_to user.email_address, user_path(user), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
-              <% else %>
-                <%= user.email_address %>
-              <% end %>
+              <%= link_to user.email_address, admin_user_path(user), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
             </td>
             <td class="px-4 py-3 text-base text-body"><%= user.type %></td>
             <td class="px-4 py-3 text-base text-body"><%= user.active? ? "Yes" : "No" %></td>
             <td class="px-4 py-3 text-base text-body text-muted"><%= l(user.created_at, format: :short) %></td>
             <td class="px-4 py-3 text-right text-base">
-              <% if Current.user.is_a?(Admin) %>
-                <%= link_to "Edit", edit_user_path(user),
-                    class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",
-                    data: { turbo_frame: "_top", turbo_prefetch: true } %>
-              <% end %>
+              <%= link_to "Edit", edit_admin_user_path(user),
+                  class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",
+                  data: { turbo_frame: "_top", turbo_prefetch: true } %>
             </td>
           </tr>
         <% end %>

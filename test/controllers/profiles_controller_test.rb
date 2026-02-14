@@ -18,4 +18,15 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Common", user.type
     assert_equal true, user.active
   end
+
+  test "user can update dashboard metric preferences" do
+    user = users(:one)
+    sign_in_as(user)
+
+    patch profile_path, params: { user: { dashboard_metric_keys: [ "customers_last_7_days" ] } }
+    assert_redirected_to edit_profile_path
+
+    user.reload
+    assert_equal [ "customers_last_7_days" ], user.dashboard_metric_keys
+  end
 end

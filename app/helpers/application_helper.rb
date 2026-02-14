@@ -37,7 +37,7 @@ module ApplicationHelper
     return nil unless record
 
     case audit.auditable_type
-    when "User" then user_path(record)
+    when "User" then admin_user_path(record)
     when "Product" then product_path(record)
     when "ProductVariant" then record.product ? product_product_variant_path(record.product, record) : nil
     when "Service" then service_path(record)

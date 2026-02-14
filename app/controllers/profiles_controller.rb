@@ -44,7 +44,8 @@ class ProfilesController < ApplicationController
         :password_confirmation,
         :theme,
         :font_size,
-        :sidebar_collapsed
+        :sidebar_collapsed,
+        dashboard_metric_keys: []
       )
     end
 

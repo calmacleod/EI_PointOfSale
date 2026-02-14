@@ -10,10 +10,7 @@ class Ability
       return
     end
 
-    # Authenticated users can view users.
-    can :read, User if user.persisted?
-
-    # Common users can only update themselves.
+    # Common users can update their own profile (via Profile, not Admin > Users).
     can %i[edit update], User, id: user.id if user.persisted?
 
     # Common users can read products, services, and customers.

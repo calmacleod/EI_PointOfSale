@@ -19,6 +19,7 @@ class SearchController < ApplicationController
     def search_result_for(doc)
       record = doc.searchable
       return nil unless record
+      return nil if record.is_a?(User) && !(current_user&.is_a?(Admin))
 
       {
         id: doc.id,
@@ -60,7 +61,7 @@ class SearchController < ApplicationController
       case type
       when "Product" then product_path(record)
       when "Service" then service_path(record)
-      when "User" then user_path(record)
+      when "User" then admin_user_path(record)
       when "ProductVariant" then product_product_variant_path(record.product, record)
       when "TaxCode" then admin_tax_code_path(record)
       when "Category", "Supplier" then products_path

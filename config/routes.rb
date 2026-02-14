@@ -9,11 +9,11 @@ Rails.application.routes.draw do
 
   resource :session
   resources :passwords, param: :token
-  resources :users, only: %i[index show edit update]
   resource :profile, only: %i[edit update]
   patch "profile/display_preferences", to: "profiles#update_display_preferences", as: :profile_display_preferences
   scope :admin, as: :admin, module: :admin_area do
     resource :settings, only: %i[ show update ]
+    resources :users, only: %i[index show edit update]
     resources :tax_codes
     resources :suppliers
     resources :audits, only: %i[index show], path: "audits"

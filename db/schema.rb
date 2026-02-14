@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_14_214048) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_14_215756) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -83,6 +83,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_14_214048) do
     t.index ["added_by_id"], name: "index_customers_on_added_by_id"
     t.index ["discarded_at"], name: "index_customers_on_discarded_at"
     t.index ["member_number"], name: "index_customers_on_member_number", unique: true
+  end
+
+  create_table "dashboard_metrics", force: :cascade do |t|
+    t.datetime "computed_at", null: false
+    t.datetime "created_at", null: false
+    t.string "key", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "value", precision: 20, scale: 4
+    t.index ["key"], name: "index_dashboard_metrics_on_key", unique: true
   end
 
   create_table "pg_search_documents", force: :cascade do |t|
@@ -321,6 +330,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_14_214048) do
   create_table "users", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
+    t.string "dashboard_metric_keys", default: [], array: true
     t.string "email_address", null: false
     t.string "font_size", default: "default", null: false
     t.string "name"
