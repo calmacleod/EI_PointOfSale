@@ -198,3 +198,60 @@ html {
     display: none !important;
   }
 }
+
+/* Pagy 43 pagination: theme-aware styling */
+.pagy-nav .pagy {
+  --spacing: 0.25rem;
+  --padding: 0.75rem;
+  --rounding: 0.5rem;
+  --border-width: 1px;
+  --text: var(--color-text);
+  --text-hover: var(--color-text);
+  --text-current: var(--color-page);
+  --background: var(--color-surface);
+  --background-hover: var(--color-border);
+  --background-current: var(--color-accent);
+  --background-input: var(--color-surface);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+.pagy-nav .pagy a:not([role="separator"]) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+  padding: 0 0.75rem;
+  text-decoration: none;
+  background-color: var(--background);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--rounding);
+  color: var(--text);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+.pagy-nav .pagy a[href]:hover {
+  background-color: var(--background-hover);
+  color: var(--text-hover);
+}
+.pagy-nav .pagy a:not([href]) {
+  cursor: default;
+  opacity: 0.6;
+}
+.pagy-nav .pagy a[aria-current] {
+  background-color: var(--background-current);
+  color: var(--text-current);
+  border-color: var(--color-accent);
+}
+/* Per-page select */
+.pagy-limit-selector select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2rem;
+}

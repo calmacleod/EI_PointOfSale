@@ -5,7 +5,7 @@ module AdminArea
     before_action :set_tax_code, only: %i[ edit update destroy ]
 
     def index
-      @tax_codes = TaxCode.kept.order(:code)
+      @pagy, @tax_codes = pagy(:offset, TaxCode.kept.order(:code))
     end
 
     def new

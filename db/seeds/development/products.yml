@@ -26,3 +26,27 @@ records:
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :jf_sports).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: mtg_booster_box
+    name: MTG Dominaria United Booster Box
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: pokemon_etb
+    name: Pokemon Scarlet & Violet Elite Trainer Box
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :upper_deck).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: playmat_generic
+    name: Generic Gaming Playmat
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: dice_set
+    name: D&D Premium Dice Set
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"

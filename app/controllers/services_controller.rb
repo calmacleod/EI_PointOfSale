@@ -4,9 +4,11 @@ class ServicesController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @services = @services.kept
-      .includes(:tax_code)
-      .order(:name)
+    @pagy, @services = pagy(:offset,
+      @services.kept
+        .includes(:tax_code)
+        .order(:name)
+    )
   end
 
   def new

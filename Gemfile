@@ -94,3 +94,6 @@ gem "discard", "~> 1.4"
 
 # PostgreSQL full text search
 gem "pg_search"
+
+# Pagination
+gem "pagy", "~> 43.2"

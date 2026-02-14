@@ -1,0 +1,23 @@
+<% if @pagy.present? && Pagy.options[:client_max_limit] %>
+  <% page_sizes = [ 5, 25, 50, 100 ].select { |n| n <= Pagy.options[:client_max_limit] } %>
+  <div class="pagy-limit-selector flex flex-wrap items-center justify-center gap-3">
+    <%= form_with url: request.path, method: :get, local: true, class: "flex items-center gap-2" do %>
+      <% request.params.except(:limit, :page, :controller, :action).each do |key, value| %>
+        <% Array(value).each do |v| %>
+          <%= hidden_field_tag key, v, id: nil %>
+        <% end %>
+      <% end %>
+      <%= hidden_field_tag :page, 1 %>
+      <label for="pagy_limit_select" class="text-base text-muted">Per page:</label>
+      <select name="limit" id="pagy_limit_select" class="pagy-limit-select select input-field min-h-[44px] w-auto min-w-[5rem] cursor-pointer py-2 pl-3" onchange="this.form.submit()">
+        <% page_sizes.each do |size| %>
+          <% if @pagy.limit == size %>
+            <option value="<%= size %>" selected><%= size %></option>
+          <% else %>
+            <option value="<%= size %>"><%= size %></option>
+          <% end %>
+        <% end %>
+      </select>
+    <% end %>
+  </div>
+<% end %>

@@ -2,7 +2,7 @@ class UsersController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @users = @users.order(:email_address)
+    @pagy, @users = pagy(:offset, @users.order(:email_address))
   end
 
   def edit

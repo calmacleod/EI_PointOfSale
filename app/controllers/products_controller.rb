@@ -4,9 +4,11 @@ class ProductsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @products = @products.kept
-      .includes(:tax_code, :supplier, :variants)
-      .order(:name)
+    @pagy, @products = pagy(:offset,
+      @products.kept
+        .includes(:tax_code, :supplier, :variants)
+        .order(:name)
+    )
   end
 
   def new
