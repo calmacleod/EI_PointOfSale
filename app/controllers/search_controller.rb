@@ -57,11 +57,11 @@ class SearchController < ApplicationController
 
     def search_url_for(record, type)
       case type
-      when "Product" then edit_product_path(record)
-      when "Service" then edit_service_path(record)
-      when "User" then edit_user_path(record)
-      when "ProductVariant" then edit_product_product_variant_path(record.product, record)
-      when "TaxCode" then edit_admin_tax_code_path(record)
+      when "Product" then product_path(record)
+      when "Service" then service_path(record)
+      when "User" then user_path(record)
+      when "ProductVariant" then product_product_variant_path(record.product, record)
+      when "TaxCode" then admin_tax_code_path(record)
       when "Category", "Supplier" then products_path
       else root_path
       end

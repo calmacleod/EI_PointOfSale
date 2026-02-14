@@ -4,11 +4,14 @@ class ProductsController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @pagy, @products = pagy(:offset,
-      @products.kept
-        .includes(:tax_code, :supplier, :variants)
-        .order(:name)
-    )
+    scope = @products.kept
+      .includes(:tax_code, :supplier, :variants)
+      .order(:name)
+    scope = scope.search(params[:q]) if params[:q].present?
+    scope = scope.where(supplier_id: params[:supplier_id]) if params[:supplier_id].present?
+    scope = apply_date_filters(scope)
+    @suppliers = Supplier.kept.order(:name)
+    @pagy, @products = pagy(:offset, scope)
   end
 
   def new
@@ -21,6 +24,10 @@ class ProductsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def show
+    @product.variants.load
   end
 
   def edit

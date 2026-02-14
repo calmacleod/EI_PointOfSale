@@ -4,11 +4,12 @@ class ServicesController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @pagy, @services = pagy(:offset,
-      @services.kept
-        .includes(:tax_code)
-        .order(:name)
-    )
+    scope = @services.kept
+      .includes(:tax_code)
+      .order(:name)
+    scope = scope.search(params[:q]) if params[:q].present?
+    scope = apply_date_filters(scope)
+    @pagy, @services = pagy(:offset, scope)
   end
 
   def new
@@ -21,6 +22,9 @@ class ServicesController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def show
   end
 
   def edit

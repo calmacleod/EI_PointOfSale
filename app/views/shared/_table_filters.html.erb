@@ -1,0 +1,95 @@
+<%# Renders a compact search/filter bar. Pass search_path, turbo_frame, label, placeholder. %>
+<%# Optionally pass a block for extra fields (e.g. supplier). Date filters collapse in a "Dates" disclosure. %>
+<% storage_key = local_assigns[:storage_key] || turbo_frame.sub("_table", "") %>
+<% date_filter_params = %w[created_at_from created_at_to updated_at_from updated_at_to] %>
+<% filter_params = (local_assigns[:filter_params] || ["q"]) + date_filter_params %>
+<% has_active_filters = filter_params.any? { |p| params[p].present? } %>
+<% has_date_filters = date_filter_params.any? { |p| params[p].present? } %>
+
+<div data-controller="table-filters-persistence"
+     data-table-filters-persistence-storage-key-value="<%= storage_key %>"
+     data-table-filters-persistence-search-path-value="<%= search_path %>"
+     data-table-filters-persistence-filter-params-value="<%= filter_params.to_json %>">
+  <aside class="table-filters-panel flex flex-col gap-2 rounded-lg border border-theme bg-surface px-3 py-2" aria-labelledby="<%= turbo_frame %>_filters_heading">
+    <%= form_with url: search_path,
+        method: :get,
+        data: {
+          controller: "table-search",
+          table_search_target: "form",
+          turbo_frame: turbo_frame
+        },
+        class: "flex flex-col gap-2" do |f| %>
+      <%# Row 1: search + extra filters + clear — full width for main inputs %>
+      <div class="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+        <%= f.search_field :q,
+            value: params[:q],
+            id: "#{turbo_frame}_search",
+            placeholder: placeholder,
+            autocomplete: "off",
+            class: "input-field min-h-[44px] min-w-0 flex-1 basis-48 rounded-md px-3 py-2",
+            data: { table_search_target: "input" } %>
+
+        <% if block_given? %>
+          <div class="flex shrink-0 items-center">
+            <%= yield f %>
+          </div>
+        <% end %>
+
+        <% if has_active_filters %>
+          <button type="button"
+                  data-action="click->table-filters-persistence#clearFilters"
+                  class="shrink-0 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-[var(--color-border)]/30 hover:text-body">
+            Clear
+          </button>
+        <% end %>
+      </div>
+
+      <%# Row 2: Dates disclosure — collapsible, on its own line %>
+      <details class="group/details" <%= "open" if has_date_filters %>>
+        <summary class="flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted hover:bg-[var(--color-border)]/30 hover:text-body [&::-webkit-details-marker]:hidden">
+          <span>Dates</span>
+          <% if has_date_filters %>
+            <span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+          <% end %>
+          <svg class="h-4 w-4 transition-transform group-open/details:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </summary>
+        <div class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-theme pt-2">
+          <div class="flex items-center gap-1.5">
+            <label for="<%= turbo_frame %>_created_from" class="sr-only">Created from</label>
+            <%= f.date_field :created_at_from,
+                value: params[:created_at_from],
+                id: "#{turbo_frame}_created_from",
+                class: "input-field-compact h-9 w-32 rounded-md px-2 py-1 text-sm",
+                data: { action: "change->table-search#handleChange" } %>
+            <span class="text-xs text-muted">–</span>
+            <label for="<%= turbo_frame %>_created_to" class="sr-only">Created to</label>
+            <%= f.date_field :created_at_to,
+                value: params[:created_at_to],
+                id: "#{turbo_frame}_created_to",
+                class: "input-field-compact h-9 w-32 rounded-md px-2 py-1 text-sm",
+                data: { action: "change->table-search#handleChange" } %>
+            <span class="text-xs text-muted">created</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <label for="<%= turbo_frame %>_updated_from" class="sr-only">Updated from</label>
+            <%= f.date_field :updated_at_from,
+                value: params[:updated_at_from],
+                id: "#{turbo_frame}_updated_from",
+                class: "input-field-compact h-9 w-32 rounded-md px-2 py-1 text-sm",
+                data: { action: "change->table-search#handleChange" } %>
+            <span class="text-xs text-muted">–</span>
+            <label for="<%= turbo_frame %>_updated_to" class="sr-only">Updated to</label>
+            <%= f.date_field :updated_at_to,
+                value: params[:updated_at_to],
+                id: "#{turbo_frame}_updated_to",
+                class: "input-field-compact h-9 w-32 rounded-md px-2 py-1 text-sm",
+                data: { action: "change->table-search#handleChange" } %>
+            <span class="text-xs text-muted">updated</span>
+          </div>
+        </div>
+      </details>
+    <% end %>
+  </aside>
+</div>

@@ -9,7 +9,7 @@ Rails.application.routes.draw do
 
   resource :session
   resources :passwords, param: :token
-  resources :users, only: %i[index edit update]
+  resources :users, only: %i[index show edit update]
   resource :profile, only: %i[edit update]
   patch "profile/display_preferences", to: "profiles#update_display_preferences", as: :profile_display_preferences
   scope :admin, as: :admin, module: :admin_area do
@@ -17,10 +17,10 @@ Rails.application.routes.draw do
     resources :tax_codes
   end
 
-  resources :products, except: [ :show ] do
-    resources :product_variants, only: %i[ new create edit update destroy ]
+  resources :products do
+    resources :product_variants, only: %i[ show new create edit update destroy ]
   end
-  resources :services, except: [ :show ]
+  resources :services
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

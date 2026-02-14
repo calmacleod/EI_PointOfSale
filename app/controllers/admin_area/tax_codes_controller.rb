@@ -2,10 +2,13 @@
 
 module AdminArea
   class TaxCodesController < BaseController
-    before_action :set_tax_code, only: %i[ edit update destroy ]
+    before_action :set_tax_code, only: %i[ show edit update destroy ]
 
     def index
-      @pagy, @tax_codes = pagy(:offset, TaxCode.kept.order(:code))
+      scope = TaxCode.kept.order(:code)
+      scope = scope.search(params[:q]) if params[:q].present?
+      scope = apply_date_filters(scope)
+      @pagy, @tax_codes = pagy(:offset, scope)
     end
 
     def new
@@ -19,6 +22,9 @@ module AdminArea
       else
         render :new, status: :unprocessable_entity
       end
+    end
+
+    def show
     end
 
     def edit

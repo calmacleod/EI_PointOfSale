@@ -2,7 +2,7 @@
 
 class ProductVariantsController < ApplicationController
   load_and_authorize_resource :product
-  load_and_authorize_resource :product_variant, through: :product
+  load_and_authorize_resource :product_variant, through: :product, through_association: :variants
 
   def new
   end
@@ -13,6 +13,9 @@ class ProductVariantsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def show
   end
 
   def edit

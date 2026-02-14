@@ -2,7 +2,13 @@ class UsersController < ApplicationController
   load_and_authorize_resource
 
   def index
-    @pagy, @users = pagy(:offset, @users.order(:email_address))
+    scope = @users.order(:email_address)
+    scope = scope.search(params[:q]) if params[:q].present?
+    scope = apply_date_filters(scope)
+    @pagy, @users = pagy(:offset, scope)
+  end
+
+  def show
   end
 
   def edit

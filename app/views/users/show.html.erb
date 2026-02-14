@@ -1,0 +1,71 @@
+<% content_for :title, @user.name.presence || @user.email_address %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Users", users_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted"><%= @user.name.presence || @user.email_address %></li>
+<% end %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: (@user.name.presence || @user.email_address), description: "User profile and account details." do %>
+    <div class="flex items-center gap-2">
+      <%= link_to "Back to users", users_path, class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
+      <% if can? :update, @user %>
+        <%= link_to "Edit", edit_user_path(@user),
+            class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
+            data: { turbo_prefetch: true } %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="user-details-heading">
+    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
+      <h2 id="user-details-heading" class="text-base font-semibold text-body">Details</h2>
+      <p class="mt-0.5 text-sm text-muted">Profile and contact information</p>
+    </div>
+    <dl class="divide-y divide-[var(--color-border)]">
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Name</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @user.name.presence || "—" %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Email</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @user.email_address %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Phone</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @user.phone.presence || "—" %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Role</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @user.type %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Active</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @user.active? ? "Yes" : "No" %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Notes</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @user.notes.present? ? simple_format(@user.notes) : "—" %></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="user-meta-heading">
+    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
+      <h2 id="user-meta-heading" class="text-base font-semibold text-body">Record info</h2>
+      <p class="mt-0.5 text-sm text-muted">Timestamps</p>
+    </div>
+    <dl class="divide-y divide-[var(--color-border)]">
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Created</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @user.created_at.strftime("%b %-d, %Y at %-I:%M %p") %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Last updated</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @user.updated_at.strftime("%b %-d, %Y at %-I:%M %p") %></dd>
+      </div>
+    </dl>
+  </section>
+</div>

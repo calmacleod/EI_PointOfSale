@@ -14,26 +14,38 @@
         data: { turbo_prefetch: true } %>
   <% end %>
 
-  <div class="mt-6 overflow-x-auto rounded-lg border border-theme bg-surface">
+  <div class="mt-6 flex flex-col gap-4">
+    <%= render "shared/table_filters",
+        search_path: admin_tax_codes_path,
+        turbo_frame: "tax_codes_table",
+        label: "Search tax codes",
+        placeholder: "Search tax codes…" %>
+
+    <%= turbo_frame_tag "tax_codes_table" do %>
+  <div class="overflow-x-auto rounded-lg border border-theme bg-surface">
     <table class="min-w-full divide-y divide-[var(--color-border)]">
       <thead class="bg-[var(--color-border)]/30">
         <tr>
           <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Code</th>
           <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Name</th>
           <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Rate</th>
+          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Created</th>
           <th class="px-4 py-3 text-right text-base font-medium uppercase tracking-wider text-muted"></th>
         </tr>
       </thead>
       <tbody class="divide-y divide-[var(--color-border)] bg-surface">
         <% @tax_codes.each do |tax_code| %>
           <tr>
-            <td class="px-4 py-3 text-base font-medium text-body"><%= tax_code.code %></td>
+            <td class="px-4 py-3 text-base font-medium text-body">
+              <%= link_to tax_code.code, admin_tax_code_path(tax_code), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
+            </td>
             <td class="px-4 py-3 text-base text-body"><%= tax_code.name %></td>
             <td class="px-4 py-3 text-base text-body"><%= number_to_percentage(tax_code.rate * 100, precision: 2) %></td>
+            <td class="px-4 py-3 text-base text-body text-muted"><%= l(tax_code.created_at, format: :short) %></td>
             <td class="px-4 py-3 text-right text-base">
               <%= link_to "Edit", edit_admin_tax_code_path(tax_code),
                   class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",
-                  data: { turbo_prefetch: true } %>
+                  data: { turbo_frame: "_top", turbo_prefetch: true } %>
             </td>
           </tr>
         <% end %>
@@ -46,4 +58,6 @@
   <% end %>
 
   <%= render "shared/pagy_nav" %>
+    <% end %>
+  </div>
 </div>

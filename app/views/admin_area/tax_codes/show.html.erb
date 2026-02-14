@@ -1,0 +1,71 @@
+<% content_for :title, "#{@tax_code.code} – #{@tax_code.name}" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Tax codes", admin_tax_codes_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted"><%= @tax_code.code %></li>
+<% end %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: "#{@tax_code.code} – #{@tax_code.name}", description: "Tax code details and configuration." do %>
+    <div class="flex items-center gap-2">
+      <%= link_to "Back to tax codes", admin_tax_codes_path, class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
+      <%= link_to "Edit", edit_admin_tax_code_path(@tax_code),
+          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
+          data: { turbo_prefetch: true } %>
+    </div>
+  <% end %>
+
+  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="tax-code-details-heading">
+    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
+      <h2 id="tax-code-details-heading" class="text-base font-semibold text-body">Details</h2>
+      <p class="mt-0.5 text-sm text-muted">Tax configuration</p>
+    </div>
+    <dl class="divide-y divide-[var(--color-border)]">
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Code</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.code %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Name</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.name %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Rate</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= number_to_percentage(@tax_code.rate * 100, precision: 2) %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Exemption type</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.exemption_type.presence || "—" %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Province</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.province_code.presence || "—" %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Notes</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.notes.present? ? simple_format(@tax_code.notes) : "—" %></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="tax-code-meta-heading">
+    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
+      <h2 id="tax-code-meta-heading" class="text-base font-semibold text-body">Record info</h2>
+      <p class="mt-0.5 text-sm text-muted">Timestamps</p>
+    </div>
+    <dl class="divide-y divide-[var(--color-border)]">
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Created</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.created_at.strftime("%b %-d, %Y at %-I:%M %p") %></dd>
+      </div>
+      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+        <dt class="text-sm font-medium text-muted">Last updated</dt>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.updated_at.strftime("%b %-d, %Y at %-I:%M %p") %></dd>
+      </div>
+    </dl>
+  </section>
+</div>

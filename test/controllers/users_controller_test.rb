@@ -6,6 +6,16 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_session_path
   end
 
+  test "signed in user can view show" do
+    user = users(:one)
+    sign_in_as(user)
+
+    get user_path(user)
+
+    assert_response :success
+    assert_includes response.body, user.email_address
+  end
+
   test "signed in user can view index and sees signed in users" do
     user1 = users(:one)
     user2 = users(:two)
@@ -17,6 +27,31 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, user1.email_address
     assert_includes response.body, user2.email_address
+  end
+
+  test "index date filter filters by created_at" do
+    user = users(:one)
+    sign_in_as(user)
+
+    get users_path(created_at_from: user.created_at.to_date.to_s)
+
+    assert_response :success
+    assert_includes response.body, user.email_address
+  end
+
+  test "index search filters users and preserves q in pagination" do
+    user1 = users(:one)
+    user2 = users(:two)
+
+    sign_in_as(user1)
+
+    get users_path(q: user1.email_address)
+
+    assert_response :success
+    assert_includes response.body, user1.email_address
+    assert_not_includes response.body, user2.email_address
+    assert_includes response.body, "users_table"
+    assert_includes response.body, ERB::Util.html_escape(user1.email_address)
   end
 
   test "non-admin cannot edit or update users" do
