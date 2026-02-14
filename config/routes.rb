@@ -5,6 +5,8 @@ Rails.application.routes.draw do
     post "/dev/test_job", to: "dev_tools#test_job", as: :dev_tools_test_job
   end
 
+  get "search", to: "search#index", as: :search
+
   resource :session
   resources :passwords, param: :token
   resources :users, only: %i[index edit update]

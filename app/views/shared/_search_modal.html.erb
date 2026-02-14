@@ -1,0 +1,38 @@
+<div data-search-modal-target="modal"
+     class="search-modal-overlay fixed inset-0 z-[60] hidden"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Search">
+  <div data-action="click->search-modal#close"
+       class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
+  <div class="fixed inset-0 flex items-start justify-center pt-[15vh] px-4 pointer-events-none">
+    <div class="w-full max-w-xl rounded-xl border border-theme bg-surface shadow-2xl overflow-hidden pointer-events-auto"
+         role="document">
+      <%= form_with url: search_path,
+          method: :get,
+          data: { turbo_stream: true, search_modal_target: "form", action: "turbo:submit-end->search-modal#onResultsLoaded" },
+          class: "contents" do |f| %>
+        <div class="flex items-center gap-3 border-b border-theme px-4 py-3">
+          <svg class="h-5 w-5 shrink-0 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <%= f.search_field :q,
+              data: { search_modal_target: "input", action: "input->search-modal#scheduleSearch" },
+              autocomplete: "off",
+              placeholder: "Search products, services, users…",
+              class: "flex-1 min-w-0 bg-transparent text-base text-body placeholder:text-muted focus:outline-none",
+              "aria-label": "Search query" %>
+          <kbd class="hidden sm:inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded border border-theme px-1.5 text-xs font-medium text-muted">ESC</kbd>
+        </div>
+        <div id="search_results"
+             data-search-modal-target="results"
+             class="max-h-[min(60vh,400px)] overflow-y-auto py-2">
+          <p class="px-4 py-8 text-center text-sm text-muted">Type to search products, services, users, and more…</p>
+        </div>
+      <% end %>
+      <div class="border-t border-theme px-4 py-2 bg-[var(--color-border)]/20">
+        <p class="text-xs text-muted">Press <kbd class="font-mono">/</kbd> to open search from anywhere</p>
+      </div>
+    </div>
+  </div>
+</div>
