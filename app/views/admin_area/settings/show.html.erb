@@ -1,0 +1,117 @@
+<% content_for :title, "Admin settings" %>
+
+<% content_for :breadcrumbs do %>
+  <li>
+    <%= link_to "Dashboard", root_path, class: "font-medium text-slate-700 hover:text-slate-900" %>
+  </li>
+  <li class="text-slate-400">/</li>
+  <li class="font-medium text-slate-900">Admin settings</li>
+<% end %>
+
+<div class="mx-auto max-w-3xl">
+  <div class="flex flex-col gap-1">
+    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Admin settings</h1>
+    <p class="mt-1 text-sm text-slate-600">
+      Placeholder settings for now. We can hook these up to persisted configuration later.
+    </p>
+  </div>
+
+  <div class="mt-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3">
+      <p class="text-sm font-semibold text-amber-900">Not wired up yet</p>
+      <p class="mt-1 text-sm text-amber-800">
+        These inputs are placeholders only — no values are saved.
+      </p>
+    </div>
+
+    <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-slate-700">Store name</label>
+        <input
+          type="text"
+          value="Example Store"
+          disabled
+          class="mt-1 block w-full rounded-md border-slate-300 bg-slate-50 text-slate-900 shadow-sm disabled:cursor-not-allowed"
+        />
+        <p class="mt-1 text-xs text-slate-500">Shown on receipts and in the app header.</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Default currency</label>
+        <select
+          disabled
+          class="mt-1 block w-full rounded-md border-slate-300 bg-slate-50 text-slate-900 shadow-sm disabled:cursor-not-allowed"
+        >
+          <option selected>USD</option>
+          <option>CAD</option>
+          <option>EUR</option>
+        </select>
+        <p class="mt-1 text-xs text-slate-500">Used for money formatting across the POS.</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Default tax rate</label>
+        <div class="mt-1 flex items-center gap-2">
+          <input
+            type="text"
+            value="0.00"
+            disabled
+            class="block w-full rounded-md border-slate-300 bg-slate-50 text-slate-900 shadow-sm disabled:cursor-not-allowed"
+          />
+          <span class="text-sm text-slate-600">%</span>
+        </div>
+        <p class="mt-1 text-xs text-slate-500">Applied when an item doesn’t have a specific tax rule.</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Low stock threshold</label>
+        <input
+          type="number"
+          value="5"
+          disabled
+          class="mt-1 block w-full rounded-md border-slate-300 bg-slate-50 text-slate-900 shadow-sm disabled:cursor-not-allowed"
+        />
+        <p class="mt-1 text-xs text-slate-500">Triggers the “Low stock” dashboard widget.</p>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700">Receipt footer</label>
+        <textarea
+          rows="4"
+          disabled
+          class="mt-1 block w-full rounded-md border-slate-300 bg-slate-50 text-slate-900 shadow-sm disabled:cursor-not-allowed"
+        >Thanks for shopping with us!</textarea>
+        <p class="mt-1 text-xs text-slate-500">Printed at the bottom of receipts.</p>
+      </div>
+
+      <div class="sm:col-span-2">
+        <div class="rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-sm font-medium text-slate-900">Require manager PIN for refunds</p>
+              <p class="mt-0.5 text-xs text-slate-600">Placeholder toggle (implement later).</p>
+            </div>
+            <div class="pt-0.5">
+              <input
+                type="checkbox"
+                disabled
+                class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900 disabled:cursor-not-allowed"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end">
+      <button
+        type="button"
+        disabled
+        class="inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm opacity-50 disabled:cursor-not-allowed"
+      >
+        Save (coming soon)
+      </button>
+    </div>
+  </div>
+</div>
+

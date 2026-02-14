@@ -28,6 +28,16 @@
       <span>Users</span>
     <% end %>
 
+    <% if Current.user.is_a?(Admin) %>
+      <%= link_to admin_settings_path,
+          class: [
+            "mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
+            (current_page?(admin_settings_path) ? "bg-slate-900 text-white" : "text-slate-700 hover:bg-slate-50")
+          ].join(" ") do %>
+        <span>Admin settings</span>
+      <% end %>
+    <% end %>
+
     <%= link_to edit_profile_path,
         class: [
           "mt-1 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
