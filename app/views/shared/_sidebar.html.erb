@@ -4,7 +4,12 @@
   <div class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
     <div class="flex shrink-0 items-center justify-between gap-2 px-3 py-3 lg:px-4">
       <div class="sidebar-brand flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-        <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-semibold text-[color:var(--color-page)]">EI</div>
+        <div class="logo-easter-egg-logo flex h-9 w-9 shrink-0 cursor-default items-center justify-center rounded-lg bg-accent text-sm font-semibold text-[color:var(--color-page)] select-none"
+             data-controller="logo-easter-egg"
+             data-action="click->logo-easter-egg#click keydown->logo-easter-egg#click"
+             role="button"
+             tabindex="0"
+             aria-label="EI logo">EI</div>
         <div class="sidebar-text min-w-0 flex-1 overflow-hidden">
           <p class="truncate text-sm font-semibold text-body">Point of Sale</p>
           <p class="truncate text-xs text-muted"><%= Current.user&.email_address %></p>

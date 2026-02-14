@@ -125,6 +125,38 @@ html {
 .confirm-modal-overlay .form-card {
   animation: confirm-modal-scale-in 0.2s ease-out;
 }
+
+/* Logo easter egg: triple-click for chainsaw spin */
+.logo-easter-egg-logo {
+  position: relative;
+}
+.logo-easter-egg-logo.logo-easter-egg-active {
+  animation: logo-chainsaw-spin 0.5s linear infinite;
+}
+.logo-easter-egg-logo.logo-easter-egg-active::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 10px;
+  background: repeating-conic-gradient(
+    from 0deg at 50% 50%,
+    var(--color-accent) 0deg 8deg,
+    var(--color-border) 8deg 20deg
+  );
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent 42%, black 42% 58%, transparent 58%);
+  mask: radial-gradient(circle at 50% 50%, transparent 42%, black 42% 58%, transparent 58%);
+  animation: logo-chainsaw-chain 0.25s linear infinite;
+  pointer-events: none;
+}
+@keyframes logo-chainsaw-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes logo-chainsaw-chain {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-360deg); }
+}
+
 @keyframes confirm-modal-scale-in {
   from {
     opacity: 0;
