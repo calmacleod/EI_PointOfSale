@@ -158,7 +158,7 @@ export default class extends Controller {
     const isOpen = this.isMobileDrawerOpen()
 
     const edgeSwipeToOpen = isClosed && x < EDGE_ZONE
-    const swipeToClose = isOpen
+    const swipeToClose = isOpen && x >= SIDEBAR_WIDTH // Only capture on overlay; touches on sidebar allow scroll
 
     if (edgeSwipeToOpen || swipeToClose) {
       this.swipeState = {

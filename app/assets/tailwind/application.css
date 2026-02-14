@@ -76,6 +76,30 @@ html {
   .hover\:text-accent:hover { color: var(--color-accent); }
 }
 
+/* Form inputs: thin border + subtle shadow, 4px radius, padding for clean low-DPI rendering */
+.input-field {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  color: var(--color-text);
+  padding: 0.5rem 0.75rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input-field::placeholder {
+  color: var(--color-text-muted);
+}
+.input-field:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+/* Form cards: softer corners for clean low-DPI rendering */
+.form-card {
+  border-radius: 0.5rem; /* 8px - renders cleanly on most screens */
+}
+
 /* Sidebar: scrollable nav with fixed top/bottom */
 .sidebar-nav {
   overscroll-behavior: contain;

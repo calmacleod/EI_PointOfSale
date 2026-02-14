@@ -1,4 +1,9 @@
 <% content_for :title, "Sign in" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Point of Sale", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Sign in</li>
+<% end %>
 
 <div class="w-full flex items-start justify-center">
   <div class="w-full max-w-md">
@@ -16,7 +21,7 @@
       </div>
     <% end %>
 
-    <div class="rounded-2xl border border-theme bg-surface p-6 shadow-sm">
+    <div class="form-card border border-theme bg-surface p-6 shadow-sm">
       <div class="mb-6">
         <h1 class="text-2xl font-semibold tracking-tight text-body">Welcome back</h1>
         <p class="mt-1 text-base text-muted">Sign in to continue.</p>
@@ -32,22 +37,36 @@
                 autocomplete: "username",
                 placeholder: "you@example.com",
                 value: params[:email_address],
-                class: "block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm ring-1 ring-inset placeholder:text-muted focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+                class: "input-field block w-full min-h-[44px] px-3 py-2" %>
           </div>
         </div>
 
-        <div>
+        <div data-controller="password-toggle">
           <div class="flex items-center justify-between">
             <%= form.label :password, "Password", class: "block text-base font-medium text-body" %>
             <%= link_to "Forgot password?", new_password_path, class: "text-base font-medium text-accent hover:opacity-80" %>
           </div>
-          <div class="mt-2">
+          <div class="mt-2 relative">
             <%= form.password_field :password,
                 required: true,
                 autocomplete: "current-password",
                 placeholder: "••••••••",
                 maxlength: 72,
-                class: "block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm ring-1 ring-inset placeholder:text-muted focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+                data: { password_toggle_target: "input" },
+                class: "input-field block w-full min-h-[44px] pr-12" %>
+            <button type="button"
+                    data-password-toggle-target="toggle"
+                    data-action="click->password-toggle#toggleVisibility"
+                    aria-label="Show password"
+                    class="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[32px] min-w-[32px] items-center justify-center rounded text-muted hover:bg-[var(--color-border)] hover:text-body">
+              <svg data-password-toggle-target="showIcon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+              </svg>
+              <svg data-password-toggle-target="hideIcon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.12 9.12l-5.758-5.758a7.5 7.5 0 0010.607 10.607"/>
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -60,6 +79,12 @@
       <p class="mt-6 text-center text-sm text-muted">
         By continuing, you agree to your organization’s usage policies.
       </p>
+
+      <% if Rails.env.development? %>
+        <p class="mt-4 rounded-lg border border-theme bg-[var(--color-page)] px-3 py-2 text-center text-xs text-muted">
+          <strong class="text-body">Dev credentials:</strong> <%= ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com") %> / <%= ENV.fetch("DEV_ADMIN_PASSWORD", "password123!") %>
+        </p>
+      <% end %>
     </div>
   </div>
 </div>
