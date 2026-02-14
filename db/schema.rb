@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_14_205742) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_14_214048) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -60,14 +60,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_14_205742) do
   end
 
   create_table "customers", force: :cascade do |t|
+    t.integer "account_status"
     t.boolean "active", default: true, null: false
+    t.bigint "added_by_id"
+    t.string "address_line1"
+    t.string "address_line2"
+    t.text "alert"
+    t.string "city"
+    t.string "country"
     t.datetime "created_at", null: false
+    t.date "date_of_birth"
+    t.datetime "discarded_at"
     t.string "email"
     t.datetime "joining_date"
+    t.string "member_number"
     t.string "name"
     t.text "notes"
     t.string "phone"
+    t.string "postal_code"
+    t.string "province"
     t.datetime "updated_at", null: false
+    t.index ["added_by_id"], name: "index_customers_on_added_by_id"
+    t.index ["discarded_at"], name: "index_customers_on_discarded_at"
+    t.index ["member_number"], name: "index_customers_on_member_number", unique: true
   end
 
   create_table "pg_search_documents", force: :cascade do |t|
@@ -320,6 +335,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_14_205742) do
   end
 
   add_foreign_key "categorizations", "categories"
+  add_foreign_key "customers", "users", column: "added_by_id"
   add_foreign_key "product_variants", "products"
   add_foreign_key "product_variants", "suppliers"
   add_foreign_key "products", "suppliers"

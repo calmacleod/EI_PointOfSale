@@ -6,7 +6,7 @@ class Ability
 
     if user.is_a?(Admin)
       can :manage, User
-      can :manage, [ TaxCode, Supplier, Category, Product, ProductVariant, Service ]
+      can :manage, [ TaxCode, Supplier, Category, Product, ProductVariant, Service, Customer ]
       return
     end
 
@@ -16,7 +16,7 @@ class Ability
     # Common users can only update themselves.
     can %i[edit update], User, id: user.id if user.persisted?
 
-    # Common users can read products and services.
-    can :read, [ Product, ProductVariant, Service ] if user.persisted?
+    # Common users can read products, services, and customers.
+    can :read, [ Product, ProductVariant, Service, Customer ] if user.persisted?
   end
 end

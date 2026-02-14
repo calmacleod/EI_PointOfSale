@@ -41,6 +41,7 @@ class SearchController < ApplicationController
       when "Category" then record.name
       when "Supplier" then record.name
       when "TaxCode" then "#{record.code} - #{record.name}"
+      when "Customer" then record.name
       else record.try(:name) || record.to_s
       end
     end
@@ -63,6 +64,7 @@ class SearchController < ApplicationController
       when "ProductVariant" then product_product_variant_path(record.product, record)
       when "TaxCode" then admin_tax_code_path(record)
       when "Category", "Supplier" then products_path
+      when "Customer" then customer_path(record)
       else root_path
       end
     end

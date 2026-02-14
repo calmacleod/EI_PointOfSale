@@ -27,6 +27,7 @@ module ApplicationHelper
     when "Supplier" then record.name
     when "Category" then record.name
     when "Store" then record.name.presence || "Store"
+    when "Customer" then record.name
     else "#{audit.auditable_type} ##{audit.auditable_id}"
     end
   end
@@ -44,6 +45,7 @@ module ApplicationHelper
     when "Supplier" then admin_supplier_path(record)
     when "Category" then nil
     when "Store" then admin_settings_path
+    when "Customer" then customer_path(record)
     else nil
     end
   end

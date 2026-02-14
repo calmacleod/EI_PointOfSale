@@ -4,6 +4,7 @@ include Sprig::Helpers
 
 sprig [ TaxCode, Supplier, Category, User ]
 sprig [ Product, ProductVariant, Service ]
+sprig [ Customer ]
 
 # Categorizations (polymorphic - easier in Ruby)
 product_category_map = {

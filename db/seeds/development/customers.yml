@@ -1,0 +1,65 @@
+options:
+  find_existing_by: ['member_number']
+
+records:
+  - sprig_id: acme_corp
+    name: Acme Corp
+    member_number: "100001"
+    phone: "555-0100"
+    email: acme@example.com
+    address_line1: "123 Main St"
+    address_line2: "Suite 100"
+    city: "Springfield"
+    province: "ON"
+    postal_code: "M1M 1M1"
+    country: "Canada"
+    active: true
+    joining_date: "2024-01-15"
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: jane_doe
+    name: Jane Doe
+    member_number: "100002"
+    phone: "555-0200"
+    email: jane@example.com
+    address_line1: "456 Oak Ave"
+    city: "Toronto"
+    province: "ON"
+    postal_code: "M2N 2N2"
+    country: "Canada"
+    active: true
+    joining_date: "2024-02-01"
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: john_smith
+    name: John Smith
+    member_number: "100003"
+    phone: "555-0300"
+    email: john@example.com
+    active: true
+    notes: Prefers email contact
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: comic_collector
+    name: Sarah Chen
+    member_number: "100004"
+    phone: "555-0400"
+    email: sarah@example.com
+    address_line1: "789 Maple Rd"
+    city: "Mississauga"
+    province: "ON"
+    postal_code: "L5B 2K3"
+    country: "Canada"
+    active: true
+    alert: VIP - ask about new release alerts
+    joining_date: "2024-03-10"
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: inactive_member
+    name: Inactive Member
+    member_number: "100005"
+    phone: "555-0500"
+    email: inactive@example.com
+    active: false
+    notes: Account suspended - payment overdue
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"

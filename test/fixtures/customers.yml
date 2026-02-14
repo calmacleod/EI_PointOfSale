@@ -1,0 +1,24 @@
+acme_corp:
+  name: Acme Corp
+  member_number: "100001"
+  phone: "555-0100"
+  email: acme@example.com
+  address_line1: "123 Main St"
+  city: "Springfield"
+  province: "ON"
+  postal_code: "M1M 1M1"
+  country: "Canada"
+  active: true
+  joining_date: 2024-01-15
+
+jane_doe:
+  name: Jane Doe
+  member_number: "100002"
+  phone: "555-0200"
+  email: jane@example.com
+  active: true
+
+inactive_customer:
+  name: Inactive Customer
+  member_number: "100003"
+  active: false
