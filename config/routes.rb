@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resources :users, only: %i[index edit update]
   resource :profile, only: %i[edit update]
+  patch "profile/display_preferences", to: "profiles#update_display_preferences", as: :profile_display_preferences
   scope :admin, as: :admin, module: :admin_area do
     resource :settings, only: %i[show]
   end

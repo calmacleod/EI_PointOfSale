@@ -62,6 +62,9 @@ group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 
+  # Hot reloading for Hotwire [https://github.com/hotwired/spark]
+  gem "hotwire-spark"
+
   # Better seeding behavior with environment-specific seed files and fixtures
   gem "sprig", "~> 0.3.1"
 end

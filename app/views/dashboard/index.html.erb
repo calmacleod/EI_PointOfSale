@@ -2,17 +2,17 @@
 
 <div class="w-full flex flex-col gap-4">
   <% if Current.user.nil? %>
-    <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+    <div class="rounded-xl border border-[var(--color-success-border)] bg-[var(--color-success-bg)] p-4 text-[var(--color-success-text)]">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="font-semibold">You're viewing the dashboard as a guest.</p>
-          <p class="text-sm text-amber-800">Sign in to see real sales, customers, and activity.</p>
+          <p class="text-sm opacity-90">Sign in to see real sales, customers, and activity.</p>
         </div>
         <div class="flex gap-2">
           <%= link_to "Sign in", new_session_path,
-              class: "inline-flex items-center justify-center rounded-md bg-amber-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-amber-600 focus:ring-offset-2" %>
+              class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
           <%= link_to "Forgot password?", new_password_path,
-              class: "inline-flex items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-amber-900 shadow-sm ring-1 ring-inset ring-amber-200 hover:bg-amber-100" %>
+              class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border-theme bg-surface px-4 py-3 text-base font-semibold text-body ring-1 ring-inset hover:bg-[var(--color-border)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
         </div>
       </div>
     </div>
@@ -20,10 +20,10 @@
 
   <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
     <div>
-      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Dashboard</h1>
-      <p class="mt-1 text-sm text-slate-600">
+      <h1 class="text-2xl font-semibold tracking-tight text-body">Dashboard</h1>
+      <p class="mt-1 text-base text-muted">
         <% if Current.user %>
-          Welcome back, <span class="font-medium text-slate-900"><%= Current.user.email_address %></span>.
+          Welcome back, <span class="font-medium text-body"><%= Current.user.email_address %></span>.
         <% else %>
           Overview and shortcuts for your point of sale.
         <% end %>
@@ -33,60 +33,60 @@
 
   <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-12 lg:grid-cols-4">
-      <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="rounded-xl border border-theme bg-surface p-4 shadow-sm">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <p class="text-sm font-medium text-slate-600">Today's sales</p>
-          <p class="mt-1 text-2xl font-semibold text-slate-900"><%= number_to_currency(0) %></p>
-          <p class="mt-1 text-xs text-slate-500">vs. yesterday: <span class="font-medium text-slate-700">—</span></p>
+          <p class="text-base font-medium text-muted">Today's sales</p>
+          <p class="mt-1 text-2xl font-semibold text-body"><%= number_to_currency(0) %></p>
+          <p class="mt-1 text-sm text-muted">vs. yesterday: <span class="font-medium text-body">—</span></p>
         </div>
-        <div class="rounded-lg bg-slate-50 p-2 ring-1 ring-inset ring-slate-200">
-          <svg class="h-5 w-5 text-slate-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <div class="rounded-lg bg-[var(--color-border)]/30 p-2 ring-1 ring-inset border-theme">
+          <svg class="h-5 w-5 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M10 2a1 1 0 011 1v1.07A7 7 0 0117 11a7 7 0 11-7-6.93V3a1 1 0 011-1zm0 5a5 5 0 100 10 5 5 0 000-10z" />
           </svg>
         </div>
       </div>
       </div>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="rounded-xl border border-theme bg-surface p-4 shadow-sm">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <p class="text-sm font-medium text-slate-600">Transactions</p>
-          <p class="mt-1 text-2xl font-semibold text-slate-900">0</p>
-          <p class="mt-1 text-xs text-slate-500">Completed today</p>
+          <p class="text-base font-medium text-muted">Transactions</p>
+          <p class="mt-1 text-2xl font-semibold text-body">0</p>
+          <p class="mt-1 text-sm text-muted">Completed today</p>
         </div>
-        <div class="rounded-lg bg-slate-50 p-2 ring-1 ring-inset ring-slate-200">
-          <svg class="h-5 w-5 text-slate-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <div class="rounded-lg bg-[var(--color-border)]/30 p-2 ring-1 ring-inset border-theme">
+          <svg class="h-5 w-5 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 3a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z" />
           </svg>
         </div>
       </div>
       </div>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="rounded-xl border border-theme bg-surface p-4 shadow-sm">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <p class="text-sm font-medium text-slate-600">Average ticket</p>
-          <p class="mt-1 text-2xl font-semibold text-slate-900"><%= number_to_currency(0) %></p>
-          <p class="mt-1 text-xs text-slate-500">Per transaction</p>
+          <p class="text-base font-medium text-muted">Average ticket</p>
+          <p class="mt-1 text-2xl font-semibold text-body"><%= number_to_currency(0) %></p>
+          <p class="mt-1 text-sm text-muted">Per transaction</p>
         </div>
-        <div class="rounded-lg bg-slate-50 p-2 ring-1 ring-inset ring-slate-200">
-          <svg class="h-5 w-5 text-slate-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <div class="rounded-lg bg-[var(--color-border)]/30 p-2 ring-1 ring-inset border-theme">
+          <svg class="h-5 w-5 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v1H8a1 1 0 000 2h1v1H8a1 1 0 000 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V9h1a1 1 0 100-2h-1V6z" />
           </svg>
         </div>
       </div>
       </div>
 
-      <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="rounded-xl border border-theme bg-surface p-4 shadow-sm">
       <div class="flex items-start justify-between gap-3">
         <div>
-          <p class="text-sm font-medium text-slate-600">Low stock</p>
-          <p class="mt-1 text-2xl font-semibold text-slate-900">0</p>
-          <p class="mt-1 text-xs text-slate-500">Items need attention</p>
+          <p class="text-base font-medium text-muted">Low stock</p>
+          <p class="mt-1 text-2xl font-semibold text-body">0</p>
+          <p class="mt-1 text-sm text-muted">Items need attention</p>
         </div>
-        <div class="rounded-lg bg-slate-50 p-2 ring-1 ring-inset ring-slate-200">
-          <svg class="h-5 w-5 text-slate-700" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <div class="rounded-lg bg-[var(--color-border)]/30 p-2 ring-1 ring-inset border-theme">
+          <svg class="h-5 w-5 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M8.257 3.099c.765-1.36 2.721-1.36 3.486 0l6.516 11.59c.75 1.334-.214 2.99-1.743 2.99H3.484c-1.53 0-2.493-1.656-1.743-2.99l6.516-11.59zM11 14a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-1 1v4a1 1 0 102 0V7a1 1 0 00-1-1z" />
           </svg>
         </div>
@@ -95,144 +95,146 @@
     </div>
 
     <div class="lg:col-span-8">
-      <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="rounded-xl border border-theme bg-surface p-4 shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-sm font-semibold text-slate-900">Sales trend</h2>
-            <p class="mt-1 text-xs text-slate-500">Placeholder chart area (hook to orders later)</p>
+            <h2 class="text-base font-semibold text-body">Sales trend</h2>
+            <p class="mt-1 text-sm text-muted">Placeholder chart area (hook to orders later)</p>
           </div>
-          <div class="flex items-center gap-2 text-xs">
-            <span class="rounded-full bg-slate-100 px-2 py-1 font-medium text-slate-700">7d</span>
-            <span class="rounded-full bg-white px-2 py-1 font-medium text-slate-500 ring-1 ring-inset ring-slate-200">30d</span>
-            <span class="rounded-full bg-white px-2 py-1 font-medium text-slate-500 ring-1 ring-inset ring-slate-200">90d</span>
+          <div class="flex items-center gap-2 text-sm">
+            <span class="rounded-full bg-[var(--color-border)]/50 px-2 py-1 font-medium text-body">7d</span>
+            <span class="rounded-full bg-surface px-2 py-1 font-medium text-muted ring-1 ring-inset border-theme">30d</span>
+            <span class="rounded-full bg-surface px-2 py-1 font-medium text-muted ring-1 ring-inset border-theme">90d</span>
           </div>
         </div>
 
-        <div class="mt-4 h-56 w-full rounded-lg bg-gradient-to-br from-slate-50 to-slate-100 ring-1 ring-inset ring-slate-200">
+        <div class="mt-4 h-56 w-full rounded-lg bg-[var(--color-border)]/20 ring-1 ring-inset border-theme">
           <div class="flex h-full items-center justify-center">
-            <p class="text-sm font-medium text-slate-500">Chart placeholder</p>
+            <p class="text-base font-medium text-muted">Chart placeholder</p>
           </div>
         </div>
       </div>
 
-      <div class="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="mt-4 rounded-xl border border-theme bg-surface p-4 shadow-sm">
         <div class="flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-slate-900">Recent activity</h2>
-          <span class="text-xs text-slate-500">Last 24 hours</span>
+          <h2 class="text-base font-semibold text-body">Recent activity</h2>
+          <span class="text-sm text-muted">Last 24 hours</span>
         </div>
 
-        <div class="mt-3 overflow-hidden rounded-lg ring-1 ring-inset ring-slate-200">
-          <table class="min-w-full divide-y divide-slate-200">
-            <thead class="bg-slate-50">
+        <div class="mt-3 overflow-x-auto rounded-lg ring-1 ring-inset border-theme">
+          <table class="min-w-full divide-y divide-[var(--color-border)]">
+            <thead class="bg-[var(--color-border)]/30">
               <tr>
-                <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-slate-600">Type</th>
-                <th scope="col" class="px-3 py-2 text-left text-xs font-semibold text-slate-600">Details</th>
-                <th scope="col" class="px-3 py-2 text-right text-xs font-semibold text-slate-600">When</th>
+                <th scope="col" class="px-3 py-3 text-left text-base font-semibold text-body">Type</th>
+                <th scope="col" class="px-3 py-3 text-left text-base font-semibold text-body">Details</th>
+                <th scope="col" class="px-3 py-3 text-right text-base font-semibold text-body">When</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200 bg-white">
+            <tbody class="divide-y divide-[var(--color-border)] bg-surface">
               <tr>
-                <td class="px-3 py-2 text-sm font-medium text-slate-900">Setup</td>
-                <td class="px-3 py-2 text-sm text-slate-600">Dashboard scaffold created</td>
-                <td class="px-3 py-2 text-right text-sm text-slate-600">Just now</td>
+                <td class="px-3 py-3 text-base font-medium text-body">Setup</td>
+                <td class="px-3 py-3 text-base text-muted">Dashboard scaffold created</td>
+                <td class="px-3 py-3 text-right text-base text-muted">Just now</td>
               </tr>
               <tr>
-                <td class="px-3 py-2 text-sm font-medium text-slate-900">Auth</td>
-                <td class="px-3 py-2 text-sm text-slate-600">Sign in to start tracking sales and customers</td>
-                <td class="px-3 py-2 text-right text-sm text-slate-600">—</td>
+                <td class="px-3 py-3 text-base font-medium text-body">Auth</td>
+                <td class="px-3 py-3 text-base text-muted">Sign in to start tracking sales and customers</td>
+                <td class="px-3 py-3 text-right text-base text-muted">—</td>
               </tr>
               <tr>
-                <td class="px-3 py-2 text-sm font-medium text-slate-900">Next</td>
-                <td class="px-3 py-2 text-sm text-slate-600">Hook these panels up to real models (sales, inventory, customers)</td>
-                <td class="px-3 py-2 text-right text-sm text-slate-600">—</td>
+                <td class="px-3 py-3 text-base font-medium text-body">Next</td>
+                <td class="px-3 py-3 text-base text-muted">Hook these panels up to real models (sales, inventory, customers)</td>
+                <td class="px-3 py-3 text-right text-base text-muted">—</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <p class="mt-3 text-xs text-slate-500">
+        <p class="mt-3 text-sm text-muted">
           Tip: once you add models for orders/inventory, we can replace these placeholders with real KPIs.
         </p>
       </div>
     </div>
 
     <div class="lg:col-span-4">
-      <div class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div class="rounded-xl border border-theme bg-surface p-4 shadow-sm">
         <div class="flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-slate-900">Quick actions</h2>
-          <span class="text-xs text-slate-500"><%= Time.zone.today.strftime("%b %-d, %Y") %></span>
+          <h2 class="text-base font-semibold text-body">Quick actions</h2>
+          <span class="text-sm text-muted"><%= Time.zone.today.strftime("%b %-d, %Y") %></span>
         </div>
 
         <div class="mt-3 grid grid-cols-1 gap-2">
           <%= link_to users_path,
-              class: "group flex items-center justify-between rounded-lg px-3 py-2 ring-1 ring-inset ring-slate-200 hover:bg-slate-50" do %>
+              data: { turbo_prefetch: true },
+              class: "group flex min-h-[44px] items-center justify-between rounded-lg px-3 py-3 ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-3">
-              <div class="rounded-md bg-slate-900 p-2 text-white">
+              <div class="rounded-md bg-accent p-2 text-[color:var(--color-page)]">
                 <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-5-3.5a5.5 5.5 0 0110 0A6.96 6.96 0 0110 17a6.96 6.96 0 01-5-2.5z" clip-rule="evenodd" />
                 </svg>
               </div>
               <div>
-                <p class="text-sm font-medium text-slate-900">Users</p>
-                <p class="text-xs text-slate-500">View signed-in users</p>
+                <p class="text-base font-medium text-body">Users</p>
+                <p class="text-sm text-muted">View signed-in users</p>
               </div>
             </div>
-            <span class="text-xs font-medium text-slate-500 group-hover:text-slate-700">View</span>
+            <span class="text-sm font-medium text-muted group-hover:text-body">View</span>
           <% end %>
 
-          <a href="#" class="group flex items-center justify-between rounded-lg px-3 py-2 ring-1 ring-inset ring-slate-200 hover:bg-slate-50">
+          <a href="#" class="group flex min-h-[44px] items-center justify-between rounded-lg px-3 py-3 ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30">
             <div class="flex items-center gap-3">
-              <div class="rounded-md bg-slate-900 p-2 text-white">
+              <div class="rounded-md bg-accent p-2 text-[color:var(--color-page)]">
                 <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v5a1 1 0 11-2 0V4H5v12h6a1 1 0 110 2H4a1 1 0 01-1-1V3z" />
                   <path d="M14 12a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2h-2a1 1 0 110-2h2v-2a1 1 0 011-1z" />
                 </svg>
               </div>
               <div>
-                <p class="text-sm font-medium text-slate-900">New sale</p>
-                <p class="text-xs text-slate-500">Start a transaction</p>
+                <p class="text-base font-medium text-body">New sale</p>
+                <p class="text-sm text-muted">Start a transaction</p>
               </div>
             </div>
-            <span class="text-xs font-medium text-slate-500 group-hover:text-slate-700">Soon</span>
+            <span class="text-sm font-medium text-muted group-hover:text-body">Soon</span>
           </a>
 
-          <a href="#" class="group flex items-center justify-between rounded-lg px-3 py-2 ring-1 ring-inset ring-slate-200 hover:bg-slate-50">
+          <a href="#" class="group flex min-h-[44px] items-center justify-between rounded-lg px-3 py-3 ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30">
             <div class="flex items-center gap-3">
-              <div class="rounded-md bg-slate-900 p-2 text-white">
+              <div class="rounded-md bg-accent p-2 text-[color:var(--color-page)]">
                 <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M2 5a2 2 0 012-2h6a2 2 0 012 2v1h4a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2 0v10h12V8h-4a2 2 0 01-2-2V5H4z" />
                 </svg>
               </div>
               <div>
-                <p class="text-sm font-medium text-slate-900">Import catalog</p>
-                <p class="text-xs text-slate-500">Load items from a file</p>
+                <p class="text-base font-medium text-body">Import catalog</p>
+                <p class="text-sm text-muted">Load items from a file</p>
               </div>
             </div>
-            <span class="text-xs font-medium text-slate-500 group-hover:text-slate-700">Soon</span>
+            <span class="text-sm font-medium text-muted group-hover:text-body">Soon</span>
           </a>
 
           <%= link_to rails_health_check_path,
-              class: "group flex items-center justify-between rounded-lg px-3 py-2 ring-1 ring-inset ring-slate-200 hover:bg-slate-50" do %>
+              data: { turbo_prefetch: true },
+              class: "group flex min-h-[44px] items-center justify-between rounded-lg px-3 py-3 ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-3">
-              <div class="rounded-md bg-slate-900 p-2 text-white">
+              <div class="rounded-md bg-accent p-2 text-[color:var(--color-page)]">
                 <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9a1 1 0 01-1-1V6a1 1 0 112 0v5h1a1 1 0 110 2z" />
                 </svg>
               </div>
               <div>
-                <p class="text-sm font-medium text-slate-900">System status</p>
-                <p class="text-xs text-slate-500">Health check endpoint</p>
+                <p class="text-base font-medium text-body">System status</p>
+                <p class="text-sm text-muted">Health check endpoint</p>
               </div>
             </div>
-            <span class="text-xs font-medium text-slate-500 group-hover:text-slate-700">View</span>
+            <span class="text-sm font-medium text-muted group-hover:text-body">View</span>
           <% end %>
         </div>
       </div>
 
-      <div class="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-        <h2 class="text-sm font-semibold text-slate-900">Notes</h2>
-        <p class="mt-2 text-sm text-slate-600">
+      <div class="mt-4 rounded-xl border border-theme bg-surface p-4 shadow-sm">
+        <h2 class="text-base font-semibold text-body">Notes</h2>
+        <p class="mt-2 text-base text-muted">
           Add inventory + orders models next; then we’ll wire up sales totals, low-stock alerts, and real activity.
         </p>
       </div>

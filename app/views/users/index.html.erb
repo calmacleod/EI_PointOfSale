@@ -1,37 +1,40 @@
+<% content_for :title, "Users" %>
 <% content_for :breadcrumbs do %>
   <li>
-    <%= link_to "Dashboard", root_path, class: "font-medium text-slate-700 hover:text-slate-900" %>
+    <%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %>
   </li>
-  <li class="text-slate-400">/</li>
-  <li class="font-medium text-slate-900">Users</li>
+  <li class="text-muted">/</li>
+  <li class="font-medium text-body">Users</li>
 <% end %>
 
 <div class="mx-auto max-w-5xl">
   <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold">Users</h1>
+    <h1 class="text-2xl font-semibold text-body">Users</h1>
   </div>
 
-  <div class="mt-6 overflow-hidden rounded-lg border border-gray-200 bg-white">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
+  <div class="mt-6 overflow-x-auto rounded-lg border border-theme bg-surface">
+    <table class="min-w-full divide-y divide-[var(--color-border)]">
+      <thead class="bg-[var(--color-border)]/30">
         <tr>
-          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Name</th>
-          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Email</th>
-          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Type</th>
-          <th class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Active</th>
+          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Name</th>
+          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Email</th>
+          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Type</th>
+          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Active</th>
           <th class="px-4 py-3"></th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-200 bg-white">
+      <tbody class="divide-y divide-[var(--color-border)] bg-surface">
         <% @users.each do |user| %>
           <tr>
-            <td class="px-4 py-3 text-sm text-gray-900"><%= user.name.presence || "—" %></td>
-            <td class="px-4 py-3 text-sm text-gray-900"><%= user.email_address %></td>
-            <td class="px-4 py-3 text-sm text-gray-900"><%= user.type %></td>
-            <td class="px-4 py-3 text-sm text-gray-900"><%= user.active? ? "Yes" : "No" %></td>
-            <td class="px-4 py-3 text-right text-sm">
+            <td class="px-4 py-3 text-base text-body"><%= user.name.presence || "—" %></td>
+            <td class="px-4 py-3 text-base text-body"><%= user.email_address %></td>
+            <td class="px-4 py-3 text-base text-body"><%= user.type %></td>
+            <td class="px-4 py-3 text-base text-body"><%= user.active? ? "Yes" : "No" %></td>
+            <td class="px-4 py-3 text-right text-base">
               <% if Current.user.is_a?(Admin) %>
-                <%= link_to "Edit", edit_user_path(user), class: "text-indigo-600 hover:text-indigo-900" %>
+                <%= link_to "Edit", edit_user_path(user),
+                    class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",
+                    data: { turbo_prefetch: true } %>
               <% end %>
             </td>
           </tr>

@@ -1,9 +1,39 @@
-<h1>Update your password</h1>
+<% content_for :title, "Reset password" %>
 
-<%= tag.div(flash[:alert], style: "color:red") if flash[:alert] %>
+<div class="mx-auto max-w-md">
+  <% if flash[:alert].present? %>
+    <div class="mb-4 rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-4 text-base text-[var(--color-error-text)]">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
 
-<%= form_with url: password_path(params[:token]), method: :put do |form| %>
-  <%= form.password_field :password, required: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72 %><br>
-  <%= form.password_field :password_confirmation, required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72 %><br>
-  <%= form.submit "Save" %>
-<% end %>
+  <div class="rounded-2xl border border-theme bg-surface p-6 shadow-sm">
+    <h1 class="text-2xl font-semibold tracking-tight text-body">Update your password</h1>
+    <p class="mt-2 text-base text-muted">Enter and confirm your new password below.</p>
+
+    <%= form_with url: password_path(params[:token]), method: :put, class: "mt-6 space-y-4" do |form| %>
+      <div>
+        <%= form.label :password, "New password", class: "block text-base font-medium text-body" %>
+        <%= form.password_field :password,
+            required: true,
+            autocomplete: "new-password",
+            placeholder: "Enter new password",
+            maxlength: 72,
+            class: "mt-2 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+
+      <div>
+        <%= form.label :password_confirmation, "Confirm password", class: "block text-base font-medium text-body" %>
+        <%= form.password_field :password_confirmation,
+            required: true,
+            autocomplete: "new-password",
+            placeholder: "Repeat new password",
+            maxlength: 72,
+            class: "mt-2 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+
+      <%= form.submit "Save",
+          class: "inline-flex w-full min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
+    <% end %>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="<%= Current.user&.theme || 'light' %>" data-font-size="<%= Current.user&.font_size || 'default' %>">
   <head>
     <title><%= content_for(:title) || "Ei Point Of Sale" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -25,15 +25,28 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-slate-50 text-slate-900">
+  <body class="bg-page text-body overflow-x-hidden">
     <% if authenticated? %>
-      <div class="min-h-screen w-full lg:flex">
+      <% sidebar_collapsed = Current.user&.sidebar_collapsed == true %>
+      <div class="min-h-screen w-full lg:flex <%= 'sidebar-collapsed' if sidebar_collapsed %>" data-controller="sidebar" data-sidebar-collapsed-value="<%= sidebar_collapsed %>" data-sidebar-profile-path-value="<%= profile_display_preferences_path %>">
+        <button type="button"
+                data-action="click->sidebar#toggle"
+                class="fixed left-4 top-4 z-50 flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg bg-surface border-theme border text-body hover:bg-[var(--color-border)] lg:hidden"
+                aria-label="Open menu">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
+        <div data-sidebar-target="overlay"
+             data-action="click->sidebar#close"
+             class="fixed inset-0 z-30 hidden bg-black/50 lg:hidden"
+             aria-hidden="true"></div>
         <%= render "shared/sidebar" %>
 
-        <main class="flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        <main class="flex-1 px-4 pt-16 pb-8 sm:px-6 lg:pt-8 lg:px-8">
           <div class="mx-auto w-full max-w-screen-2xl">
             <%= render "shared/breadcrumbs" %>
-            <%= render "shared/flash" %>
+            <div id="flash_container"><%= render "shared/flash" %></div>
             <%= yield %>
           </div>
         </main>
@@ -42,7 +55,7 @@
       <main class="min-h-screen w-full px-4 py-8 sm:px-6 lg:px-8">
         <div class="mx-auto w-full max-w-screen-2xl">
           <%= render "shared/breadcrumbs" %>
-          <%= render "shared/flash" %>
+          <div id="flash_container"><%= render "shared/flash" %></div>
           <%= yield %>
         </div>
       </main>

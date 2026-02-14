@@ -3,28 +3,28 @@
 <div class="w-full flex items-start justify-center">
   <div class="w-full max-w-md">
     <% if flash[:alert].present? %>
-      <div class="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-900">
+      <div class="mb-4 rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-4 text-base text-[var(--color-error-text)]">
         <p class="font-medium">Sign in failed</p>
-        <p class="mt-1 text-rose-800"><%= flash[:alert] %></p>
+        <p class="mt-1"><%= flash[:alert] %></p>
       </div>
     <% end %>
 
     <% if flash[:notice].present? %>
-      <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+      <div class="mb-4 rounded-lg border border-[var(--color-success-border)] bg-[var(--color-success-bg)] p-4 text-base text-[var(--color-success-text)]">
         <p class="font-medium">Success</p>
-        <p class="mt-1 text-emerald-800"><%= flash[:notice] %></p>
+        <p class="mt-1"><%= flash[:notice] %></p>
       </div>
     <% end %>
 
-    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div class="rounded-2xl border border-theme bg-surface p-6 shadow-sm">
       <div class="mb-6">
-        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Welcome back</h1>
-        <p class="mt-1 text-sm text-slate-600">Sign in to continue.</p>
+        <h1 class="text-2xl font-semibold tracking-tight text-body">Welcome back</h1>
+        <p class="mt-1 text-base text-muted">Sign in to continue.</p>
       </div>
 
       <%= form_with url: session_path, class: "space-y-4" do |form| %>
         <div>
-          <%= form.label :email_address, "Email address", class: "block text-sm font-medium text-slate-900" %>
+          <%= form.label :email_address, "Email address", class: "block text-base font-medium text-body" %>
           <div class="mt-2">
             <%= form.email_field :email_address,
                 required: true,
@@ -32,14 +32,14 @@
                 autocomplete: "username",
                 placeholder: "you@example.com",
                 value: params[:email_address],
-                class: "block w-full rounded-md border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:text-sm" %>
+                class: "block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm ring-1 ring-inset placeholder:text-muted focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
           </div>
         </div>
 
         <div>
           <div class="flex items-center justify-between">
-            <%= form.label :password, "Password", class: "block text-sm font-medium text-slate-900" %>
-            <%= link_to "Forgot password?", new_password_path, class: "text-sm font-medium text-slate-700 hover:text-slate-900" %>
+            <%= form.label :password, "Password", class: "block text-base font-medium text-body" %>
+            <%= link_to "Forgot password?", new_password_path, class: "text-base font-medium text-accent hover:opacity-80" %>
           </div>
           <div class="mt-2">
             <%= form.password_field :password,
@@ -47,17 +47,17 @@
                 autocomplete: "current-password",
                 placeholder: "••••••••",
                 maxlength: 72,
-                class: "block w-full rounded-md border-0 px-3 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-slate-900 sm:text-sm" %>
+                class: "block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm ring-1 ring-inset placeholder:text-muted focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
           </div>
         </div>
 
         <div class="pt-2">
           <%= form.submit "Sign in",
-              class: "inline-flex w-full items-center justify-center rounded-md bg-slate-900 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900 focus:ring-offset-2" %>
+              class: "inline-flex w-full min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
         </div>
       <% end %>
 
-      <p class="mt-6 text-center text-xs text-slate-500">
+      <p class="mt-6 text-center text-sm text-muted">
         By continuing, you agree to your organization’s usage policies.
       </p>
     </div>

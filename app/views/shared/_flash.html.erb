@@ -3,18 +3,18 @@
     <% flash.each do |type, message| %>
       <% next if message.blank? %>
 
-      <% classes =
+      <% css_vars =
         case type.to_s
         when "notice"
-          "border-emerald-200 bg-emerald-50 text-emerald-900"
+          "border-[var(--color-success-border)] bg-[var(--color-success-bg)] text-[var(--color-success-text)]"
         when "alert", "error"
-          "border-rose-200 bg-rose-50 text-rose-900"
+          "border-[var(--color-error-border)] bg-[var(--color-error-bg)] text-[var(--color-error-text)]"
         else
-          "border-slate-200 bg-white text-slate-900"
+          "border-theme bg-surface text-body"
         end
       %>
 
-      <div class="rounded-lg border px-4 py-3 text-sm <%= classes %>">
+      <div class="rounded-lg border px-4 py-3 text-base <%= css_vars %>">
         <%= message %>
       </div>
     <% end %>

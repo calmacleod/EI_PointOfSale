@@ -1,0 +1,114 @@
+<%= form_with model: user, url: profile_path, method: :patch, class: "divide-y divide-[var(--color-border)]" do |f| %>
+  <% if user.errors.any? %>
+    <div class="bg-[var(--color-error-bg)] px-6 py-4">
+      <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+        <% user.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="px-6 py-5">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="text-base font-semibold text-body">Contact</h2>
+        <p class="mt-1 text-sm text-muted">How we reach you and how you sign in.</p>
+      </div>
+      <span class="inline-flex items-center rounded-full bg-[var(--color-border)]/50 px-2.5 py-1 text-sm font-medium text-body">
+        <%= user.type %>
+      </span>
+    </div>
+
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="sm:col-span-1">
+        <%= f.label :name, class: "block text-base font-medium text-body" %>
+        <%= f.text_field :name,
+            placeholder: "Full name",
+            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+
+      <div class="sm:col-span-1">
+        <%= f.label :email_address, "Email", class: "block text-base font-medium text-body" %>
+        <%= f.email_field :email_address,
+            autocomplete: "email",
+            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+
+      <div class="sm:col-span-1">
+        <%= f.label :phone, class: "block text-base font-medium text-body" %>
+        <%= f.telephone_field :phone,
+            autocomplete: "tel",
+            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+
+      <div class="sm:col-span-2">
+        <%= f.label :notes, class: "block text-base font-medium text-body" %>
+        <%= f.text_area :notes, rows: 4,
+            placeholder: "Optional notes…",
+            class: "mt-1 block w-full rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-6 py-5">
+    <h2 class="text-base font-semibold text-body">Display settings</h2>
+    <p class="mt-1 text-sm text-muted">Theme, font size, and sidebar preference.</p>
+
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :theme, class: "block text-base font-medium text-body" %>
+        <%= f.select :theme, [["Light", "light"], ["Dark", "dark"], ["Dim", "dim"]], {},
+            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+
+      <div>
+        <%= f.label :font_size, "Font size", class: "block text-base font-medium text-body" %>
+        <%= f.select :font_size, [["Default", "default"], ["Large", "large"], ["Extra large", "xlarge"]], {},
+            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+
+      <div class="sm:col-span-2">
+        <div class="flex min-h-[44px] items-center justify-between rounded-lg border border-theme bg-[var(--color-border)]/20 px-4 py-3">
+          <div>
+            <p class="text-base font-medium text-body">Collapse sidebar on desktop</p>
+            <p class="mt-0.5 text-sm text-muted">Hide the sidebar by default on large screens.</p>
+          </div>
+          <div class="pt-0.5">
+            <%= f.check_box :sidebar_collapsed,
+                class: "h-5 w-5 rounded border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="px-6 py-5">
+    <h2 class="text-base font-semibold text-body">Password</h2>
+    <p class="mt-1 text-sm text-muted">Leave blank to keep your current password.</p>
+
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div class="sm:col-span-1">
+        <%= f.label :password, class: "block text-base font-medium text-body" %>
+        <%= f.password_field :password,
+            autocomplete: "new-password",
+            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+
+      <div class="sm:col-span-1">
+        <%= f.label :password_confirmation, class: "block text-base font-medium text-body" %>
+        <%= f.password_field :password_confirmation,
+            autocomplete: "new-password",
+            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-surface px-6 py-4">
+    <div class="flex items-center justify-end">
+      <%= f.submit "Save changes",
+          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
+    </div>
+  </div>
+<% end %>
