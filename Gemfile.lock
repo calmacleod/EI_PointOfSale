@@ -77,6 +77,7 @@ GEM
       uri (>= 0.13.1)
     addressable (2.8.8)
       public_suffix (>= 2.0.2, < 8.0)
+    ansi (1.5.0)
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt (3.1.21)
@@ -130,6 +131,13 @@ GEM
       raabro (~> 1.4)
     globalid (1.3.0)
       activesupport (>= 6.1)
+    herb (0.8.10-aarch64-linux-gnu)
+    herb (0.8.10-aarch64-linux-musl)
+    herb (0.8.10-arm-linux-gnu)
+    herb (0.8.10-arm-linux-musl)
+    herb (0.8.10-arm64-darwin)
+    herb (0.8.10-x86_64-linux-gnu)
+    herb (0.8.10-x86_64-linux-musl)
     hotwire-spark (0.1.13)
       listen
       rails (>= 7.0.0)
@@ -185,6 +193,11 @@ GEM
       logger
     mini_mime (1.1.5)
     minitest (5.27.0)
+    minitest-reporters (1.7.1)
+      ansi
+      builder
+      minitest (>= 5.0)
+      ruby-progressbar
     msgpack (1.8.0)
     net-imap (0.6.2)
       date
@@ -423,12 +436,14 @@ DEPENDENCIES
   debug
   discard (~> 1.4)
   dotenv
+  herb
   hotwire-spark
   image_processing (~> 1.2)
   importmap-rails
   jbuilder
   kamal
   minitest (< 6)
+  minitest-reporters
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)
@@ -460,6 +475,7 @@ CHECKSUMS
   activestorage (8.1.1) sha256=bc01d8b4c55e309a0a2e218bfe502c382c9f232e28b1f4b0adc9d8719d2bf28d
   activesupport (8.1.1) sha256=5e92534e8d0c8b8b5e6b16789c69dbea65c1d7b752269f71a39422e9546cea67
   addressable (2.8.8) sha256=7c13b8f9536cf6364c03b9d417c19986019e28f7c00ac8132da4eb0fe393b057
+  ansi (1.5.0) sha256=5408253274e33d9d27d4a98c46d2998266fd51cba58a7eb9d08f50e57ed23592
   ast (2.4.3) sha256=954615157c1d6a382bc27d690d973195e79db7f55e9765ac7c481c60bdb4d383
   base64 (0.3.0) sha256=27337aeabad6ffae05c265c450490628ef3ebd4b67be58257393227588f5a97b
   bcrypt (3.1.21) sha256=5964613d750a42c7ee5dc61f7b9336fb6caca429ba4ac9f2011609946e4a2dcf
@@ -494,6 +510,13 @@ CHECKSUMS
   ffi (1.17.3-x86_64-linux-musl) sha256=086b221c3a68320b7564066f46fed23449a44f7a1935f1fe5a245bd89d9aea56
   fugit (1.12.1) sha256=5898f478ede9b415f0804e42b8f3fd53f814bd85eebffceebdbc34e1107aaf68
   globalid (1.3.0) sha256=05c639ad6eb4594522a0b07983022f04aa7254626ab69445a0e493aa3786ff11
+  herb (0.8.10-aarch64-linux-gnu) sha256=da47ed456350077e73c6d94336dda8a3ac141922c867cf552bf17cb0840388de
+  herb (0.8.10-aarch64-linux-musl) sha256=6317516ad3dc0fc4543dad748d9a34689426beb4ee5eace0ac0f3c185277b5ce
+  herb (0.8.10-arm-linux-gnu) sha256=535eaf3003aa115b7c6c7ea634cdf4234cbec91596d946e8817261a45b7699d9
+  herb (0.8.10-arm-linux-musl) sha256=2cded27f825c868322df1d7343670122e2317644d4d75191409b915cd6d559fe
+  herb (0.8.10-arm64-darwin) sha256=bba77f7f64ffd144f36af5d4573ca5ee863f7258acd71c8536384d63d60e3d72
+  herb (0.8.10-x86_64-linux-gnu) sha256=268b059f66a1f3191c8d7c15cfcb293a91be5c3811704856acd49b6f2e5dc1b1
+  herb (0.8.10-x86_64-linux-musl) sha256=bd1b2bf9f0ab9ceecdd874cdf03424176b83fa3c937188568c011cecf40b5d7f
   hotwire-spark (0.1.13) sha256=0a24799b0942fc9b7ea3e560a5aba3f4dd9a6086958a25929894340f920fb499
   i18n (1.14.8) sha256=285778639134865c5e0f6269e0b818256017e8cde89993fdfcbfb64d088824a5
   image_processing (1.14.0) sha256=754cc169c9c262980889bec6bfd325ed1dafad34f85242b5a07b60af004742fb
@@ -514,6 +537,7 @@ CHECKSUMS
   mini_magick (5.3.1) sha256=29395dfd76badcabb6403ee5aff6f681e867074f8f28ce08d78661e9e4a351c4
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
   minitest (5.27.0) sha256=2d3b17f8a36fe7801c1adcffdbc38233b938eb0b4966e97a6739055a45fa77d5
+  minitest-reporters (1.7.1) sha256=5060413a0c95b8c32fe73e0606f3631c173a884d7900e50013e15094eb50562c
   msgpack (1.8.0) sha256=e64ce0212000d016809f5048b48eb3a65ffb169db22238fb4b72472fecb2d732
   net-imap (0.6.2) sha256=08caacad486853c61676cca0c0c47df93db02abc4a8239a8b67eb0981428acc6
   net-pop (0.1.2) sha256=848b4e982013c15b2f0382792268763b748cce91c9e91e36b0f27ed26420dff3

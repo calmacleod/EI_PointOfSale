@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+require "rubygems"
+require "bundler/setup"
+
+require "fileutils"
+
+# Run herb from tmp/herb so analyze results are saved in their own directory
+project_root = File.expand_path("..", __dir__)
+herb_dir = File.join(project_root, "tmp", "herb")
+
+FileUtils.mkdir_p(herb_dir)
+
+# Replace "analyze ." with "analyze <project_root>" so we analyze the whole project
+argv = ARGV.dup
+if (idx = argv.index("analyze")) && argv[idx + 1] == "."
+  argv[idx + 1] = project_root
+end
+
+ARGV.replace(argv)
+
+Dir.chdir(herb_dir) do
+  load Gem.bin_path("herb", "herb")
+end

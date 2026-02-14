@@ -56,6 +56,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # HTML-aware ERB linting and tooling [https://github.com/marcoroth/herb]
+  gem "herb"
 end
 
 group :development do
@@ -74,6 +77,8 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "minitest", "< 6"
+  # JUnit XML report for CI Insights [https://github.com/minitest-reporters/minitest-reporters]
+  gem "minitest-reporters"
 end
 
 gem "tailwindcss-rails", "~> 4.4"

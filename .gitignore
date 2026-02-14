@@ -37,3 +37,9 @@ For testing Database Data
 *.mdb
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Herb analyze results
+*_erb_parsing_result_*.log
+!/tmp/herb/
+!/tmp/herb/.keep
+/tmp/herb/*.log
