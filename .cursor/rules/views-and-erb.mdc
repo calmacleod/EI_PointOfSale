@@ -1,0 +1,20 @@
+---
+description: View and layout conventions
+globs: app/views/**/*.erb
+alwaysApply: false
+---
+
+# Views & ERB
+
+## Styling
+- Use **Tailwind CSS** utility classes
+- Use `class: [...]` with `.join(" ")` for conditional classes
+- Shared UI lives in `app/views/shared/` (e.g., `_sidebar`)
+
+## Current Context
+- Use `Current.user` for the signed-in user (may be nil)
+- Use `Current.user&.type` for role display
+
+## Layout
+- Use `root_path` for redirects after auth
+- Use `link_to` with path helpers; prefer `*_path` over `*_url` for in-app links

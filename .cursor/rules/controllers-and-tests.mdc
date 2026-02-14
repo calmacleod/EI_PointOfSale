@@ -1,0 +1,46 @@
+---
+description: Controller patterns and integration test conventions
+globs: app/controllers/**/*.rb, test/controllers/**/*.rb
+alwaysApply: false
+---
+
+# Controllers & Integration Tests
+
+## Controller Conventions
+- Extend `ApplicationController`; use `AdminArea::` for admin-only controllers
+- Include `Authentication` (default); use `allow_unauthenticated_access` for public actions
+- Use `load_and_authorize_resource` for resource controllers
+- Strong params in private `*_params` methods
+- Redirect with `notice:` or `alert:` for user feedback
+
+## Admin Area
+```ruby
+module AdminArea
+  class SettingsController < ApplicationController
+    before_action :require_admin
+    # ...
+  end
+end
+```
+
+## Integration Tests (Minitest)
+- Use `ActionDispatch::IntegrationTest`
+- Use `sign_in_as(user)` from `SessionTestHelper` for authenticated requests
+- Use fixtures (`users(:one)`, etc.); create records only when fixtures are insufficient
+- Test authorization: assert `assert_redirected_to root_path` for unauthorized access
+
+## Example Test
+```ruby
+test "signed in user can view index" do
+  sign_in_as(users(:one))
+  get users_path
+  assert_response :success
+  assert_includes response.body, users(:one).email_address
+end
+
+test "non-admin cannot edit other users" do
+  sign_in_as(users(:one))
+  patch user_path(users(:two)), params: { user: { name: "Hacked" } }
+  assert_redirected_to root_path
+end
+```

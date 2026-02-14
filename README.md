@@ -1,15 +1,83 @@
-# Ei Point of Sale
+# EI Point of Sale
 
-## Local development
+A Rails 8 point-of-sale application for managing products, services, customers, and inventory.
 
-When running the app locally with Solid Queue (e.g. via `bin/dev` with a `jobs` process, or `bin/jobs` directly), set `PGGSSENCMODE=disable` so the `pg` gem can connect without GSSAPI:
+## Tech Stack
+
+- **Ruby 4.0**, **Rails 8.1**
+- **PostgreSQL** with PgSearch for full-text search
+- **Tailwind CSS** for styling
+- **Hotwire** (Turbo + Stimulus) for interactivity
+- **Solid Queue** for background jobs
+- **CanCanCan** for authorization
+- **Audited** for change tracking
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- Ruby 4.0
+- PostgreSQL
+- Node.js (for Herb ERB linter)
+
+### Setup
 
 ```bash
-export PGGSSENCMODE=disable
+# Clone the repository
+git clone <repository-url>
+cd EI_PointOfSale
+
+# Install dependencies
+bundle install
+npm install
+
+# Copy environment template and configure
+cp env.template .env
+# Edit .env and set MAPBOX_ACCESS_TOKEN if you want address autocomplete
+
+# Create and migrate the database
+bin/rails db:create db:migrate
+
+# Load development data (optional)
+bin/rails db:seed
+```
+
+### Run the app
+
+```bash
 bin/dev
 ```
 
-Or add it to `.env`:
+This starts the web server, Tailwind CSS watcher, and Solid Queue workers. Open [http://localhost:3000](http://localhost:3000).
+
+### Sign in (development)
+
+After seeding, use the credentials shown on the sign-in page (default: `admin@example.com` / `password123!`).
+
+---
+
+## Features
+
+| Area | Description |
+|------|-------------|
+| **Dashboard** | Overview with configurable metrics (e.g. new customers). Metrics refresh every 15 minutes via background job. |
+| **Products** | Catalog with variants, categories, tax codes, and suppliers. Full-text search. |
+| **Services** | Sellable services with tax and optional categories. |
+| **Customers** | Customer records with addresses, member numbers, and soft delete. |
+| **Users** | Staff accounts (Admin only). Manage roles and activation. |
+| **Admin** | Store settings, tax codes, suppliers, audit trail. Mapbox address autofill for store address. |
+| **Profile** | Edit contact info, theme (light/dark/dim), font size, sidebar preference, and dashboard metric selection. |
+| **Search** | Global search across products, services, customers, users, and more. |
+
+---
+
+## Local Development
+
+### PostgreSQL connection
+
+When running Solid Queue locally (`bin/dev` or `bin/jobs`), set `PGGSSENCMODE=disable` so the `pg` gem can connect without GSSAPI. Add to `.env`:
 
 ```
 PGGSSENCMODE=disable
@@ -25,17 +93,54 @@ MAPBOX_ACCESS_TOKEN=pk.your_mapbox_public_token
 
 Get a free token at [account.mapbox.com](https://account.mapbox.com/). Without it, the address field works as a normal text input.
 
+### CI and linting
+
+```bash
+# Run tests
+bin/rails test
+
+# Lint
+bin/rubocop
+npx herb-lint
+bundle exec herb analyze .
+
+# Full CI suite (tests, lint, security)
+bin/ci
+```
+
+---
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `RAILS_ENV` | Rails environment (development, test, production) |
+| `PGGSSENCMODE` | Set to `disable` for local PostgreSQL with Solid Queue |
+| `MAPBOX_ACCESS_TOKEN` | Mapbox public token for address autofill |
+| `DEV_ADMIN_EMAIL` | Admin email for development seeds (optional) |
+| `DEV_ADMIN_PASSWORD` | Admin password for development seeds (optional) |
+| `DEV_ADMIN_NAME` | Admin display name for development seeds (optional) |
+
+See `env.template` for a full list.
+
+---
+
+## Documentation
+
+- [Search (pg_search)](docs/search.md) — Full-text search
+- [Products and variants](docs/products-and-variants.md)
+- [Services](docs/services.md)
+- [Style guide](docs/styleguide.md)
+
 ---
 
 ## Local CI & Signoff
 
-Run the full CI suite locally (tests, lint, security scans) and sign off on PRs when everything passes:
+Run the full CI suite and sign off on PRs when everything passes:
 
 ```bash
 bin/ci
 ```
-
-When all steps pass, `gh signoff` runs automatically to set a green GitHub commit status on your PR.
 
 ### One-time setup for local CI
 
@@ -44,39 +149,6 @@ When all steps pass, `gh signoff` runs automatically to set a green GitHub commi
 
 ### Require signoff for merges
 
-To require a signoff before PRs can be merged:
-
 ```bash
 gh signoff install
 ```
-
----
-
-## Documentation
-
-- **[Search (pg_search)](docs/search.md)** — Full-text search across Product, Service, Category, Supplier, User, ProductVariant, TaxCode
-- [Products and variants](docs/products-and-variants.md)
-- [Services](docs/services.md)
-- [Style guide](docs/styleguide.md)
-
----
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...

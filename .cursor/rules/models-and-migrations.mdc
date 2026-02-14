@@ -1,0 +1,28 @@
+---
+description: Model and migration conventions
+globs: app/models/**/*.rb, db/migrate/**/*.rb
+alwaysApply: false
+---
+
+# Models & Migrations
+
+## Models
+- Inherit from `ApplicationRecord`
+- Use `normalizes` for attribute cleaning (e.g., `email_address`)
+- Use `has_secure_password` where applicable
+- Define associations with `dependent:` where cleanup is needed
+
+## STI (Single Table Inheritance)
+- Use `type` column for User subclasses (e.g., `Admin`, `Common`)
+- Check type with `user.is_a?(Admin)`
+
+## Migrations
+- Use descriptive names: `add_index_users_on_email_address`
+- Use `change` methods; avoid `up`/`down` unless necessary
+- Add `null: false` for required columns where appropriate
+- Use `references` for foreign keys with appropriate options
+
+## Ability (CanCanCan)
+- Define rules in `app/models/ability.rb`
+- Use `can :manage, Model` for admin full access
+- Scope with `Model, id: user.id` for self-only access

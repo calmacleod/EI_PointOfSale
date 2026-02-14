@@ -1,0 +1,37 @@
+---
+description: Core project standards and tech stack
+alwaysApply: true
+---
+
+# EI Point of Sale - Core Standards
+
+## Tech Stack
+- **Ruby 4.0**, **Rails 8.1**
+- **CanCanCan** for authorization (not Pundit)
+- **Custom session-based auth** via `Authentication` concern
+- **Tailwind CSS** for styling
+- **Stimulus + Turbo** for interactivity
+- **Minitest** for testing (not RSpec)
+- **Rubocop Rails Omakase** for linting
+
+## Naming & Style
+- Use descriptive variable and method names (e.g., `user_signed_in?`, `calculate_total`)
+- Prefer readability and scalability over premature optimization
+- Follow Rails conventions and Omakase defaults
+
+## Linting
+- Run `bin/rubocop` after any substantial changes (new files, refactors, multi-file edits)
+- Fix all violations that rubocop reports before considering the work complete
+- Use `bin/rubocop -a` to auto-correct safe violations, then manually fix any remaining issues
+
+## Testing
+- Significant changes must include corresponding tests
+- New controllers → integration tests in `test/controllers/`
+- New models or model logic → unit tests in `test/models/`
+- Add tests before or alongside implementation; do not leave tests for "later"
+
+## Authorization
+- Controllers use `load_and_authorize_resource` or explicit `authorize_resource`
+- Define abilities in `app/models/ability.rb`
+- Admin users: `current_user.is_a?(Admin)`
+- Admin-only areas use `AdminArea::` namespace with `require_admin` before_action
