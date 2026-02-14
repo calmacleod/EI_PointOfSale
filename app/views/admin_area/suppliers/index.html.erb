@@ -1,0 +1,61 @@
+<% content_for :title, "Suppliers" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Suppliers</li>
+<% end %>
+
+<div class="mx-auto max-w-5xl">
+  <%= render "shared/page_header", title: "Suppliers" do %>
+    <%= link_to "Add supplier", new_admin_supplier_path,
+        class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
+        data: { turbo_prefetch: true } %>
+  <% end %>
+
+  <div class="mt-6 flex flex-col gap-4">
+    <%= render "shared/table_filters",
+        search_path: admin_suppliers_path,
+        turbo_frame: "suppliers_table",
+        label: "Search suppliers",
+        placeholder: "Search suppliers…" %>
+
+    <%= turbo_frame_tag "suppliers_table" do %>
+      <div class="overflow-x-auto rounded-lg border border-theme bg-surface">
+        <table class="min-w-full divide-y divide-[var(--color-border)]">
+          <thead class="bg-[var(--color-border)]/30">
+            <tr>
+              <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Name</th>
+              <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Phone</th>
+              <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Created</th>
+              <th class="px-4 py-3 text-right text-base font-medium uppercase tracking-wider text-muted"></th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+            <% @suppliers.each do |supplier| %>
+              <tr>
+                <td class="px-4 py-3 text-base font-medium text-body">
+                  <%= link_to supplier.name, admin_supplier_path(supplier), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
+                </td>
+                <td class="px-4 py-3 text-base text-body"><%= supplier.phone.presence || "—" %></td>
+                <td class="px-4 py-3 text-base text-body text-muted"><%= l(supplier.created_at, format: :short) %></td>
+                <td class="px-4 py-3 text-right text-base">
+                  <%= link_to "Edit", edit_admin_supplier_path(supplier),
+                      class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",
+                      data: { turbo_frame: "_top", turbo_prefetch: true } %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <% if @suppliers.empty? %>
+        <p class="mt-4 text-base text-muted">No suppliers yet. Add one to get started.</p>
+      <% end %>
+
+      <%= render "shared/pagy_nav" %>
+    <% end %>
+  </div>
+</div>

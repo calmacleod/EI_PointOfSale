@@ -1,0 +1,39 @@
+<%= form_with model: supplier, url: supplier.persisted? ? admin_supplier_path(supplier) : admin_suppliers_path, class: "divide-y divide-[var(--color-border)]" do |f| %>
+  <% if supplier.errors.any? %>
+    <div class="bg-[var(--color-error-bg)] px-6 py-4">
+      <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+        <% supplier.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="px-6 py-5 space-y-4">
+    <div>
+      <%= f.label :name, class: "block text-base font-medium text-body" %>
+      <%= f.text_field :name,
+          placeholder: "e.g. Acme Supplies",
+          class: "input-field mt-1 block w-full min-h-[44px]" %>
+    </div>
+    <div>
+      <%= f.label :phone, class: "block text-base font-medium text-body" %>
+      <%= f.telephone_field :phone,
+          placeholder: "e.g. 1-800-555-0100",
+          class: "input-field mt-1 block w-full min-h-[44px]" %>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between bg-surface px-6 py-4">
+    <% if supplier.persisted? %>
+      <%= button_to "Remove", admin_supplier_path(supplier), method: :delete,
+          data: { turbo_confirm: "Remove this supplier? Products using it will need to be updated." },
+          class: "text-base font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+    <% else %>
+      <span></span>
+    <% end %>
+    <%= f.submit supplier.persisted? ? "Save changes" : "Create supplier",
+        class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]" %>
+  </div>
+<% end %>

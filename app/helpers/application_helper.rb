@@ -29,7 +29,7 @@ module ApplicationHelper
     when "ProductVariant" then record.product ? product_product_variant_path(record.product, record) : nil
     when "Service" then service_path(record)
     when "TaxCode" then admin_tax_code_path(record)
-    when "Supplier" then nil
+    when "Supplier" then admin_supplier_path(record)
     when "Category" then nil
     else nil
     end

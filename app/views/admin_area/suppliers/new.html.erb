@@ -1,0 +1,18 @@
+<% content_for :title, "New supplier" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Suppliers", admin_suppliers_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">New</li>
+<% end %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: "New supplier", description: "Add a supplier for product sourcing." %>
+
+  <div class="mt-6 form-card overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
+    <%= render "form", supplier: @supplier %>
+  </div>
+</div>

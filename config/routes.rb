@@ -15,6 +15,7 @@ Rails.application.routes.draw do
   scope :admin, as: :admin, module: :admin_area do
     resource :settings, only: %i[show]
     resources :tax_codes
+    resources :suppliers
     get "audits", to: "audits#index", as: :audits
   end
 
