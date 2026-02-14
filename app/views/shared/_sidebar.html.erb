@@ -45,6 +45,30 @@
         <span class="sidebar-text min-w-0 truncate">Users</span>
       <% end %>
 
+      <%= link_to products_path,
+          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          class: [
+            "nav-link mt-1 flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-base font-medium",
+            (current_page?(products_path) ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
+          ].join(" ") do %>
+        <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+        </svg>
+        <span class="sidebar-text min-w-0 truncate">Products</span>
+      <% end %>
+
+      <%= link_to services_path,
+          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          class: [
+            "nav-link mt-1 flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-base font-medium",
+            (current_page?(services_path) ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
+          ].join(" ") do %>
+        <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+        <span class="sidebar-text min-w-0 truncate">Services</span>
+      <% end %>
+
       <% if Current.user.is_a?(Admin) %>
         <%= link_to admin_settings_path,
             data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },

@@ -1,0 +1,75 @@
+<%= form_with model: tax_code, url: tax_code.persisted? ? admin_tax_code_path(tax_code) : admin_tax_codes_path, class: "divide-y divide-[var(--color-border)]" do |f| %>
+  <% if tax_code.errors.any? %>
+    <div class="bg-[var(--color-error-bg)] px-6 py-4">
+      <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+        <% tax_code.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="px-6 py-5 space-y-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :code, class: "block text-base font-medium text-body" %>
+        <%= f.text_field :code,
+            placeholder: "e.g. HST",
+            class: "input-field mt-1 block w-full min-h-[44px]" %>
+      </div>
+      <div>
+        <%= f.label :name, class: "block text-base font-medium text-body" %>
+        <%= f.text_field :name,
+            placeholder: "e.g. Ontario HST",
+            class: "input-field mt-1 block w-full min-h-[44px]" %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <%= f.label :rate, "Rate (%)", class: "block text-base font-medium text-body" %>
+        <%= f.number_field :rate,
+            step: 0.01,
+            min: 0,
+            max: 100,
+            value: tax_code.rate.present? ? (tax_code.rate * 100) : nil,
+            placeholder: "e.g. 13",
+            class: "input-field mt-1 block w-full min-h-[44px]" %>
+        <p class="mt-1 text-sm text-muted">Enter as percentage (e.g. 13 for 13%).</p>
+      </div>
+      <div>
+        <%= f.label :exemption_type, class: "block text-base font-medium text-body" %>
+        <%= f.text_field :exemption_type,
+            placeholder: "Optional",
+            class: "input-field mt-1 block w-full min-h-[44px]" %>
+      </div>
+    </div>
+
+    <div>
+      <%= f.label :province_code, "Province", class: "block text-base font-medium text-body" %>
+      <%= f.text_field :province_code,
+          placeholder: "e.g. ON",
+          class: "input-field mt-1 block w-full min-h-[44px]" %>
+    </div>
+
+    <div>
+      <%= f.label :notes, class: "block text-base font-medium text-body" %>
+      <%= f.text_area :notes, rows: 3,
+          placeholder: "Optional notes",
+          class: "input-field mt-1 block w-full" %>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between bg-surface px-6 py-4">
+    <% if tax_code.persisted? %>
+      <%= button_to "Remove", admin_tax_code_path(tax_code), method: :delete,
+          data: { turbo_confirm: "Remove this tax code? Products and services using it will need to be updated." },
+          class: "text-base font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+    <% else %>
+      <span></span>
+    <% end %>
+    <%= f.submit tax_code.persisted? ? "Save changes" : "Create tax code",
+        class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]" %>
+  </div>
+<% end %>

@@ -6,7 +6,13 @@ Rails.application.routes.draw do
   patch "profile/display_preferences", to: "profiles#update_display_preferences", as: :profile_display_preferences
   scope :admin, as: :admin, module: :admin_area do
     resource :settings, only: %i[show]
+    resources :tax_codes
   end
+
+  resources :products, except: [ :show ] do
+    resources :product_variants, only: %i[ new create edit update destroy ]
+  end
+  resources :services, except: [ :show ]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

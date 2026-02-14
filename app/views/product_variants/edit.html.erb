@@ -1,0 +1,19 @@
+<% content_for :title, "Edit variant" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Products", products_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to @product.name, edit_product_path(@product), class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Edit variant</li>
+<% end %>
+
+<div class="mx-auto max-w-2xl">
+  <h1 class="text-2xl font-semibold tracking-tight text-body">Edit variant</h1>
+  <p class="mt-1 text-base text-muted">Update <%= @product_variant.code %>.</p>
+
+  <div class="mt-6 form-card overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
+    <%= render "form", product: @product, product_variant: @product_variant %>
+  </div>
+</div>

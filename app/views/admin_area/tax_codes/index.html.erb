@@ -1,0 +1,48 @@
+<% content_for :title, "Tax codes" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Tax codes</li>
+<% end %>
+
+<div class="mx-auto max-w-5xl">
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-semibold text-body">Tax codes</h1>
+    <%= link_to "Add tax code", new_admin_tax_code_path,
+        class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
+        data: { turbo_prefetch: true } %>
+  </div>
+
+  <div class="mt-6 overflow-x-auto rounded-lg border border-theme bg-surface">
+    <table class="min-w-full divide-y divide-[var(--color-border)]">
+      <thead class="bg-[var(--color-border)]/30">
+        <tr>
+          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Code</th>
+          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Name</th>
+          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Rate</th>
+          <th class="px-4 py-3 text-right text-base font-medium uppercase tracking-wider text-muted"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+        <% @tax_codes.each do |tax_code| %>
+          <tr>
+            <td class="px-4 py-3 text-base font-medium text-body"><%= tax_code.code %></td>
+            <td class="px-4 py-3 text-base text-body"><%= tax_code.name %></td>
+            <td class="px-4 py-3 text-base text-body"><%= number_to_percentage(tax_code.rate * 100, precision: 2) %></td>
+            <td class="px-4 py-3 text-right text-base">
+              <%= link_to "Edit", edit_admin_tax_code_path(tax_code),
+                  class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",
+                  data: { turbo_prefetch: true } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @tax_codes.empty? %>
+    <p class="mt-4 text-base text-muted">No tax codes yet. Add one to get started.</p>
+  <% end %>
+</div>

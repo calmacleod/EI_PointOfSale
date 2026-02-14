@@ -12,8 +12,20 @@
   <div class="flex flex-col gap-1">
     <h1 class="text-2xl font-semibold tracking-tight text-body">Admin settings</h1>
     <p class="mt-1 text-base text-muted">
-      Placeholder settings for now. We can hook these up to persisted configuration later.
+      Configure the application and manage reference data.
     </p>
+  </div>
+
+  <div class="mt-6 space-y-4">
+    <div class="form-card rounded-xl border border-theme bg-surface p-6 shadow-sm">
+      <h2 class="text-lg font-semibold text-body">Reference data</h2>
+      <p class="mt-1 text-base text-muted">Tax codes are used for product and service pricing.</p>
+      <div class="mt-4">
+        <%= link_to "Manage tax codes", admin_tax_codes_path,
+            class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
+            data: { turbo_prefetch: true } %>
+      </div>
+    </div>
   </div>
 
   <div class="mt-6 rounded-xl border border-theme bg-surface p-4 shadow-sm">

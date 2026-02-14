@@ -1,0 +1,19 @@
+<% content_for :title, "Edit tax code" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Tax codes", admin_tax_codes_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Edit</li>
+<% end %>
+
+<div class="mx-auto max-w-2xl">
+  <h1 class="text-2xl font-semibold tracking-tight text-body">Edit tax code</h1>
+  <p class="mt-1 text-base text-muted">Update <%= @tax_code.code %>.</p>
+
+  <div class="mt-6 form-card overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
+    <%= render "form", tax_code: @tax_code %>
+  </div>
+</div>
