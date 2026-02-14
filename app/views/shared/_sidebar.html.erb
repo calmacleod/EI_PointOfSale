@@ -74,14 +74,14 @@
     </nav>
 
     <div class="sidebar-bottom flex shrink-0 flex-col space-y-1 border-t border-theme px-2 py-2">
-      <%= button_to session_path, method: :delete,
-          class: "flex w-full min-h-[44px] items-center justify-center gap-3 rounded-lg text-body hover:bg-[var(--color-border)]",
-          form: { data: { turbo_confirm: "Sign out now?" } } do %>
+      <button type="button"
+              data-action="click->confirm-modal#open"
+              class="flex w-full min-h-[44px] items-center justify-center gap-3 rounded-lg text-body hover:bg-[var(--color-border)]">
         <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
         </svg>
         <span class="sidebar-sign-out-text">Sign out</span>
-      <% end %>
+      </button>
       <button type="button"
               data-action="click->sidebar#toggle"
               class="flex w-full min-h-[44px] items-center justify-center rounded-lg text-body hover:bg-[var(--color-border)]"

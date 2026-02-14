@@ -100,6 +100,24 @@ html {
   border-radius: 0.5rem; /* 8px - renders cleanly on most screens */
 }
 
+/* Confirm modal: subtle open animation */
+.confirm-modal-overlay > div:first-of-type {
+  transition: opacity 0.15s ease-out;
+}
+.confirm-modal-overlay .form-card {
+  animation: confirm-modal-scale-in 0.2s ease-out;
+}
+@keyframes confirm-modal-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* Sidebar: scrollable nav with fixed top/bottom */
 .sidebar-nav {
   overscroll-behavior: contain;

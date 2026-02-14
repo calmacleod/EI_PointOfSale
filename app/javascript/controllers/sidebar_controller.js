@@ -61,7 +61,9 @@ export default class extends Controller {
     const handler = (event) => {
       if (event.propertyName === "width") {
         this.sidebarTarget.removeEventListener("transitionend", handler)
-        this.sidebarTarget.classList.add("sidebar-mini-hide-text")
+        if (this.sidebarTarget.classList.contains("sidebar-mini")) {
+          this.sidebarTarget.classList.add("sidebar-mini-hide-text")
+        }
       }
     }
     this.sidebarTarget.addEventListener("transitionend", handler)

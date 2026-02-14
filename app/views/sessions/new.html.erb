@@ -21,7 +21,7 @@
       </div>
     <% end %>
 
-    <div class="form-card border border-theme bg-surface p-6 shadow-sm">
+    <div class="form-card border border-theme bg-surface p-6 shadow-sm"<%= raw(' data-controller="dev-credentials" data-dev-credentials-email-value="' + h(ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com")) + '" data-dev-credentials-password-value="' + h(ENV.fetch("DEV_ADMIN_PASSWORD", "password123!")) + '"') if Rails.env.development? %>>
       <div class="mb-6">
         <h1 class="text-2xl font-semibold tracking-tight text-body">Welcome back</h1>
         <p class="mt-1 text-base text-muted">Sign in to continue.</p>
@@ -37,6 +37,7 @@
                 autocomplete: "username",
                 placeholder: "you@example.com",
                 value: params[:email_address],
+                data: { dev_credentials_target: "emailInput" },
                 class: "input-field block w-full min-h-[44px] px-3 py-2" %>
           </div>
         </div>
@@ -52,7 +53,7 @@
                 autocomplete: "current-password",
                 placeholder: "••••••••",
                 maxlength: 72,
-                data: { password_toggle_target: "input" },
+                data: { password_toggle_target: "input", dev_credentials_target: "passwordInput" },
                 class: "input-field block w-full min-h-[44px] pr-12" %>
             <button type="button"
                     data-password-toggle-target="toggle"
@@ -81,9 +82,16 @@
       </p>
 
       <% if Rails.env.development? %>
-        <p class="mt-4 rounded-lg border border-theme bg-[var(--color-page)] px-3 py-2 text-center text-xs text-muted">
-          <strong class="text-body">Dev credentials:</strong> <%= ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com") %> / <%= ENV.fetch("DEV_ADMIN_PASSWORD", "password123!") %>
-        </p>
+        <div class="mt-4 flex flex-col items-center gap-2 rounded-lg border border-theme bg-[var(--color-page)] px-3 py-2 text-center text-xs text-muted">
+          <p>
+            <strong class="text-body">Dev credentials:</strong> <%= ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com") %> / <%= ENV.fetch("DEV_ADMIN_PASSWORD", "password123!") %>
+          </p>
+          <button type="button"
+                  data-action="click->dev-credentials#autofill"
+                  class="rounded border border-theme bg-surface px-3 py-1.5 text-body hover:bg-[var(--color-border)]">
+            Auto-fill
+          </button>
+        </div>
       <% end %>
     </div>
   </div>

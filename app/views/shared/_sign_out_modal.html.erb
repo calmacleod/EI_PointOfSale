@@ -1,0 +1,29 @@
+<div data-confirm-modal-target="modal"
+     class="confirm-modal-overlay fixed inset-0 z-[60] hidden"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="sign-out-modal-title">
+  <div data-action="click->confirm-modal#close"
+       class="fixed inset-0 bg-black/50 backdrop-blur-sm"></div>
+  <div class="fixed inset-0 flex items-center justify-center p-4 pointer-events-none">
+    <div class="form-card w-full max-w-sm border border-theme bg-surface p-6 shadow-lg pointer-events-auto"
+         role="document">
+      <div class="cursor-default">
+        <h2 id="sign-out-modal-title" class="text-lg font-semibold text-body">Sign out?</h2>
+        <p class="mt-1 text-sm text-muted">Are you sure you want to sign out of your account?</p>
+        <div class="mt-6 flex justify-end gap-3">
+          <button type="button"
+                  data-action="click->confirm-modal#close"
+                  data-autofocus
+                  class="rounded-lg border border-theme bg-surface px-4 py-2 text-base font-medium text-body hover:bg-[var(--color-border)]">
+            Cancel
+          </button>
+          <%= button_to session_path, method: :delete,
+              class: "rounded-lg bg-accent px-4 py-2 text-base font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" do %>
+            Sign out
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
