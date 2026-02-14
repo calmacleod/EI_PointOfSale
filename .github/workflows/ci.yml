@@ -109,23 +109,12 @@ jobs:
           bundler-cache: true
 
       - name: Run tests
-        continue-on-error: true
         env:
           RAILS_ENV: test
           DATABASE_URL: postgres://postgres:postgres@localhost:5432
-          JUNIT_OUTPUT_DIR: tmp/test_results
           # RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
           # REDIS_URL: redis://localhost:6379/0
-        run: |
-          mkdir -p tmp/test_results
-          bin/rails db:test:prepare test
-
-      - name: Mergify CI Insights upload
-        if: success() || failure()
-        uses: mergifyio/gha-mergify-ci@v8
-        with:
-          token: ${{ secrets.MERGIFY_TOKEN }}
-          report_path: tmp/test_results/TEST-minitest.xml
+        run: bin/rails db:test:prepare test
 
   system-test:
     runs-on: ubuntu-latest
