@@ -1,4 +1,6 @@
 class Supplier < ApplicationRecord
+  audited
+
   include Discard::Model
   include PgSearch::Model
 

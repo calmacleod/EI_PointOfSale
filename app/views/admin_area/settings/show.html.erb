@@ -9,19 +9,40 @@
 <div class="mx-auto max-w-5xl">
   <%= render "shared/page_header", title: "Admin settings", description: "Configure the application and manage reference data." %>
 
-  <div class="mt-6 space-y-4">
-    <div class="form-card rounded-xl border border-theme bg-surface p-6 shadow-sm">
-      <h2 class="text-lg font-semibold text-body">Reference data</h2>
-      <p class="mt-1 text-base text-muted">Tax codes are used for product and service pricing.</p>
-      <div class="mt-4">
-        <%= link_to "Manage tax codes", admin_tax_codes_path,
-            class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
-            data: { turbo_prefetch: true } %>
+  <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <%= link_to admin_tax_codes_path, class: "group block rounded-xl border border-theme bg-surface p-6 shadow-sm transition hover:border-[var(--color-accent)]/50 hover:shadow-md", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-semibold text-body group-hover:text-accent">Tax codes</h2>
+          <p class="mt-1 text-sm text-muted">Manage tax rates for products and services.</p>
+          <p class="mt-3 text-sm font-medium text-accent">Manage tax codes →</p>
+        </div>
+        <div class="rounded-lg bg-[var(--color-border)]/30 p-2.5 ring-1 ring-inset border-theme group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-6 w-6 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M10.75 10.818v2.614A3.13 3.13 0 0 0 11.888 13c.482-.314.664-.65.664-1.18 0-.657-.524-1.165-1.436-1.165-.899 0-1.432.508-1.432 1.165 0 .53.182.866.664 1.18.175.114.331.233.538.368v-2.614a.24.24 0 0 0-.118-.199 1.497 1.497 0 0 0-1.277.218 1.66 1.66 0 0 0-.577 1.195c0 .624.255 1.154.577 1.195.485.077 1.05.137 1.277.218.048.03.08.066.118.199z" />
+            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-13a1 1 0 1 0-2 0v.092a4.535 4.535 0 0 0-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 1 0-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 1 0 2 0v-.092a4.535 4.535 0 0 0 1.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0 0 11 9.092V7.151c.391.127.68.317.843.504a1 1 0 1 0 1.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
+          </svg>
+        </div>
       </div>
-    </div>
+    <% end %>
+
+    <%= link_to admin_audits_path, class: "group block rounded-xl border border-theme bg-surface p-6 shadow-sm transition hover:border-[var(--color-accent)]/50 hover:shadow-md", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <h2 class="text-lg font-semibold text-body group-hover:text-accent">Audit trail</h2>
+          <p class="mt-1 text-sm text-muted">View all create, update, and delete events.</p>
+          <p class="mt-3 text-sm font-medium text-accent">View audit trail →</p>
+        </div>
+        <div class="rounded-lg bg-[var(--color-border)]/30 p-2.5 ring-1 ring-inset border-theme group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-6 w-6 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.256A11.949 11.949 0 018 15.5c0 3.058 1.836 5.741 4.256 7.086A2 2 0 0018 15V3a1 1 0 100-2H3zm11 4a1 1 0 01 1-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1V7zm-3 4a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zm-3 4a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H7a1 1 0 01-1-1v-2z" clip-rule="evenodd" />
+          </svg>
+        </div>
+      </div>
+    <% end %>
   </div>
 
-  <div class="mt-6 rounded-xl border border-theme bg-surface p-4 shadow-sm">
+  <div class="mt-8 rounded-xl border border-theme bg-surface p-4 shadow-sm">
     <div class="rounded-lg border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-4 py-3">
       <p class="text-base font-semibold text-[var(--color-success-text)]">Not wired up yet</p>
       <p class="mt-1 text-base text-[var(--color-success-text)] opacity-90">

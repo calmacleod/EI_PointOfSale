@@ -1,4 +1,6 @@
 class TaxCode < ApplicationRecord
+  audited
+
   include Discard::Model
   include PgSearch::Model
 

@@ -97,3 +97,6 @@ gem "pg_search"
 
 # Pagination
 gem "pagy", "~> 43.2"
+
+# Audit trail for model changes
+gem "audited"

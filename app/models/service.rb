@@ -1,4 +1,6 @@
 class Service < ApplicationRecord
+  audited
+
   include Discard::Model
   include Categorizable
   include PgSearch::Model

@@ -1,4 +1,6 @@
 class Categorization < ApplicationRecord
+  audited
+
   include Discard::Model
 
   belongs_to :categorizable, polymorphic: true

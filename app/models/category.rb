@@ -1,4 +1,6 @@
 class Category < ApplicationRecord
+  audited
+
   include Discard::Model
   include PgSearch::Model
 

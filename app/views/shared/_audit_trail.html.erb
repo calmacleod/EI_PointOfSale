@@ -1,0 +1,69 @@
+<%# Renders an audit trail for an auditable record. Pass auditable: @record %>
+<% auditable = local_assigns[:auditable] %>
+<% audit_scope = auditable.respond_to?(:audits) ? auditable.audits.reorder(created_at: :desc) : Audited::Audit.none %>
+<% pagy_audits, audits = pagy(audit_scope, page_key: "audit_page", items: 20) %>
+
+<% if audits.any? %>
+  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="audit-trail-heading">
+    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
+      <div>
+        <h2 id="audit-trail-heading" class="text-base font-semibold text-body">Audit trail</h2>
+        <p class="mt-0.5 text-sm text-muted">History of changes to this record</p>
+      </div>
+      <% if pagy_audits.pages > 1 %>
+        <nav aria-label="Audit trail pagination" class="pagy-nav">
+          <%== pagy_audits.series_nav %>
+        </nav>
+      <% end %>
+    </div>
+    <ol class="divide-y divide-[var(--color-border)]">
+      <% audits.each do |audit| %>
+        <li class="px-6 py-4">
+          <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+            <span class="font-medium capitalize text-body"><%= audit.action %></span>
+            <span class="text-sm text-muted">at <%= l(audit.created_at, format: :long) %></span>
+            <% if audit.user.present? %>
+              <span class="text-sm text-muted">by <%= audit.user.respond_to?(:email_address) ? audit.user.email_address : audit.user.to_s %></span>
+            <% end %>
+          </div>
+          <% if audit.comment.present? %>
+            <p class="mt-1 text-sm text-muted italic"><%= audit.comment %></p>
+          <% end %>
+          <% if audit.audited_changes.present? && audit.action == "update" %>
+            <% meaningful_changes = audit.audited_changes.select do |_attr, values|
+                 old_val, new_val = values.is_a?(Array) ? values : [values, nil]
+                 old_val.to_s.present? || new_val.to_s.present?
+               end %>
+            <% if meaningful_changes.any? %>
+              <ul class="mt-2 space-y-1 text-sm">
+                <% meaningful_changes.each do |attr, values| %>
+                  <% old_val, new_val = values.is_a?(Array) ? values : [values, nil] %>
+                  <li class="flex flex-wrap gap-x-1">
+                    <span class="font-medium text-muted"><%= attr.humanize %>:</span>
+                    <span class="text-body"><%= format_audit_value(old_val) %></span>
+                    <span class="text-muted">→</span>
+                    <span class="text-body"><%= format_audit_value(new_val) %></span>
+                  </li>
+                <% end %>
+              </ul>
+            <% end %>
+          <% elsif audit.audited_changes.present? && audit.action == "create" %>
+            <% create_keys = audit.audited_changes.reject { |_k, v| v.to_s.blank? }.keys %>
+            <% if create_keys.any? %>
+              <p class="mt-1 text-sm text-muted"><%= create_keys.map(&:humanize).join(", ") %> set</p>
+            <% end %>
+          <% elsif audit.action == "destroy" %>
+            <p class="mt-1 text-sm text-muted">Record removed</p>
+          <% end %>
+        </li>
+      <% end %>
+    </ol>
+    <% if pagy_audits.pages > 1 %>
+      <div class="flex justify-end border-t border-theme px-6 py-3">
+        <nav aria-label="Audit trail pagination" class="pagy-nav">
+          <%== pagy_audits.series_nav %>
+        </nav>
+      </div>
+    <% end %>
+  </section>
+<% end %>

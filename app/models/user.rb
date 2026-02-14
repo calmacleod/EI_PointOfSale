@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  audited except: :password_digest
+
   include PgSearch::Model
 
   multisearchable against: [ :name, :email_address, :notes ]
