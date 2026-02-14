@@ -18,7 +18,7 @@ A Rails 8 point-of-sale application for managing products, services, customers, 
 
 ### Prerequisites
 
-- Ruby 4.0
+- Ruby 4.0.1
 - PostgreSQL
 - Node.js (for Herb ERB linter)
 
