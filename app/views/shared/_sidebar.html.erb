@@ -1,7 +1,7 @@
 <% sidebar_collapsed = Current.user&.sidebar_collapsed == true %>
 <aside data-sidebar-target="sidebar"
-      class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-b border-theme bg-surface transition-[width,transform] duration-200 lg:static lg:translate-x-0 lg:border-b-0 lg:border-r <%= sidebar_collapsed ? 'sidebar-mini' : 'sidebar-expanded' %>">
-  <div class="flex h-full min-w-0 flex-col lg:min-h-0">
+      class="fixed inset-y-0 left-0 z-40 flex h-screen w-64 shrink-0 -translate-x-full flex-col overflow-hidden border-b border-theme bg-surface transition-[width,transform] duration-200 lg:static lg:translate-x-0 lg:h-full lg:max-h-full lg:min-h-0 lg:border-b-0 lg:border-r <%= sidebar_collapsed ? 'sidebar-mini' : 'sidebar-expanded' %>">
+  <div class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
     <div class="flex shrink-0 items-center justify-between gap-2 px-3 py-3 lg:px-4">
       <div class="sidebar-brand flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
         <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-semibold text-[color:var(--color-page)]">EI</div>

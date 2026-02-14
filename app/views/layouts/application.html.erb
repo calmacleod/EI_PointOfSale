@@ -12,8 +12,7 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
@@ -27,7 +26,7 @@
   <body class="bg-page text-body overflow-x-hidden">
     <% if authenticated? %>
       <% sidebar_collapsed = Current.user&.sidebar_collapsed == true %>
-      <div class="min-h-screen w-full lg:flex <%= 'sidebar-collapsed' if sidebar_collapsed %>" data-controller="sidebar confirm-modal search-modal" data-sidebar-collapsed-value="<%= sidebar_collapsed %>" data-sidebar-profile-path-value="<%= profile_display_preferences_path %>">
+      <div class="flex h-screen min-h-0 w-full flex-col overflow-hidden lg:flex-row <%= 'sidebar-collapsed' if sidebar_collapsed %>" data-controller="sidebar confirm-modal search-modal" data-sidebar-collapsed-value="<%= sidebar_collapsed %>" data-sidebar-profile-path-value="<%= profile_display_preferences_path %>">
         <header class="fixed inset-x-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-theme bg-surface px-4 lg:hidden">
           <button type="button"
                   data-action="click->sidebar#toggle"
@@ -47,7 +46,7 @@
         <%= render "shared/sign_out_modal" %>
         <%= render "shared/search_modal" %>
 
-        <main class="flex-1 px-4 pt-14 pb-8 sm:px-6 lg:pt-8 lg:px-8">
+        <main class="min-h-0 flex-1 overflow-y-auto px-4 pt-14 pb-8 sm:px-6 lg:pt-8 lg:px-8">
           <div class="mx-auto w-full max-w-screen-2xl">
             <%= render "shared/breadcrumbs" %>
             <div id="flash_container"><%= render "shared/flash" %></div>

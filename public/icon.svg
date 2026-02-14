@@ -1,3 +1,12 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark circle background -->
+  <circle cx="256" cy="256" r="240" fill="#1a1a1a"/>
+  <!-- Dollar bill - taller and thicker -->
+  <g transform="translate(256 256)" fill="#e5e4e0">
+    <rect x="-120" y="-64" width="240" height="128" rx="8"/>
+    <circle cx="-72" cy="0" r="40"/>
+    <circle cx="72" cy="0" r="40"/>
+  </g>
+  <!-- $ - bold, centered -->
+  <text x="256" y="278" text-anchor="middle" fill="#1a1a1a" font-size="72" font-weight="700" font-family="system-ui, -apple-system, sans-serif">$</text>
 </svg>
