@@ -17,9 +17,31 @@ export default class extends Controller {
 
   applyCollapsedState() {
     const collapsed = this.collapsedValue
+    const wasExpanded = this.sidebarTarget.classList.contains("sidebar-expanded")
+
     this.element.classList.toggle("sidebar-collapsed", collapsed)
     this.sidebarTarget.classList.toggle("sidebar-mini", collapsed)
     this.sidebarTarget.classList.toggle("sidebar-expanded", !collapsed)
+
+    if (collapsed) {
+      if (wasExpanded) {
+        this.scheduleHideTextAfterTransition()
+      } else {
+        this.sidebarTarget.classList.add("sidebar-mini-hide-text")
+      }
+    } else {
+      this.sidebarTarget.classList.remove("sidebar-mini-hide-text")
+    }
+  }
+
+  scheduleHideTextAfterTransition() {
+    const handler = (event) => {
+      if (event.propertyName === "width") {
+        this.sidebarTarget.removeEventListener("transitionend", handler)
+        this.sidebarTarget.classList.add("sidebar-mini-hide-text")
+      }
+    }
+    this.sidebarTarget.addEventListener("transitionend", handler)
   }
 
   toggle() {
@@ -34,6 +56,20 @@ export default class extends Controller {
     if (!this.isDesktop()) {
       this.closeMobileDrawer()
     }
+  }
+
+  // Navigate on mousedown for snappy feel (don't wait for click/mouseup)
+  navigate(event) {
+    const link = event.target.closest("a")
+    if (!link?.href) return
+    if (event.button !== 0) return
+    if (event.ctrlKey || event.metaKey || event.shiftKey) return
+    if (link.target === "_blank") return
+    if (!link.href.startsWith(window.location.origin)) return
+
+    event.preventDefault()
+    if (!this.isDesktop()) this.closeMobileDrawer()
+    Turbo.visit(link.href)
   }
 
   toggleMobileDrawer() {

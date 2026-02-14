@@ -79,6 +79,12 @@ html {
 /* Sidebar: scrollable nav with fixed top/bottom */
 .sidebar-nav {
   overscroll-behavior: contain;
+  min-width: 0;
+}
+
+/* Nav links: allow shrinking so text truncates instead of growing the button */
+.nav-link {
+  min-width: 0;
 }
 
 /* Sidebar: mini mode on desktop when collapsed */
@@ -87,36 +93,65 @@ html {
     width: 4rem; /* 64px - icons only */
     min-width: 4rem;
   }
+  /* Fixed header padding on desktop - same in both states so EI logo never moves */
+  .sidebar-mini > div > div:first-child,
+  .sidebar-expanded > div > div:first-child {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
   .sidebar-mini .sidebar-text {
     overflow: hidden;
     width: 0;
     min-width: 0;
     opacity: 0;
+    visibility: hidden;
     padding: 0;
     margin: 0;
+    transition: none;
   }
-  .sidebar-mini .sidebar-brand .sidebar-text {
+  /* Text hidden only after width transition (sidebar-mini-hide-text added via JS) */
+  .sidebar-mini.sidebar-mini-hide-text .sidebar-brand .sidebar-text {
     display: none;
   }
+  .sidebar-mini.sidebar-mini-hide-text .nav-link .sidebar-text {
+    display: none;
+  }
+  .sidebar-mini.sidebar-mini-hide-text .sidebar-sign-out-text {
+    display: none;
+  }
+  /* Brand stays left-aligned - centering would shift logo when text hides */
   .sidebar-mini .sidebar-brand {
-    justify-content: center;
     flex: 1;
   }
-  .sidebar-mini .nav-link {
+  .sidebar-mini.sidebar-mini-hide-text .nav-link {
     justify-content: center;
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }
-  .sidebar-mini .nav-link .sidebar-text {
-    display: none;
+  /* During collapse transition: keep all text visible, preserve layout (override general .sidebar-text rules) */
+  .sidebar-mini:not(.sidebar-mini-hide-text) .sidebar-brand .sidebar-text {
+    width: auto;
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    opacity: 1;
+    visibility: visible;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-mini:not(.sidebar-mini-hide-text) .nav-link .sidebar-text {
+    width: auto;
+    min-width: 0;
+    overflow: hidden;
+    opacity: 1;
+    visibility: visible;
+    padding: 0;
+    margin: 0;
   }
   .sidebar-mini .expand-icon {
     display: block !important;
   }
   .sidebar-mini .collapse-icon {
     display: none !important;
-  }
-  .sidebar-mini .sidebar-sign-out-text {
-    display: none;
   }
 }
