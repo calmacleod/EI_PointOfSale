@@ -1,0 +1,107 @@
+<div class="space-y-10">
+  <section>
+    <h2 class="text-xl font-semibold text-body">Background jobs</h2>
+    <p class="mt-2 text-base text-muted">
+      View Solid Queue jobs, retry failed jobs, and inspect what&apos;s being processed.
+    </p>
+    <div class="mt-4 flex flex-wrap gap-3">
+      <%= link_to "Open Mission Control Jobs", "/jobs", target: "_blank", rel: "noopener",
+          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]" %>
+      <%= button_to "Enqueue test job", dev_tools_test_job_path, method: :post,
+          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]" %>
+    </div>
+    <p class="mt-2 text-sm text-muted">
+      Click &ldquo;Enqueue test job&rdquo; then open Mission Control to see the job appear and process.
+    </p>
+  </section>
+
+  <section>
+    <h2 class="text-xl font-semibold text-body">UI components</h2>
+    <p class="mt-2 text-base text-muted">
+      Standard components in each theme. Use the theme switcher above to preview light, dark, and dim.
+    </p>
+
+    <div class="mt-6 space-y-8">
+      <div class="rounded-xl border border-theme bg-surface p-6 shadow-sm">
+        <h3 class="text-base font-medium text-body">Buttons</h3>
+        <div class="mt-4 flex flex-wrap gap-3">
+          <button type="button" class="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]">
+            Primary
+          </button>
+          <button type="button" class="inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]">
+            Secondary
+          </button>
+          <button type="button" class="text-base font-medium text-[var(--color-error-text)] hover:opacity-80">
+            Danger link
+          </button>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-theme bg-surface p-6 shadow-sm">
+        <h3 class="text-base font-medium text-body">Form inputs</h3>
+        <div class="mt-4 space-y-4 max-w-md">
+          <div>
+            <label class="block text-base font-medium text-body">Text field</label>
+            <input type="text" placeholder="Placeholder" class="input-field mt-1 block w-full min-h-[44px]">
+          </div>
+          <div>
+            <label class="block text-base font-medium text-body">Textarea</label>
+            <textarea rows="3" placeholder="Placeholder" class="input-field mt-1 block w-full"></textarea>
+          </div>
+          <div>
+            <label class="block text-base font-medium text-body">Select</label>
+            <select class="input-field mt-1 block w-full min-h-[44px]">
+              <option>Option 1</option>
+              <option>Option 2</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-theme bg-surface p-6 shadow-sm">
+        <h3 class="text-base font-medium text-body">Cards and alerts</h3>
+        <div class="mt-4 space-y-4">
+          <div class="rounded-lg border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-4 py-3">
+            <p class="text-base font-semibold text-[var(--color-success-text)]">Success message</p>
+          </div>
+          <div class="rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-4 py-3">
+            <p class="text-base font-semibold text-[var(--color-error-text)]">Error message</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-theme bg-surface p-6 shadow-sm">
+        <h3 class="text-base font-medium text-body">Typography</h3>
+        <div class="mt-4 space-y-2">
+          <p class="text-2xl font-semibold text-body">Heading</p>
+          <p class="text-base text-body">Body text</p>
+          <p class="text-sm text-muted">Muted helper text</p>
+        </div>
+      </div>
+
+      <div class="rounded-xl border border-theme bg-surface p-6 shadow-sm">
+        <h3 class="text-base font-medium text-body">Table</h3>
+        <div class="mt-4 overflow-x-auto rounded-lg border border-theme">
+          <table class="min-w-full divide-y divide-[var(--color-border)]">
+            <thead class="bg-[var(--color-border)]/30">
+              <tr>
+                <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">Column A</th>
+                <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">Column B</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+              <tr>
+                <td class="px-4 py-3 text-sm font-medium text-body">Row 1</td>
+                <td class="px-4 py-3 text-sm text-body">Value</td>
+              </tr>
+              <tr>
+                <td class="px-4 py-3 text-sm font-medium text-body">Row 2</td>
+                <td class="px-4 py-3 text-sm text-body">Value</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

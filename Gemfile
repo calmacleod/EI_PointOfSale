@@ -70,6 +70,9 @@ group :development do
 
   # Better seeding behavior with environment-specific seed files and fixtures
   gem "sprig", "~> 0.3.1"
+
+  # Dashboard to operate and troubleshoot Solid Queue background jobs
+  gem "mission_control-jobs"
 end
 
 group :test do

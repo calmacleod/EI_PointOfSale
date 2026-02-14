@@ -18,15 +18,35 @@ default: &default
   # For details on connection pooling, see Rails configuration guide
   # https://guides.rubyonrails.org/configuring.html#database-pooling
   max_connections: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-
-
-development:
-  <<: *default
-  database: ei_point_of_sale_development
   username: postgres
   password: postgres
   host: localhost
   port: 5432
+
+queue: &queue
+  <<: *default
+  migrations_paths: db/queue_migrate
+
+cable: &cable
+  <<: *default
+  migrations_paths: db/cable_migrate
+
+cache: &cache
+  <<: *default
+  migrations_paths: db/cache_migrate
+
+development:
+  primary:
+    <<: *default
+  queue:
+    <<: *queue
+    database: ei_point_of_sale_development_queue
+  cable:
+    <<: *cable
+    database: ei_point_of_sale_development_cable
+  cache:
+    <<: *cache
+    database: ei_point_of_sale_development_cache
 
   # The specified database role being used to connect to PostgreSQL.
   # To create additional roles in PostgreSQL see `$ createuser --help`.

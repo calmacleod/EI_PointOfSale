@@ -98,6 +98,16 @@
     </nav>
 
     <div class="sidebar-bottom flex shrink-0 flex-col space-y-1 border-t border-theme px-2 py-2">
+      <% if Rails.env.development? %>
+        <%= link_to dev_tools_path,
+            class: "flex w-full min-h-[44px] items-center justify-center rounded-lg text-body hover:bg-[var(--color-border)]",
+            aria: { label: "Dev tools" },
+            data: { turbo_prefetch: true } do %>
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
+          </svg>
+        <% end %>
+      <% end %>
       <button type="button"
               data-action="click->confirm-modal#open"
               class="flex w-full min-h-[44px] items-center justify-center gap-3 rounded-lg text-body hover:bg-[var(--color-border)]">

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html data-theme="<%= @dev_theme || 'light' %>">
+  <head>
+    <title>Dev tools — Ei Point Of Sale</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-page text-body min-h-screen">
+    <header class="border-b border-theme bg-surface px-4 py-3">
+      <div class="mx-auto flex max-w-5xl items-center justify-between">
+        <h1 class="text-lg font-semibold text-body">Dev tools</h1>
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-muted">Theme:</span>
+          <div class="flex gap-1 rounded-lg border border-theme bg-surface p-1">
+            <% %w[light dark dim].each do |theme| %>
+              <%= link_to theme.capitalize,
+                  dev_tools_path(theme: theme),
+                  class: [
+                    "rounded px-3 py-1.5 text-sm font-medium",
+                    (@dev_theme == theme ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
+                  ].join(" "),
+                  data: { turbo_prefetch: true } %>
+            <% end %>
+          </div>
+          <%= link_to "← Back to app", root_path,
+              class: "text-sm font-medium text-accent hover:opacity-80",
+              data: { turbo_prefetch: true } %>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-5xl px-4 py-8">
+      <%= yield %>
+    </main>
+  </body>
+</html>

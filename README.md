@@ -1,5 +1,22 @@
 # Ei Point of Sale
 
+## Local development
+
+When running the app locally with Solid Queue (e.g. via `bin/dev` with a `jobs` process, or `bin/jobs` directly), set `PGGSSENCMODE=disable` so the `pg` gem can connect without GSSAPI:
+
+```bash
+export PGGSSENCMODE=disable
+bin/dev
+```
+
+Or add it to `.env`:
+
+```
+PGGSSENCMODE=disable
+```
+
+---
+
 ## Local CI & Signoff
 
 Run the full CI suite locally (tests, lint, security scans) and sign off on PRs when everything passes:
