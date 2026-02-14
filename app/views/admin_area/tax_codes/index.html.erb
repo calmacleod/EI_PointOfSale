@@ -8,12 +8,11 @@
 <% end %>
 
 <div class="mx-auto max-w-5xl">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold text-body">Tax codes</h1>
+  <%= render "shared/page_header", title: "Tax codes" do %>
     <%= link_to "Add tax code", new_admin_tax_code_path,
         class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
         data: { turbo_prefetch: true } %>
-  </div>
+  <% end %>
 
   <div class="mt-6 overflow-x-auto rounded-lg border border-theme bg-surface">
     <table class="min-w-full divide-y divide-[var(--color-border)]">

@@ -10,8 +10,7 @@
 <% end %>
 
 <div class="mx-auto max-w-2xl">
-  <h1 class="text-2xl font-semibold tracking-tight text-body">New tax code</h1>
-  <p class="mt-1 text-base text-muted">Create a tax code for invoices and product pricing.</p>
+  <%= render "shared/page_header", title: "New tax code", description: "Create a tax code for invoices and product pricing." %>
 
   <div class="mt-6 form-card overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
     <%= render "form", tax_code: @tax_code %>

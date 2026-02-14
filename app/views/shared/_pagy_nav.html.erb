@@ -1,10 +1,12 @@
 <% if @pagy.present? %>
-  <div class="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-4">
+  <div class="mt-6 flex w-full flex-wrap items-center justify-between gap-4">
     <%= render "shared/pagy_limit_selector" %>
     <% if @pagy.pages > 1 %>
-      <nav aria-label="Pagination" class="flex flex-wrap justify-center gap-2 pagy-nav">
+      <nav aria-label="Pagination" class="flex flex-wrap justify-end gap-2 pagy-nav">
         <%== @pagy.series_nav %>
       </nav>
+    <% else %>
+      <span></span>
     <% end %>
   </div>
 <% end %>

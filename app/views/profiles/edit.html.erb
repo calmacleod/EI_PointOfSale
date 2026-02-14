@@ -1,19 +1,12 @@
 <% content_for :title, "Edit profile" %>
 <% content_for :breadcrumbs do %>
-  <li>
-    <%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %>
-  </li>
-  <li class="text-muted">/</li>
-  <li class="font-medium text-body">Profile</li>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Profile</li>
 <% end %>
 
 <div class="mx-auto max-w-2xl">
-  <div class="flex flex-col gap-1">
-    <div>
-      <h1 class="text-2xl font-semibold tracking-tight text-body">Your profile</h1>
-      <p class="mt-1 text-base text-muted">Update your personal details and password.</p>
-    </div>
-  </div>
+  <%= render "shared/page_header", title: "Your profile", description: "Update your personal details and password." %>
 
   <div id="profile_form" class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
     <%= render "form", user: @user %>

@@ -1,16 +1,12 @@
 <% content_for :title, "Users" %>
 <% content_for :breadcrumbs do %>
-  <li>
-    <%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %>
-  </li>
-  <li class="text-muted">/</li>
-  <li class="font-medium text-body">Users</li>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Users</li>
 <% end %>
 
 <div class="mx-auto max-w-5xl">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold text-body">Users</h1>
-  </div>
+  <%= render "shared/page_header", title: "Users" %>
 
   <div class="mt-6 overflow-x-auto rounded-lg border border-theme bg-surface">
     <table class="min-w-full divide-y divide-[var(--color-border)]">

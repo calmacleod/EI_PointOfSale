@@ -6,14 +6,13 @@
 <% end %>
 
 <div class="mx-auto max-w-5xl">
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-semibold text-body">Services</h1>
+  <%= render "shared/page_header", title: "Services" do %>
     <% if can? :create, Service %>
       <%= link_to "Add service", new_service_path,
           class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
           data: { turbo_prefetch: true } %>
     <% end %>
-  </div>
+  <% end %>
 
   <div class="mt-6 overflow-x-auto rounded-lg border border-theme bg-surface">
     <table class="min-w-full divide-y divide-[var(--color-border)]">

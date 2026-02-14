@@ -1,20 +1,13 @@
 <% content_for :title, "Admin settings" %>
 
 <% content_for :breadcrumbs do %>
-  <li>
-    <%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %>
-  </li>
-  <li class="text-muted">/</li>
-  <li class="font-medium text-body">Admin settings</li>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Admin settings</li>
 <% end %>
 
-<div class="mx-auto max-w-3xl">
-  <div class="flex flex-col gap-1">
-    <h1 class="text-2xl font-semibold tracking-tight text-body">Admin settings</h1>
-    <p class="mt-1 text-base text-muted">
-      Configure the application and manage reference data.
-    </p>
-  </div>
+<div class="mx-auto max-w-5xl">
+  <%= render "shared/page_header", title: "Admin settings", description: "Configure the application and manage reference data." %>
 
   <div class="mt-6 space-y-4">
     <div class="form-card rounded-xl border border-theme bg-surface p-6 shadow-sm">

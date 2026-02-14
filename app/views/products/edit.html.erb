@@ -7,8 +7,10 @@
   <li aria-current="page" class="text-muted">Edit</li>
 <% end %>
 
-<div class="mx-auto max-w-4xl">
-  <div class="form-card overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
+<div class="mx-auto max-w-5xl">
+  <%= render "shared/page_header", title: "Edit #{@product.name}" %>
+
+  <div class="mt-6 form-card overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
     <%= render "form", product: @product %>
   </div>
 

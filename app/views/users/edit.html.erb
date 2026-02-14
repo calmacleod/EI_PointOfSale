@@ -1,25 +1,14 @@
 <% content_for :title, "Edit user" %>
-<div class="mx-auto max-w-2xl">
-  <% content_for :breadcrumbs do %>
-    <li>
-      <%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %>
-    </li>
-    <li class="text-muted">/</li>
-    <li>
-      <%= link_to "Users", users_path, class: "font-medium text-body hover:text-accent" %>
-    </li>
-    <li class="text-muted">/</li>
-    <li class="font-medium text-body">Edit</li>
-  <% end %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Users", users_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Edit</li>
+<% end %>
 
-  <div class="flex flex-col gap-1">
-    <div>
-      <h1 class="text-2xl font-semibold tracking-tight text-body">Edit user</h1>
-      <p class="mt-1 text-base text-muted">
-        Update profile details and permissions for <span class="font-medium text-body"><%= @user.email_address %></span>.
-      </p>
-    </div>
-  </div>
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: "Edit user", description: "Update profile details and permissions for #{@user.email_address}." %>
 
   <div class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
     <%= form_with model: @user, class: "divide-y divide-[var(--color-border)]" do |f| %>

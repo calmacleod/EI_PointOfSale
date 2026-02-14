@@ -1,6 +1,6 @@
 <% content_for :title, "Dashboard" %>
 
-<div class="w-full flex flex-col gap-4">
+<div class="mx-auto flex w-full max-w-5xl flex-col gap-4">
   <% if Current.user.nil? %>
     <div class="rounded-xl border border-[var(--color-success-border)] bg-[var(--color-success-bg)] p-4 text-[var(--color-success-text)]">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
@@ -18,20 +18,10 @@
     </div>
   <% end %>
 
-  <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-    <div>
-      <h1 class="text-2xl font-semibold tracking-tight text-body">Dashboard</h1>
-      <p class="mt-1 text-base text-muted">
-        <% if Current.user %>
-          Welcome back, <span class="font-medium text-body"><%= Current.user.email_address %></span>.
-        <% else %>
-          Overview and shortcuts for your point of sale.
-        <% end %>
-      </p>
-    </div>
-  </div>
+  <% dashboard_description = Current.user ? "Welcome back, #{Current.user.email_address}." : "Overview and shortcuts for your point of sale." %>
+  <%= render "shared/page_header", title: "Dashboard", description: dashboard_description %>
 
-  <div class="grid grid-cols-1 gap-4 lg:grid-cols-12">
+  <div class="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-12 lg:grid-cols-4">
       <div class="rounded-xl border border-theme bg-surface p-4 shadow-sm">
       <div class="flex items-start justify-between gap-3">

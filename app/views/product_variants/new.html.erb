@@ -10,8 +10,7 @@
 <% end %>
 
 <div class="mx-auto max-w-2xl">
-  <h1 class="text-2xl font-semibold tracking-tight text-body">Add variant</h1>
-  <p class="mt-1 text-base text-muted">Add a sellable variant to <%= @product.name %>.</p>
+  <%= render "shared/page_header", title: "Add variant", description: "Add a sellable variant to #{@product.name}." %>
 
   <div class="mt-6 form-card overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
     <%= render "form", product: @product, product_variant: @product_variant %>

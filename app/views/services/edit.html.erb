@@ -8,8 +8,7 @@
 <% end %>
 
 <div class="mx-auto max-w-2xl">
-  <h1 class="text-2xl font-semibold tracking-tight text-body">Edit service</h1>
-  <p class="mt-1 text-base text-muted">Update <%= @service.name %>.</p>
+  <%= render "shared/page_header", title: "Edit #{@service.name}", description: "Update service details." %>
 
   <div class="mt-6 form-card overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
     <%= render "form", service: @service %>
