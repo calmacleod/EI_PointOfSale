@@ -25,6 +25,15 @@ gh signoff install
 
 ---
 
+## Documentation
+
+- **[Search (pg_search)](docs/search.md)** — Full-text search across Product, Service, Category, Supplier, User, ProductVariant, TaxCode
+- [Products and variants](docs/products-and-variants.md)
+- [Services](docs/services.md)
+- [Style guide](docs/styleguide.md)
+
+---
+
 Things you may want to cover:
 
 * Ruby version

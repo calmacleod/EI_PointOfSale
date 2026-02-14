@@ -1,5 +1,9 @@
 class Category < ApplicationRecord
   include Discard::Model
+  include PgSearch::Model
+
+  multisearchable against: [ :name ], if: :kept?
+  pg_search_scope :search, against: [ :name ], using: { tsearch: { prefix: true } }
 
   has_many :categorizations, dependent: :destroy
 

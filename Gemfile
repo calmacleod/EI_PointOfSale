@@ -88,3 +88,6 @@ gem "cancancan", "~> 3.6"
 
 # Soft delete
 gem "discard", "~> 1.4"
+
+# PostgreSQL full text search
+gem "pg_search"
