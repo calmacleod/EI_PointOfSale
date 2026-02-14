@@ -5,6 +5,7 @@ CI.run do
 
   step "Style: Ruby", "bin/rubocop"
   step "Style: ERB", "bundle exec herb analyze . --no-log-file"
+  step "Style: ERB Lint", "npm run herb:lint"
 
   step "Security: Gem audit", "bin/bundler-audit"
   step "Security: Importmap vulnerability audit", "bin/importmap audit"

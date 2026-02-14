@@ -10,14 +10,10 @@ bin/ci
 
 When all steps pass, `gh signoff` runs automatically to set a green GitHub commit status on your PR.
 
-### One-time setup for signoff
+### One-time setup for local CI
 
-1. Install the [GitHub CLI](https://cli.github.com/): `brew install gh`
-2. Authenticate: `gh auth login`
-3. Install the signoff extension:
-   ```bash
-   gh extension install basecamp/gh-signoff
-   ```
+- **Node.js** (for Herb ERB linter): `brew install node` then `npm install`
+- **GitHub CLI** (for signoff): `brew install gh`, then `gh auth login`, then `gh extension install basecamp/gh-signoff`
 
 ### Require signoff for merges
 

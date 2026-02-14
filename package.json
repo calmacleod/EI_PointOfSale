@@ -1,0 +1,11 @@
+{
+  "name": "ei-point-of-sale",
+  "private": true,
+  "devDependencies": {
+    "@herb-tools/linter": "latest"
+  },
+  "scripts": {
+    "herb:lint": "herb-lint",
+    "herb:lint:fix": "herb-lint --fix"
+  }
+}

@@ -68,6 +68,15 @@ jobs:
       - name: Analyze HTML+ERB templates
         run: bundle exec herb analyze . --no-log-file
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Lint HTML+ERB templates
+        run: npm ci && npm run herb:lint
+
   test:
     runs-on: ubuntu-latest
 
