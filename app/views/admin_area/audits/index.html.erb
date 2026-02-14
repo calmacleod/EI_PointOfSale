@@ -69,6 +69,7 @@
           <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Model</th>
           <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Record</th>
           <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">User</th>
+          <th class="px-4 py-3 text-right text-base font-medium uppercase tracking-wider text-muted">Details</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-[var(--color-border)] bg-surface">
@@ -87,6 +88,9 @@
             </td>
             <td class="px-4 py-3 text-base text-body text-muted">
               <%= audit.user.present? ? (audit.user.respond_to?(:email_address) ? audit.user.email_address : audit.user.to_s) : "—" %>
+            </td>
+            <td class="px-4 py-3 text-right">
+              <%= link_to "View changes", admin_audit_path(audit), class: "text-sm font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
             </td>
           </tr>
         <% end %>

@@ -1,0 +1,141 @@
+<% content_for :title, "Audit ##{@audit.id}" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Audit trail", admin_audits_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Audit #<%= @audit.id %></li>
+<% end %>
+
+<div class="mx-auto max-w-3xl">
+  <%= render "shared/page_header", title: "Audit ##{@audit.id}", description: "Details of what was changed." do %>
+    <%= link_to "Back to audit trail", admin_audits_path,
+        class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]/30",
+        data: { turbo_prefetch: true } %>
+  <% end %>
+
+  <div class="mt-6 space-y-6">
+    <section class="rounded-xl border border-theme bg-surface p-6 shadow-sm">
+      <h2 class="text-base font-semibold text-body">Event</h2>
+      <dl class="mt-4 grid gap-3 sm:grid-cols-2">
+        <div>
+          <dt class="text-sm font-medium text-muted">When</dt>
+          <dd class="mt-0.5 text-base text-body"><%= l(@audit.created_at, format: :long) %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-muted">Action</dt>
+          <dd class="mt-0.5 text-base font-medium capitalize text-body"><%= @audit.action %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-muted">Model</dt>
+          <dd class="mt-0.5 text-base text-body"><%= @audit.auditable_type %></dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-muted">Record</dt>
+          <dd class="mt-0.5 text-base text-body">
+            <% path = audit_auditable_path(@audit) %>
+            <% if path %>
+              <%= link_to audit_auditable_label(@audit), path, class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
+            <% else %>
+              <%= audit_auditable_label(@audit) %>
+            <% end %>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-sm font-medium text-muted">User</dt>
+          <dd class="mt-0.5 text-base text-body">
+            <%= @audit.user.present? ? (@audit.user.respond_to?(:email_address) ? @audit.user.email_address : @audit.user.to_s) : "—" %>
+          </dd>
+        </div>
+        <% if @audit.comment.present? %>
+          <div class="sm:col-span-2">
+            <dt class="text-sm font-medium text-muted">Comment</dt>
+            <dd class="mt-0.5 text-base text-body italic"><%= @audit.comment %></dd>
+          </div>
+        <% end %>
+      </dl>
+    </section>
+
+    <% if @audit.audited_changes.present? %>
+      <section class="rounded-xl border border-theme bg-surface p-6 shadow-sm">
+        <h2 class="text-base font-semibold text-body">Changes</h2>
+        <% if @audit.action == "update" %>
+          <% meaningful_changes = @audit.audited_changes.select do |_attr, values|
+               old_val, new_val = values.is_a?(Array) ? values : [values, nil]
+               old_val.to_s != new_val.to_s
+             end %>
+          <% if meaningful_changes.any? %>
+            <div class="mt-4 overflow-x-auto">
+              <table class="min-w-full divide-y divide-[var(--color-border)]">
+                <thead class="bg-[var(--color-border)]/30">
+                  <tr>
+                    <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">Attribute</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">Before</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">After</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--color-border)]">
+                  <% meaningful_changes.each do |attr, values| %>
+                    <% old_val, new_val = values.is_a?(Array) ? values : [values, nil] %>
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-body"><%= attr.humanize %></td>
+                      <td class="px-4 py-3 text-body"><%= format_audit_value(old_val) %></td>
+                      <td class="px-4 py-3 text-body"><%= format_audit_value(new_val) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <p class="mt-4 text-sm text-muted">No attribute changes recorded.</p>
+          <% end %>
+        <% elsif @audit.action == "create" %>
+          <div class="mt-4 overflow-x-auto">
+            <table class="min-w-full divide-y divide-[var(--color-border)]">
+              <thead class="bg-[var(--color-border)]/30">
+                <tr>
+                  <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">Attribute</th>
+                  <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">Value</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-[var(--color-border)]">
+                <% @audit.audited_changes.reject { |_k, v| v.to_s.blank? }.each do |attr, value| %>
+                  <tr>
+                    <td class="px-4 py-3 font-medium text-body"><%= attr.humanize %></td>
+                    <td class="px-4 py-3 text-body"><%= format_audit_value(value) %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% elsif @audit.action == "destroy" %>
+          <% if @audit.audited_changes.any? %>
+            <p class="mt-4 text-sm text-muted">Record as it was before deletion:</p>
+            <div class="mt-4 overflow-x-auto">
+              <table class="min-w-full divide-y divide-[var(--color-border)]">
+                <thead class="bg-[var(--color-border)]/30">
+                  <tr>
+                    <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">Attribute</th>
+                    <th class="px-4 py-3 text-left text-sm font-medium uppercase tracking-wider text-muted">Value</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[var(--color-border)]">
+                  <% @audit.audited_changes.each do |attr, value| %>
+                    <tr>
+                      <td class="px-4 py-3 font-medium text-body"><%= attr.humanize %></td>
+                      <td class="px-4 py-3 text-body"><%= format_audit_value(value) %></td>
+                    </tr>
+                  <% end %>
+                </tbody>
+              </table>
+            </div>
+          <% else %>
+            <p class="mt-4 text-sm text-muted">Record removed. No attribute snapshot available.</p>
+          <% end %>
+        <% end %>
+      </section>
+    <% end %>
+  </div>
+</div>

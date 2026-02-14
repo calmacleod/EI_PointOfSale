@@ -13,10 +13,10 @@ Rails.application.routes.draw do
   resource :profile, only: %i[edit update]
   patch "profile/display_preferences", to: "profiles#update_display_preferences", as: :profile_display_preferences
   scope :admin, as: :admin, module: :admin_area do
-    resource :settings, only: %i[show]
+    resource :settings, only: %i[ show update ]
     resources :tax_codes
     resources :suppliers
-    get "audits", to: "audits#index", as: :audits
+    resources :audits, only: %i[index show], path: "audits"
   end
 
   resources :products do

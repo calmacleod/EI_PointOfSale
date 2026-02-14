@@ -15,6 +15,16 @@ Or add it to `.env`:
 PGGSSENCMODE=disable
 ```
 
+### Address autocomplete (Mapbox)
+
+Admin settings use Mapbox Address Autofill for the store address. Add your token to `.env`:
+
+```
+MAPBOX_ACCESS_TOKEN=pk.your_mapbox_public_token
+```
+
+Get a free token at [account.mapbox.com](https://account.mapbox.com/). Without it, the address field works as a normal text input.
+
 ---
 
 ## Local CI & Signoff

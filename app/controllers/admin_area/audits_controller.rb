@@ -4,6 +4,10 @@ module AdminArea
   class AuditsController < BaseController
     AUDIT_ACTIONS = %w[create update destroy].freeze
 
+    def show
+      @audit = Audited::Audit.find(params[:id])
+    end
+
     def index
       scope = Audited::Audit.reorder(created_at: :desc)
       scope = apply_audit_filters(scope)

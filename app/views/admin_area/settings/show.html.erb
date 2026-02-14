@@ -57,104 +57,114 @@
     <% end %>
   </div>
 
-  <div class="mt-8 rounded-xl border border-theme bg-surface p-4 shadow-sm">
-    <div class="rounded-lg border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-4 py-3">
-      <p class="text-base font-semibold text-[var(--color-success-text)]">Not wired up yet</p>
-      <p class="mt-1 text-base text-[var(--color-success-text)] opacity-90">
-        These inputs are placeholders only — no values are saved.
-      </p>
-    </div>
+  <%= form_with model: @store, url: admin_settings_path, method: :patch, class: "mt-8 rounded-xl border border-theme bg-surface p-6 shadow-sm", data: { controller: "address-autofill", address_autofill_token_value: mapbox_access_token } do |f| %>
+    <% if @store.errors.any? %>
+      <div class="mb-6 rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-4 py-3">
+        <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+        <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+          <% @store.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <h2 class="text-lg font-semibold text-body">Store information</h2>
+    <p class="mt-1 text-sm text-muted">Contact details shown on receipts and in the app.</p>
 
     <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div class="sm:col-span-2">
-        <label class="block text-base font-medium text-body">Store name</label>
-        <input
-          type="text"
-          value="Example Store"
-          autocomplete="off"
-          disabled
-          class="mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-[var(--color-border)]/20 px-3 py-2 text-body shadow-sm disabled:cursor-not-allowed"
->
+        <%= f.label :name, "Store name", class: "block text-base font-medium text-body" %>
+        <%= f.text_field :name,
+            placeholder: "e.g. Acme Comics & Games",
+            class: "input-field mt-1 block w-full min-h-[44px]" %>
         <p class="mt-1 text-sm text-muted">Shown on receipts and in the app header.</p>
       </div>
 
       <div>
-        <label class="block text-base font-medium text-body">Default currency</label>
-        <select
-          disabled
-          class="mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-[var(--color-border)]/20 px-3 py-2 text-body shadow-sm disabled:cursor-not-allowed"
-        >
-          <option selected>USD</option>
-          <option>CAD</option>
-          <option>EUR</option>
-        </select>
-        <p class="mt-1 text-sm text-muted">Used for money formatting across the POS.</p>
+        <%= f.label :phone, "Phone", class: "block text-base font-medium text-body" %>
+        <%= f.telephone_field :phone,
+            placeholder: "e.g. 1-416-555-0100",
+            class: "input-field mt-1 block w-full min-h-[44px]" %>
       </div>
 
       <div>
-        <label class="block text-base font-medium text-body">Default tax rate</label>
-        <div class="mt-1 flex items-center gap-2">
-          <input
-            type="text"
-            value="0.00"
-            autocomplete="off"
-            disabled
-            class="block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-[var(--color-border)]/20 px-3 py-2 text-body shadow-sm disabled:cursor-not-allowed"
->
-          <span class="text-base text-muted">%</span>
-        </div>
-        <p class="mt-1 text-sm text-muted">Applied when an item doesn’t have a specific tax rule.</p>
-      </div>
-
-      <div>
-        <label class="block text-base font-medium text-body">Low stock threshold</label>
-        <input
-          type="number"
-          value="5"
-          autocomplete="off"
-          disabled
-          class="mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-[var(--color-border)]/20 px-3 py-2 text-body shadow-sm disabled:cursor-not-allowed"
->
-        <p class="mt-1 text-sm text-muted">Triggers the “Low stock” dashboard widget.</p>
-      </div>
-
-      <div>
-        <label class="block text-base font-medium text-body">Receipt footer</label>
-        <textarea
-          rows="4"
-          disabled
-          class="mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-[var(--color-border)]/20 px-3 py-2 text-body shadow-sm disabled:cursor-not-allowed"
-        >Thanks for shopping with us!</textarea>
-        <p class="mt-1 text-sm text-muted">Printed at the bottom of receipts.</p>
+        <%= f.label :email, "Email", class: "block text-base font-medium text-body" %>
+        <%= f.email_field :email,
+            placeholder: "e.g. store@example.com",
+            class: "input-field mt-1 block w-full min-h-[44px]" %>
       </div>
 
       <div class="sm:col-span-2">
-        <div class="rounded-lg border border-theme bg-[var(--color-border)]/20 px-4 py-3">
-          <div class="flex items-start justify-between gap-4">
-            <div>
-              <p class="text-base font-medium text-body">Require manager PIN for refunds</p>
-              <p class="mt-0.5 text-sm text-muted">Placeholder toggle (implement later).</p>
-            </div>
-            <div class="pt-0.5">
-              <input
-                type="checkbox"
-                disabled
-                class="h-5 w-5 rounded border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)] disabled:cursor-not-allowed"
->
-            </div>
-          </div>
-        </div>
+        <label for="address_search" class="block text-base font-medium text-body">Address</label>
+        <input type="text"
+            id="address_search"
+            autocomplete="address-line1"
+            placeholder="Start typing to search for your address..."
+            class="input-field mt-1 block w-full min-h-[44px]"
+            data-address-autofill-target="searchInput">
+        <p class="mt-1 text-sm text-muted">Select a suggestion to fill the fields below, or type manually.</p>
       </div>
+
+      <div class="sm:col-span-2">
+        <%= f.label :address_line1, "Address line 1", class: "block text-base font-medium text-body" %>
+        <%= f.text_field :address_line1,
+            autocomplete: "off",
+            placeholder: "Street address",
+            class: "input-field mt-1 block w-full min-h-[44px]",
+            data: { address_autofill_target: "addressLine1" } %>
+      </div>
+
+      <div class="sm:col-span-2">
+        <%= f.label :address_line2, "Address line 2", class: "block text-base font-medium text-body" %>
+        <%= f.text_field :address_line2,
+            autocomplete: "off",
+            placeholder: "Suite, unit, building (optional)",
+            class: "input-field mt-1 block w-full min-h-[44px]",
+            data: { address_autofill_target: "addressLine2" } %>
+      </div>
+
+      <div>
+        <%= f.label :city, "City", class: "block text-base font-medium text-body" %>
+        <%= f.text_field :city,
+            autocomplete: "off",
+            placeholder: "City",
+            class: "input-field mt-1 block w-full min-h-[44px]",
+            data: { address_autofill_target: "city" } %>
+      </div>
+
+      <div>
+        <%= f.label :province, "Province", class: "block text-base font-medium text-body" %>
+        <%= f.text_field :province,
+            autocomplete: "off",
+            placeholder: "Province",
+            class: "input-field mt-1 block w-full min-h-[44px]",
+            data: { address_autofill_target: "province" } %>
+      </div>
+
+      <div>
+        <%= f.label :postal_code, "Postal code", class: "block text-base font-medium text-body" %>
+        <%= f.text_field :postal_code,
+            autocomplete: "off",
+            placeholder: "A1A 1A1",
+            class: "input-field mt-1 block w-full min-h-[44px]",
+            data: { address_autofill_target: "postalCode" } %>
+      </div>
+
+      <div>
+        <%= f.label :country, "Country", class: "block text-base font-medium text-body" %>
+        <%= f.text_field :country,
+            autocomplete: "off",
+            placeholder: "Canada",
+            class: "input-field mt-1 block w-full min-h-[44px]",
+            data: { address_autofill_target: "country" } %>
+      </div>
+
     </div>
 
     <div class="mt-6 flex items-center justify-end">
-      <button
-        type="button"
-        disabled
-        class="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm opacity-50 disabled:cursor-not-allowed"
-      >
-        Save (coming soon)
-      </button>
+      <%= f.submit "Save settings",
+          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:opacity-90" %>
     </div>
-  </div>
+  <% end %>
 </div>

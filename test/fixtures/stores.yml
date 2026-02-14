@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  phone: MyString
+  email: MyString
+  address_line1: 123 Main St
+  city: Toronto
+  province: ON
+  postal_code: M5V 1A1
+  country: Canada
+
+two:
+  name: MyString
+  phone: MyString
+  email: MyString
+  address_line1: 456 Oak Ave
+  city: Vancouver
+  province: BC
+  postal_code: V6B 1A1
+  country: Canada

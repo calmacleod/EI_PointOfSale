@@ -3,6 +3,17 @@
 module ApplicationHelper
   include Pagy::Method
 
+  def nav_section_active?(path_or_prefix)
+    path = path_or_prefix.to_s
+    return current_page?(root_path) if path.blank? || path == "/"
+
+    request.path.start_with?(path)
+  end
+
+  def mapbox_access_token
+    Rails.application.credentials.dig(:mapbox, :access_token).presence || ENV["MAPBOX_ACCESS_TOKEN"].presence
+  end
+
   def audit_auditable_label(audit)
     record = audit.auditable
     return "#{audit.auditable_type} ##{audit.auditable_id}" unless record
@@ -15,6 +26,7 @@ module ApplicationHelper
     when "TaxCode" then record.code
     when "Supplier" then record.name
     when "Category" then record.name
+    when "Store" then record.name.presence || "Store"
     else "#{audit.auditable_type} ##{audit.auditable_id}"
     end
   end
@@ -31,6 +43,7 @@ module ApplicationHelper
     when "TaxCode" then admin_tax_code_path(record)
     when "Supplier" then admin_supplier_path(record)
     when "Category" then nil
+    when "Store" then admin_settings_path
     else nil
     end
   end
