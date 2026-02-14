@@ -38,6 +38,7 @@ cache: &cache
 development:
   primary:
     <<: *default
+    database: ei_point_of_sale_development
   queue:
     <<: *queue
     database: ei_point_of_sale_development_queue
