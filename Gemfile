@@ -77,3 +77,6 @@ gem "tailwindcss-rails", "~> 4.4"
 
 # Authorization
 gem "cancancan", "~> 3.6"
+
+# Soft delete
+gem "discard", "~> 1.4"

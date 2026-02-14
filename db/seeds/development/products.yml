@@ -1,0 +1,28 @@
+options:
+  find_existing_by: ['name']
+
+records:
+  - sprig_id: upper_deck_series1
+    name: 2024 Upper Deck Series 1
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :upper_deck).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: dragon_shield
+    name: Dragon Shield Matte Sleeves
+    product_url: https://www.dragonshield.com
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: spiderman_reprint
+    name: Amazing Spider-Man #1 Reprint
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: nhl_puck_leafs
+    name: NHL Team Puck - Maple Leafs
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :jf_sports).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"

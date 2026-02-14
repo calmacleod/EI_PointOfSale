@@ -1,0 +1,27 @@
+options:
+  find_existing_by: ['code']
+
+records:
+  - sprig_id: printer_refill_small
+    name: Printer Cartridge Refill (Small)
+    code: SVC-REFILL-SM
+    description: Refill for standard inkjet cartridges
+    price: 12.99
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: printer_refill_large
+    name: Printer Cartridge Refill (Large)
+    code: SVC-REFILL-LG
+    description: Refill for high-capacity cartridges
+    price: 19.99
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: card_sleeving
+    name: Card Sleeving Service
+    code: SVC-SLEEVE
+    description: We sleeve your cards (per 100)
+    price: 5.00
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"

@@ -1,0 +1,64 @@
+options:
+  find_existing_by: ['code']
+
+records:
+  - sprig_id: ud_series1_base
+    product_id: <%= sprig_record(Product, :upper_deck_series1).id %>
+    code: UD-2024-001
+    selling_price: 4.99
+    purchase_price: 2.50
+    stock_level: 50
+
+  - sprig_id: ds_red
+    product_id: <%= sprig_record(Product, :dragon_shield).id %>
+    code: DS-MAT-RED
+    name: Red
+    selling_price: 14.99
+    purchase_price: 7.50
+    stock_level: 24
+    option_values:
+      color: Red
+
+  - sprig_id: ds_blue
+    product_id: <%= sprig_record(Product, :dragon_shield).id %>
+    code: DS-MAT-BLU
+    name: Blue
+    selling_price: 14.99
+    purchase_price: 7.50
+    stock_level: 18
+    option_values:
+      color: Blue
+
+  - sprig_id: ds_green
+    product_id: <%= sprig_record(Product, :dragon_shield).id %>
+    code: DS-MAT-GRN
+    name: Green
+    selling_price: 14.99
+    purchase_price: 7.50
+    stock_level: 12
+    option_values:
+      color: Green
+
+  - sprig_id: ds_black
+    product_id: <%= sprig_record(Product, :dragon_shield).id %>
+    code: DS-MAT-BLK
+    name: Black
+    selling_price: 14.99
+    purchase_price: 7.50
+    stock_level: 30
+    option_values:
+      color: Black
+
+  - sprig_id: spiderman_variant
+    product_id: <%= sprig_record(Product, :spiderman_reprint).id %>
+    code: ASM-001-REPRINT
+    selling_price: 12.99
+    purchase_price: 6.50
+    stock_level: 5
+
+  - sprig_id: puck_variant
+    product_id: <%= sprig_record(Product, :nhl_puck_leafs).id %>
+    code: NHL-PUCK-001
+    selling_price: 7.99
+    purchase_price: 3.95
+    stock_level: 10

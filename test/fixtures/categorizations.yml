@@ -1,0 +1,14 @@
+product_card_sleeves:
+  categorizable_type: Product
+  categorizable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield, :products) %>
+  category: card_sleeves
+
+product_trading_cards:
+  categorizable_type: Product
+  categorizable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield, :products) %>
+  category: trading_cards
+
+service_cat:
+  categorizable_type: Service
+  categorizable_id: <%= ActiveRecord::FixtureSet.identify(:printer_refill, :services) %>
+  category: services

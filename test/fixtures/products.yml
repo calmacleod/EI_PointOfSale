@@ -1,0 +1,11 @@
+dragon_shield:
+  name: Dragon Shield Matte Sleeves
+  tax_code: one
+  supplier: diamond_comics
+  added_by: admin
+
+simple_product:
+  name: NHL Team Puck - Maple Leafs
+  tax_code: one
+  supplier: jf_sports
+  added_by: admin

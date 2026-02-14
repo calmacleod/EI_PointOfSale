@@ -1,0 +1,27 @@
+options:
+  find_existing_by: ['name']
+
+records:
+  - sprig_id: nhl_novelties
+    name: NHL Novelties
+
+  - sprig_id: trading_cards
+    name: Trading Cards
+
+  - sprig_id: card_sleeves
+    name: Card Sleeves
+
+  - sprig_id: comics
+    name: Comics
+
+  - sprig_id: tcg
+    name: TCG
+
+  - sprig_id: action_figures
+    name: Action Figures
+
+  - sprig_id: apparel
+    name: Apparel
+
+  - sprig_id: services
+    name: Services

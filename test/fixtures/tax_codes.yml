@@ -1,0 +1,10 @@
+one:
+  code: HST
+  name: Ontario HST
+  rate: 0.13
+  province_code: ON
+
+two:
+  code: EXEMPT
+  name: Exempt (no tax)
+  rate: 0

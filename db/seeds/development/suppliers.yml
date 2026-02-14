@@ -1,0 +1,23 @@
+options:
+  find_existing_by: ['name']
+
+records:
+  - sprig_id: jf_sports
+    name: JF Sports
+    phone: 1-800-267-0513
+
+  - sprig_id: diamond_comics
+    name: Diamond Comics Distribution
+    phone: 1-888-266-4226
+
+  - sprig_id: upper_deck
+    name: Upper Deck
+    phone: 1-800-873-7332
+
+  - sprig_id: panini
+    name: Panini America
+    phone: 1-800-852-8833
+
+  - sprig_id: all_star_sports
+    name: All-Star Sports Supply
+    phone: 1-416-555-0123

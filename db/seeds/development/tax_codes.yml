@@ -1,0 +1,26 @@
+options:
+  find_existing_by: ['code']
+
+records:
+  - sprig_id: hst
+    code: HST
+    name: Ontario HST
+    rate: 0.13
+    province_code: ON
+
+  - sprig_id: gst
+    code: GST
+    name: Federal GST
+    rate: 0.05
+
+  - sprig_id: exempt
+    code: EXEMPT
+    name: Exempt (no tax)
+    rate: 0
+
+  - sprig_id: exempt_status_indian
+    code: EXEMPT_STATUS_INDIAN
+    name: Status Indian exempt
+    rate: 0
+    province_code: ON
+    exemption_type: status_indian

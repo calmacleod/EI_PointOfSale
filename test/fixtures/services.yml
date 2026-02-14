@@ -1,0 +1,7 @@
+printer_refill:
+  name: Printer Cartridge Refill (Small)
+  code: SVC-REFILL-SM
+  description: Refill for standard inkjet cartridges
+  price: 12.99
+  tax_code: one
+  added_by: admin

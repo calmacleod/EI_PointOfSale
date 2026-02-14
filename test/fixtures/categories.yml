@@ -1,0 +1,11 @@
+nhl_novelties:
+  name: NHL Novelties
+
+trading_cards:
+  name: Trading Cards
+
+card_sleeves:
+  name: Card Sleeves
+
+services:
+  name: Services
