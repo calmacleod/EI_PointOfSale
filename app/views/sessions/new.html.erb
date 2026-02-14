@@ -21,7 +21,8 @@
       </div>
     <% end %>
 
-    <div class="form-card border border-theme bg-surface p-6 shadow-sm"<%= raw(' data-controller="dev-credentials" data-dev-credentials-email-value="' + h(ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com")) + '" data-dev-credentials-password-value="' + h(ENV.fetch("DEV_ADMIN_PASSWORD", "password123!")) + '"') if Rails.env.development? %>>
+    <% dev_credentials_data = Rails.env.development? ? { controller: "dev-credentials", dev_credentials_email_value: ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com"), dev_credentials_password_value: ENV.fetch("DEV_ADMIN_PASSWORD", "password123!") } : {} %>
+    <%= tag.div class: "form-card border border-theme bg-surface p-6 shadow-sm", data: dev_credentials_data do %>
       <div class="mb-6">
         <h1 class="text-2xl font-semibold tracking-tight text-body">Welcome back</h1>
         <p class="mt-1 text-base text-muted">Sign in to continue.</p>
@@ -93,6 +94,6 @@
           </button>
         </div>
       <% end %>
-    </div>
+    <% end %>
   </div>
 </div>
