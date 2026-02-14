@@ -45,7 +45,7 @@
       </div>
 
       <%# Row 2: Dates disclosure — collapsible, on its own line %>
-      <details class="group/details" <%= "open" if has_date_filters %>>
+      <%= tag.details(class: "group/details", open: has_date_filters) do %>
         <summary class="flex w-fit cursor-pointer list-none items-center gap-1.5 rounded-md px-2.5 py-1.5 text-sm font-medium text-muted hover:bg-[var(--color-border)]/30 hover:text-body [&::-webkit-details-marker]:hidden">
           <span>Dates</span>
           <% if has_date_filters %>
@@ -89,7 +89,7 @@
             <span class="text-xs text-muted">updated</span>
           </div>
         </div>
-      </details>
+      <% end %>
     <% end %>
   </aside>
 </div>
