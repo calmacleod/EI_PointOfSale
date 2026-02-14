@@ -208,7 +208,7 @@ html {
   .sidebar-mini.sidebar-mini-hide-text .nav-link .sidebar-text {
     display: none;
   }
-  .sidebar-mini.sidebar-mini-hide-text .sidebar-sign-out-text {
+  .sidebar-mini.sidebar-mini-hide-text .sidebar-bottom .sidebar-text {
     display: none;
   }
   /* Brand stays left-aligned - centering would shift logo when text hides */
@@ -232,6 +232,15 @@ html {
     margin: 0;
   }
   .sidebar-mini:not(.sidebar-mini-hide-text) .nav-link .sidebar-text {
+    width: auto;
+    min-width: 0;
+    overflow: hidden;
+    opacity: 1;
+    visibility: visible;
+    padding: 0;
+    margin: 0;
+  }
+  .sidebar-mini:not(.sidebar-mini-hide-text) .sidebar-bottom .sidebar-text {
     width: auto;
     min-width: 0;
     overflow: hidden;

@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  audited except: :password_digest
+  audited except: [ :password_digest, :theme, :font_size, :sidebar_collapsed ]
 
   include PgSearch::Model
 
