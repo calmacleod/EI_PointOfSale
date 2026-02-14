@@ -4,7 +4,7 @@ CI.run do
   step "Setup", "bin/setup --skip-server"
 
   step "Style: Ruby", "bin/rubocop"
-  step "Style: ERB", "bundle exec herb analyze . --no-log-file"
+  step "Style: ERB", "bundle exec herb analyze app --no-log-file"
   step "Style: ERB Lint", "npm run herb:lint"
 
   step "Security: Gem audit", "bin/bundler-audit"

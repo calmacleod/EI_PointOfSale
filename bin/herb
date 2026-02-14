@@ -10,10 +10,10 @@ herb_dir = File.join(project_root, "tmp", "herb")
 
 FileUtils.mkdir_p(herb_dir)
 
-# Replace "analyze ." with "analyze <project_root>" so we analyze the whole project
+# Replace "analyze ." with "analyze app" so we only analyze app code (excludes vendor, node_modules)
 argv = ARGV.dup
 if (idx = argv.index("analyze")) && argv[idx + 1] == "."
-  argv[idx + 1] = project_root
+  argv[idx + 1] = File.join(project_root, "app")
 end
 
 ARGV.replace(argv)

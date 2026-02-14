@@ -66,7 +66,7 @@ jobs:
         run: bin/rubocop -f github
 
       - name: Analyze HTML+ERB templates
-        run: bundle exec herb analyze . --no-log-file
+        run: bundle exec herb analyze app --no-log-file
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
