@@ -1,5 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
 
+const SIDEBAR_WIDTH = 256
+const EDGE_ZONE = 24
+const VELOCITY_THRESHOLD = 0.3
+
 export default class extends Controller {
   static targets = ["sidebar", "overlay"]
   static values = {
@@ -9,6 +13,25 @@ export default class extends Controller {
 
   connect() {
     this.applyCollapsedState()
+    if (!this.isDesktop()) {
+      this.boundTouchStart = this.handleTouchStart.bind(this)
+      this.boundTouchMove = this.handleTouchMove.bind(this)
+      this.boundTouchEnd = this.handleTouchEnd.bind(this)
+      this.boundTouchCancel = this.handleTouchEnd.bind(this)
+      document.addEventListener("touchstart", this.boundTouchStart, { passive: true })
+      document.addEventListener("touchmove", this.boundTouchMove, { passive: false })
+      document.addEventListener("touchend", this.boundTouchEnd, { passive: true })
+      document.addEventListener("touchcancel", this.boundTouchCancel, { passive: true })
+    }
+  }
+
+  disconnect() {
+    if (this.boundTouchStart) {
+      document.removeEventListener("touchstart", this.boundTouchStart)
+      document.removeEventListener("touchmove", this.boundTouchMove)
+      document.removeEventListener("touchend", this.boundTouchEnd)
+      document.removeEventListener("touchcancel", this.boundTouchCancel)
+    }
   }
 
   collapsedValueChanged() {
@@ -118,5 +141,104 @@ export default class extends Controller {
 
   isDesktop() {
     return window.matchMedia("(min-width: 1024px)").matches
+  }
+
+  isMobileDrawerOpen() {
+    return this.sidebarTarget.classList.contains("translate-x-0")
+  }
+
+  handleTouchStart(event) {
+    if (this.isDesktop()) return
+    const touch = event.touches[0]
+    if (!touch) return
+
+    const x = touch.clientX
+    const y = touch.clientY
+    const isClosed = this.sidebarTarget.classList.contains("-translate-x-full")
+    const isOpen = this.isMobileDrawerOpen()
+
+    const edgeSwipeToOpen = isClosed && x < EDGE_ZONE
+    const swipeToClose = isOpen
+
+    if (edgeSwipeToOpen || swipeToClose) {
+      this.swipeState = {
+        startX: x,
+        startY: y,
+        startTime: Date.now(),
+        isOpening: edgeSwipeToOpen
+      }
+    }
+  }
+
+  handleTouchMove(event) {
+    if (!this.swipeState) return
+    if (this.isDesktop()) return
+
+    const touch = event.touches[0]
+    if (!touch) return
+
+    event.preventDefault()
+
+    const x = touch.clientX
+    const translateX = Math.max(-SIDEBAR_WIDTH, Math.min(0, x - SIDEBAR_WIDTH))
+
+    this.sidebarTarget.style.transition = "none"
+    this.sidebarTarget.style.transform = `translateX(${translateX}px)`
+
+    if (this.hasOverlayTarget) {
+      this.overlayTarget.classList.remove("hidden")
+      this.overlayTarget.style.opacity = String((translateX + SIDEBAR_WIDTH) / SIDEBAR_WIDTH)
+      document.body.classList.add("overflow-hidden")
+    }
+  }
+
+  handleTouchEnd(event) {
+    if (!this.swipeState) return
+    if (this.isDesktop()) return
+
+    const touch = event.changedTouches[0]
+    if (!touch) {
+      this.swipeState = null
+      return
+    }
+
+    const x = touch.clientX
+    const deltaX = x - this.swipeState.startX
+    const deltaTime = Date.now() - this.swipeState.startTime
+    const velocity = deltaTime > 0 ? deltaX / deltaTime : 0
+
+    const currentTranslate = parseFloat(this.sidebarTarget.style.transform?.replace("translateX(", "").replace("px)", "")) || -SIDEBAR_WIDTH
+    const openRatio = (currentTranslate + SIDEBAR_WIDTH) / SIDEBAR_WIDTH
+    const totalMovement = Math.abs(deltaX)
+
+    let shouldOpen
+    if (this.swipeState.isOpening) {
+      shouldOpen = openRatio > 0.25 || velocity > VELOCITY_THRESHOLD
+    } else {
+      shouldOpen = totalMovement < 10 ? false : openRatio > 0.75 || velocity > VELOCITY_THRESHOLD
+    }
+
+    this.sidebarTarget.style.transition = ""
+    this.sidebarTarget.style.transform = ""
+
+    if (shouldOpen) {
+      this.sidebarTarget.classList.remove("-translate-x-full")
+      this.sidebarTarget.classList.add("translate-x-0")
+      if (this.hasOverlayTarget) {
+        this.overlayTarget.classList.remove("hidden")
+        this.overlayTarget.style.opacity = ""
+        document.body.classList.add("overflow-hidden")
+      }
+    } else {
+      this.sidebarTarget.classList.add("-translate-x-full")
+      this.sidebarTarget.classList.remove("translate-x-0")
+      if (this.hasOverlayTarget) {
+        this.overlayTarget.classList.add("hidden")
+        this.overlayTarget.style.opacity = ""
+        document.body.classList.remove("overflow-hidden")
+      }
+    }
+
+    this.swipeState = null
   }
 }

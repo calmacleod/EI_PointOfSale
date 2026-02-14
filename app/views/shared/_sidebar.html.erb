@@ -73,7 +73,7 @@
       <% end %>
     </nav>
 
-    <div class="sidebar-bottom hidden shrink-0 space-y-1 border-t border-theme px-2 py-2 lg:block">
+    <div class="sidebar-bottom flex shrink-0 flex-col space-y-1 border-t border-theme px-2 py-2">
       <%= button_to session_path, method: :delete,
           class: "flex w-full min-h-[44px] items-center justify-center gap-3 rounded-lg text-body hover:bg-[var(--color-border)]",
           form: { data: { turbo_confirm: "Sign out now?" } } do %>
