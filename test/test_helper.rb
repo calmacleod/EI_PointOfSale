@@ -3,7 +3,7 @@ require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/reporters"
 
-reporters = [Minitest::Reporters::DefaultReporter.new]
+reporters = [ Minitest::Reporters::DefaultReporter.new ]
 if ENV["JUNIT_OUTPUT_DIR"]
   reports_dir = ENV["JUNIT_OUTPUT_DIR"]
   reporters << Minitest::Reporters::JUnitReporter.new(reports_dir, true, single_file: true)

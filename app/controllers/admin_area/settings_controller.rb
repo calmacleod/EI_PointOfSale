@@ -15,4 +15,3 @@ module AdminArea
       end
   end
 end
-

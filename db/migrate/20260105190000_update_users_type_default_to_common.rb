@@ -19,5 +19,3 @@ class UpdateUsersTypeDefaultToCommon < ActiveRecord::Migration[8.1]
     change_column_default :users, :type, from: "Common", to: "User"
   end
 end
-
-
