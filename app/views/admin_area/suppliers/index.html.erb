@@ -39,7 +39,7 @@
                   <%= link_to supplier.name, admin_supplier_path(supplier), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
                 </td>
                 <td class="px-4 py-3 text-base text-body"><%= supplier.phone.presence || "—" %></td>
-                <td class="px-4 py-3 text-base text-body text-muted"><%= l(supplier.created_at, format: :short) %></td>
+                <td class="px-4 py-3 text-base text-body text-muted"><%= local_time(supplier.created_at, format: :short) %></td>
                 <td class="px-4 py-3 text-right text-base">
                   <%= link_to "Edit", edit_admin_supplier_path(supplier),
                       class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",

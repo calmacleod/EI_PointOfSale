@@ -21,7 +21,7 @@
         <li class="px-6 py-4">
           <div class="flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <span class="font-medium capitalize text-body"><%= audit.action %></span>
-            <span class="text-sm text-muted">at <%= l(audit.created_at, format: :long) %></span>
+            <span class="text-sm text-muted">at <%= local_time(audit.created_at, format: :long) %></span>
             <% if audit.user.present? %>
               <span class="text-sm text-muted">by <%= audit.user.respond_to?(:email_address) ? audit.user.email_address : audit.user.to_s %></span>
             <% end %>

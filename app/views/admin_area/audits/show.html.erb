@@ -22,7 +22,7 @@
       <dl class="mt-4 grid gap-3 sm:grid-cols-2">
         <div>
           <dt class="text-sm font-medium text-muted">When</dt>
-          <dd class="mt-0.5 text-base text-body"><%= l(@audit.created_at, format: :long) %></dd>
+          <dd class="mt-0.5 text-base text-body"><%= local_time(@audit.created_at, format: :long) %></dd>
         </div>
         <div>
           <dt class="text-sm font-medium text-muted">Action</dt>

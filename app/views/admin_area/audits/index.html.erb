@@ -75,7 +75,7 @@
       <tbody class="divide-y divide-[var(--color-border)] bg-surface">
         <% @audits.each do |audit| %>
           <tr>
-            <td class="px-4 py-3 text-base text-body text-muted"><%= l(audit.created_at, format: :short) %></td>
+            <td class="px-4 py-3 text-base text-body text-muted"><%= local_time(audit.created_at, format: :short) %></td>
             <td class="px-4 py-3 text-base font-medium capitalize text-body"><%= audit.action %></td>
             <td class="px-4 py-3 text-base text-body"><%= audit.auditable_type %></td>
             <td class="px-4 py-3 text-base text-body">

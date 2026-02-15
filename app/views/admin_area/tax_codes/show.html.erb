@@ -60,11 +60,11 @@
     <dl class="divide-y divide-[var(--color-border)]">
       <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
         <dt class="text-sm font-medium text-muted">Created</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.created_at.strftime("%b %-d, %Y at %-I:%M %p") %></dd>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= local_time(@tax_code.created_at, format: :long) %></dd>
       </div>
       <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
         <dt class="text-sm font-medium text-muted">Last updated</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @tax_code.updated_at.strftime("%b %-d, %Y at %-I:%M %p") %></dd>
+        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= local_time(@tax_code.updated_at, format: :long) %></dd>
       </div>
     </dl>
   </section>

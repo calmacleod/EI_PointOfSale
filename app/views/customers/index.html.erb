@@ -62,7 +62,7 @@
                 <td class="px-4 py-3 text-base text-body"><%= customer.member_number.presence || "—" %></td>
                 <td class="px-4 py-3 text-base text-body"><%= customer.phone.presence || customer.email.presence || "—" %></td>
                 <td class="px-4 py-3 text-base text-body"><%= customer.active? ? "Active" : "Inactive" %></td>
-                <td class="px-4 py-3 text-base text-body text-muted"><%= l(customer.created_at, format: :short) %></td>
+                <td class="px-4 py-3 text-base text-body text-muted"><%= local_time(customer.created_at, format: :short) %></td>
                 <td class="px-4 py-3 text-right text-base">
                   <% if can? :update, customer %>
                     <%= link_to "Edit", edit_customer_path(customer),

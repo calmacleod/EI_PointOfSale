@@ -47,7 +47,7 @@
             <td class="px-4 py-3 text-base text-body"><%= service.code.presence || "—" %></td>
             <td class="px-4 py-3 text-base text-body"><%= number_to_currency(service.price) %></td>
             <td class="px-4 py-3 text-base text-body"><%= service.tax_code&.code || "—" %></td>
-            <td class="px-4 py-3 text-base text-body text-muted"><%= l(service.created_at, format: :short) %></td>
+            <td class="px-4 py-3 text-base text-body text-muted"><%= local_time(service.created_at, format: :short) %></td>
             <td class="px-4 py-3 text-right text-base">
               <% if can? :update, service %>
                 <%= link_to "Edit", edit_service_path(service),

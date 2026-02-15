@@ -58,7 +58,7 @@
             <td class="px-4 py-3 text-base text-body"><%= product.tax_code&.code || "—" %></td>
             <td class="px-4 py-3 text-base text-body"><%= product.supplier&.name || "—" %></td>
             <td class="px-4 py-3 text-base text-body"><%= product.variants.kept.count %></td>
-            <td class="px-4 py-3 text-base text-body text-muted"><%= l(product.created_at, format: :short) %></td>
+            <td class="px-4 py-3 text-base text-body text-muted"><%= local_time(product.created_at, format: :short) %></td>
             <td class="px-4 py-3 text-right text-base">
               <% if can? :update, product %>
                 <%= link_to "Edit", edit_product_path(product),

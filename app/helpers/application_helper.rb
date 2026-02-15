@@ -55,7 +55,7 @@ module ApplicationHelper
     when nil, "" then "—"
     when true then "Yes"
     when false then "No"
-    when Time, DateTime, ActiveSupport::TimeWithZone then l(value, format: :short)
+    when Time, DateTime, ActiveSupport::TimeWithZone then local_time(value, format: :short)
     when Date then l(value, format: :short)
     when Integer then number_with_delimiter(value)
     else value.to_s

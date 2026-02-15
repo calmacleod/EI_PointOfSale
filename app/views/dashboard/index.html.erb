@@ -171,7 +171,7 @@
       <div class="rounded-xl border border-theme bg-surface p-4 shadow-sm">
         <div class="flex items-center justify-between">
           <h2 class="text-base font-semibold text-body">Quick actions</h2>
-          <span class="text-sm text-muted"><%= Time.zone.today.strftime("%b %-d, %Y") %></span>
+          <span class="text-sm text-muted"><%= local_date(Time.current, "%b %e, %Y") %></span>
         </div>
 
         <div class="mt-3 grid grid-cols-1 gap-2">

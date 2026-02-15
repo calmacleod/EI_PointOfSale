@@ -41,7 +41,7 @@
             </td>
             <td class="px-4 py-3 text-base text-body"><%= user.type %></td>
             <td class="px-4 py-3 text-base text-body"><%= user.active? ? "Yes" : "No" %></td>
-            <td class="px-4 py-3 text-base text-body text-muted"><%= l(user.created_at, format: :short) %></td>
+            <td class="px-4 py-3 text-base text-body text-muted"><%= local_time(user.created_at, format: :short) %></td>
             <td class="px-4 py-3 text-right text-base">
               <%= link_to "Edit", edit_admin_user_path(user),
                   class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",

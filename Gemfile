@@ -102,3 +102,6 @@ gem "pagy", "~> 43.2"
 
 # Audit trail for model changes
 gem "audited"
+
+# Client-side local time display
+gem "local_time"
