@@ -10,6 +10,8 @@ class ProductVariant < ApplicationRecord
   belongs_to :product
   belongs_to :supplier, optional: true
 
+  has_many_attached :images
+
   validates :code, presence: true, uniqueness: true
 
   # Instant exact-match lookup for barcode scans.

@@ -33,6 +33,9 @@ class Store < ApplicationRecord
   # ── Normalizations ─────────────────────────────────────────────────
   normalizes :email, with: ->(e) { e.to_s.strip.downcase.presence }
 
+  # ── Attachments ────────────────────────────────────────────────────
+  has_many_attached :images
+
   # ── Validations ────────────────────────────────────────────────────
   validates :name, presence: true
   validates :accent_color, inclusion: { in: ACCENT_COLOR_NAMES }

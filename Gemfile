@@ -42,6 +42,9 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# S3-compatible storage (used with MinIO for local object storage)
+gem "aws-sdk-s3", require: false
+
 gem "csv"
 
 gem "dotenv", groups: [ :development, :test ]

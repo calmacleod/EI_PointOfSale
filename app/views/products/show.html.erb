@@ -7,7 +7,7 @@
   <li aria-current="page" class="text-muted"><%= @product.name %></li>
 <% end %>
 
-<div class="mx-auto max-w-3xl">
+<div>
   <%= render "shared/page_header", title: @product.name, description: "Product details, variants, and inventory." do %>
     <div class="flex items-center gap-1.5">
       <%= link_to "Back to products", products_path, class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
@@ -19,61 +19,63 @@
     </div>
   <% end %>
 
-  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="product-details-heading">
-    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-      <h2 id="product-details-heading" class="text-sm font-semibold text-body">Details</h2>
-      <p class="text-xs text-muted">Product information and classification</p>
-    </div>
-    <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Name</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.name %></dd>
+  <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <section class="overflow-hidden border border-theme bg-surface" aria-labelledby="product-details-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="product-details-heading" class="text-sm font-semibold text-body">Details</h2>
+        <p class="text-xs text-muted">Product information and classification</p>
       </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Tax code</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.tax_code&.code || "—" %></dd>
-      </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Supplier</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.supplier&.name || "—" %></dd>
-      </div>
-      <% if @product.categories.any? %>
+      <dl class="divide-y divide-[var(--color-border)]">
         <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Categories</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.categories.pluck(:name).join(", ") %></dd>
+          <dt class="text-xs font-medium text-muted">Name</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.name %></dd>
         </div>
-      <% end %>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Product URL</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
-          <%= @product.product_url.present? ? link_to(@product.product_url, @product.product_url, class: "text-accent hover:underline break-all", target: "_blank", rel: "noopener") : "—" %>
-        </dd>
-      </div>
-      <% if @product.added_by.present? %>
         <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Added by</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.added_by.email_address %></dd>
+          <dt class="text-xs font-medium text-muted">Tax code</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.tax_code&.code || "—" %></dd>
         </div>
-      <% end %>
-    </dl>
-  </section>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Supplier</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.supplier&.name || "—" %></dd>
+        </div>
+        <% if @product.categories.any? %>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Categories</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.categories.pluck(:name).join(", ") %></dd>
+          </div>
+        <% end %>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Product URL</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+            <%= @product.product_url.present? ? link_to(@product.product_url, @product.product_url, class: "text-accent hover:underline break-all", target: "_blank", rel: "noopener") : "—" %>
+          </dd>
+        </div>
+      </dl>
+    </section>
 
-  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="product-meta-heading">
-    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-      <h2 id="product-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
-      <p class="text-xs text-muted">Timestamps</p>
-    </div>
-    <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Created</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product.created_at, format: :long) %></dd>
+    <section class="overflow-hidden border border-theme bg-surface" aria-labelledby="product-meta-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="product-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
+        <p class="text-xs text-muted">Timestamps and provenance</p>
       </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Last updated</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product.updated_at, format: :long) %></dd>
-      </div>
-    </dl>
-  </section>
+      <dl class="divide-y divide-[var(--color-border)]">
+        <% if @product.added_by.present? %>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Added by</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.added_by.email_address %></dd>
+          </div>
+        <% end %>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Created</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product.created_at, format: :long) %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Last updated</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product.updated_at, format: :long) %></dd>
+        </div>
+      </dl>
+    </section>
+  </div>
 
   <section class="mt-2" aria-labelledby="variants-heading">
     <div class="flex items-center justify-between mb-1.5">

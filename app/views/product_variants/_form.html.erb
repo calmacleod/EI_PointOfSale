@@ -89,6 +89,36 @@
           placeholder: "Optional notes",
           class: "input-field w-full" %>
     </div>
+
+    <%# ── Images ──────────────────────────────────────────────────── %>
+    <div>
+      <%= f.label :images, "Images", class: "text-sm font-medium text-body" %>
+
+      <% if product_variant.persisted? && product_variant.images.attached? %>
+        <div class="mt-1 flex flex-wrap gap-2">
+          <% product_variant.images.each do |image| %>
+            <div class="group relative">
+              <%= image_tag image.representation(resize_to_limit: [ 120, 120 ]),
+                  class: "h-[120px] w-[120px] border border-theme object-cover bg-surface-alt" %>
+              <% if can?(:update, product_variant) %>
+                <%= button_to purge_image_product_product_variant_path(product, product_variant, image_id: image.id),
+                    method: :delete,
+                    data: { turbo_confirm: "Remove this image?" },
+                    class: "absolute -top-1.5 -right-1.5 hidden group-hover:flex h-5 w-5 items-center justify-center bg-[var(--color-error-text)] text-white text-xs font-bold leading-none" do %>
+                  &times;
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= f.file_field :images,
+          multiple: true,
+          accept: "image/*",
+          class: "mt-1 block w-full text-sm text-body file:mr-2 file:border file:border-theme file:bg-surface-alt file:px-2.5 file:py-1 file:text-sm file:font-medium file:text-body hover:file:bg-[var(--color-border)]/30" %>
+      <p class="mt-0.5 text-xs text-muted">Upload one or more images. Existing images are kept unless removed.</p>
+    </div>
   </div>
 
   <div class="flex items-center justify-between px-3 py-2">

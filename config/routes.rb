@@ -21,7 +21,11 @@ Rails.application.routes.draw do
   end
 
   resources :products do
-    resources :product_variants, only: %i[ show new create edit update destroy ]
+    resources :product_variants, only: %i[ show new create edit update destroy ] do
+      member do
+        delete :purge_image
+      end
+    end
   end
   resources :services
   resources :customers

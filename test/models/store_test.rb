@@ -63,4 +63,29 @@ class StoreTest < ActiveSupport::TestCase
       end
     end
   end
+
+  # ── Image attachments ──────────────────────────────────────────────
+
+  test "can attach images" do
+    store = stores(:one)
+    store.images.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_image.png")),
+      filename: "store_logo.png",
+      content_type: "image/png"
+    )
+    assert store.images.attached?
+    assert_equal 1, store.images.count
+  end
+
+  test "can attach multiple images" do
+    store = stores(:one)
+    2.times do |i|
+      store.images.attach(
+        io: File.open(Rails.root.join("test/fixtures/files/test_image.png")),
+        filename: "store_image_#{i}.png",
+        content_type: "image/png"
+      )
+    end
+    assert_equal 2, store.images.count
+  end
 end

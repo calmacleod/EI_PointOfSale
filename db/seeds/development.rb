@@ -32,6 +32,52 @@ Service.find_each do |service|
   service.categories << services_category unless service.categories.include?(services_category)
 end
 
+# ── Seed images ─────────────────────────────────────────────────────
+# Attach product images from db/seeds/images/ (free Pexels photos).
+# Skips if variant already has images (safe to re-run).
+
+images_dir = Rails.root.join("db/seeds/images")
+
+variant_images = {
+  "UD-2024-001"    => "hockey_cards.jpg",
+  "DS-MAT-RED"     => "card_sleeves_red.jpg",
+  "DS-MAT-BLU"     => "card_sleeves_red.jpg",
+  "DS-MAT-GRN"     => "card_sleeves_red.jpg",
+  "DS-MAT-BLK"     => "card_sleeves_red.jpg",
+  "ASM-001-REPRINT" => "comic_books.jpg",
+  "NHL-PUCK-001"   => "hockey_puck.jpg"
+}
+
+variant_images.each do |code, filename|
+  variant = ProductVariant.find_by(code: code)
+  next unless variant
+  next if variant.images.attached?
+
+  path = images_dir.join(filename)
+  next unless File.exist?(path)
+
+  variant.images.attach(
+    io: File.open(path),
+    filename: filename,
+    content_type: "image/jpeg"
+  )
+  puts "  Attached #{filename} to variant #{code}"
+end
+
+# Attach a store image
+store = Store.first
+if store && !store.images.attached?
+  store_image = images_dir.join("gaming_equipment.jpg")
+  if File.exist?(store_image)
+    store.images.attach(
+      io: File.open(store_image),
+      filename: "store_photo.jpg",
+      content_type: "image/jpeg"
+    )
+    puts "  Attached store photo to #{store.name}"
+  end
+end
+
 # Generate audit trail data (run as admin so audits are attributed)
 admin = User.find_by!(email_address: "admin@example.com")
 Audited.audit_class.as_user(admin) do

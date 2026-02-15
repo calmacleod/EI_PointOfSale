@@ -22,7 +22,9 @@ class ProductVariantsController < ApplicationController
   end
 
   def update
-    if @product_variant.update(product_variant_params)
+    @product_variant.images.attach(product_variant_params[:images]) if product_variant_params[:images].present?
+
+    if @product_variant.update(product_variant_params.except(:images))
       redirect_to edit_product_path(@product), notice: "Variant updated."
     else
       render :edit, status: :unprocessable_entity
@@ -32,6 +34,12 @@ class ProductVariantsController < ApplicationController
   def destroy
     @product_variant.discard
     redirect_to edit_product_path(@product), notice: "Variant removed."
+  end
+
+  def purge_image
+    image = @product_variant.images.find(params[:image_id])
+    image.purge
+    redirect_to edit_product_product_variant_path(@product, @product_variant), notice: "Image removed."
   end
 
   private
@@ -47,7 +55,8 @@ class ProductVariantsController < ApplicationController
         :unit_cost,
         :supplier_id,
         :supplier_reference,
-        :notes
+        :notes,
+        images: []
       )
     end
 end

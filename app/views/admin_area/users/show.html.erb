@@ -9,7 +9,7 @@
   <li aria-current="page" class="text-muted"><%= @user.name.presence || @user.email_address %></li>
 <% end %>
 
-<div class="mx-auto max-w-3xl">
+<div>
   <%= render "shared/page_header", title: (@user.name.presence || @user.email_address), description: "User profile and account details." do %>
     <div class="flex items-center gap-1.5">
       <%= link_to "Back to users", admin_users_path, class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
@@ -19,55 +19,57 @@
     </div>
   <% end %>
 
-  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="user-details-heading">
-    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-      <h2 id="user-details-heading" class="text-sm font-semibold text-body">Details</h2>
-      <p class="text-xs text-muted">Profile and contact information</p>
-    </div>
-    <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Name</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.name.presence || "—" %></dd>
+  <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <section class="overflow-hidden border border-theme bg-surface" aria-labelledby="user-details-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="user-details-heading" class="text-sm font-semibold text-body">Details</h2>
+        <p class="text-xs text-muted">Profile and contact information</p>
       </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Email</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.email_address %></dd>
-      </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Phone</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.phone.presence || "—" %></dd>
-      </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Role</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.type %></dd>
-      </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Active</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.active? ? "Yes" : "No" %></dd>
-      </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Notes</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.notes.present? ? simple_format(@user.notes) : "—" %></dd>
-      </div>
-    </dl>
-  </section>
+      <dl class="divide-y divide-[var(--color-border)]">
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Name</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.name.presence || "—" %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Email</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.email_address %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Phone</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.phone.presence || "—" %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Role</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.type %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Active</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.active? ? "Yes" : "No" %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Notes</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @user.notes.present? ? simple_format(@user.notes) : "—" %></dd>
+        </div>
+      </dl>
+    </section>
 
-  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="user-meta-heading">
-    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-      <h2 id="user-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
-      <p class="text-xs text-muted">Timestamps</p>
-    </div>
-    <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Created</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@user.created_at, format: :long) %></dd>
+    <section class="overflow-hidden border border-theme bg-surface self-start" aria-labelledby="user-meta-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="user-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
+        <p class="text-xs text-muted">Timestamps</p>
       </div>
-      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-        <dt class="text-xs font-medium text-muted">Last updated</dt>
-        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@user.updated_at, format: :long) %></dd>
-      </div>
-    </dl>
-  </section>
+      <dl class="divide-y divide-[var(--color-border)]">
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Created</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@user.created_at, format: :long) %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Last updated</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@user.updated_at, format: :long) %></dd>
+        </div>
+      </dl>
+    </section>
+  </div>
 
   <%= render "shared/audit_trail", auditable: @user %>
 </div>
