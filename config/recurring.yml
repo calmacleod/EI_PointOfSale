@@ -24,3 +24,13 @@ production:
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"
     schedule: every hour at minute 12
+
+  nightly_database_backup:
+    class: DatabaseBackupJob
+    schedule: at 2am every day
+    queue: low
+
+  nightly_minio_backup:
+    class: MinioBackupJob
+    schedule: at 3am every day
+    queue: low

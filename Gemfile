@@ -45,6 +45,9 @@ gem "image_processing", "~> 1.2"
 # S3-compatible storage (used with MinIO for local object storage)
 gem "aws-sdk-s3", require: false
 
+# Google Drive API (used for nightly backup uploads)
+gem "google-apis-drive_v3", require: false
+
 gem "csv"
 
 gem "dotenv", groups: [ :development, :test ]
@@ -85,6 +88,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
   gem "minitest", ">= 6"
+  gem "minitest-mock"
   # JUnit XML report for CI Insights [https://github.com/minitest-reporters/minitest-reporters]
   gem "minitest-reporters"
 end

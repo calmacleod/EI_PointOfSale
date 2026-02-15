@@ -67,7 +67,8 @@ After seeding, use the credentials shown on the sign-in page (default: `admin@ex
 | **Services** | Sellable services with tax and optional categories. |
 | **Customers** | Customer records with addresses, member numbers, and soft delete. |
 | **Users** | Staff accounts (Admin only). Manage roles and activation. |
-| **Admin** | Store settings, tax codes, suppliers, audit trail. Mapbox address autofill for store address. |
+| **Admin** | Store settings, tax codes, suppliers, audit trail, backups. Mapbox address autofill for store address. |
+| **Backups** | Nightly database and MinIO backups to Google Drive. OAuth 2.0 integration managed from Admin > Backups. |
 | **Profile** | Edit contact info, theme (light/dark/dim), font size, sidebar preference, and dashboard metric selection. |
 | **Search** | Global search across products, services, customers, users, and more. |
 
@@ -117,6 +118,12 @@ bin/ci
 | `RAILS_ENV` | Rails environment (development, test, production) |
 | `PGGSSENCMODE` | Set to `disable` for local PostgreSQL with Solid Queue |
 | `MAPBOX_ACCESS_TOKEN` | Mapbox public token for address autofill |
+| `MINIO_ACCESS_KEY` | MinIO access key for local object storage |
+| `MINIO_SECRET_KEY` | MinIO secret key for local object storage |
+| `MINIO_ENDPOINT` | MinIO server URL (default: `http://localhost:9000`) |
+| `GOOGLE_CLIENT_ID` | Google OAuth 2.0 client ID for Drive backups |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 client secret for Drive backups |
+| `GOOGLE_DRIVE_BACKUP_FOLDER_ID` | Google Drive folder ID where backups are stored |
 | `DEV_ADMIN_EMAIL` | Admin email for development seeds (optional) |
 | `DEV_ADMIN_PASSWORD` | Admin password for development seeds (optional) |
 | `DEV_ADMIN_NAME` | Admin display name for development seeds (optional) |
@@ -125,11 +132,20 @@ See `env.template` for a full list.
 
 ---
 
+### Google Drive backups (optional)
+
+Nightly backups of the database and MinIO bucket are uploaded to Google Drive. Setup requires a Google Cloud project with OAuth 2.0 credentials. See [docs/google-drive-backups.md](docs/google-drive-backups.md) for full instructions.
+
+Once configured, connect your Google account from **Admin Settings > Backups**.
+
+---
+
 ## Documentation
 
 - [Search (pg_search)](docs/search.md) — Full-text search
 - [Products and variants](docs/products-and-variants.md)
 - [Services](docs/services.md)
+- [Google Drive backups](docs/google-drive-backups.md) — Nightly backup setup and troubleshooting
 - [Style guide](docs/styleguide.md)
 
 ---

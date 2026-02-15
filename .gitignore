@@ -33,6 +33,9 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Google Drive OAuth token (stored after authorization)
+/config/credentials/google_oauth_token.json
+
 For testing Database Data
 *.mdb
 /app/assets/builds/*
