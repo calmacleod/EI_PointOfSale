@@ -50,6 +50,9 @@ gem "google-apis-drive_v3", require: false
 
 gem "csv"
 
+# Excel export (.xlsx) for database data exports
+gem "caxlsx"
+
 gem "dotenv", groups: [ :development, :test ]
 
 group :development, :test do

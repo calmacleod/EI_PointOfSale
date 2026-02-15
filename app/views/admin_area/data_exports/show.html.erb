@@ -1,0 +1,61 @@
+<% content_for :title, "Data export" %>
+
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Data export</li>
+<% end %>
+
+<div class="mx-auto max-w-6xl">
+  <%= render "shared/page_header", title: "Data export", description: "Download the entire database as an Excel spreadsheet." do %>
+    <%= link_to "Back to admin settings", admin_settings_path,
+        class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30",
+        data: { turbo_prefetch: true } %>
+  <% end %>
+
+  <div class="mt-3 border border-theme bg-surface p-2.5">
+    <h2 class="text-sm font-semibold text-body">Export database to Excel</h2>
+    <p class="mt-0.5 text-xs text-muted">
+      Downloads a single <code>.xlsx</code> file containing all business data. Each table is exported as a separate worksheet.
+      Sensitive data (passwords) and internal system tables are excluded.
+    </p>
+
+    <div class="mt-3">
+      <%= button_to admin_data_export_path,
+          method: :post,
+          data: { turbo: false },
+          class: "inline-flex min-h-[30px] items-center gap-1.5 bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:opacity-90" do %>
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Download Excel export
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-2 border border-theme bg-surface p-2.5">
+    <h2 class="text-sm font-semibold text-body">Included tables</h2>
+    <p class="mt-0.5 text-xs text-muted">The following tables will be included as worksheets in the export:</p>
+
+    <div class="mt-2 grid grid-cols-2 gap-1 sm:grid-cols-3 lg:grid-cols-4">
+      <% @export_tables.each do |table_name| %>
+        <div class="flex items-center gap-1.5 px-2 py-1">
+          <svg class="h-3.5 w-3.5 shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span class="text-sm text-body"><%= table_name.titleize %></span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="mt-2 border border-theme bg-surface p-2.5">
+    <h2 class="text-sm font-semibold text-body">Excluded tables</h2>
+    <p class="mt-0.5 text-xs text-muted">
+      Internal system tables (sessions, background jobs, search indexes, audit logs, Active Storage) are not included.
+      Password digests are also excluded from the users table.
+    </p>
+  </div>
+</div>

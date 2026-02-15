@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   patch "profile/display_preferences", to: "profiles#update_display_preferences", as: :profile_display_preferences
   scope :admin, as: :admin, module: :admin_area do
     resource :settings, only: %i[ show update ]
+    resource :data_export, only: %i[ show create ]
     resource :backups, only: %i[ show ] do
       get :download, on: :member
       get :authorize, on: :member
