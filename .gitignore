@@ -33,8 +33,9 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
-# Google Drive OAuth token (stored after authorization)
+# Google Drive credentials (OAuth token & service account key)
 /config/credentials/google_oauth_token.json
+/config/credentials/google_service_account.json
 
 For testing Database Data
 *.mdb
