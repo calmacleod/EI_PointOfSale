@@ -109,7 +109,7 @@ class ReportChartRenderer
               try {
                 const ctx = document.getElementById("chart").getContext("2d");
                 const chartData = #{chart_json};
-                const chartType = "#{chart_type}";
+                const chartType = #{chart_type.to_json};
 
                 const gridColor = "rgba(0, 0, 0, 0.1)";
                 const textColor = "rgba(0, 0, 0, 0.7)";
