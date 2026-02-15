@@ -7,7 +7,7 @@ class ProductsController < ApplicationController
     scope = @products.kept
       .includes(:tax_code, :supplier, :variants)
       .order(:name)
-    scope = scope.search(params[:q]) if params[:q].present?
+    scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
     scope = scope.where(supplier_id: params[:supplier_id]) if params[:supplier_id].present?
     scope = apply_date_filters(scope)
     @suppliers = Supplier.kept.order(:name)

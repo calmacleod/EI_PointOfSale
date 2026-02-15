@@ -8,7 +8,7 @@ module AdminArea
 
     def index
       scope = Supplier.kept.order(:name)
-      scope = scope.search(params[:q]) if params[:q].present?
+      scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
       scope = apply_date_filters(scope)
       @pagy, @suppliers = pagy(:offset, scope)
     end

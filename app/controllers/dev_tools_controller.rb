@@ -15,6 +15,18 @@ class DevToolsController < ApplicationController
     redirect_to dev_tools_path, notice: "Test job enqueued. Open Mission Control to see it process."
   end
 
+  def reindex_search
+    models = [ Product, ProductVariant, Service, Customer, User, Category, Supplier, TaxCode ]
+    count = 0
+
+    models.each do |model|
+      PgSearch::Multisearch.rebuild(model)
+      count += model.count
+    end
+
+    redirect_to dev_tools_path, notice: "Search index rebuilt for #{models.size} models (#{count} records)."
+  end
+
   private
 
     def require_development

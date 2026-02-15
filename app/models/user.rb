@@ -4,7 +4,7 @@ class User < ApplicationRecord
   include PgSearch::Model
 
   multisearchable against: [ :name, :email_address, :notes ]
-  pg_search_scope :search, against: [ :name, :email_address, :notes ], using: { tsearch: { prefix: true } }
+  pg_search_scope :search, against: [ :name, :email_address, :notes ], using: { tsearch: { prefix: true }, trigram: {} }
 
   has_secure_password
   has_many :sessions, dependent: :destroy

@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     mount MissionControl::Jobs::Engine, at: "/jobs"
     get "/dev", to: "dev_tools#show", as: :dev_tools
     post "/dev/test_job", to: "dev_tools#test_job", as: :dev_tools_test_job
+    post "/dev/reindex_search", to: "dev_tools#reindex_search", as: :dev_tools_reindex_search
   end
 
   get "search", to: "search#index", as: :search

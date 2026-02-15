@@ -6,11 +6,13 @@ admin:
   type: Admin
 
 one:
+  name: Alice Johnson
   email_address: one@example.com
   password_digest: <%= password_digest %>
   type: Common
 
 two:
+  name: Bob Martinez
   email_address: two@example.com
   password_digest: <%= password_digest %>
   type: Common

@@ -58,4 +58,31 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert data["results"].is_a?(Array)
     assert data["results"].empty?, "Expected no matches for nonsense query"
   end
+
+  test "exact product variant code match appears first in results" do
+    sign_in_as(users(:one))
+    variant = product_variants(:ds_red)
+
+    get search_path(q: variant.code, format: :json)
+
+    assert_response :success
+    data = JSON.parse(response.body)
+    first = data["results"].first
+    assert first, "Expected at least one result for exact code"
+    assert_equal "ProductVariant", first["type"]
+    assert_equal variant.code, first["label"]
+  end
+
+  test "exact service code match appears first in results" do
+    sign_in_as(users(:one))
+    service = Service.create!(name: "Barcode Test Service", code: "SVC-EXACT-001", price: 10.00)
+
+    get search_path(q: "SVC-EXACT-001", format: :json)
+
+    assert_response :success
+    data = JSON.parse(response.body)
+    first = data["results"].first
+    assert first, "Expected at least one result for exact service code"
+    assert_equal "Service", first["type"]
+  end
 end

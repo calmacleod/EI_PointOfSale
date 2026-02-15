@@ -6,7 +6,7 @@ module AdminArea
 
     def index
       scope = TaxCode.kept.order(:code)
-      scope = scope.search(params[:q]) if params[:q].present?
+      scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
       scope = apply_date_filters(scope)
       @pagy, @tax_codes = pagy(:offset, scope)
     end

@@ -2,10 +2,24 @@
 
 class SearchController < ApplicationController
   def index
-    query = params[:q].to_s.strip
+    raw_query = params[:q].to_s.strip
+    query = sanitize_search_query(raw_query)
     limit = [ (params[:limit] || 10).to_i, 25 ].min
-    docs = query.present? ? PgSearch.multisearch(query).limit(limit) : []
-    @results = docs.filter_map { |doc| search_result_for(doc) }
+
+    # Fast path: exact code match for barcode scans
+    exact = exact_code_matches(raw_query)
+
+    # Fill remaining slots with fuzzy pg_search results
+    remaining = limit - exact.size
+    if remaining > 0 && query.present?
+      exact_keys = exact.map { |r| [ r[:type], r[:record_id] ] }.to_set
+      docs = PgSearch.multisearch(query).limit(limit)
+      fuzzy = docs.filter_map { |doc| search_result_for(doc) }
+      fuzzy.reject! { |r| exact_keys.include?([ r[:type], r[:record_id] ]) }
+      @results = exact + fuzzy.first(remaining)
+    else
+      @results = exact
+    end
 
     respond_to do |format|
       format.turbo_stream
@@ -16,21 +30,44 @@ class SearchController < ApplicationController
 
   private
 
+    # Exact code lookup against indexed code columns.
+    # Uses the raw (unsanitized) query so "WH-BLK-001" matches the stored code exactly.
+    def exact_code_matches(query)
+      return [] if query.blank?
+
+      results = []
+
+      if (variant = ProductVariant.kept.find_by(code: query))
+        results << build_result(variant, "ProductVariant")
+      end
+
+      if (service = Service.kept.find_by(code: query))
+        results << build_result(service, "Service")
+      end
+
+      results
+    end
+
     def search_result_for(doc)
       record = doc.searchable
       return nil unless record
       return nil if record.is_a?(User) && !(current_user&.is_a?(Admin))
 
-      {
-        id: doc.id,
-        type: doc.searchable_type,
-        label: search_label_for(record, doc.searchable_type),
-        sublabel: search_sublabel_for(record, doc.searchable_type),
-        url: search_url_for(record, doc.searchable_type),
-        icon: doc.searchable_type.underscore
-      }
+      build_result(record, doc.searchable_type)
     rescue StandardError
       nil
+    end
+
+    def build_result(record, type)
+      {
+        id: record.id,
+        record_id: record.id,
+        type: type,
+        label: search_label_for(record, type),
+        sublabel: search_sublabel_for(record, type),
+        url: search_url_for(record, type),
+        icon: type.underscore
+      }
     end
 
     def search_label_for(record, type)

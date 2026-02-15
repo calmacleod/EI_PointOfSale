@@ -5,7 +5,7 @@ class CustomersController < ApplicationController
 
   def index
     scope = @customers.kept.includes(:added_by).order(:name)
-    scope = scope.search(params[:q]) if params[:q].present?
+    scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
     scope = scope.where(active: true) if params[:filter] == "active"
     scope = scope.where(active: false) if params[:filter] == "inactive"
     scope = apply_date_filters(scope)

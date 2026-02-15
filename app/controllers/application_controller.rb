@@ -20,4 +20,11 @@ class ApplicationController < ActionController::Base
     def current_user
       Current.user
     end
+
+    # Replace dashes (and other tsquery-unsafe characters) with spaces
+    # so codes like "WH-BLK-001" become "WH BLK 001" and don't break
+    # PostgreSQL's to_tsquery parser.
+    def sanitize_search_query(query)
+      query.to_s.gsub(/[-]/, " ").squish.presence
+    end
 end

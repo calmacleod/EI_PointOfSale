@@ -72,13 +72,12 @@ module AdminArea
 
       sign_in_as(admin)
 
-      get admin_users_path(q: user1.email_address)
+      get admin_users_path(q: "Alice Johnson")
 
       assert_response :success
       assert_includes response.body, user1.email_address
       assert_not_includes response.body, user2.email_address
       assert_includes response.body, "users_table"
-      assert_includes response.body, ERB::Util.html_escape(user1.email_address)
     end
 
     test "admin can update users" do

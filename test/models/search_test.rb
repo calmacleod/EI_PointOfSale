@@ -94,6 +94,47 @@ class SearchTest < ActiveSupport::TestCase
     assert_includes TaxCode.search("Test tax"), tax_code
   end
 
+  test "ProductVariant.search finds variants by code containing dashes" do
+    product = products(:dragon_shield)
+    variant = ProductVariant.create!(product: product, code: "WH-BLK-001", name: "Warehouse Black")
+    assert_includes ProductVariant.search("WH-BLK-001"), variant
+    assert_includes ProductVariant.search("WH-BLK"), variant
+  end
+
+  test "Service.search finds services by code containing dashes" do
+    service = Service.create!(name: "Express Shipping", code: "EXP-SHIP-42", price: 5.00)
+    assert_includes Service.search("EXP-SHIP-42"), service
+    assert_includes Service.search("EXP-SHIP"), service
+  end
+
+  test "TaxCode.search finds tax codes by code containing dashes" do
+    tax_code = TaxCode.create!(code: "GST-NZ-15", name: "NZ GST")
+    assert_includes TaxCode.search("GST-NZ-15"), tax_code
+    assert_includes TaxCode.search("GST-NZ"), tax_code
+  end
+
+  test "Supplier.search finds suppliers by phone containing dashes" do
+    supplier = Supplier.create!(name: "Test Supplier Dash", phone: "04-555-1234")
+    assert_includes Supplier.search("04-555-1234"), supplier
+  end
+
+  test "ProductVariant.find_by_exact_code returns exact match" do
+    product = products(:dragon_shield)
+    variant = ProductVariant.create!(product: product, code: "EXACT-SCAN-001", name: "Scannable")
+
+    assert_equal variant, ProductVariant.find_by_exact_code("EXACT-SCAN-001")
+    assert_nil ProductVariant.find_by_exact_code("EXACT-SCAN")
+    assert_nil ProductVariant.find_by_exact_code("exact-scan-001")
+  end
+
+  test "ProductVariant.find_by_exact_code excludes discarded variants" do
+    product = products(:dragon_shield)
+    variant = ProductVariant.create!(product: product, code: "DISCARD-SCAN-001", name: "Discardable")
+    variant.discard
+
+    assert_nil ProductVariant.find_by_exact_code("DISCARD-SCAN-001")
+  end
+
   test "PgSearch.multisearch finds records across models" do
     product = Product.create!(name: "Multisearch Widget")
     user = User.create!(

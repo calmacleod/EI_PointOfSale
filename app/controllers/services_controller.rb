@@ -7,7 +7,7 @@ class ServicesController < ApplicationController
     scope = @services.kept
       .includes(:tax_code)
       .order(:name)
-    scope = scope.search(params[:q]) if params[:q].present?
+    scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
     scope = apply_date_filters(scope)
     @pagy, @services = pagy(:offset, scope)
   end

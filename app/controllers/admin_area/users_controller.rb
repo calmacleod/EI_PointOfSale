@@ -8,7 +8,7 @@ module AdminArea
 
     def index
       scope = @users.order(:email_address)
-      scope = scope.search(params[:q]) if params[:q].present?
+      scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
       scope = apply_date_filters(scope)
       @pagy, @users = pagy(:offset, scope)
     end

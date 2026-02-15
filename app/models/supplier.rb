@@ -5,7 +5,7 @@ class Supplier < ApplicationRecord
   include PgSearch::Model
 
   multisearchable against: [ :name, :phone ], if: :kept?
-  pg_search_scope :search, against: [ :name, :phone ], using: { tsearch: { prefix: true } }
+  pg_search_scope :search, against: [ :name, :phone ], using: { tsearch: { prefix: true }, trigram: {} }
 
   validates :name, presence: true
 end
