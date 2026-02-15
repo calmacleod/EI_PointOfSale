@@ -19,7 +19,7 @@ module AdminArea
 
       def store_params
         params.require(:store).permit(
-          :name, :phone, :email,
+          :name, :phone, :email, :accent_color,
           :address_line1, :address_line2, :city, :province, :postal_code, :country
         )
       end

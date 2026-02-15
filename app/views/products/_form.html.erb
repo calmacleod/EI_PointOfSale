@@ -1,8 +1,8 @@
 <%= form_with model: product, class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if product.errors.any? %>
-    <div class="bg-[var(--color-error-bg)] px-6 py-4">
-      <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-      <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+    <div class="bg-[var(--color-error-bg)] px-3 py-2">
+      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
         <% product.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -10,52 +10,52 @@
     </div>
   <% end %>
 
-  <div class="px-6 py-5 space-y-4">
+  <div class="px-3 py-2.5 space-y-2">
     <div>
-      <%= f.label :name, class: "block text-base font-medium text-body" %>
+      <%= f.label :name, class: "text-sm font-medium text-body" %>
       <%= f.text_field :name,
           placeholder: "Product name",
-          class: "input-field mt-1 block w-full min-h-[44px]" %>
+          class: "input-field min-h-[30px] w-full" %>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div>
-        <%= f.label :tax_code_id, "Tax code", class: "block text-base font-medium text-body" %>
+        <%= f.label :tax_code_id, "Tax code", class: "text-sm font-medium text-body" %>
         <%= f.collection_select :tax_code_id,
             TaxCode.kept.order(:code),
             :id,
             :code,
             { include_blank: "None" },
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
       <div>
-        <%= f.label :supplier_id, "Supplier", class: "block text-base font-medium text-body" %>
+        <%= f.label :supplier_id, "Supplier", class: "text-sm font-medium text-body" %>
         <%= f.collection_select :supplier_id,
             Supplier.kept.order(:name),
             :id,
             :name,
             { include_blank: "None" },
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
     </div>
 
     <div>
-      <%= f.label :product_url, "Product URL", class: "block text-base font-medium text-body" %>
+      <%= f.label :product_url, "Product URL", class: "text-sm font-medium text-body" %>
       <%= f.url_field :product_url,
           placeholder: "https://...",
-          class: "input-field mt-1 block w-full min-h-[44px]" %>
+          class: "input-field min-h-[30px] w-full" %>
     </div>
   </div>
 
-  <div class="flex items-center justify-between bg-surface px-6 py-4">
+  <div class="flex items-center justify-between px-3 py-2">
     <% if product.persisted? && can?(:destroy, product) %>
       <%= button_to "Remove", product_path(product), method: :delete,
           data: { turbo_confirm: "Remove this product and its variants?" },
-          class: "text-base font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: "inline-flex min-h-[30px] items-center justify-center px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
     <% else %>
       <span></span>
     <% end %>
     <%= f.submit product.persisted? ? "Save changes" : "Create product",
-        class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]" %>
+        class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
   </div>
 <% end %>

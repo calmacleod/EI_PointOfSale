@@ -10,75 +10,75 @@
 <% filter_params = %w[audit_action auditable_type user_id created_at_from created_at_to] %>
 <% has_active_filters = filter_params.any? { |p| params[p].present? } %>
 
-<div class="mx-auto max-w-5xl">
+<div class="mx-auto max-w-6xl">
   <%= render "shared/page_header", title: "Audit trail", description: "All changes across the application." do %>
     <%= link_to "Back to admin settings", admin_settings_path,
-        class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]/30",
+        class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30",
         data: { turbo_prefetch: true } %>
   <% end %>
 
-  <%= form_with url: admin_audits_path, method: :get, class: "mt-6" do |f| %>
-    <aside class="flex flex-col gap-3 rounded-lg border border-theme bg-surface px-4 py-3">
-      <div class="flex flex-wrap items-end gap-3">
+  <%= form_with url: admin_audits_path, method: :get, class: "mt-2" do |f| %>
+    <aside class="flex flex-col gap-1.5 border border-theme bg-surface px-2 py-1.5">
+      <div class="flex flex-wrap items-end gap-1.5">
         <div class="flex flex-col">
-          <label for="audit_action" class="text-sm font-medium text-muted">Action</label>
+          <label for="audit_action" class="text-xs font-medium text-muted">Action</label>
           <%= f.select :audit_action,
               options_for_select(@audit_action_options, params[:audit_action]),
               {},
               id: "audit_action",
-              class: "input-field mt-1 h-10 w-36 cursor-pointer text-sm" %>
+              class: "input-field mt-0.5 h-7 w-32 cursor-pointer text-xs" %>
         </div>
         <div class="flex flex-col">
-          <label for="auditable_type" class="text-sm font-medium text-muted">Model</label>
+          <label for="auditable_type" class="text-xs font-medium text-muted">Model</label>
           <%= f.select :auditable_type,
               options_for_select(@auditable_type_options, params[:auditable_type]),
               {},
               id: "auditable_type",
-              class: "input-field mt-1 h-10 w-40 cursor-pointer text-sm" %>
+              class: "input-field mt-0.5 h-7 w-36 cursor-pointer text-xs" %>
         </div>
         <div class="flex flex-col">
-          <label for="user_id" class="text-sm font-medium text-muted">User</label>
+          <label for="user_id" class="text-xs font-medium text-muted">User</label>
           <%= f.select :user_id,
               options_for_select(@user_options, params[:user_id]),
               {},
               id: "user_id",
-              class: "input-field mt-1 h-10 w-48 cursor-pointer text-sm" %>
+              class: "input-field mt-0.5 h-7 w-44 cursor-pointer text-xs" %>
         </div>
         <div class="flex flex-col">
-          <label for="created_at_from" class="text-sm font-medium text-muted">From date</label>
-          <%= f.date_field :created_at_from, value: params[:created_at_from], id: "created_at_from", class: "input-field mt-1 h-10 w-36 text-sm" %>
+          <label for="created_at_from" class="text-xs font-medium text-muted">From date</label>
+          <%= f.date_field :created_at_from, value: params[:created_at_from], id: "created_at_from", class: "input-field mt-0.5 h-7 w-32 text-xs" %>
         </div>
         <div class="flex flex-col">
-          <label for="created_at_to" class="text-sm font-medium text-muted">To date</label>
-          <%= f.date_field :created_at_to, value: params[:created_at_to], id: "created_at_to", class: "input-field mt-1 h-10 w-36 text-sm" %>
+          <label for="created_at_to" class="text-xs font-medium text-muted">To date</label>
+          <%= f.date_field :created_at_to, value: params[:created_at_to], id: "created_at_to", class: "input-field mt-0.5 h-7 w-32 text-xs" %>
         </div>
-        <%= f.submit "Apply", class: "h-10 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        <%= f.submit "Apply", class: "h-7 bg-accent px-2.5 py-0.5 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
         <% if has_active_filters %>
-          <%= link_to "Clear", admin_audits_path, class: "h-10 rounded-md px-3 py-2 text-sm font-medium text-muted hover:bg-[var(--color-border)]/30 hover:text-body" %>
+          <%= link_to "Clear", admin_audits_path, class: "h-7 px-2 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)]/30 hover:text-body" %>
         <% end %>
       </div>
     </aside>
   <% end %>
 
-  <div class="mt-6 overflow-x-auto rounded-lg border border-theme bg-surface">
+  <div class="mt-2 overflow-x-auto border border-theme bg-surface lg:min-h-[70vh]">
     <table class="min-w-full divide-y divide-[var(--color-border)]">
-      <thead class="bg-[var(--color-border)]/30">
+      <thead class="bg-surface-alt">
         <tr>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">When</th>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Action</th>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Model</th>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Record</th>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">User</th>
-          <th class="px-4 py-3 text-right text-base font-medium uppercase tracking-wider text-muted">Details</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">When</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Action</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Model</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Record</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">User</th>
+          <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted">Details</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-[var(--color-border)] bg-surface">
         <% @audits.each do |audit| %>
           <tr>
-            <td class="px-4 py-3 text-base text-body text-muted"><%= local_time(audit.created_at, format: :short) %></td>
-            <td class="px-4 py-3 text-base font-medium capitalize text-body"><%= audit.action %></td>
-            <td class="px-4 py-3 text-base text-body"><%= audit.auditable_type %></td>
-            <td class="px-4 py-3 text-base text-body">
+            <td class="px-3 py-1.5 text-sm text-muted"><%= local_time(audit.created_at, format: :short) %></td>
+            <td class="px-3 py-1.5 text-sm font-medium capitalize text-body"><%= audit.action %></td>
+            <td class="px-3 py-1.5 text-sm text-body"><%= audit.auditable_type %></td>
+            <td class="px-3 py-1.5 text-sm text-body">
               <% path = audit_auditable_path(audit) %>
               <% if path %>
                 <%= link_to audit_auditable_label(audit), path, class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
@@ -86,10 +86,10 @@
                 <%= audit_auditable_label(audit) %>
               <% end %>
             </td>
-            <td class="px-4 py-3 text-base text-body text-muted">
+            <td class="px-3 py-1.5 text-sm text-muted">
               <%= audit.user.present? ? (audit.user.respond_to?(:email_address) ? audit.user.email_address : audit.user.to_s) : "—" %>
             </td>
-            <td class="px-4 py-3 text-right">
+            <td class="px-3 py-1.5 text-right">
               <%= link_to "View changes", admin_audit_path(audit), class: "text-sm font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
             </td>
           </tr>
@@ -99,7 +99,7 @@
   </div>
 
   <% if @audits.empty? %>
-    <p class="mt-4 text-base text-muted">No audit events yet.</p>
+    <p class="mt-2 text-sm text-muted">No audit events yet.</p>
   <% end %>
 
   <%= render "shared/pagy_nav" %>

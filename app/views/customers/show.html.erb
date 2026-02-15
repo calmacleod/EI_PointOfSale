@@ -7,114 +7,114 @@
   <li aria-current="page" class="text-muted"><%= @customer.name %></li>
 <% end %>
 
-<div class="mx-auto max-w-2xl">
+<div class="mx-auto max-w-3xl">
   <%= render "shared/page_header", title: @customer.name, description: "Customer details and contact info." do %>
-    <div class="flex items-center gap-2">
-      <%= link_to "Back to customers", customers_path, class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
+    <div class="flex items-center gap-1.5">
+      <%= link_to "Back to customers", customers_path, class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
       <% if can? :update, @customer %>
         <%= link_to "Edit", edit_customer_path(@customer),
-            class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
+            class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
             data: { turbo_prefetch: true } %>
       <% end %>
     </div>
   <% end %>
 
-  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="customer-contact-heading">
-    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-      <h2 id="customer-contact-heading" class="text-base font-semibold text-body">Contact</h2>
-      <p class="mt-0.5 text-sm text-muted">Name, member number, phone, and email</p>
+  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="customer-contact-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="customer-contact-heading" class="text-sm font-semibold text-body">Contact</h2>
+      <p class="text-xs text-muted">Name, member number, phone, and email</p>
     </div>
     <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Name</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @customer.name %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Name</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.name %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Member number</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @customer.member_number.presence || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Member number</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.member_number.presence || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Phone</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @customer.phone.presence || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Phone</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.phone.presence || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Email</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @customer.email.presence || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Email</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.email.presence || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Status</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @customer.active? ? "Active" : "Inactive" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Status</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.active? ? "Active" : "Inactive" %></dd>
       </div>
     </dl>
   </section>
 
   <% if @customer.address.present? %>
-    <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="customer-address-heading">
-      <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-        <h2 id="customer-address-heading" class="text-base font-semibold text-body">Address</h2>
+    <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="customer-address-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="customer-address-heading" class="text-sm font-semibold text-body">Address</h2>
       </div>
       <dl class="divide-y divide-[var(--color-border)]">
-        <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-          <dt class="text-sm font-medium text-muted">Address</dt>
-          <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @customer.address %></dd>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Address</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.address %></dd>
         </div>
       </dl>
     </section>
   <% end %>
 
   <% if @customer.notes.present? || @customer.alert.present? || @customer.joining_date.present? || @customer.date_of_birth.present? %>
-    <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="customer-notes-heading">
-      <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-        <h2 id="customer-notes-heading" class="text-base font-semibold text-body">Notes & alerts</h2>
+    <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="customer-notes-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="customer-notes-heading" class="text-sm font-semibold text-body">Notes & alerts</h2>
       </div>
       <dl class="divide-y divide-[var(--color-border)]">
         <% if @customer.notes.present? %>
-          <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-            <dt class="text-sm font-medium text-muted">Notes</dt>
-            <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= simple_format(@customer.notes) %></dd>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Notes</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= simple_format(@customer.notes) %></dd>
           </div>
         <% end %>
         <% if @customer.alert.present? %>
-          <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-            <dt class="text-sm font-medium text-muted">Alert</dt>
-            <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= simple_format(@customer.alert) %></dd>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Alert</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= simple_format(@customer.alert) %></dd>
           </div>
         <% end %>
         <% if @customer.joining_date.present? %>
-          <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-            <dt class="text-sm font-medium text-muted">Joining date</dt>
-            <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= l(@customer.joining_date, format: :long) %></dd>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Joining date</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= l(@customer.joining_date, format: :long) %></dd>
           </div>
         <% end %>
         <% if @customer.date_of_birth.present? %>
-          <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-            <dt class="text-sm font-medium text-muted">Date of birth</dt>
-            <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= l(@customer.date_of_birth, format: :long) %></dd>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Date of birth</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= l(@customer.date_of_birth, format: :long) %></dd>
           </div>
         <% end %>
       </dl>
     </section>
   <% end %>
 
-  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="customer-meta-heading">
-    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-      <h2 id="customer-meta-heading" class="text-base font-semibold text-body">Record info</h2>
-      <p class="mt-0.5 text-sm text-muted">Timestamps</p>
+  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="customer-meta-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="customer-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
+      <p class="text-xs text-muted">Timestamps</p>
     </div>
     <dl class="divide-y divide-[var(--color-border)]">
       <% if @customer.added_by.present? %>
-        <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-          <dt class="text-sm font-medium text-muted">Added by</dt>
-          <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @customer.added_by.email_address %></dd>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Added by</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.added_by.email_address %></dd>
         </div>
       <% end %>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Created</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= local_time(@customer.created_at, format: :long) %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Created</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@customer.created_at, format: :long) %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Last updated</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= local_time(@customer.updated_at, format: :long) %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Last updated</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@customer.updated_at, format: :long) %></dd>
       </div>
     </dl>
   </section>

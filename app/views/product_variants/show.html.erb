@@ -9,128 +9,128 @@
   <li aria-current="page" class="text-muted"><%= @product_variant.code %></li>
 <% end %>
 
-<div class="mx-auto max-w-2xl">
+<div class="mx-auto max-w-3xl">
   <%= render "shared/page_header", title: "#{@product_variant.code} – #{@product.name}", description: "Variant details, pricing, and inventory." do %>
-    <div class="flex items-center gap-2">
-      <%= link_to "Back to product", product_path(@product), class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
+    <div class="flex items-center gap-1.5">
+      <%= link_to "Back to product", product_path(@product), class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
       <% if can? :update, @product_variant %>
         <%= link_to "Edit", edit_product_product_variant_path(@product, @product_variant),
-            class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
+            class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
             data: { turbo_prefetch: true } %>
       <% end %>
     </div>
   <% end %>
 
-  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="variant-details-heading">
-    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-      <h2 id="variant-details-heading" class="text-base font-semibold text-body">Details</h2>
-      <p class="mt-0.5 text-sm text-muted">SKU and identification</p>
+  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="variant-details-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="variant-details-heading" class="text-sm font-semibold text-body">Details</h2>
+      <p class="text-xs text-muted">SKU and identification</p>
     </div>
     <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Code</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.code %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Code</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.code %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Name</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.name.presence || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Name</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.name.presence || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Product</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= link_to @product.name, product_path(@product), class: "text-accent hover:underline", data: { turbo_prefetch: true } %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Product</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= link_to @product.name, product_path(@product), class: "text-accent hover:underline", data: { turbo_prefetch: true } %></dd>
       </div>
     </dl>
   </section>
 
-  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="variant-pricing-heading">
-    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-      <h2 id="variant-pricing-heading" class="text-base font-semibold text-body">Pricing</h2>
-      <p class="mt-0.5 text-sm text-muted">Cost and selling prices</p>
+  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="variant-pricing-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="variant-pricing-heading" class="text-sm font-semibold text-body">Pricing</h2>
+      <p class="text-xs text-muted">Cost and selling prices</p>
     </div>
     <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Selling price</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product_variant.selling_price) || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Selling price</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product_variant.selling_price) || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Purchase price</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product_variant.purchase_price) || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Purchase price</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product_variant.purchase_price) || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Unit cost</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product_variant.unit_cost) || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Unit cost</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product_variant.unit_cost) || "—" %></dd>
       </div>
     </dl>
   </section>
 
-  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="variant-inventory-heading">
-    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-      <h2 id="variant-inventory-heading" class="text-base font-semibold text-body">Inventory</h2>
-      <p class="mt-0.5 text-sm text-muted">Stock levels and ordering</p>
+  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="variant-inventory-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="variant-inventory-heading" class="text-sm font-semibold text-body">Inventory</h2>
+      <p class="text-xs text-muted">Stock levels and ordering</p>
     </div>
     <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Stock level</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.stock_level || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Stock level</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.stock_level || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Reorder level</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.reorder_level || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Reorder level</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.reorder_level || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Items per unit</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.items_per_unit || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Items per unit</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.items_per_unit || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Order quantity</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.order_quantity || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Order quantity</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.order_quantity || "—" %></dd>
       </div>
     </dl>
   </section>
 
-  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="variant-supplier-heading">
-    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-      <h2 id="variant-supplier-heading" class="text-base font-semibold text-body">Supplier</h2>
-      <p class="mt-0.5 text-sm text-muted">Procurement details</p>
+  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="variant-supplier-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="variant-supplier-heading" class="text-sm font-semibold text-body">Supplier</h2>
+      <p class="text-xs text-muted">Procurement details</p>
     </div>
     <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Supplier</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.supplier&.name || @product.supplier&.name || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Supplier</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.supplier&.name || @product.supplier&.name || "—" %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Supplier reference</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.supplier_reference.presence || "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Supplier reference</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.supplier_reference.presence || "—" %></dd>
       </div>
     </dl>
   </section>
 
-  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="variant-notes-heading">
-    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-      <h2 id="variant-notes-heading" class="text-base font-semibold text-body">Notes</h2>
-      <p class="mt-0.5 text-sm text-muted">Internal notes and reference</p>
+  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="variant-notes-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="variant-notes-heading" class="text-sm font-semibold text-body">Notes</h2>
+      <p class="text-xs text-muted">Internal notes and reference</p>
     </div>
     <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Notes</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= @product_variant.notes.present? ? simple_format(@product_variant.notes) : "—" %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Notes</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product_variant.notes.present? ? simple_format(@product_variant.notes) : "—" %></dd>
       </div>
     </dl>
   </section>
 
-  <section class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm" aria-labelledby="variant-meta-heading">
-    <div class="border-b border-theme bg-[var(--color-border)]/20 px-6 py-3">
-      <h2 id="variant-meta-heading" class="text-base font-semibold text-body">Record info</h2>
-      <p class="mt-0.5 text-sm text-muted">Timestamps</p>
+  <section class="mt-2 overflow-hidden border border-theme bg-surface" aria-labelledby="variant-meta-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="variant-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
+      <p class="text-xs text-muted">Timestamps</p>
     </div>
     <dl class="divide-y divide-[var(--color-border)]">
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Created</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= local_time(@product_variant.created_at, format: :long) %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Created</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product_variant.created_at, format: :long) %></dd>
       </div>
-      <div class="px-6 py-4 sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt class="text-sm font-medium text-muted">Last updated</dt>
-        <dd class="mt-1 text-base text-body sm:col-span-2 sm:mt-0"><%= local_time(@product_variant.updated_at, format: :long) %></dd>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Last updated</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product_variant.updated_at, format: :long) %></dd>
       </div>
     </dl>
   </section>

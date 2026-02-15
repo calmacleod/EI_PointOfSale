@@ -1,8 +1,8 @@
 <%= form_with model: [ product, product_variant ], class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if product_variant.errors.any? %>
-    <div class="bg-[var(--color-error-bg)] px-6 py-4">
-      <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-      <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+    <div class="bg-[var(--color-error-bg)] px-3 py-2">
+      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
         <% product_variant.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -10,100 +10,100 @@
     </div>
   <% end %>
 
-  <div class="px-6 py-5 space-y-4">
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+  <div class="px-3 py-2.5 space-y-2">
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div>
-        <%= f.label :code, "SKU / Code", class: "block text-base font-medium text-body" %>
+        <%= f.label :code, "SKU / Code", class: "text-sm font-medium text-body" %>
         <%= f.text_field :code,
             placeholder: "e.g. DS-MAT-RED",
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
-        <p class="mt-1 text-sm text-muted">Unique identifier for this variant.</p>
+            class: "input-field min-h-[30px] w-full" %>
+        <p class="mt-0.5 text-xs text-muted">Unique identifier for this variant.</p>
       </div>
       <div>
-        <%= f.label :name, class: "block text-base font-medium text-body" %>
+        <%= f.label :name, class: "text-sm font-medium text-body" %>
         <%= f.text_field :name,
             placeholder: "e.g. Red",
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div>
-        <%= f.label :selling_price, class: "block text-base font-medium text-body" %>
+        <%= f.label :selling_price, class: "text-sm font-medium text-body" %>
         <%= f.number_field :selling_price,
             step: 0.01,
             min: 0,
             placeholder: "0.00",
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
       <div>
-        <%= f.label :purchase_price, class: "block text-base font-medium text-body" %>
+        <%= f.label :purchase_price, class: "text-sm font-medium text-body" %>
         <%= f.number_field :purchase_price,
             step: 0.01,
             min: 0,
             placeholder: "0.00",
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div>
-        <%= f.label :stock_level, class: "block text-base font-medium text-body" %>
+        <%= f.label :stock_level, class: "text-sm font-medium text-body" %>
         <%= f.number_field :stock_level,
             step: 0.0001,
             min: 0,
             value: product_variant.stock_level,
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
       <div>
-        <%= f.label :reorder_level, class: "block text-base font-medium text-body" %>
+        <%= f.label :reorder_level, class: "text-sm font-medium text-body" %>
         <%= f.number_field :reorder_level,
             step: 0.0001,
             min: 0,
             value: product_variant.reorder_level || 0,
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div>
-        <%= f.label :supplier_id, "Supplier", class: "block text-base font-medium text-body" %>
+        <%= f.label :supplier_id, "Supplier", class: "text-sm font-medium text-body" %>
         <%= f.collection_select :supplier_id,
             Supplier.kept.order(:name),
             :id,
             :name,
             { include_blank: "Use product default" },
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
       <div>
-        <%= f.label :supplier_reference, "Supplier ref", class: "block text-base font-medium text-body" %>
+        <%= f.label :supplier_reference, "Supplier ref", class: "text-sm font-medium text-body" %>
         <%= f.text_field :supplier_reference,
             placeholder: "Optional",
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
     </div>
 
     <div>
-      <%= f.label :notes, class: "block text-base font-medium text-body" %>
+      <%= f.label :notes, class: "text-sm font-medium text-body" %>
       <%= f.text_area :notes, rows: 3,
           placeholder: "Optional notes",
-          class: "input-field mt-1 block w-full" %>
+          class: "input-field w-full" %>
     </div>
   </div>
 
-  <div class="flex items-center justify-between bg-surface px-6 py-4">
+  <div class="flex items-center justify-between px-3 py-2">
     <% if product_variant.persisted? && can?(:destroy, product_variant) %>
       <%= button_to "Remove", product_product_variant_path(product, product_variant), method: :delete,
           data: { turbo_confirm: "Remove this variant?" },
-          class: "text-base font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: "inline-flex min-h-[30px] items-center justify-center px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
     <% else %>
       <span></span>
     <% end %>
     <div class="flex gap-2">
       <%= link_to "Cancel", edit_product_path(product),
-          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg border border-theme bg-surface px-4 py-3 text-base font-semibold text-body hover:bg-[var(--color-border)]" %>
+          class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]" %>
       <%= f.submit product_variant.persisted? ? "Save changes" : "Add variant",
-          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]" %>
+          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
     </div>
   </div>
 <% end %>

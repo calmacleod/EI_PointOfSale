@@ -1,8 +1,8 @@
 <%= form_with model: customer, class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if customer.errors.any? %>
-    <div class="bg-[var(--color-error-bg)] px-6 py-4">
-      <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-      <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+    <div class="bg-[var(--color-error-bg)] px-3 py-2">
+      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
         <% customer.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -10,129 +10,129 @@
     </div>
   <% end %>
 
-  <div class="px-6 py-5 space-y-5">
+  <div class="px-3 py-2.5 space-y-2">
     <div>
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted mb-3">Contact</h3>
-      <div class="space-y-4">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">Contact</h3>
+      <div class="space-y-2">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div>
-            <%= f.label :name, class: "block text-base font-medium text-body" %>
+            <%= f.label :name, class: "text-sm font-medium text-body" %>
             <%= f.text_field :name,
                 placeholder: "Customer name",
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
           <div>
-            <%= f.label :member_number, "Member number", class: "block text-base font-medium text-body" %>
+            <%= f.label :member_number, "Member number", class: "text-sm font-medium text-body" %>
             <%= f.text_field :member_number,
                 placeholder: "Optional",
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
         </div>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div>
-            <%= f.label :phone, class: "block text-base font-medium text-body" %>
+            <%= f.label :phone, class: "text-sm font-medium text-body" %>
             <%= f.telephone_field :phone,
                 placeholder: "Phone",
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
           <div>
-            <%= f.label :email, class: "block text-base font-medium text-body" %>
+            <%= f.label :email, class: "text-sm font-medium text-body" %>
             <%= f.email_field :email,
                 placeholder: "Email",
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
         </div>
       </div>
     </div>
 
     <div>
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted mb-3">Address</h3>
-      <div class="space-y-4">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">Address</h3>
+      <div class="space-y-2">
         <div>
-          <%= f.label :address_line1, "Address line 1", class: "block text-base font-medium text-body" %>
+          <%= f.label :address_line1, "Address line 1", class: "text-sm font-medium text-body" %>
           <%= f.text_field :address_line1,
               placeholder: "Street address",
-              class: "input-field mt-1 block w-full min-h-[44px]" %>
+              class: "input-field min-h-[30px] w-full" %>
         </div>
         <div>
-          <%= f.label :address_line2, "Address line 2", class: "block text-base font-medium text-body" %>
+          <%= f.label :address_line2, "Address line 2", class: "text-sm font-medium text-body" %>
           <%= f.text_field :address_line2,
               placeholder: "Suite, unit, etc. (optional)",
-              class: "input-field mt-1 block w-full min-h-[44px]" %>
+              class: "input-field min-h-[30px] w-full" %>
         </div>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <div>
-            <%= f.label :city, class: "block text-base font-medium text-body" %>
+            <%= f.label :city, class: "text-sm font-medium text-body" %>
             <%= f.text_field :city,
                 placeholder: "City",
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
           <div>
-            <%= f.label :province, class: "block text-base font-medium text-body" %>
+            <%= f.label :province, class: "text-sm font-medium text-body" %>
             <%= f.text_field :province,
                 placeholder: "Province / state",
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
           <div>
-            <%= f.label :postal_code, "Postal code", class: "block text-base font-medium text-body" %>
+            <%= f.label :postal_code, "Postal code", class: "text-sm font-medium text-body" %>
             <%= f.text_field :postal_code,
                 placeholder: "Postal / zip",
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
         </div>
         <div>
-          <%= f.label :country, class: "block text-base font-medium text-body" %>
+          <%= f.label :country, class: "text-sm font-medium text-body" %>
           <%= f.text_field :country,
               placeholder: "Country",
-              class: "input-field mt-1 block w-full min-h-[44px]" %>
+              class: "input-field min-h-[30px] w-full" %>
         </div>
       </div>
     </div>
 
     <div>
-      <h3 class="text-sm font-semibold uppercase tracking-wider text-muted mb-3">Notes & alerts</h3>
-      <div class="space-y-4">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">Notes & alerts</h3>
+      <div class="space-y-2">
         <div>
-          <%= f.label :notes, class: "block text-base font-medium text-body" %>
+          <%= f.label :notes, class: "text-sm font-medium text-body" %>
           <%= f.text_area :notes, rows: 3,
               placeholder: "Internal notes (optional)",
-              class: "input-field mt-1 block w-full" %>
+              class: "input-field w-full" %>
         </div>
         <div>
-          <%= f.label :alert, class: "block text-base font-medium text-body" %>
+          <%= f.label :alert, class: "text-sm font-medium text-body" %>
           <%= f.text_area :alert, rows: 2,
               placeholder: "Staff alerts (e.g. payment reminder)",
-              class: "input-field mt-1 block w-full" %>
+              class: "input-field w-full" %>
         </div>
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div>
-            <%= f.label :joining_date, class: "block text-base font-medium text-body" %>
+            <%= f.label :joining_date, class: "text-sm font-medium text-body" %>
             <%= f.date_field :joining_date,
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
           <div>
-            <%= f.label :date_of_birth, "Date of birth", class: "block text-base font-medium text-body" %>
+            <%= f.label :date_of_birth, "Date of birth", class: "text-sm font-medium text-body" %>
             <%= f.date_field :date_of_birth,
-                class: "input-field mt-1 block w-full min-h-[44px]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <%= f.check_box :active, class: "h-4 w-4 rounded border-[var(--color-border)]" %>
-          <%= f.label :active, "Active", class: "text-base font-medium text-body" %>
+          <%= f.check_box :active, class: "h-4 w-4 border-[var(--color-border)]" %>
+          <%= f.label :active, "Active", class: "text-sm font-medium text-body" %>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="flex items-center justify-between bg-surface px-6 py-4">
+  <div class="flex items-center justify-between px-3 py-2">
     <% if customer.persisted? && can?(:destroy, customer) %>
       <%= button_to "Remove", customer_path(customer), method: :delete,
           data: { turbo_confirm: "Remove this customer?" },
-          class: "text-base font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: "inline-flex min-h-[30px] items-center justify-center px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
     <% else %>
       <span></span>
     <% end %>
     <%= f.submit customer.persisted? ? "Save changes" : "Create customer",
-        class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]" %>
+        class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
   </div>
 <% end %>

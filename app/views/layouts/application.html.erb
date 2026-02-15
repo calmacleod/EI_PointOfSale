@@ -20,6 +20,7 @@
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= accent_color_style_tag %>
     <%= javascript_importmap_tags %>
   </head>
 
@@ -27,16 +28,16 @@
     <% if authenticated? %>
       <% sidebar_collapsed = Current.user&.sidebar_collapsed == true %>
       <div class="flex h-screen min-h-0 w-full flex-col overflow-hidden lg:flex-row <%= 'sidebar-collapsed' if sidebar_collapsed %>" data-controller="sidebar confirm-modal search-modal" data-sidebar-collapsed-value="<%= sidebar_collapsed %>" data-sidebar-profile-path-value="<%= profile_display_preferences_path %>">
-        <header class="fixed inset-x-0 top-0 z-50 flex h-14 items-center gap-3 border-b border-theme bg-surface px-4 lg:hidden">
+        <header class="fixed inset-x-0 top-0 z-50 flex h-9 items-center gap-2 border-b border-theme bg-surface px-2 lg:hidden">
           <button type="button"
                   data-action="click->sidebar#toggle"
-                  class="flex min-h-[44px] min-w-[44px] -ml-2 items-center justify-center rounded-lg text-body hover:bg-[var(--color-border)]"
+                  class="flex h-7 w-7 -ml-0.5 items-center justify-center text-body hover:bg-[var(--color-border)]"
                   aria-label="Open menu">
-            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
             </svg>
           </button>
-          <span class="text-sm font-semibold text-body">Point of Sale</span>
+          <span class="text-xs font-semibold text-body">Point of Sale</span>
         </header>
         <div data-sidebar-target="overlay"
              data-action="click->sidebar#close"
@@ -46,8 +47,8 @@
         <%= render "shared/sign_out_modal" %>
         <%= render "shared/search_modal" %>
 
-        <main class="min-h-0 flex-1 overflow-y-auto px-4 pt-14 pb-8 sm:px-6 lg:pt-8 lg:px-8">
-          <div class="mx-auto w-full max-w-screen-2xl">
+        <main class="min-h-0 flex-1 overflow-y-auto px-3 pt-9 pb-3 lg:pt-3 lg:px-4">
+          <div class="mx-auto w-full max-w-screen-xl">
             <%= render "shared/breadcrumbs" %>
             <div id="flash_container"><%= render "shared/flash" %></div>
             <%= yield %>
@@ -55,8 +56,8 @@
         </main>
       </div>
     <% else %>
-      <main class="min-h-screen w-full px-4 py-8 sm:px-6 lg:px-8">
-        <div class="mx-auto w-full max-w-screen-2xl">
+      <main class="min-h-screen w-full px-3 py-3 lg:px-4">
+        <div class="mx-auto w-full max-w-screen-xl">
           <%= render "shared/breadcrumbs" %>
           <div id="flash_container"><%= render "shared/flash" %></div>
           <%= yield %>

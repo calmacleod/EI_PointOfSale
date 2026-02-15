@@ -7,38 +7,38 @@
 
 <div class="mx-auto max-w-md">
   <% if flash[:alert].present? %>
-    <div class="mb-4 rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-4 text-base text-[var(--color-error-text)]">
+    <div class="mb-2 border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2 text-sm text-[var(--color-error-text)]">
       <%= flash[:alert] %>
     </div>
   <% end %>
 
-  <div class="form-card border border-theme bg-surface p-6 shadow-sm">
-    <h1 class="text-2xl font-semibold tracking-tight text-body">Update your password</h1>
-    <p class="mt-2 text-base text-muted">Enter and confirm your new password below.</p>
+  <div class="form-card border border-theme bg-surface p-3">
+    <h1 class="text-lg font-semibold tracking-tight text-body">Update your password</h1>
+    <p class="mt-1 text-sm text-muted">Enter and confirm your new password below.</p>
 
-    <%= form_with url: password_path(params[:token]), method: :put, class: "mt-6 space-y-4" do |form| %>
+    <%= form_with url: password_path(params[:token]), method: :put, class: "mt-2 space-y-2" do |form| %>
       <div>
-        <%= form.label :password, "New password", class: "block text-base font-medium text-body" %>
+        <%= form.label :password, "New password", class: "text-sm font-medium text-body" %>
         <%= form.password_field :password,
             required: true,
             autocomplete: "new-password",
             placeholder: "Enter new password",
             maxlength: 72,
-            class: "input-field mt-2 block w-full min-h-[44px] px-3 py-2" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
 
       <div>
-        <%= form.label :password_confirmation, "Confirm password", class: "block text-base font-medium text-body" %>
+        <%= form.label :password_confirmation, "Confirm password", class: "text-sm font-medium text-body" %>
         <%= form.password_field :password_confirmation,
             required: true,
             autocomplete: "new-password",
             placeholder: "Repeat new password",
             maxlength: 72,
-            class: "input-field mt-2 block w-full min-h-[44px] px-3 py-2" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
 
       <%= form.submit "Save",
-          class: "inline-flex w-full min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
+          class: "inline-flex w-full min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
     <% end %>
   </div>
 </div>

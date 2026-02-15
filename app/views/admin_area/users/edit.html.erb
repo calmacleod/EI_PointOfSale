@@ -12,12 +12,12 @@
 <div class="mx-auto max-w-2xl">
   <%= render "shared/page_header", title: "Edit user", description: "Update profile details and permissions for #{@user.email_address}." %>
 
-  <div class="mt-6 overflow-hidden rounded-xl border border-theme bg-surface shadow-sm">
+  <div class="mt-2 overflow-hidden border border-theme bg-surface">
     <%= form_with model: @user, url: admin_user_path(@user), class: "divide-y divide-[var(--color-border)]" do |f| %>
       <% if @user.errors.any? %>
-        <div class="bg-[var(--color-error-bg)] px-6 py-4">
-          <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-          <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+        <div class="bg-[var(--color-error-bg)] px-3 py-2">
+          <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+          <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
             <% @user.errors.full_messages.each do |message| %>
               <li><%= message %></li>
             <% end %>
@@ -25,79 +25,79 @@
         </div>
       <% end %>
 
-      <div class="px-6 py-5">
+      <div class="px-3 py-2.5">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-base font-semibold text-body">Profile</h2>
-            <p class="mt-1 text-sm text-muted">Basic contact details shown across the app.</p>
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Profile</h2>
+            <p class="text-xs text-muted">Basic contact details shown across the app.</p>
           </div>
-          <span class="inline-flex items-center rounded-full bg-[var(--color-border)]/50 px-2.5 py-1 text-sm font-medium text-body">
+          <span class="inline-flex items-center rounded-full bg-[var(--color-border)]/50 px-2 py-0.5 text-xs font-medium text-body">
             <%= @user.type %>
           </span>
         </div>
 
-        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <div class="sm:col-span-1">
-            <%= f.label :name, class: "block text-base font-medium text-body" %>
+            <%= f.label :name, class: "text-sm font-medium text-body" %>
             <%= f.text_field :name,
                 placeholder: "Full name",
-                class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
 
           <div class="sm:col-span-1">
-            <%= f.label :email_address, "Email", class: "block text-base font-medium text-body" %>
+            <%= f.label :email_address, "Email", class: "text-sm font-medium text-body" %>
             <%= f.email_field :email_address,
                 autocomplete: "email",
-                class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
-            <p class="mt-1 text-sm text-muted">Used for signing in and notifications.</p>
+                class: "input-field min-h-[30px] w-full" %>
+            <p class="mt-0.5 text-xs text-muted">Used for signing in and notifications.</p>
           </div>
 
           <div class="sm:col-span-1">
-            <%= f.label :phone, class: "block text-base font-medium text-body" %>
+            <%= f.label :phone, class: "text-sm font-medium text-body" %>
             <%= f.telephone_field :phone,
                 placeholder: "(555) 555-5555",
                 autocomplete: "tel",
-                class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+                class: "input-field min-h-[30px] w-full" %>
           </div>
 
           <div class="sm:col-span-1">
-            <%= f.label :type, "Role", class: "block text-base font-medium text-body" %>
+            <%= f.label :type, "Role", class: "text-sm font-medium text-body" %>
             <%= f.select :type, ["Common", "Admin"], {},
-                class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
-            <p class="mt-1 text-sm text-muted">Admins can update users.</p>
+                class: "input-field min-h-[30px] w-full" %>
+            <p class="mt-0.5 text-xs text-muted">Admins can update users.</p>
           </div>
 
           <div class="sm:col-span-2">
-            <div class="flex min-h-[44px] items-center justify-between rounded-lg border border-theme bg-[var(--color-border)]/20 px-4 py-3">
+            <div class="flex min-h-[30px] items-center justify-between border border-theme bg-[var(--color-border)]/20 px-3 py-1.5">
               <div>
-                <p class="text-base font-medium text-body">Active</p>
-                <p class="mt-0.5 text-sm text-muted">Inactive users should not be able to sign in.</p>
+                <p class="text-sm font-medium text-body">Active</p>
+                <p class="text-xs text-muted">Inactive users should not be able to sign in.</p>
               </div>
               <div class="pt-0.5">
                 <%= f.check_box :active,
-                    class: "h-5 w-5 rounded border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" %>
+                    class: "h-4 w-4 border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" %>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="px-6 py-5">
-        <h2 class="text-base font-semibold text-body">Notes</h2>
-        <p class="mt-1 text-sm text-muted">Internal notes (not shown to the user).</p>
+      <div class="px-3 py-2.5">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Notes</h2>
+        <p class="text-xs text-muted">Internal notes (not shown to the user).</p>
 
-        <div class="mt-3">
+        <div class="mt-2">
           <%= f.label :notes, class: "sr-only" %>
-          <%= f.text_area :notes, rows: 5,
+          <%= f.text_area :notes, rows: 4,
               placeholder: "Add any helpful context…",
-              class: "block w-full rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+              class: "input-field w-full" %>
         </div>
       </div>
 
-      <div class="bg-surface px-6 py-4">
-        <div class="flex items-center justify-end gap-2">
+      <div class="px-3 py-2">
+        <div class="flex items-center justify-end">
           <%= f.submit "Save changes",
-              class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
+              class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
         </div>
       </div>
     <% end %>

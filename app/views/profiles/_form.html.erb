@@ -1,8 +1,8 @@
 <%= form_with model: user, url: profile_path, method: :patch, class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if user.errors.any? %>
-    <div class="bg-[var(--color-error-bg)] px-6 py-4">
-      <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-      <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+    <div class="bg-[var(--color-error-bg)] px-3 py-2">
+      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
         <% user.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -10,89 +10,89 @@
     </div>
   <% end %>
 
-  <div class="px-6 py-5">
+  <div class="px-3 py-2.5">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="text-base font-semibold text-body">Contact</h2>
-        <p class="mt-1 text-sm text-muted">How we reach you and how you sign in.</p>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Contact</h2>
+        <p class="text-xs text-muted">How we reach you and how you sign in.</p>
       </div>
-      <span class="inline-flex items-center rounded-full bg-[var(--color-border)]/50 px-2.5 py-1 text-sm font-medium text-body">
+      <span class="inline-flex items-center rounded-full bg-[var(--color-border)]/50 px-2 py-0.5 text-xs font-medium text-body">
         <%= user.type %>
       </span>
     </div>
 
-    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div class="sm:col-span-1">
-        <%= f.label :name, class: "block text-base font-medium text-body" %>
+        <%= f.label :name, class: "text-sm font-medium text-body" %>
         <%= f.text_field :name,
             placeholder: "Full name",
-            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
 
       <div class="sm:col-span-1">
-        <%= f.label :email_address, "Email", class: "block text-base font-medium text-body" %>
+        <%= f.label :email_address, "Email", class: "text-sm font-medium text-body" %>
         <%= f.email_field :email_address,
             autocomplete: "email",
-            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
 
       <div class="sm:col-span-1">
-        <%= f.label :phone, class: "block text-base font-medium text-body" %>
+        <%= f.label :phone, class: "text-sm font-medium text-body" %>
         <%= f.telephone_field :phone,
             autocomplete: "tel",
-            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
 
       <div class="sm:col-span-2">
-        <%= f.label :notes, class: "block text-base font-medium text-body" %>
-        <%= f.text_area :notes, rows: 4,
+        <%= f.label :notes, class: "text-sm font-medium text-body" %>
+        <%= f.text_area :notes, rows: 3,
             placeholder: "Optional notes…",
-            class: "mt-1 block w-full rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+            class: "input-field w-full" %>
       </div>
     </div>
   </div>
 
-  <div class="px-6 py-5">
-    <h2 class="text-base font-semibold text-body">Display settings</h2>
-    <p class="mt-1 text-sm text-muted">Theme, font size, and sidebar preference.</p>
+  <div class="px-3 py-2.5">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Display settings</h2>
+    <p class="text-xs text-muted">Theme, font size, and sidebar preference.</p>
 
-    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div>
-        <%= f.label :theme, class: "block text-base font-medium text-body" %>
+        <%= f.label :theme, class: "text-sm font-medium text-body" %>
         <%= f.select :theme, [["Light", "light"], ["Dark", "dark"], ["Dim", "dim"]], {},
-            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
 
       <div>
-        <%= f.label :font_size, "Font size", class: "block text-base font-medium text-body" %>
+        <%= f.label :font_size, "Font size", class: "text-sm font-medium text-body" %>
         <%= f.select :font_size, [["Default", "default"], ["Large", "large"], ["Extra large", "xlarge"]], {},
-            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
 
       <div class="sm:col-span-2">
-        <div class="flex min-h-[44px] items-center justify-between rounded-lg border border-theme bg-[var(--color-border)]/20 px-4 py-3">
+        <div class="flex min-h-[30px] items-center justify-between border border-theme bg-[var(--color-border)]/20 px-3 py-1.5">
           <div>
-            <p class="text-base font-medium text-body">Collapse sidebar on desktop</p>
-            <p class="mt-0.5 text-sm text-muted">Hide the sidebar by default on large screens.</p>
+            <p class="text-sm font-medium text-body">Collapse sidebar on desktop</p>
+            <p class="text-xs text-muted">Hide the sidebar by default on large screens.</p>
           </div>
           <div class="pt-0.5">
             <%= f.check_box :sidebar_collapsed,
-                class: "h-5 w-5 rounded border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" %>
+                class: "h-4 w-4 border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" %>
           </div>
         </div>
       </div>
 
       <div class="sm:col-span-2">
-        <p class="block text-base font-medium text-body">Dashboard metrics</p>
-        <p class="mt-0.5 text-sm text-muted">Choose which metrics to show on the dashboard. Leave all checked for default.</p>
-        <div class="mt-3 flex flex-wrap gap-x-6 gap-y-2">
+        <p class="text-sm font-medium text-body">Dashboard metrics</p>
+        <p class="text-xs text-muted">Choose which metrics to show on the dashboard. Leave all checked for default.</p>
+        <div class="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
           <% DashboardMetrics.available_keys.each do |key| %>
-            <label class="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg border border-theme bg-[var(--color-border)]/20 px-4 py-2 hover:bg-[var(--color-border)]/30">
+            <label class="flex min-h-[30px] cursor-pointer items-center gap-1.5 border border-theme bg-[var(--color-border)]/20 px-2.5 py-1 hover:bg-[var(--color-border)]/30">
               <%= f.check_box :dashboard_metric_keys,
-                  { multiple: true, include_hidden: false, checked: user.dashboard_metric_keys_for_form.include?(key), class: "h-4 w-4 rounded border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" },
+                  { multiple: true, include_hidden: false, checked: user.dashboard_metric_keys_for_form.include?(key), class: "h-3.5 w-3.5 border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" },
                   key,
                   nil %>
-              <span class="text-base text-body"><%= DashboardMetrics.label_for(key) %></span>
+              <span class="text-sm text-body"><%= DashboardMetrics.label_for(key) %></span>
             </label>
           <% end %>
         </div>
@@ -100,31 +100,31 @@
     </div>
   </div>
 
-  <div class="px-6 py-5">
-    <h2 class="text-base font-semibold text-body">Password</h2>
-    <p class="mt-1 text-sm text-muted">Leave blank to keep your current password.</p>
+  <div class="px-3 py-2.5">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Password</h2>
+    <p class="text-xs text-muted">Leave blank to keep your current password.</p>
 
-    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div class="sm:col-span-1">
-        <%= f.label :password, class: "block text-base font-medium text-body" %>
+        <%= f.label :password, class: "text-sm font-medium text-body" %>
         <%= f.password_field :password,
             autocomplete: "new-password",
-            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
 
       <div class="sm:col-span-1">
-        <%= f.label :password_confirmation, class: "block text-base font-medium text-body" %>
+        <%= f.label :password_confirmation, class: "text-sm font-medium text-body" %>
         <%= f.password_field :password_confirmation,
             autocomplete: "new-password",
-            class: "mt-1 block w-full min-h-[44px] rounded-md border-[var(--color-border)] bg-surface px-3 py-2 text-body shadow-sm focus:border-[var(--color-accent)] focus:ring-2 focus:ring-[var(--color-accent)]" %>
+            class: "input-field min-h-[30px] w-full" %>
       </div>
     </div>
   </div>
 
-  <div class="bg-surface px-6 py-4">
+  <div class="px-3 py-2">
     <div class="flex items-center justify-end">
       <%= f.submit "Save changes",
-          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
+          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
     </div>
   </div>
 <% end %>

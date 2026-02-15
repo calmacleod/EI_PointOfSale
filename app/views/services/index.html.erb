@@ -5,16 +5,16 @@
   <li aria-current="page" class="text-muted">Services</li>
 <% end %>
 
-<div class="mx-auto max-w-5xl">
+<div class="mx-auto max-w-6xl">
   <%= render "shared/page_header", title: "Services" do %>
     <% if can? :create, Service %>
       <%= link_to "Add service", new_service_path,
-          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)]",
+          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
           data: { turbo_prefetch: true } %>
     <% end %>
   <% end %>
 
-  <div class="mt-6 flex flex-col gap-4">
+  <div class="mt-2 flex flex-col gap-2">
     <%= render "shared/table_filters",
         search_path: services_path,
         turbo_frame: "services_table",
@@ -22,36 +22,36 @@
         placeholder: "Search services…" %>
 
     <%= turbo_frame_tag "services_table" do %>
-  <div class="overflow-x-auto rounded-lg border border-theme bg-surface">
+  <div class="overflow-x-auto border border-theme bg-surface lg:min-h-[70vh]">
     <table class="min-w-full divide-y divide-[var(--color-border)]">
-      <thead class="bg-[var(--color-border)]/30">
+      <thead class="bg-surface-alt">
         <tr>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Service</th>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Code</th>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Price</th>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Tax</th>
-          <th class="px-4 py-3 text-left text-base font-medium uppercase tracking-wider text-muted">Created</th>
-          <th class="px-4 py-3 text-right text-base font-medium uppercase tracking-wider text-muted"></th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Service</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Code</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Price</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Tax</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Created</th>
+          <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted"></th>
         </tr>
       </thead>
       <tbody class="divide-y divide-[var(--color-border)] bg-surface">
         <% @services.each do |service| %>
           <tr>
-            <td class="px-4 py-3 text-base font-medium text-body">
+            <td class="px-3 py-1.5 text-sm font-medium text-body">
               <% if can? :read, service %>
                 <%= link_to service.name, service_path(service), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
               <% else %>
                 <%= service.name %>
               <% end %>
             </td>
-            <td class="px-4 py-3 text-base text-body"><%= service.code.presence || "—" %></td>
-            <td class="px-4 py-3 text-base text-body"><%= number_to_currency(service.price) %></td>
-            <td class="px-4 py-3 text-base text-body"><%= service.tax_code&.code || "—" %></td>
-            <td class="px-4 py-3 text-base text-body text-muted"><%= local_time(service.created_at, format: :short) %></td>
-            <td class="px-4 py-3 text-right text-base">
+            <td class="px-3 py-1.5 text-sm text-body"><%= service.code.presence || "—" %></td>
+            <td class="px-3 py-1.5 text-sm text-body"><%= number_to_currency(service.price) %></td>
+            <td class="px-3 py-1.5 text-sm text-body"><%= service.tax_code&.code || "—" %></td>
+            <td class="px-3 py-1.5 text-sm text-muted"><%= local_time(service.created_at, format: :short) %></td>
+            <td class="px-3 py-1.5 text-right text-sm">
               <% if can? :update, service %>
                 <%= link_to "Edit", edit_service_path(service),
-                    class: "inline-flex items-center px-3 py-2 font-medium text-accent hover:opacity-80 rounded",
+                    class: "font-medium text-accent hover:opacity-80",
                     data: { turbo_frame: "_top", turbo_prefetch: true } %>
               <% end %>
             </td>
@@ -62,7 +62,7 @@
   </div>
 
   <% if @services.empty? %>
-    <p class="mt-4 text-base text-muted">No services yet. Add one to get started.</p>
+    <p class="mt-2 text-sm text-muted">No services yet. Add one to get started.</p>
   <% end %>
 
   <%= render "shared/pagy_nav" %>

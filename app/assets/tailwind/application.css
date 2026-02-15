@@ -1,72 +1,80 @@
 @import "tailwindcss";
 
-/* Theme system: data-theme and data-font-size on html */
+/* ── Theme: Native desktop POS ───────────────────────────────────── */
+/* Sharp edges, recessed inputs, flat panels, instant state changes.  */
+/* Designed to feel like a native desktop application, not a website. */
+
 :root,
 [data-theme="light"] {
-  --color-page: #f8fafc;
+  --color-page: #f0f0f0;       /* light panel bg — like a Win/macOS window */
   --color-surface: #ffffff;
-  --color-border: #e2e8f0;
-  --color-text: #0f172a;
-  --color-text-muted: #64748b;
-  --color-accent: #0f172a;
-  --color-accent-hover: #1e293b;
+  --color-surface-alt: #f7f7f7; /* alternate row / toolbar strip */
+  --color-border: #c8c8c8;     /* stronger border for native crispness */
+  --color-text: #1a1a1a;
+  --color-text-muted: #6b6b6b;
+  --color-accent: #0d9488;
+  --color-accent-hover: #0f766e;
   --color-success-bg: #ecfdf5;
-  --color-success-border: #a7f3d0;
+  --color-success-border: #6ee7b7;
   --color-success-text: #065f46;
   --color-error-bg: #fef2f2;
-  --color-error-border: #fecaca;
+  --color-error-border: #fca5a5;
   --color-error-text: #991b1b;
+  --color-inset-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
 }
 
 [data-theme="dark"] {
-  --color-page: #0f172a;
-  --color-surface: #1e293b;
-  --color-border: #334155;
-  --color-text: #f1f5f9;
-  --color-text-muted: #94a3b8;
-  --color-accent: #f1f5f9;
-  --color-accent-hover: #e2e8f0;
+  --color-page: #1e1e1e;
+  --color-surface: #2a2a2a;
+  --color-surface-alt: #252525;
+  --color-border: #444444;
+  --color-text: #e8e8e8;
+  --color-text-muted: #999999;
+  --color-accent: #2dd4bf;
+  --color-accent-hover: #5eead4;
   --color-success-bg: #064e3b;
   --color-success-border: #047857;
   --color-success-text: #a7f3d0;
   --color-error-bg: #7f1d1d;
   --color-error-border: #b91c1c;
   --color-error-text: #fecaca;
+  --color-inset-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
 }
 
 [data-theme="dim"] {
-  --color-page: #1e293b;
-  --color-surface: #334155;
-  --color-border: #475569;
-  --color-text: #e2e8f0;
-  --color-text-muted: #94a3b8;
-  --color-accent: #e2e8f0;
-  --color-accent-hover: #f1f5f9;
+  --color-page: #2a2a2a;
+  --color-surface: #363636;
+  --color-surface-alt: #303030;
+  --color-border: #505050;
+  --color-text: #dcdcdc;
+  --color-text-muted: #999999;
+  --color-accent: #2dd4bf;
+  --color-accent-hover: #5eead4;
   --color-success-bg: #064e3b;
   --color-success-border: #047857;
   --color-success-text: #a7f3d0;
   --color-error-bg: #7f1d1d;
   --color-error-border: #b91c1c;
   --color-error-text: #fecaca;
+  --color-inset-shadow: inset 0 1px 2px rgba(0,0,0,0.20);
 }
 
-/* Font size scaling */
+/* System font + crisp rendering — match the OS, not a website */
 html {
   font-size: 16px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-[data-font-size="large"] {
-  font-size: 18px;
-}
-
-[data-font-size="xlarge"] {
-  font-size: 20px;
-}
+[data-font-size="large"]  { font-size: 18px; }
+[data-font-size="xlarge"] { font-size: 20px; }
 
 /* Semantic utility classes */
 @layer components {
   .bg-page { background-color: var(--color-page); }
   .bg-surface { background-color: var(--color-surface); }
+  .bg-surface-alt { background-color: var(--color-surface-alt); }
   .text-body { color: var(--color-text); }
   .text-muted { color: var(--color-text-muted); }
   .border-theme { border-color: var(--color-border); }
@@ -76,60 +84,53 @@ html {
   .hover\:text-accent:hover { color: var(--color-accent); }
 }
 
-/* Form inputs: thin border + subtle shadow, 6px radius for softer feel */
+/* ── Form inputs — recessed, native feel ─────────────────────────── */
 .input-field {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
+  border-radius: 1px;
   color: var(--color-text);
-  padding: 0.5rem 0.75rem;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  padding: 0.3125rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  box-shadow: var(--color-inset-shadow);
 }
-.input-field::placeholder {
-  color: var(--color-text-muted);
-}
+.input-field::placeholder { color: var(--color-text-muted); }
 .input-field:focus {
   outline: none;
   border-color: var(--color-accent);
-  /* 1px solid accent ring + intense shadow */
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 0 0 1px var(--color-accent), 0 4px 12px 2px rgb(0 0 0 / 0.2);
+  box-shadow: var(--color-inset-shadow), 0 0 0 1px var(--color-accent);
 }
 
-/* Compact variant for filter bars - same styling, used with smaller utility classes */
 .input-field-compact {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-radius: 1px;
   color: var(--color-text);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  font-size: 0.8125rem;
+  box-shadow: var(--color-inset-shadow);
 }
-.input-field-compact::placeholder {
-  color: var(--color-text-muted);
-}
+.input-field-compact::placeholder { color: var(--color-text-muted); }
 .input-field-compact:focus {
   outline: none;
   border-color: var(--color-accent);
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05), 0 0 0 1px var(--color-accent), 0 4px 12px 2px rgb(0 0 0 / 0.2);
+  box-shadow: var(--color-inset-shadow), 0 0 0 1px var(--color-accent);
 }
 
-/* Form cards: softer corners for clean low-DPI rendering */
-.form-card {
-  border-radius: 0.5rem; /* 8px - renders cleanly on most screens */
+/* Form cards — sharp panels */
+.form-card { border-radius: 0; }
+
+/* ── Buttons — no transition, instant feedback ───────────────────── */
+button, a, [role="button"] {
+  transition: none !important;
 }
 
-/* Confirm modal: subtle open animation */
-.confirm-modal-overlay > div:first-of-type {
-  transition: opacity 0.15s ease-out;
-}
-.confirm-modal-overlay .form-card {
-  animation: confirm-modal-scale-in 0.2s ease-out;
-}
+/* Confirm modal — no scale animation, just appear */
+.confirm-modal-overlay > div:first-of-type { transition: none; }
+.confirm-modal-overlay .form-card { animation: none; }
 
-/* Logo easter egg: triple-click for chainsaw spin */
-.logo-easter-egg-logo {
-  position: relative;
-}
+/* Logo easter egg (keep the fun) */
+.logo-easter-egg-logo { position: relative; }
 .logo-easter-egg-logo.logo-easter-egg-active {
   animation: logo-chainsaw-spin 0.5s linear infinite;
 }
@@ -149,119 +150,66 @@ html {
   pointer-events: none;
 }
 @keyframes logo-chainsaw-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from { transform: rotate(0deg); } to { transform: rotate(360deg); }
 }
 @keyframes logo-chainsaw-chain {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(-360deg); }
+  from { transform: rotate(0deg); } to { transform: rotate(-360deg); }
 }
 
-@keyframes confirm-modal-scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Sidebar: scrollable nav with fixed top/bottom */
+/* ── Sidebar — navigation pane ───────────────────────────────────── */
 .sidebar-nav {
   overscroll-behavior: contain;
   min-width: 0;
 }
+.nav-link { min-width: 0; }
 
-/* Nav links: allow shrinking so text truncates instead of growing the button */
-.nav-link {
-  min-width: 0;
-}
-
-/* Sidebar: mini mode on desktop when collapsed */
+/* Sidebar: mini mode on desktop */
 @media (min-width: 1024px) {
-  .sidebar-mini {
-    width: 4rem; /* 64px - icons only */
-    min-width: 4rem;
-  }
-  /* Fixed header padding on desktop - same in both states so EI logo never moves */
+  .sidebar-mini { width: 3.5rem; min-width: 3.5rem; }
   .sidebar-mini > div > div:first-child,
   .sidebar-expanded > div > div:first-child {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-left: 0.5rem; padding-right: 0.5rem;
   }
   .sidebar-mini .sidebar-text {
-    overflow: hidden;
-    width: 0;
-    min-width: 0;
-    opacity: 0;
-    visibility: hidden;
-    padding: 0;
-    margin: 0;
-    transition: none;
+    overflow: hidden; width: 0; min-width: 0;
+    opacity: 0; visibility: hidden; padding: 0; margin: 0; transition: none;
   }
-  /* Text hidden only after width transition (sidebar-mini-hide-text added via JS) */
-  .sidebar-mini.sidebar-mini-hide-text .sidebar-brand .sidebar-text {
-    display: none;
-  }
-  .sidebar-mini.sidebar-mini-hide-text .nav-link .sidebar-text {
-    display: none;
-  }
-  .sidebar-mini.sidebar-mini-hide-text .sidebar-bottom .sidebar-text {
-    display: none;
-  }
-  /* Brand stays left-aligned - centering would shift logo when text hides */
-  .sidebar-mini .sidebar-brand {
-    flex: 1;
-  }
+  .sidebar-mini.sidebar-mini-hide-text .sidebar-brand .sidebar-text { display: none; }
+  .sidebar-mini.sidebar-mini-hide-text .nav-link .sidebar-text { display: none; }
+  .sidebar-mini.sidebar-mini-hide-text .sidebar-bottom .sidebar-text { display: none; }
+  .sidebar-mini .sidebar-brand { flex: 1; }
   .sidebar-mini.sidebar-mini-hide-text .nav-link {
-    justify-content: center;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    justify-content: center; padding-left: 0.5rem; padding-right: 0.5rem;
   }
-  /* During collapse transition: keep all text visible, preserve layout (override general .sidebar-text rules) */
   .sidebar-mini:not(.sidebar-mini-hide-text) .sidebar-brand .sidebar-text {
-    width: auto;
-    min-width: 0;
-    flex: 1;
-    overflow: hidden;
-    opacity: 1;
-    visibility: visible;
-    padding: 0;
-    margin: 0;
+    width: auto; min-width: 0; flex: 1; overflow: hidden;
+    opacity: 1; visibility: visible; padding: 0; margin: 0;
   }
   .sidebar-mini:not(.sidebar-mini-hide-text) .nav-link .sidebar-text {
-    width: auto;
-    min-width: 0;
-    overflow: hidden;
-    opacity: 1;
-    visibility: visible;
-    padding: 0;
-    margin: 0;
+    width: auto; min-width: 0; overflow: hidden;
+    opacity: 1; visibility: visible; padding: 0; margin: 0;
   }
   .sidebar-mini:not(.sidebar-mini-hide-text) .sidebar-bottom .sidebar-text {
-    width: auto;
-    min-width: 0;
-    overflow: hidden;
-    opacity: 1;
-    visibility: visible;
-    padding: 0;
-    margin: 0;
+    width: auto; min-width: 0; overflow: hidden;
+    opacity: 1; visibility: visible; padding: 0; margin: 0;
   }
-  .sidebar-mini .expand-icon {
-    display: block !important;
-  }
-  .sidebar-mini .collapse-icon {
-    display: none !important;
-  }
+  .sidebar-mini .expand-icon { display: block !important; }
+  .sidebar-mini .collapse-icon { display: none !important; }
 }
 
-/* Pagy 43 pagination: theme-aware styling */
+/* ── Table rows — zebra stripe + hover ─────────────────────────── */
+tbody tr:nth-child(even) {
+  background-color: var(--color-surface-alt);
+}
+tbody tr:hover {
+  background-color: var(--color-border);
+}
+
+/* ── Pagination — flat, sharp ────────────────────────────────────── */
 .pagy-nav .pagy {
-  --spacing: 0.25rem;
-  --padding: 0.75rem;
-  --rounding: 0.5rem;
+  --spacing: 0px;
+  --padding: 0.375rem;
+  --rounding: 0;
   --border-width: 1px;
   --text: var(--color-text);
   --text-hover: var(--color-text);
@@ -269,47 +217,51 @@ html {
   --background: var(--color-surface);
   --background-hover: var(--color-border);
   --background-current: var(--color-accent);
-  --background-input: var(--color-surface);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
   gap: var(--spacing);
-  font-size: 0.9375rem;
+  font-size: 0.8125rem;
   font-weight: 500;
 }
 .pagy-nav .pagy a:not([role="separator"]) {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.5rem;
-  min-width: 2.5rem;
-  padding: 0 0.75rem;
+  min-height: 1.75rem;
+  min-width: 1.75rem;
+  padding: 0 0.375rem;
   text-decoration: none;
   background-color: var(--background);
   border: var(--border-width) solid var(--color-border);
-  border-radius: var(--rounding);
+  border-radius: 0;
   color: var(--text);
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  /* Collapse double borders between adjacent buttons */
+  margin-left: -1px;
 }
+.pagy-nav .pagy a:first-child { margin-left: 0; }
 .pagy-nav .pagy a[href]:hover {
   background-color: var(--background-hover);
   color: var(--text-hover);
+  position: relative;
+  z-index: 1;
 }
 .pagy-nav .pagy a:not([href]) {
   cursor: default;
-  opacity: 0.6;
+  opacity: 0.5;
 }
 .pagy-nav .pagy a[aria-current] {
   background-color: var(--background-current);
   color: var(--text-current);
   border-color: var(--color-accent);
+  position: relative;
+  z-index: 1;
 }
 /* Per-page select */
 .pagy-limit-selector select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b6b6b' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  padding-right: 2rem;
+  background-position: right 0.5rem center;
+  padding-right: 1.75rem;
 }

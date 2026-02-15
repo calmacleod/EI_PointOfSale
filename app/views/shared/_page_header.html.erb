@@ -1,15 +1,13 @@
-<% title = local_assigns[:title] || "" %>
-<% description = local_assigns[:description] %>
-<header class="flex min-h-[4.5rem] items-start justify-between gap-4">
-  <div class="min-w-0 flex-1">
-    <h1 class="text-2xl font-semibold tracking-tight text-body"><%= title %></h1>
-    <% if description.present? %>
-      <p class="mt-1 text-base text-muted"><%= description %></p>
+<div class="flex flex-wrap items-end justify-between gap-2">
+  <div>
+    <h1 class="text-base font-semibold text-body"><%= title %></h1>
+    <% if local_assigns[:description] && description.present? %>
+      <p class="mt-0.5 text-xs text-muted"><%= description %></p>
     <% end %>
   </div>
-  <% if block_given? %>
-    <div class="flex shrink-0 items-center">
-      <%= yield %>
+  <% if content_for?(:page_actions) %>
+    <div class="flex items-center gap-1.5">
+      <%= yield :page_actions %>
     </div>
   <% end %>
-</header>
+</div>

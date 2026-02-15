@@ -6,90 +6,88 @@
 <% end %>
 
 <div class="w-full flex items-start justify-center">
-  <div class="w-full max-w-md">
+  <div class="w-full max-w-sm">
     <% if flash[:alert].present? %>
-      <div class="mb-4 rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-4 text-base text-[var(--color-error-text)]">
+      <div class="mb-2 border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2 text-sm text-[var(--color-error-text)]">
         <p class="font-medium">Sign in failed</p>
-        <p class="mt-1"><%= flash[:alert] %></p>
+        <p class="mt-0.5"><%= flash[:alert] %></p>
       </div>
     <% end %>
 
     <% if flash[:notice].present? %>
-      <div class="mb-4 rounded-lg border border-[var(--color-success-border)] bg-[var(--color-success-bg)] p-4 text-base text-[var(--color-success-text)]">
+      <div class="mb-2 border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-3 py-2 text-sm text-[var(--color-success-text)]">
         <p class="font-medium">Success</p>
-        <p class="mt-1"><%= flash[:notice] %></p>
+        <p class="mt-0.5"><%= flash[:notice] %></p>
       </div>
     <% end %>
 
     <% dev_credentials_data = Rails.env.development? ? { controller: "dev-credentials", dev_credentials_email_value: ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com"), dev_credentials_password_value: ENV.fetch("DEV_ADMIN_PASSWORD", "password123!") } : {} %>
-    <%= tag.div class: "form-card border border-theme bg-surface p-6 shadow-sm", data: dev_credentials_data do %>
-      <div class="mb-6">
-        <h1 class="text-2xl font-semibold tracking-tight text-body">Welcome back</h1>
-        <p class="mt-1 text-base text-muted">Sign in to continue.</p>
+    <%= tag.div class: "form-card border border-theme bg-surface p-3", data: dev_credentials_data do %>
+      <div class="mb-3">
+        <h1 class="text-lg font-semibold tracking-tight text-body">Welcome back</h1>
+        <p class="mt-0.5 text-sm text-muted">Sign in to continue.</p>
       </div>
 
-      <%= form_with url: session_path, class: "space-y-4" do |form| %>
+      <%= form_with url: session_path, class: "space-y-2" do |form| %>
         <div>
-          <%= form.label :email_address, "Email address", class: "block text-base font-medium text-body" %>
-          <div class="mt-2">
-            <%= form.email_field :email_address,
-                required: true,
-                autofocus: true,
-                autocomplete: "username",
-                placeholder: "you@example.com",
-                value: params[:email_address],
-                data: { dev_credentials_target: "emailInput" },
-                class: "input-field block w-full min-h-[44px] px-3 py-2" %>
-          </div>
+          <%= form.label :email_address, "Email address", class: "text-sm font-medium text-body" %>
+          <%= form.email_field :email_address,
+              required: true,
+              autofocus: true,
+              autocomplete: "username",
+              placeholder: "you@example.com",
+              value: params[:email_address],
+              data: { dev_credentials_target: "emailInput" },
+              class: "input-field min-h-[30px] w-full" %>
         </div>
 
         <div data-controller="password-toggle">
           <div class="flex items-center justify-between">
-            <%= form.label :password, "Password", class: "block text-base font-medium text-body" %>
-            <%= link_to "Forgot password?", new_password_path, class: "text-base font-medium text-accent hover:opacity-80" %>
+            <%= form.label :password, "Password", class: "text-sm font-medium text-body" %>
+            <%= link_to "Forgot password?", new_password_path, class: "text-sm font-medium text-accent hover:opacity-80" %>
           </div>
-          <div class="mt-2 relative">
+          <div class="relative">
             <%= form.password_field :password,
                 required: true,
                 autocomplete: "current-password",
                 placeholder: "••••••••",
                 maxlength: 72,
                 data: { password_toggle_target: "input", dev_credentials_target: "passwordInput" },
-                class: "input-field block w-full min-h-[44px] pr-12" %>
+                class: "input-field min-h-[30px] w-full pr-10" %>
             <button type="button"
                     data-password-toggle-target="toggle"
                     data-action="click->password-toggle#toggleVisibility"
                     aria-label="Show password"
-                    class="absolute right-2 top-1/2 -translate-y-1/2 flex min-h-[32px] min-w-[32px] items-center justify-center rounded text-muted hover:bg-[var(--color-border)] hover:text-body">
-              <svg data-password-toggle-target="showIcon" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    class="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center text-muted hover:bg-[var(--color-border)] hover:text-body">
+              <svg data-password-toggle-target="showIcon" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
               </svg>
-              <svg data-password-toggle-target="hideIcon" class="h-5 w-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <svg data-password-toggle-target="hideIcon" class="h-4 w-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.12 9.12l-5.758-5.758a7.5 7.5 0 0010.607 10.607"/>
               </svg>
             </button>
           </div>
         </div>
 
-        <div class="pt-2">
+        <div class="pt-0.5">
           <%= form.submit "Sign in",
-              class: "inline-flex w-full min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:bg-[var(--color-accent-hover)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]" %>
+              class: "inline-flex w-full min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
         </div>
       <% end %>
 
-      <p class="mt-6 text-center text-sm text-muted">
-        By continuing, you agree to your organization’s usage policies.
+      <p class="mt-3 text-center text-xs text-muted">
+        By continuing, you agree to your organization's usage policies.
       </p>
 
       <% if Rails.env.development? %>
-        <div class="mt-4 flex flex-col items-center gap-2 rounded-lg border border-theme bg-[var(--color-page)] px-3 py-2 text-center text-xs text-muted">
+        <div class="mt-2 flex flex-col items-center gap-1 border border-theme bg-[var(--color-page)] px-2 py-1.5 text-center text-xs text-muted">
           <p>
             <strong class="text-body">Dev credentials:</strong> <%= ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com") %> / <%= ENV.fetch("DEV_ADMIN_PASSWORD", "password123!") %>
           </p>
           <button type="button"
                   data-action="click->dev-credentials#autofill"
-                  class="rounded border border-theme bg-surface px-3 py-1.5 text-body hover:bg-[var(--color-border)]">
+                  class="border border-theme bg-surface px-2 py-0.5 text-xs text-body hover:bg-[var(--color-border)]">
             Auto-fill
           </button>
         </div>

@@ -1,38 +1,40 @@
 <% sidebar_collapsed = Current.user&.sidebar_collapsed == true %>
 <aside data-sidebar-target="sidebar"
-      class="fixed inset-y-0 left-0 z-40 flex h-screen w-64 shrink-0 -translate-x-full flex-col overflow-hidden border-b border-theme bg-surface transition-[width,transform] duration-200 lg:static lg:translate-x-0 lg:h-full lg:max-h-full lg:min-h-0 lg:border-b-0 lg:border-r <%= sidebar_collapsed ? 'sidebar-mini' : 'sidebar-expanded' %>">
+      class="fixed inset-y-0 left-0 z-40 flex h-screen w-56 shrink-0 -translate-x-full flex-col overflow-hidden border-b border-theme bg-surface duration-200 lg:static lg:translate-x-0 lg:h-full lg:max-h-full lg:min-h-0 lg:border-b-0 lg:border-r <%= sidebar_collapsed ? 'sidebar-mini' : 'sidebar-expanded' %>">
   <div class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
-    <div class="flex shrink-0 items-center justify-between gap-2 px-3 py-3 lg:px-4">
-      <div class="sidebar-brand flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
-        <div class="logo-easter-egg-logo flex h-9 w-9 shrink-0 cursor-default items-center justify-center rounded-lg bg-accent text-sm font-semibold text-[color:var(--color-page)] select-none"
+    <%# ── Titlebar strip ── %>
+    <div class="flex shrink-0 items-center justify-between gap-2 border-b border-theme bg-surface-alt px-2 py-1.5 lg:px-2">
+      <div class="sidebar-brand flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
+        <div class="logo-easter-egg-logo flex h-6 w-6 shrink-0 cursor-default items-center justify-center bg-accent text-[10px] font-bold text-[color:var(--color-page)] select-none"
              data-controller="logo-easter-egg"
              data-action="click->logo-easter-egg#click keydown->logo-easter-egg#click"
              role="button"
              tabindex="0"
              aria-label="EI logo">EI</div>
         <div class="sidebar-text min-w-0 flex-1 overflow-hidden">
-          <p class="truncate text-sm font-semibold text-body">Point of Sale</p>
-          <p class="truncate text-xs text-muted"><%= Current.user&.email_address %></p>
+          <p class="truncate text-xs font-semibold text-body leading-tight">Point of Sale</p>
+          <p class="truncate text-[11px] text-muted leading-tight"><%= Current.user&.email_address %></p>
         </div>
       </div>
       <button type="button"
-              class="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg text-body hover:bg-[var(--color-border)] lg:hidden"
+              class="flex h-6 w-6 items-center justify-center text-body hover:bg-[var(--color-border)] lg:hidden"
               data-action="click->sidebar#close"
               aria-label="Close menu">
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
     </div>
 
-    <nav class="sidebar-nav min-h-0 flex-1 overflow-y-auto px-2 py-2 lg:px-2">
+    <%# ── Navigation pane ── %>
+    <nav class="sidebar-nav min-h-0 flex-1 overflow-y-auto px-0 py-0.5">
       <%= link_to root_path,
           data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
           class: [
-            "nav-link flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-base font-medium",
+            "nav-link flex h-7 items-center gap-2 px-2.5 text-sm font-medium",
             (nav_section_active?(root_path) ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
           ].join(" ") do %>
-        <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
         <span class="sidebar-text min-w-0 truncate">Dashboard</span>
@@ -41,10 +43,10 @@
       <%= link_to products_path,
           data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
           class: [
-            "nav-link mt-1 flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-base font-medium",
+            "nav-link flex h-7 items-center gap-2 px-2.5 text-sm font-medium",
             (nav_section_active?(products_path) ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
           ].join(" ") do %>
-        <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
         </svg>
         <span class="sidebar-text min-w-0 truncate">Products</span>
@@ -53,10 +55,10 @@
       <%= link_to services_path,
           data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
           class: [
-            "nav-link mt-1 flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-base font-medium",
+            "nav-link flex h-7 items-center gap-2 px-2.5 text-sm font-medium",
             (nav_section_active?(services_path) ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
           ].join(" ") do %>
-        <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
         <span class="sidebar-text min-w-0 truncate">Services</span>
@@ -65,10 +67,10 @@
       <%= link_to customers_path,
           data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
           class: [
-            "nav-link mt-1 flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-base font-medium",
+            "nav-link flex h-7 items-center gap-2 px-2.5 text-sm font-medium",
             (nav_section_active?(customers_path) ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
           ].join(" ") do %>
-        <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
         </svg>
         <span class="sidebar-text min-w-0 truncate">Customers</span>
@@ -78,60 +80,61 @@
         <%= link_to admin_settings_path,
             data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
             class: [
-              "nav-link mt-1 flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-base font-medium",
+              "nav-link flex h-7 items-center gap-2 px-2.5 text-sm font-medium",
               (nav_section_active?("/admin") ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
             ].join(" ") do %>
-          <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
-          <span class="sidebar-text min-w-0 truncate">Admin settings</span>
+          <span class="sidebar-text min-w-0 truncate">Admin</span>
         <% end %>
       <% end %>
 
       <%= link_to edit_profile_path,
           data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
           class: [
-            "nav-link mt-1 flex min-h-[44px] items-center gap-3 rounded-lg px-3 py-3 text-base font-medium",
+            "nav-link flex h-7 items-center gap-2 px-2.5 text-sm font-medium",
             (nav_section_active?(edit_profile_path) ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
           ].join(" ") do %>
-        <svg class="h-6 w-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
         </svg>
         <span class="sidebar-text min-w-0 truncate">Profile</span>
       <% end %>
     </nav>
 
-    <div class="sidebar-bottom flex shrink-0 flex-col space-y-1 border-t border-theme px-2 py-2">
+    <%# ── Bottom toolbar ── %>
+    <div class="sidebar-bottom flex shrink-0 flex-col border-t border-theme px-0 py-0.5">
       <% if Rails.env.development? %>
         <%= link_to dev_tools_path,
-            class: "flex w-full min-h-[44px] items-center justify-center rounded-lg text-body hover:bg-[var(--color-border)]",
+            class: "flex w-full h-7 items-center justify-center text-body hover:bg-[var(--color-border)]",
             aria: { label: "Dev tools" },
             data: { turbo_prefetch: true } do %>
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"/>
           </svg>
         <% end %>
       <% end %>
       <button type="button"
               data-action="click->confirm-modal#open"
-              class="flex w-full min-h-[44px] items-center justify-center gap-3 rounded-lg text-body hover:bg-[var(--color-border)]">
-        <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="flex w-full h-7 items-center justify-center gap-2 text-body hover:bg-[var(--color-border)]">
+        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
         </svg>
-        <span class="sidebar-text min-w-0 truncate">Sign out</span>
+        <span class="sidebar-text min-w-0 truncate text-sm">Sign out</span>
       </button>
       <button type="button"
               data-action="click->sidebar#toggle"
-              class="flex w-full min-h-[44px] items-center justify-center rounded-lg text-body hover:bg-[var(--color-border)]"
+              class="flex w-full h-7 items-center justify-center text-body hover:bg-[var(--color-border)]"
               aria-label="Collapse sidebar">
         <span class="expand-icon hidden">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
           </svg>
         </span>
         <span class="collapse-icon">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
           </svg>
         </span>

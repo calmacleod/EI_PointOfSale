@@ -6,34 +6,35 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= accent_color_style_tag %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body class="bg-page text-body min-h-screen">
-    <header class="border-b border-theme bg-surface px-4 py-3">
-      <div class="mx-auto flex max-w-5xl items-center justify-between">
-        <h1 class="text-lg font-semibold text-body">Dev tools</h1>
-        <div class="flex items-center gap-3">
-          <span class="text-sm text-muted">Theme:</span>
-          <div class="flex gap-1 rounded-lg border border-theme bg-surface p-1">
+    <header class="border-b border-theme bg-surface px-2 py-1.5">
+      <div class="mx-auto flex max-w-6xl items-center justify-between">
+        <h1 class="text-base font-semibold text-body">Dev tools</h1>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-muted">Theme:</span>
+          <div class="flex gap-0.5 border border-theme bg-surface p-0.5">
             <% %w[light dark dim].each do |theme| %>
               <%= link_to theme.capitalize,
                   dev_tools_path(theme: theme),
                   class: [
-                    "rounded px-3 py-1.5 text-sm font-medium",
+                    "px-2 py-1 text-xs font-medium",
                     (@dev_theme == theme ? "bg-accent text-[color:var(--color-page)]" : "text-body hover:bg-[var(--color-border)]")
                   ].join(" "),
                   data: { turbo_prefetch: true } %>
             <% end %>
           </div>
           <%= link_to "← Back to app", root_path,
-              class: "text-sm font-medium text-accent hover:opacity-80",
+              class: "text-xs font-medium text-accent hover:opacity-80",
               data: { turbo_prefetch: true } %>
         </div>
       </div>
     </header>
 
-    <main class="mx-auto max-w-5xl px-4 py-8">
+    <main class="mx-auto max-w-6xl px-2 py-2">
       <%= yield %>
     </main>
   </body>

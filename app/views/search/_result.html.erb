@@ -1,15 +1,15 @@
 <%= link_to result[:url],
-    class: "search-result-item flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-[var(--color-border)]/30" do %>
-  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--color-border)]/50 text-muted">
+    class: "search-result-item flex items-center gap-2 px-3 py-2 text-left hover:bg-[var(--color-border)]/30" do %>
+  <span class="flex h-7 w-7 shrink-0 items-center justify-center bg-[var(--color-border)]/50 text-muted">
     <%= search_icon_svg(result[:icon]) %>
   </span>
   <div class="min-w-0 flex-1">
-    <p class="truncate text-base font-medium text-body"><%= result[:label] %></p>
+    <p class="truncate text-sm font-medium text-body"><%= result[:label] %></p>
     <% if result[:sublabel].present? %>
-      <p class="truncate text-sm text-muted"><%= result[:sublabel] %></p>
+      <p class="truncate text-xs text-muted"><%= result[:sublabel] %></p>
     <% end %>
   </div>
-  <span class="shrink-0 rounded px-2 py-0.5 text-xs font-medium text-muted ring-1 ring-inset ring-[var(--color-border)]">
+  <span class="shrink-0 px-1.5 py-0.5 text-[10px] font-medium text-muted ring-1 ring-inset ring-[var(--color-border)]">
     <%= search_type_label(result[:icon]) %>
   </span>
 <% end %>

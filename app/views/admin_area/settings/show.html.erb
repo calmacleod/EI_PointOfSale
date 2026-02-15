@@ -6,34 +6,34 @@
   <li aria-current="page" class="text-muted">Admin settings</li>
 <% end %>
 
-<div class="mx-auto max-w-5xl">
+<div class="mx-auto max-w-6xl">
   <%= render "shared/page_header", title: "Admin settings", description: "Configure the application and manage reference data." %>
 
-  <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    <%= link_to admin_users_path, class: "group block rounded-xl border border-theme bg-surface p-6 shadow-sm transition hover:border-[var(--color-accent)]/50 hover:shadow-md", data: { turbo_prefetch: true } do %>
-      <div class="flex items-start justify-between gap-3">
+  <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+    <%= link_to admin_users_path, class: "group block border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-2">
         <div>
-          <h2 class="text-lg font-semibold text-body group-hover:text-accent">Users</h2>
-          <p class="mt-1 text-sm text-muted">Manage staff accounts and permissions.</p>
-          <p class="mt-3 text-sm font-medium text-accent">Manage users →</p>
+          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Users</h2>
+          <p class="mt-0.5 text-xs text-muted">Manage staff accounts and permissions.</p>
+          <p class="mt-1.5 text-xs font-medium text-accent">Manage users →</p>
         </div>
-        <div class="rounded-lg bg-[var(--color-border)]/30 p-2.5 ring-1 ring-inset border-theme group-hover:bg-[var(--color-accent)]/10">
-          <svg class="h-6 w-6 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <div class="bg-[var(--color-border)]/30 p-1 group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
           </svg>
         </div>
       </div>
     <% end %>
 
-    <%= link_to admin_tax_codes_path, class: "group block rounded-xl border border-theme bg-surface p-6 shadow-sm transition hover:border-[var(--color-accent)]/50 hover:shadow-md", data: { turbo_prefetch: true } do %>
-      <div class="flex items-start justify-between gap-3">
+    <%= link_to admin_tax_codes_path, class: "group block border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-2">
         <div>
-          <h2 class="text-lg font-semibold text-body group-hover:text-accent">Tax codes</h2>
-          <p class="mt-1 text-sm text-muted">Manage tax rates for products and services.</p>
-          <p class="mt-3 text-sm font-medium text-accent">Manage tax codes →</p>
+          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Tax codes</h2>
+          <p class="mt-0.5 text-xs text-muted">Manage tax rates for products and services.</p>
+          <p class="mt-1.5 text-xs font-medium text-accent">Manage tax codes →</p>
         </div>
-        <div class="rounded-lg bg-[var(--color-border)]/30 p-2.5 ring-1 ring-inset border-theme group-hover:bg-[var(--color-accent)]/10">
-          <svg class="h-6 w-6 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <div class="bg-[var(--color-border)]/30 p-1 group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M10.75 10.818v2.614A3.13 3.13 0 0 0 11.888 13c.482-.314.664-.65.664-1.18 0-.657-.524-1.165-1.436-1.165-.899 0-1.432.508-1.432 1.165 0 .53.182.866.664 1.18.175.114.331.233.538.368v-2.614a.24.24 0 0 0-.118-.199 1.497 1.497 0 0 0-1.277.218 1.66 1.66 0 0 0-.577 1.195c0 .624.255 1.154.577 1.195.485.077 1.05.137 1.277.218.048.03.08.066.118.199z" />
             <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm1-13a1 1 0 1 0-2 0v.092a4.535 4.535 0 0 0-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 1 0-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 1 0 2 0v-.092a4.535 4.535 0 0 0 1.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0 0 11 9.092V7.151c.391.127.68.317.843.504a1 1 0 1 0 1.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd" />
           </svg>
@@ -41,30 +41,30 @@
       </div>
     <% end %>
 
-    <%= link_to admin_suppliers_path, class: "group block rounded-xl border border-theme bg-surface p-6 shadow-sm transition hover:border-[var(--color-accent)]/50 hover:shadow-md", data: { turbo_prefetch: true } do %>
-      <div class="flex items-start justify-between gap-3">
+    <%= link_to admin_suppliers_path, class: "group block border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-2">
         <div>
-          <h2 class="text-lg font-semibold text-body group-hover:text-accent">Suppliers</h2>
-          <p class="mt-1 text-sm text-muted">Manage product suppliers and contacts.</p>
-          <p class="mt-3 text-sm font-medium text-accent">Manage suppliers →</p>
+          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Suppliers</h2>
+          <p class="mt-0.5 text-xs text-muted">Manage product suppliers and contacts.</p>
+          <p class="mt-1.5 text-xs font-medium text-accent">Manage suppliers →</p>
         </div>
-        <div class="rounded-lg bg-[var(--color-border)]/30 p-2.5 ring-1 ring-inset border-theme group-hover:bg-[var(--color-accent)]/10">
-          <svg class="h-6 w-6 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <div class="bg-[var(--color-border)]/30 p-1 group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
           </svg>
         </div>
       </div>
     <% end %>
 
-    <%= link_to admin_audits_path, class: "group block rounded-xl border border-theme bg-surface p-6 shadow-sm transition hover:border-[var(--color-accent)]/50 hover:shadow-md", data: { turbo_prefetch: true } do %>
-      <div class="flex items-start justify-between gap-3">
+    <%= link_to admin_audits_path, class: "group block border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-2">
         <div>
-          <h2 class="text-lg font-semibold text-body group-hover:text-accent">Audit trail</h2>
-          <p class="mt-1 text-sm text-muted">View all create, update, and delete events.</p>
-          <p class="mt-3 text-sm font-medium text-accent">View audit trail →</p>
+          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Audit trail</h2>
+          <p class="mt-0.5 text-xs text-muted">View all create, update, and delete events.</p>
+          <p class="mt-1.5 text-xs font-medium text-accent">View audit trail →</p>
         </div>
-        <div class="rounded-lg bg-[var(--color-border)]/30 p-2.5 ring-1 ring-inset border-theme group-hover:bg-[var(--color-accent)]/10">
-          <svg class="h-6 w-6 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <div class="bg-[var(--color-border)]/30 p-1 group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.256A11.949 11.949 0 018 15.5c0 3.058 1.836 5.741 4.256 7.086A2 2 0 0018 15V3a1 1 0 100-2H3zm11 4a1 1 0 01 1-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1V7zm-3 4a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2zm-3 4a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 01-1 1H7a1 1 0 01-1-1v-2z" clip-rule="evenodd" />
           </svg>
         </div>
@@ -72,11 +72,11 @@
     <% end %>
   </div>
 
-  <%= form_with model: @store, url: admin_settings_path, method: :patch, class: "mt-8 rounded-xl border border-theme bg-surface p-6 shadow-sm", data: { controller: "address-autofill", address_autofill_token_value: mapbox_access_token } do |f| %>
+  <%= form_with model: @store, url: admin_settings_path, method: :patch, class: "mt-3 border border-theme bg-surface p-2.5", data: { controller: "address-autofill", address_autofill_token_value: mapbox_access_token } do |f| %>
     <% if @store.errors.any? %>
-      <div class="mb-6 rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-4 py-3">
-        <p class="text-base font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-        <ul class="mt-2 list-disc space-y-1 pl-5 text-base text-[var(--color-error-text)]">
+      <div class="mb-2.5 border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2">
+        <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+        <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
           <% @store.errors.full_messages.each do |message| %>
             <li><%= message %></li>
           <% end %>
@@ -84,102 +84,132 @@
       </div>
     <% end %>
 
-    <h2 class="text-lg font-semibold text-body">Store information</h2>
-    <p class="mt-1 text-sm text-muted">Contact details shown on receipts and in the app.</p>
+    <h2 class="text-sm font-semibold text-body">Store information</h2>
+    <p class="mt-0.5 text-xs text-muted">Contact details shown on receipts and in the app.</p>
 
-    <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
       <div class="sm:col-span-2">
-        <%= f.label :name, "Store name", class: "block text-base font-medium text-body" %>
+        <%= f.label :name, "Store name", class: "text-sm font-medium text-body" %>
         <%= f.text_field :name,
             placeholder: "e.g. Acme Comics & Games",
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
-        <p class="mt-1 text-sm text-muted">Shown on receipts and in the app header.</p>
+            class: "input-field mt-0.5 w-full min-h-[30px]" %>
+        <p class="mt-0.5 text-xs text-muted">Shown on receipts and in the app header.</p>
       </div>
 
       <div>
-        <%= f.label :phone, "Phone", class: "block text-base font-medium text-body" %>
+        <%= f.label :phone, "Phone", class: "text-sm font-medium text-body" %>
         <%= f.telephone_field :phone,
             placeholder: "e.g. 1-416-555-0100",
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field mt-0.5 w-full min-h-[30px]" %>
       </div>
 
       <div>
-        <%= f.label :email, "Email", class: "block text-base font-medium text-body" %>
+        <%= f.label :email, "Email", class: "text-sm font-medium text-body" %>
         <%= f.email_field :email,
             placeholder: "e.g. store@example.com",
-            class: "input-field mt-1 block w-full min-h-[44px]" %>
+            class: "input-field mt-0.5 w-full min-h-[30px]" %>
       </div>
 
       <div class="sm:col-span-2">
-        <label for="address_search" class="block text-base font-medium text-body">Address</label>
+        <label for="address_search" class="text-sm font-medium text-body">Address</label>
         <input type="text"
             id="address_search"
             autocomplete="address-line1"
             placeholder="Start typing to search for your address..."
-            class="input-field mt-1 block w-full min-h-[44px]"
+            class="input-field mt-0.5 w-full min-h-[30px]"
             data-address-autofill-target="searchInput">
-        <p class="mt-1 text-sm text-muted">Select a suggestion to fill the fields below, or type manually.</p>
+        <p class="mt-0.5 text-xs text-muted">Select a suggestion to fill the fields below, or type manually.</p>
       </div>
 
       <div class="sm:col-span-2">
-        <%= f.label :address_line1, "Address line 1", class: "block text-base font-medium text-body" %>
+        <%= f.label :address_line1, "Address line 1", class: "text-sm font-medium text-body" %>
         <%= f.text_field :address_line1,
             autocomplete: "off",
             placeholder: "Street address",
-            class: "input-field mt-1 block w-full min-h-[44px]",
+            class: "input-field mt-0.5 w-full min-h-[30px]",
             data: { address_autofill_target: "addressLine1" } %>
       </div>
 
       <div class="sm:col-span-2">
-        <%= f.label :address_line2, "Address line 2", class: "block text-base font-medium text-body" %>
+        <%= f.label :address_line2, "Address line 2", class: "text-sm font-medium text-body" %>
         <%= f.text_field :address_line2,
             autocomplete: "off",
             placeholder: "Suite, unit, building (optional)",
-            class: "input-field mt-1 block w-full min-h-[44px]",
+            class: "input-field mt-0.5 w-full min-h-[30px]",
             data: { address_autofill_target: "addressLine2" } %>
       </div>
 
       <div>
-        <%= f.label :city, "City", class: "block text-base font-medium text-body" %>
+        <%= f.label :city, "City", class: "text-sm font-medium text-body" %>
         <%= f.text_field :city,
             autocomplete: "off",
             placeholder: "City",
-            class: "input-field mt-1 block w-full min-h-[44px]",
+            class: "input-field mt-0.5 w-full min-h-[30px]",
             data: { address_autofill_target: "city" } %>
       </div>
 
       <div>
-        <%= f.label :province, "Province", class: "block text-base font-medium text-body" %>
+        <%= f.label :province, "Province", class: "text-sm font-medium text-body" %>
         <%= f.text_field :province,
             autocomplete: "off",
             placeholder: "Province",
-            class: "input-field mt-1 block w-full min-h-[44px]",
+            class: "input-field mt-0.5 w-full min-h-[30px]",
             data: { address_autofill_target: "province" } %>
       </div>
 
       <div>
-        <%= f.label :postal_code, "Postal code", class: "block text-base font-medium text-body" %>
+        <%= f.label :postal_code, "Postal code", class: "text-sm font-medium text-body" %>
         <%= f.text_field :postal_code,
             autocomplete: "off",
             placeholder: "A1A 1A1",
-            class: "input-field mt-1 block w-full min-h-[44px]",
+            class: "input-field mt-0.5 w-full min-h-[30px]",
             data: { address_autofill_target: "postalCode" } %>
       </div>
 
       <div>
-        <%= f.label :country, "Country", class: "block text-base font-medium text-body" %>
+        <%= f.label :country, "Country", class: "text-sm font-medium text-body" %>
         <%= f.text_field :country,
             autocomplete: "off",
             placeholder: "Canada",
-            class: "input-field mt-1 block w-full min-h-[44px]",
+            class: "input-field mt-0.5 w-full min-h-[30px]",
             data: { address_autofill_target: "country" } %>
       </div>
 
     </div>
 
+    <div class="mt-3 border-t border-theme pt-3" data-controller="color-picker">
+      <h2 class="text-sm font-semibold text-body">Accent colour</h2>
+      <p class="mt-0.5 text-xs text-muted">Choose the primary colour used for buttons, links, and active navigation.</p>
+
+      <%= f.hidden_field :accent_color, data: { color_picker_target: "input" } %>
+
+      <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Accent colour">
+        <% Store::ACCENT_COLORS.each do |name, palette| %>
+          <% selected = @store.accent_color == name %>
+          <button type="button"
+                  data-action="click->color-picker#select"
+                  data-color="<%= name %>"
+                  data-color-picker-target="swatch"
+                  aria-checked="<%= selected %>"
+                  aria-label="<%= palette[:label] %>"
+                  role="radio"
+                  class="group relative flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all
+                         <%= selected ? 'ring-2 ring-offset-1' : '' %>"
+                  style="background-color: <%= palette[:swatch] %>; border-color: <%= palette[:swatch] %>; --tw-ring-color: <%= palette[:swatch] %>;">
+            <svg data-check class="h-4 w-4 text-white <%= 'hidden' unless selected %>" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            </svg>
+            <span class="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-muted">
+              <%= palette[:label] %>
+            </span>
+          </button>
+        <% end %>
+      </div>
+    </div>
+
     <div class="mt-6 flex items-center justify-end">
       <%= f.submit "Save settings",
-          class: "inline-flex min-h-[44px] items-center justify-center rounded-lg bg-accent px-4 py-3 text-base font-semibold text-[color:var(--color-page)] shadow-sm hover:opacity-90" %>
+          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:opacity-90" %>
     </div>
   <% end %>
 </div>

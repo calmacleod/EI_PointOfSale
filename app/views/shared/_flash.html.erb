@@ -1,5 +1,5 @@
 <% if flash.any? %>
-  <div data-controller="flash" data-flash-duration-value="5" class="mb-4 space-y-2">
+  <div data-controller="flash" data-flash-duration-value="5" class="mb-1.5 space-y-1">
     <% flash.each do |type, message| %>
       <% next if message.blank? %>
 
@@ -14,11 +14,11 @@
         end
       %>
 
-      <div class="rounded-lg border px-4 py-3 text-base <%= css_vars %>">
+      <div class="border px-2.5 py-1.5 text-sm <%= css_vars %>">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <span><%= message %></span>
           <div class="shrink-0" role="img" aria-label="Dismissing in 5 seconds">
-            <svg viewBox="0 0 24 24" class="h-6 w-6 -rotate-90" stroke="currentColor" stroke-width="2" fill="none">
+            <svg viewBox="0 0 24 24" class="h-4 w-4 -rotate-90" stroke="currentColor" stroke-width="2" fill="none">
               <circle data-flash-target="circle" cx="12" cy="12" r="9" stroke-linecap="round" />
             </svg>
           </div>

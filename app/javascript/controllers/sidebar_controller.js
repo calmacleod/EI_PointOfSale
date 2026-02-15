@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-const SIDEBAR_WIDTH = 256
+const SIDEBAR_WIDTH = 224
 const EDGE_ZONE = 24
 const VELOCITY_THRESHOLD = 0.3
 

@@ -9,6 +9,7 @@ one:
   province: ON
   postal_code: M5V 1A1
   country: Canada
+  accent_color: teal
 
 two:
   name: MyString
@@ -19,3 +20,4 @@ two:
   province: BC
   postal_code: V6B 1A1
   country: Canada
+  accent_color: blue
