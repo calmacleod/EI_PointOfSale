@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_15_144047) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_15_164453) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -114,9 +114,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_15_144047) do
     t.decimal "order_quantity", precision: 12, scale: 4
     t.bigint "product_id", null: false
     t.decimal "purchase_price", precision: 10, scale: 2
-    t.decimal "reorder_level", precision: 12, scale: 4, default: "0.0"
+    t.integer "reorder_level", default: 0, null: false
     t.decimal "selling_price", precision: 10, scale: 2
-    t.decimal "stock_level", precision: 12, scale: 4, default: "0.0"
+    t.integer "stock_level", default: 0, null: false
     t.bigint "supplier_id"
     t.string "supplier_reference"
     t.decimal "unit_cost", precision: 10, scale: 2

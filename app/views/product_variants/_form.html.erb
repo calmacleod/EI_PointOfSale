@@ -50,7 +50,7 @@
       <div>
         <%= f.label :stock_level, class: "text-sm font-medium text-body" %>
         <%= f.number_field :stock_level,
-            step: 0.0001,
+            step: 1,
             min: 0,
             value: product_variant.stock_level,
             class: "input-field min-h-[30px] w-full" %>
@@ -58,7 +58,7 @@
       <div>
         <%= f.label :reorder_level, class: "text-sm font-medium text-body" %>
         <%= f.number_field :reorder_level,
-            step: 0.0001,
+            step: 1,
             min: 0,
             value: product_variant.reorder_level || 0,
             class: "input-field min-h-[30px] w-full" %>
