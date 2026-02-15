@@ -1,5 +1,5 @@
 <% if @pagy.present? && Pagy.options[:client_max_limit] %>
-  <% page_sizes = [ 5, 25, 50, 100 ].select { |n| n <= Pagy.options[:client_max_limit] } %>
+  <% page_sizes = [ 5, 10, 25, 50, 100 ].select { |n| n <= Pagy.options[:client_max_limit] } %>
   <div class="pagy-limit-selector flex items-center gap-1.5">
     <%= form_with url: request.path, method: :get, local: true, class: "flex items-center gap-1.5" do %>
       <% request.params.except(:limit, :page, :controller, :action).each do |key, value| %>

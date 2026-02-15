@@ -178,6 +178,9 @@ button, a, [role="button"] {
   .sidebar-mini.sidebar-mini-hide-text .nav-link .sidebar-text { display: none; }
   .sidebar-mini.sidebar-mini-hide-text .sidebar-bottom .sidebar-text { display: none; }
   .sidebar-mini .sidebar-brand { flex: 1; }
+  .sidebar-mini.sidebar-mini-hide-text .sidebar-brand {
+    justify-content: center;
+  }
   .sidebar-mini.sidebar-mini-hide-text .nav-link {
     justify-content: center; padding-left: 0.5rem; padding-right: 0.5rem;
   }

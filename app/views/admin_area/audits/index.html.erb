@@ -10,7 +10,7 @@
 <% filter_params = %w[audit_action auditable_type user_id created_at_from created_at_to] %>
 <% has_active_filters = filter_params.any? { |p| params[p].present? } %>
 
-<div class="mx-auto max-w-6xl">
+<div class="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
   <%= render "shared/page_header", title: "Audit trail", description: "All changes across the application." do %>
     <%= link_to "Back to admin settings", admin_settings_path,
         class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30",
@@ -60,9 +60,9 @@
     </aside>
   <% end %>
 
-  <div class="mt-2 overflow-x-auto border border-theme bg-surface lg:min-h-[70vh]">
+  <div class="mt-2 overflow-x-auto border border-theme bg-surface lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
     <table class="min-w-full divide-y divide-[var(--color-border)]">
-      <thead class="bg-surface-alt">
+      <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
         <tr>
           <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">When</th>
           <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Action</th>
@@ -90,7 +90,12 @@
               <%= audit.user.present? ? (audit.user.respond_to?(:email_address) ? audit.user.email_address : audit.user.to_s) : "—" %>
             </td>
             <td class="px-3 py-1.5 text-right">
-              <%= link_to "View changes", admin_audit_path(audit), class: "text-sm font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
+              <%= link_to admin_audit_path(audit), class: "inline-flex items-center justify-center text-accent hover:opacity-70", aria: { label: "View changes" }, data: { turbo_frame: "_top", turbo_prefetch: true } do %>
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              <% end %>
             </td>
           </tr>
         <% end %>

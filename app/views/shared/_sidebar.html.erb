@@ -3,7 +3,7 @@
       class="fixed inset-y-0 left-0 z-40 flex h-screen w-56 shrink-0 -translate-x-full flex-col overflow-hidden border-b border-theme bg-surface duration-200 lg:static lg:translate-x-0 lg:h-full lg:max-h-full lg:min-h-0 lg:border-b-0 lg:border-r <%= sidebar_collapsed ? 'sidebar-mini' : 'sidebar-expanded' %>">
   <div class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
     <%# ── Titlebar strip ── %>
-    <div class="flex shrink-0 items-center justify-between gap-2 border-b border-theme bg-surface-alt px-2 py-1.5 lg:px-2">
+    <div class="flex shrink-0 items-center justify-between gap-2 border-b border-theme bg-surface-alt px-2 py-1.5 lg:min-h-[40px] lg:px-2">
       <div class="sidebar-brand flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden">
         <div class="logo-easter-egg-logo flex h-6 w-6 shrink-0 cursor-default items-center justify-center bg-accent text-[10px] font-bold text-[color:var(--color-page)] select-none"
              data-controller="logo-easter-egg"
@@ -122,7 +122,7 @@
         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
         </svg>
-        <span class="sidebar-text min-w-0 truncate text-sm">Sign out</span>
+        <span class="sidebar-text min-w-0 truncate whitespace-nowrap text-sm">Sign out</span>
       </button>
       <button type="button"
               data-action="click->sidebar#toggle"

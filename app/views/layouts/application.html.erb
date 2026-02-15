@@ -47,8 +47,8 @@
         <%= render "shared/sign_out_modal" %>
         <%= render "shared/search_modal" %>
 
-        <main class="min-h-0 flex-1 overflow-y-auto px-3 pt-9 pb-3 lg:pt-3 lg:px-4">
-          <div class="mx-auto w-full max-w-screen-xl">
+        <main class="min-h-0 flex-1 overflow-y-auto px-3 pt-9 pb-3 lg:flex lg:flex-col lg:overflow-hidden lg:pt-3 lg:px-4">
+          <div class="mx-auto w-full max-w-screen-xl lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-y-auto">
             <%= render "shared/breadcrumbs" %>
             <div id="flash_container"><%= render "shared/flash" %></div>
             <%= yield %>
