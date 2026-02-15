@@ -62,6 +62,19 @@ module ApplicationHelper
     end
   end
 
+  # Renders a themed status chip.
+  #
+  # Variants: :success, :error, :warning, :info, :neutral
+  #
+  # Usage:
+  #   status_chip("Completed", :success)
+  #   status_chip("Failed", :error)
+  #
+  def status_chip(label, variant = :neutral)
+    variant_class = "status-chip-#{variant}"
+    tag.span(label, class: "status-chip #{variant_class}")
+  end
+
   # Generates a <style> tag that overrides the CSS accent custom properties
   # based on the store's configured accent colour.  Returns an empty string
   # when the default (teal) is selected so no extra CSS is injected.

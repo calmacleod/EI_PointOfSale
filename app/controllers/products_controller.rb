@@ -1,17 +1,21 @@
 # frozen_string_literal: true
 
 class ProductsController < ApplicationController
+  include Filterable
+
   load_and_authorize_resource
 
   def index
-    scope = @products.kept
-      .includes(:tax_code, :supplier, :variants)
-      .order(:name)
-    scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
-    scope = scope.where(supplier_id: params[:supplier_id]) if params[:supplier_id].present?
-    scope = apply_date_filters(scope)
     @suppliers = Supplier.kept.order(:name)
-    @pagy, @products = pagy(:offset, scope)
+    @pagy, @products = filter_and_paginate(
+      @products.kept.includes(:tax_code, :supplier, :variants),
+      sort_allowed: %w[name created_at updated_at],
+      sort_default: "name", sort_default_direction: "asc",
+      filters: ->(scope) {
+        scope = scope.where(supplier_id: params[:supplier_id]) if params[:supplier_id].present?
+        scope
+      }
+    )
   end
 
   def new

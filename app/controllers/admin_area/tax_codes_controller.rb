@@ -2,13 +2,16 @@
 
 module AdminArea
   class TaxCodesController < BaseController
+    include Filterable
+
     before_action :set_tax_code, only: %i[ show edit update destroy ]
 
     def index
-      scope = TaxCode.kept.order(:code)
-      scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
-      scope = apply_date_filters(scope)
-      @pagy, @tax_codes = pagy(:offset, scope)
+      @pagy, @tax_codes = filter_and_paginate(
+        TaxCode.kept,
+        sort_allowed: %w[code name rate created_at],
+        sort_default: "code", sort_default_direction: "asc"
+      )
     end
 
     def new

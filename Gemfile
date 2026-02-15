@@ -50,8 +50,12 @@ gem "google-apis-drive_v3", require: false
 
 gem "csv"
 
-# Excel export (.xlsx) for database data exports
+# Excel export (.xlsx) for database data exports and reports
 gem "caxlsx"
+
+# PDF generation for report exports
+gem "prawn"
+gem "prawn-table"
 
 gem "dotenv", groups: [ :development, :test ]
 

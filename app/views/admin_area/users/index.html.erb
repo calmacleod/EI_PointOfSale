@@ -22,11 +22,11 @@
     <table class="min-w-full divide-y divide-[var(--color-border)]">
       <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
         <tr>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Name</th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Email</th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Type</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Name", :name %></th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Email", :email_address %></th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Type", :type %></th>
           <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Active</th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Created</th>
+          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Created", :created_at %></th>
           <th class="px-3 py-1"></th>
         </tr>
       </thead>

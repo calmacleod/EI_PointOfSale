@@ -20,6 +20,15 @@
   --color-error-bg: #fef2f2;
   --color-error-border: #fca5a5;
   --color-error-text: #991b1b;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fcd34d;
+  --color-warning-text: #92400e;
+  --color-info-bg: #eff6ff;
+  --color-info-border: #93c5fd;
+  --color-info-text: #1e40af;
+  --color-neutral-bg: #f3f4f6;
+  --color-neutral-border: #d1d5db;
+  --color-neutral-text: #374151;
   --color-inset-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
 }
 
@@ -38,6 +47,15 @@
   --color-error-bg: #7f1d1d;
   --color-error-border: #b91c1c;
   --color-error-text: #fecaca;
+  --color-warning-bg: #78350f;
+  --color-warning-border: #b45309;
+  --color-warning-text: #fde68a;
+  --color-info-bg: #1e3a5f;
+  --color-info-border: #2563eb;
+  --color-info-text: #bfdbfe;
+  --color-neutral-bg: #374151;
+  --color-neutral-border: #4b5563;
+  --color-neutral-text: #d1d5db;
   --color-inset-shadow: inset 0 1px 2px rgba(0,0,0,0.25);
 }
 
@@ -56,6 +74,15 @@
   --color-error-bg: #7f1d1d;
   --color-error-border: #b91c1c;
   --color-error-text: #fecaca;
+  --color-warning-bg: #78350f;
+  --color-warning-border: #b45309;
+  --color-warning-text: #fde68a;
+  --color-info-bg: #1e3a5f;
+  --color-info-border: #2563eb;
+  --color-info-text: #bfdbfe;
+  --color-neutral-bg: #374151;
+  --color-neutral-border: #4b5563;
+  --color-neutral-text: #d1d5db;
   --color-inset-shadow: inset 0 1px 2px rgba(0,0,0,0.20);
 }
 
@@ -82,6 +109,43 @@ html {
   .hover\:bg-accent:hover { background-color: var(--color-accent-hover); }
   .text-accent { color: var(--color-accent); }
   .hover\:text-accent:hover { color: var(--color-accent); }
+
+  /* Status chips — themed, readable across light/dark/dim */
+  .status-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    border: 1px solid;
+  }
+  .status-chip-success {
+    background-color: var(--color-success-bg);
+    border-color: var(--color-success-border);
+    color: var(--color-success-text);
+  }
+  .status-chip-error {
+    background-color: var(--color-error-bg);
+    border-color: var(--color-error-border);
+    color: var(--color-error-text);
+  }
+  .status-chip-warning {
+    background-color: var(--color-warning-bg);
+    border-color: var(--color-warning-border);
+    color: var(--color-warning-text);
+  }
+  .status-chip-info {
+    background-color: var(--color-info-bg);
+    border-color: var(--color-info-border);
+    color: var(--color-info-text);
+  }
+  .status-chip-neutral {
+    background-color: var(--color-neutral-bg);
+    border-color: var(--color-neutral-border);
+    color: var(--color-neutral-text);
+  }
 }
 
 /* ── Form inputs — recessed, native feel ─────────────────────────── */

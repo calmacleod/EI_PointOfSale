@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_15_170208) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_15_222710) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -169,6 +169,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_15_170208) do
     t.index ["discarded_at"], name: "index_products_on_discarded_at"
     t.index ["supplier_id"], name: "index_products_on_supplier_id"
     t.index ["tax_code_id"], name: "index_products_on_tax_code_id"
+  end
+
+  create_table "reports", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.text "error_message"
+    t.bigint "generated_by_id", null: false
+    t.jsonb "parameters", default: {}, null: false
+    t.string "report_type", null: false
+    t.jsonb "result_data"
+    t.datetime "started_at"
+    t.string "status", default: "pending", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["created_at"], name: "index_reports_on_created_at"
+    t.index ["generated_by_id"], name: "index_reports_on_generated_by_id"
+    t.index ["report_type"], name: "index_reports_on_report_type"
+    t.index ["status"], name: "index_reports_on_status"
   end
 
   create_table "services", force: :cascade do |t|
@@ -382,6 +400,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_15_170208) do
   add_foreign_key "products", "suppliers"
   add_foreign_key "products", "tax_codes"
   add_foreign_key "products", "users", column: "added_by_id"
+  add_foreign_key "reports", "users", column: "generated_by_id"
   add_foreign_key "services", "tax_codes"
   add_foreign_key "services", "users", column: "added_by_id"
   add_foreign_key "sessions", "users"

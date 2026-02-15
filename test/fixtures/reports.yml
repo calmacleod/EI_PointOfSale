@@ -1,0 +1,51 @@
+completed_report:
+  report_type: new_customers_by_date
+  title: "New customers by date — Feb 01, 2026 10:00 AM"
+  status: completed
+  parameters:
+    start_date: "2026-01-01"
+    end_date: "2026-01-31"
+  result_data:
+    chart:
+      labels: ["2026-01-15"]
+      datasets:
+        - label: "New customers"
+          data: [1]
+          backgroundColor: "rgba(59, 130, 246, 0.6)"
+          borderColor: "rgba(59, 130, 246, 1)"
+          borderWidth: 1
+    table:
+      - name: "Acme Corp"
+        member_number: "100001"
+        email: "acme@example.com"
+        phone: "555-0100"
+        registered_on: "2026-01-15"
+    summary:
+      total_customers: 1
+      date_range: "Jan 01, 2026 – Jan 31, 2026"
+      busiest_day: "2026-01-15"
+      busiest_day_count: 1
+  generated_by: admin
+  started_at: <%= 1.hour.ago.to_fs(:db) %>
+  completed_at: <%= 1.hour.ago.to_fs(:db) %>
+
+pending_report:
+  report_type: new_customers_by_date
+  title: "New customers by date — Feb 15, 2026 2:00 PM"
+  status: pending
+  parameters:
+    start_date: "2026-02-01"
+    end_date: "2026-02-15"
+  generated_by: admin
+
+failed_report:
+  report_type: new_customers_by_date
+  title: "New customers by date — Feb 10, 2026 9:00 AM"
+  status: failed
+  parameters:
+    start_date: "2026-02-01"
+    end_date: "2026-02-10"
+  error_message: "Something went wrong"
+  generated_by: admin
+  started_at: <%= 2.hours.ago.to_fs(:db) %>
+  completed_at: <%= 2.hours.ago.to_fs(:db) %>

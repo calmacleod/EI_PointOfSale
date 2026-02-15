@@ -2,15 +2,16 @@
 
 module AdminArea
   class UsersController < BaseController
-    include FilterableByDate
+    include Filterable
 
     load_and_authorize_resource
 
     def index
-      scope = @users.order(:email_address)
-      scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
-      scope = apply_date_filters(scope)
-      @pagy, @users = pagy(:offset, scope)
+      @pagy, @users = filter_and_paginate(
+        @users,
+        sort_allowed: %w[name email_address type created_at],
+        sort_default: "email_address", sort_default_direction: "asc"
+      )
     end
 
     def show

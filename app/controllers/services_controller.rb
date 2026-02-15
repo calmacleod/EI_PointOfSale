@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 class ServicesController < ApplicationController
+  include Filterable
+
   load_and_authorize_resource
 
   def index
-    scope = @services.kept
-      .includes(:tax_code)
-      .order(:name)
-    scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
-    scope = apply_date_filters(scope)
-    @pagy, @services = pagy(:offset, scope)
+    @pagy, @services = filter_and_paginate(
+      @services.kept.includes(:tax_code),
+      sort_allowed: %w[name code price created_at],
+      sort_default: "name", sort_default_direction: "asc"
+    )
   end
 
   def new

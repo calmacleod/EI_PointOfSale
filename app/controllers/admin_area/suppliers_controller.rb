@@ -2,15 +2,16 @@
 
 module AdminArea
   class SuppliersController < BaseController
-    include FilterableByDate
+    include Filterable
 
     before_action :set_supplier, only: %i[ show edit update destroy ]
 
     def index
-      scope = Supplier.kept.order(:name)
-      scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
-      scope = apply_date_filters(scope)
-      @pagy, @suppliers = pagy(:offset, scope)
+      @pagy, @suppliers = filter_and_paginate(
+        Supplier.kept,
+        sort_allowed: %w[name phone created_at],
+        sort_default: "name", sort_default_direction: "asc"
+      )
     end
 
     def new

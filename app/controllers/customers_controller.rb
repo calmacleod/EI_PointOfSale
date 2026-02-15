@@ -1,15 +1,21 @@
 # frozen_string_literal: true
 
 class CustomersController < ApplicationController
+  include Filterable
+
   load_and_authorize_resource
 
   def index
-    scope = @customers.kept.includes(:added_by).order(:name)
-    scope = scope.search(sanitize_search_query(params[:q])) if params[:q].present?
-    scope = scope.where(active: true) if params[:filter] == "active"
-    scope = scope.where(active: false) if params[:filter] == "inactive"
-    scope = apply_date_filters(scope)
-    @pagy, @customers = pagy(:offset, scope)
+    @pagy, @customers = filter_and_paginate(
+      @customers.kept.includes(:added_by),
+      sort_allowed: %w[name member_number email active created_at],
+      sort_default: "name", sort_default_direction: "asc",
+      filters: ->(scope) {
+        scope = scope.where(active: true) if params[:filter] == "active"
+        scope = scope.where(active: false) if params[:filter] == "inactive"
+        scope
+      }
+    )
   end
 
   def new
