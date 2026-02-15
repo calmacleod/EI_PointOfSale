@@ -57,6 +57,9 @@ gem "caxlsx"
 gem "prawn"
 gem "prawn-table"
 
+# Headless Chrome for server-side Chart.js rendering in PDF exports
+gem "ferrum"
+
 gem "dotenv", groups: [ :development, :test ]
 
 group :development, :test do

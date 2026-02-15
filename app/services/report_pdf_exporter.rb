@@ -31,6 +31,12 @@ class ReportPdfExporter
           pdf.move_down 12
         end
 
+        # Chart
+        if result[:chart].present?
+          render_chart(pdf, result[:chart], template.chart_type)
+          pdf.move_down 12
+        end
+
         # Data table
         if result[:table].present? && template.table_columns.present?
           render_table(pdf, template, result[:table])
@@ -54,6 +60,19 @@ class ReportPdfExporter
           label = key.to_s.titleize
           pdf.text "#{label}: #{value}", size: 10
         end
+      end
+
+      def render_chart(pdf, chart_data, chart_type)
+        png_blob = ReportChartRenderer.render(chart_data, chart_type: chart_type)
+
+        pdf.text "Chart", size: 13, style: :bold
+        pdf.move_down 4
+
+        # Embed the PNG into the PDF, scaled to fit the page width
+        pdf.image StringIO.new(png_blob), width: pdf.bounds.width, position: :center
+      rescue StandardError => e
+        Rails.logger.error { "[ReportPdfExporter] Chart rendering failed: #{e.message}" }
+        pdf.text "(Chart could not be rendered)", size: 10, color: "999999", style: :italic
       end
 
       def render_table(pdf, template, table_data)
