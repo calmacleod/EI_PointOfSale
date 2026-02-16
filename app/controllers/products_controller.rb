@@ -12,6 +12,9 @@ class ProductsController < ApplicationController
       f.association  :supplier_id,      label: "Supplier",      collection: -> { Supplier.kept.order(:name) }
       f.association  :tax_code_id,      label: "Tax Code",      collection: -> { TaxCode.kept.order(:code) }, display: :code
       f.association  :product_group_id, label: "Product Group",  collection: -> { ProductGroup.order(:name) }
+      f.multi_select :category_ids,     label: "Categories",
+                     collection: -> { Category.kept.order(:name) },
+                     scope: ->(rel, ids) { rel.joins(:categories).where(categories: { id: ids }).distinct }
       f.boolean      :sync_to_shopify,  label: "Shopify Sync"
       f.number_range :selling_price,    label: "Price"
       f.number_range :stock_level,      label: "Stock"

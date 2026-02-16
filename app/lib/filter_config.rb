@@ -26,6 +26,15 @@ class FilterConfig
         [ key.to_s ]
       end
     end
+
+    def js_param_keys
+      case type
+      when :multi_select
+        [ "#{key}[]" ]
+      else
+        param_keys
+      end
+    end
   end
 
   ColumnDefinition = Data.define(:key, :label, :default, :sortable, :width)
@@ -115,6 +124,15 @@ class FilterConfig
     )
   end
 
+  def multi_select(key, label:, collection:, display: :name, scope: nil)
+    @filters << FilterDefinition.new(
+      key: key.to_sym,
+      type: :multi_select,
+      label: label,
+      options: { collection: collection, display: display, scope: scope }
+    )
+  end
+
   # --- Column DSL ---
 
   def column(key, label:, default: true, sortable: false, width: nil)
@@ -165,9 +183,9 @@ class FilterConfig
 
   def filters_json
     @filters.map { |f|
-      base = { key: f.key, type: f.type, label: f.label, paramKeys: f.param_keys }
+      base = { key: f.key, type: f.type, label: f.label, paramKeys: f.js_param_keys }
       case f.type
-      when :association
+      when :association, :multi_select
         items = f.options[:collection].call
         display = f.options[:display] || :name
         base[:choices] = items.map { |item| { value: item.id.to_s, label: item.public_send(display) } }
@@ -193,26 +211,49 @@ class FilterConfig
   private
 
     def filter_active?(filter, params)
-      filter.param_keys.any? { |k| params[k].present? }
+      filter.param_keys.any? { |k|
+        value = params[k]
+        if value.is_a?(Array)
+          value.any?(&:present?)
+        else
+          value.present?
+        end
+      }
     end
 
     def apply_single_filter(scope, filter, params)
-      # Custom scope overrides default behavior for equality/boolean filters
-      if filter.options[:scope] && params[filter.key.to_s].present?
-        return filter.options[:scope].call(scope, params[filter.key.to_s])
-      end
-
       case filter.type
-      when :association, :select
-        apply_equality_filter(scope, filter, params)
-      when :boolean
-        apply_boolean_filter(scope, filter, params)
-      when :number_range
-        apply_number_range_filter(scope, filter, params)
-      when :date_range
-        apply_date_range_filter(scope, filter, params)
+      when :multi_select
+        apply_multi_select_filter(scope, filter, params)
       else
-        scope
+        # Custom scope overrides default behavior for equality/boolean filters
+        if filter.options[:scope] && params[filter.key.to_s].present?
+          return filter.options[:scope].call(scope, params[filter.key.to_s])
+        end
+
+        case filter.type
+        when :association, :select
+          apply_equality_filter(scope, filter, params)
+        when :boolean
+          apply_boolean_filter(scope, filter, params)
+        when :number_range
+          apply_number_range_filter(scope, filter, params)
+        when :date_range
+          apply_date_range_filter(scope, filter, params)
+        else
+          scope
+        end
+      end
+    end
+
+    def apply_multi_select_filter(scope, filter, params)
+      values = Array(params[filter.key.to_s]).select(&:present?)
+      return scope if values.empty?
+
+      if filter.options[:scope]
+        filter.options[:scope].call(scope, values)
+      else
+        scope.where(filter.key => values)
       end
     end
 

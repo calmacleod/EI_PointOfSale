@@ -9,8 +9,11 @@ class ServicesController < ApplicationController
     @filter_config = FilterConfig.new(:services, services_path,
                                       sort_default: "name", sort_default_direction: "asc",
                                       search_placeholder: "Search services...") do |f|
-      f.association  :tax_code_id, label: "Tax Code", collection: -> { TaxCode.kept.order(:code) }, display: :code
-      f.number_range :price,       label: "Price"
+      f.association  :tax_code_id,  label: "Tax Code",   collection: -> { TaxCode.kept.order(:code) }, display: :code
+      f.multi_select :category_ids, label: "Categories",
+                     collection: -> { Category.kept.order(:name) },
+                     scope: ->(rel, ids) { rel.joins(:categories).where(categories: { id: ids }).distinct }
+      f.number_range :price,        label: "Price"
       f.date_range   :created_at,  label: "Created"
       f.date_range   :updated_at,  label: "Updated"
 

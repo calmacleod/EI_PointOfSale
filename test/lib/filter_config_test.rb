@@ -219,4 +219,111 @@ class FilterConfigTest < ActiveSupport::TestCase
     assert_equal "10%", json.first["width"]
     assert_nil json.last["width"]
   end
+
+  # --- Multi-select filter ---
+
+  test "multi_select registers filter with correct type" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.multi_select :category_ids, label: "Categories",
+                     collection: -> { Category.all }
+    end
+
+    filter = config.filters.first
+    assert_equal :multi_select, filter.type
+    assert_equal :category_ids, filter.key
+    assert_equal "Categories", filter.label
+  end
+
+  test "multi_select param_keys returns array-style key" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.multi_select :category_ids, label: "Categories",
+                     collection: -> { Category.all }
+    end
+
+    assert_equal [ "category_ids" ], config.filters.first.param_keys
+  end
+
+  test "multi_select active when array param present" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.multi_select :category_ids, label: "Categories",
+                     collection: -> { Category.all }
+    end
+
+    params = ActionController::Parameters.new(category_ids: [ "1", "2" ])
+    active = config.active_filters(params)
+    assert_equal 1, active.size
+    assert_equal :category_ids, active.first.key
+  end
+
+  test "multi_select not active when param blank" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.multi_select :category_ids, label: "Categories",
+                     collection: -> { Category.all }
+    end
+
+    params = ActionController::Parameters.new(category_ids: [ "" ])
+    active = config.active_filters(params)
+    assert_empty active
+  end
+
+  test "multi_select applies WHERE IN filter by default" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.multi_select :supplier_id, label: "Suppliers",
+                     collection: -> { Supplier.all }
+    end
+
+    params = ActionController::Parameters.new(supplier_id: [ "1", "2" ])
+    scope = config.apply_filters(Product.all, params)
+    sql = scope.to_sql
+
+    assert_match(/supplier_id/, sql)
+    assert_match(/IN/, sql)
+  end
+
+  test "multi_select uses custom scope when provided" do
+    custom_scope = ->(relation, ids) {
+      relation.joins(:categories).where(categories: { id: ids }).distinct
+    }
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.multi_select :category_ids, label: "Categories",
+                     collection: -> { Category.all },
+                     scope: custom_scope
+    end
+
+    params = ActionController::Parameters.new(
+      category_ids: [ categories(:nhl_novelties).id.to_s, categories(:trading_cards).id.to_s ]
+    )
+    scope = config.apply_filters(Product.all, params)
+    sql = scope.to_sql
+
+    assert_match(/categories/, sql)
+    assert_match(/DISTINCT/, sql)
+  end
+
+  test "multi_select ignores blank values in array" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.multi_select :supplier_id, label: "Suppliers",
+                     collection: -> { Supplier.all }
+    end
+
+    params = ActionController::Parameters.new(supplier_id: [ "", "" ])
+    scope = config.apply_filters(Product.all, params)
+
+    refute_match(/supplier_id/, scope.to_sql)
+  end
+
+  test "multi_select filters_json includes choices" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.multi_select :category_ids, label: "Categories",
+                     collection: -> { Category.order(:name) }
+    end
+
+    json = JSON.parse(config.filters_json)
+    filter_json = json.first
+
+    assert_equal "multi_select", filter_json["type"]
+    assert_equal "category_ids[]", filter_json["paramKeys"].first
+    assert_kind_of Array, filter_json["choices"]
+    assert filter_json["choices"].any? { |c| c["label"] == "NHL Novelties" }
+  end
 end

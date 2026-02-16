@@ -145,10 +145,17 @@ export default class extends Controller {
 
   saveToStorage() {
     if (!this.hasFormTarget) return
-    const data = new URLSearchParams(new FormData(this.formTarget))
+    const formData = new FormData(this.formTarget)
     const filters = {}
-    for (const [key, value] of data) {
-      if (value != null && value !== "") filters[key] = value
+    for (const [key, value] of formData) {
+      if (value == null || value === "") continue
+      if (key.endsWith("[]")) {
+        const base = key
+        filters[base] = filters[base] || []
+        filters[base].push(value)
+      } else {
+        filters[key] = value
+      }
     }
     if (Object.keys(filters).length === 0) {
       localStorage.removeItem(this.storageKey)
@@ -177,7 +184,11 @@ export default class extends Controller {
 
       const url = new URL(this.searchPathValue || window.location.pathname, window.location.origin)
       for (const [key, value] of Object.entries(stored)) {
-        url.searchParams.set(key, value)
+        if (Array.isArray(value)) {
+          value.forEach(v => url.searchParams.append(key, v))
+        } else {
+          url.searchParams.set(key, value)
+        }
       }
 
       if (window.Turbo) {
@@ -206,7 +217,13 @@ export default class extends Controller {
     const paramKeys = filterDef.paramKeys || [key]
     paramKeys.forEach(pk => {
       const inputs = this.element.querySelectorAll(`[name="${pk}"]`)
-      inputs.forEach(input => { input.value = "" })
+      inputs.forEach(input => {
+        if (input.type === "checkbox") {
+          input.checked = false
+        } else {
+          input.value = ""
+        }
+      })
     })
   }
 
@@ -243,6 +260,13 @@ export default class extends Controller {
       ).join("")
       inner = `<select name="${key}_preset" form="${fid}" class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0" data-controller="date-range-filter" data-date-range-filter-target="presetSelect" data-action="change->date-range-filter#presetChanged change->filter-builder#handleFilterChange">${presets}</select><div data-date-range-filter-target="customFields" class="hidden flex items-center gap-1"><input type="date" name="${key}_from" form="${fid}" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange"><span class="text-xs text-muted">–</span><input type="date" name="${key}_to" form="${fid}" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange"></div>`
       break
+    }
+    case "multi_select": {
+      const checkboxes = (filterDef.choices || []).map(c =>
+        `<label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-[var(--color-border)]"><input type="checkbox" name="${key}[]" value="${c.value}" form="${fid}" class="rounded border-theme text-accent focus:ring-accent" data-action="change->multi-select-filter#changed change->filter-builder#handleFilterChange">${this.escapeHTML(c.label)}</label>`
+      ).join("")
+      inner = `<button type="button" data-action="click->multi-select-filter#toggle" class="inline-flex items-center gap-0.5 text-xs font-medium text-body"><span data-multi-select-filter-target="label">Select\u2026</span><svg class="h-3 w-3 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button><div data-multi-select-filter-target="dropdown" class="absolute left-0 top-full z-20 mt-1 hidden max-h-60 min-w-[200px] overflow-y-auto rounded-lg border border-theme bg-surface py-1 shadow-lg">${checkboxes}</div>`
+      return `<div class="relative ${chipClass}" data-filter-key="${key}" data-controller="multi-select-filter"><span class="text-xs font-medium text-muted">${this.escapeHTML(label)}:</span>${inner}${removeBtn}</div>`
     }
     }
 

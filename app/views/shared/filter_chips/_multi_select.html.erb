@@ -1,0 +1,53 @@
+<%# Multi-select filter chip: renders a dropdown with checkboxes inside a pill. %>
+<% items = filter.options[:collection].call %>
+<% display = filter.options[:display] || :name %>
+<% selected_ids = Array(params[filter.key.to_s]).select(&:present?) %>
+<div class="relative inline-flex items-center gap-1 rounded-full border border-theme bg-[var(--color-border)]/20 px-2 py-0.5"
+     data-filter-key="<%= filter.key %>"
+     data-controller="multi-select-filter">
+  <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
+  <button type="button"
+          data-action="click->multi-select-filter#toggle"
+          class="inline-flex items-center gap-0.5 text-xs font-medium text-body">
+    <span data-multi-select-filter-target="label">
+      <% if selected_ids.any? %>
+        <%= pluralize(selected_ids.size, "selected") %>
+      <% else %>
+        Select…
+      <% end %>
+    </span>
+    <svg class="h-3 w-3 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </button>
+  <div data-multi-select-filter-target="dropdown"
+       class="absolute left-0 top-full z-20 mt-1 hidden max-h-60 min-w-[200px] overflow-y-auto rounded-lg border border-theme bg-surface py-1 shadow-lg">
+    <% items.each do |item| %>
+      <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-[var(--color-border)]">
+        <% if selected_ids.include?(item.id.to_s) %>
+        <input type="checkbox"
+               name="<%= filter.key %>[]"
+               value="<%= item.id %>"
+               form="<%= local_assigns[:form_id] %>"
+               class="rounded border-theme text-accent focus:ring-accent"
+               data-action="change->multi-select-filter#changed change->filter-builder#handleFilterChange"
+               checked>
+        <% else %>
+        <input type="checkbox"
+               name="<%= filter.key %>[]"
+               value="<%= item.id %>"
+               form="<%= local_assigns[:form_id] %>"
+               class="rounded border-theme text-accent focus:ring-accent"
+               data-action="change->multi-select-filter#changed change->filter-builder#handleFilterChange">
+        <% end %>
+        <%= item.public_send(display) %>
+      </label>
+    <% end %>
+  </div>
+  <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="<%= filter.key %>"
+          class="ml-0.5 text-muted hover:text-body" title="Remove filter">
+    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+</div>
