@@ -42,7 +42,7 @@ module ApplicationHelper
     when "TaxCode" then admin_tax_code_path(record)
     when "Supplier" then admin_supplier_path(record)
     when "Category" then nil
-    when "Store" then admin_settings_path
+    when "Store" then admin_store_path
     when "Customer" then customer_path(record)
     else nil
     end

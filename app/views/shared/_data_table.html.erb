@@ -15,7 +15,7 @@
 <% table = DataTableHelper::DataTableBuilder.new(records, self) %>
 <% yield table if block_given? %>
 
-<%= turbo_frame_tag turbo_frame, class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
+<%= turbo_frame_tag turbo_frame, data: { turbo_action: "advance" }, class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
   <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto"
        data-controller="column-toggle"
        data-column-toggle-resource-value="<%= config.resource_name %>"
