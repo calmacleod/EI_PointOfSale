@@ -220,33 +220,77 @@ button, a, [role="button"] {
   from { transform: rotate(0deg); } to { transform: rotate(-360deg); }
 }
 
-/* ── Sidebar — navigation pane ───────────────────────────────────── */
+/* ── Sidebar — themed navigation panel ───────────────────────────── */
+/* Uses the same refined layout (rounded items, section headers,     */
+/* subtle active states) but respects the user's chosen theme.       */
+
+:root,
+[data-theme="light"] {
+  --sidebar-bg: #f5f5f7;
+  --sidebar-border: #dcdce0;
+  --sidebar-text: #555566;
+  --sidebar-text-muted: #8e8e9a;
+  --sidebar-text-bright: #1a1a2e;
+  --sidebar-hover: rgba(0, 0, 0, 0.04);
+  --sidebar-active: rgba(0, 0, 0, 0.07);
+  --sidebar-accent: var(--color-accent);
+}
+[data-theme="dark"] {
+  --sidebar-bg: #1a1a22;
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --sidebar-text: #9090a8;
+  --sidebar-text-muted: #5a5a70;
+  --sidebar-text-bright: #e0e0e8;
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-active: rgba(255, 255, 255, 0.08);
+  --sidebar-accent: var(--color-accent);
+}
+[data-theme="dim"] {
+  --sidebar-bg: #202028;
+  --sidebar-border: rgba(255, 255, 255, 0.07);
+  --sidebar-text: #9898b0;
+  --sidebar-text-muted: #606078;
+  --sidebar-text-bright: #e4e4ec;
+  --sidebar-hover: rgba(255, 255, 255, 0.055);
+  --sidebar-active: rgba(255, 255, 255, 0.09);
+  --sidebar-accent: var(--color-accent);
+}
+
+.sidebar-chrome {
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  border-bottom: none;
+}
+@media (max-width: 1023px) {
+  .sidebar-chrome { border-right: none; }
+}
+
 .sidebar-nav {
   overscroll-behavior: contain;
   min-width: 0;
 }
 .nav-link { min-width: 0; }
 
+/* Section labels hide cleanly in mini mode */
+.sidebar-section-label { min-width: 0; }
+
 /* Sidebar: mini mode on desktop */
 @media (min-width: 1024px) {
   .sidebar-mini { width: 3.5rem; min-width: 3.5rem; }
-  .sidebar-mini > div > div:first-child,
-  .sidebar-expanded > div > div:first-child {
+  .sidebar-mini > div > div:first-child {
     padding-left: 0.5rem; padding-right: 0.5rem;
   }
   .sidebar-mini .sidebar-text {
     overflow: hidden; width: 0; min-width: 0;
     opacity: 0; visibility: hidden; padding: 0; margin: 0; transition: none;
   }
+  .sidebar-mini .sidebar-section-label { display: none; }
   .sidebar-mini.sidebar-mini-hide-text .sidebar-brand .sidebar-text { display: none; }
   .sidebar-mini.sidebar-mini-hide-text .nav-link .sidebar-text { display: none; }
   .sidebar-mini.sidebar-mini-hide-text .sidebar-bottom .sidebar-text { display: none; }
   .sidebar-mini .sidebar-brand { flex: 1; }
-  .sidebar-mini.sidebar-mini-hide-text .sidebar-brand {
-    justify-content: center;
-  }
   .sidebar-mini.sidebar-mini-hide-text .nav-link {
-    justify-content: center; padding-left: 0.5rem; padding-right: 0.5rem;
+    padding-left: 0.5rem; padding-right: 0.5rem;
   }
   .sidebar-mini:not(.sidebar-mini-hide-text) .sidebar-brand .sidebar-text {
     width: auto; min-width: 0; flex: 1; overflow: hidden;
