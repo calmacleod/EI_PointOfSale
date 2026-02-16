@@ -1,8 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 const SIDEBAR_WIDTH = 224
-const EDGE_ZONE = 24
+const EDGE_ZONE = 28
+const DIRECTION_LOCK_THRESHOLD = 10
 const VELOCITY_THRESHOLD = 0.3
+const SNAP_EASING = "cubic-bezier(0.2, 0, 0, 1)"
+const SNAP_DURATION = "250ms"
 
 export default class extends Controller {
   static targets = ["sidebar", "overlay"]
@@ -13,25 +16,32 @@ export default class extends Controller {
 
   connect() {
     this.applyCollapsedState()
-    if (!this.isDesktop()) {
-      this.boundTouchStart = this.handleTouchStart.bind(this)
-      this.boundTouchMove = this.handleTouchMove.bind(this)
-      this.boundTouchEnd = this.handleTouchEnd.bind(this)
-      this.boundTouchCancel = this.handleTouchEnd.bind(this)
-      document.addEventListener("touchstart", this.boundTouchStart, { passive: true })
-      document.addEventListener("touchmove", this.boundTouchMove, { passive: false })
-      document.addEventListener("touchend", this.boundTouchEnd, { passive: true })
-      document.addEventListener("touchcancel", this.boundTouchCancel, { passive: true })
-    }
+    this.swipeState = null
+    this.rafId = null
+    this.setupTouchListeners()
   }
 
   disconnect() {
-    if (this.boundTouchStart) {
-      document.removeEventListener("touchstart", this.boundTouchStart)
-      document.removeEventListener("touchmove", this.boundTouchMove)
-      document.removeEventListener("touchend", this.boundTouchEnd)
-      document.removeEventListener("touchcancel", this.boundTouchCancel)
-    }
+    this.teardownTouchListeners()
+    if (this.rafId) cancelAnimationFrame(this.rafId)
+  }
+
+  setupTouchListeners() {
+    this.boundTouchStart = this.handleTouchStart.bind(this)
+    this.boundTouchMove = this.handleTouchMove.bind(this)
+    this.boundTouchEnd = this.handleTouchEnd.bind(this)
+    document.addEventListener("touchstart", this.boundTouchStart, { passive: true })
+    document.addEventListener("touchmove", this.boundTouchMove, { passive: false })
+    document.addEventListener("touchend", this.boundTouchEnd, { passive: true })
+    document.addEventListener("touchcancel", this.boundTouchEnd, { passive: true })
+  }
+
+  teardownTouchListeners() {
+    if (!this.boundTouchStart) return
+    document.removeEventListener("touchstart", this.boundTouchStart)
+    document.removeEventListener("touchmove", this.boundTouchMove)
+    document.removeEventListener("touchend", this.boundTouchEnd)
+    document.removeEventListener("touchcancel", this.boundTouchEnd)
   }
 
   collapsedValueChanged() {
@@ -83,7 +93,6 @@ export default class extends Controller {
     }
   }
 
-  // Navigate on mousedown for snappy feel (don't wait for click/mouseup)
   navigate(event) {
     const link = event.target.closest("a")
     if (!link?.href) return
@@ -98,11 +107,20 @@ export default class extends Controller {
   }
 
   toggleMobileDrawer() {
-    this.sidebarTarget.classList.toggle("-translate-x-full")
-    this.sidebarTarget.classList.toggle("translate-x-0")
+    if (this.isMobileDrawerOpen()) {
+      this.closeMobileDrawer()
+    } else {
+      this.openMobileDrawer()
+    }
+  }
+
+  openMobileDrawer() {
+    this.sidebarTarget.classList.remove("-translate-x-full")
+    this.sidebarTarget.classList.add("translate-x-0")
     if (this.hasOverlayTarget) {
-      this.overlayTarget.classList.toggle("hidden")
-      document.body.classList.toggle("overflow-hidden", !this.overlayTarget.classList.contains("hidden"))
+      this.overlayTarget.classList.remove("hidden")
+      this.overlayTarget.style.opacity = ""
+      document.body.classList.add("overflow-hidden")
     }
   }
 
@@ -111,6 +129,7 @@ export default class extends Controller {
     this.sidebarTarget.classList.remove("translate-x-0")
     if (this.hasOverlayTarget) {
       this.overlayTarget.classList.add("hidden")
+      this.overlayTarget.style.opacity = ""
       document.body.classList.remove("overflow-hidden")
     }
   }
@@ -149,25 +168,28 @@ export default class extends Controller {
     return this.sidebarTarget.classList.contains("translate-x-0")
   }
 
+  // ── Touch gesture handling ──────────────────────────────────────────
+
   handleTouchStart(event) {
     if (this.isDesktop()) return
     const touch = event.touches[0]
     if (!touch) return
 
     const x = touch.clientX
-    const y = touch.clientY
-    const isClosed = this.sidebarTarget.classList.contains("-translate-x-full")
+    const isClosed = !this.isMobileDrawerOpen()
     const isOpen = this.isMobileDrawerOpen()
 
     const edgeSwipeToOpen = isClosed && x < EDGE_ZONE
-    const swipeToClose = isOpen && x >= SIDEBAR_WIDTH // Only capture on overlay; touches on sidebar allow scroll
+    const swipeToClose = isOpen
 
     if (edgeSwipeToOpen || swipeToClose) {
       this.swipeState = {
         startX: x,
-        startY: y,
+        startY: touch.clientY,
+        lastX: x,
         startTime: Date.now(),
-        isOpening: edgeSwipeToOpen
+        isOpening: edgeSwipeToOpen,
+        direction: null
       }
     }
   }
@@ -179,17 +201,48 @@ export default class extends Controller {
     const touch = event.touches[0]
     if (!touch) return
 
-    event.preventDefault()
-
     const x = touch.clientX
+    const y = touch.clientY
+    const deltaX = x - this.swipeState.startX
+    const deltaY = y - this.swipeState.startY
+
+    if (!this.swipeState.direction) {
+      const absDeltaX = Math.abs(deltaX)
+      const absDeltaY = Math.abs(deltaY)
+
+      if (absDeltaX < DIRECTION_LOCK_THRESHOLD && absDeltaY < DIRECTION_LOCK_THRESHOLD) {
+        return
+      }
+
+      if (absDeltaY > absDeltaX) {
+        this.swipeState = null
+        return
+      }
+
+      this.swipeState.direction = "horizontal"
+    }
+
+    event.preventDefault()
+    this.swipeState.lastX = x
+
+    if (this.rafId) cancelAnimationFrame(this.rafId)
+    this.rafId = requestAnimationFrame(() => {
+      this.rafId = null
+      this.applySwipePosition(x)
+    })
+  }
+
+  applySwipePosition(x) {
     const translateX = Math.max(-SIDEBAR_WIDTH, Math.min(0, x - SIDEBAR_WIDTH))
 
     this.sidebarTarget.style.transition = "none"
     this.sidebarTarget.style.transform = `translateX(${translateX}px)`
 
     if (this.hasOverlayTarget) {
+      const progress = (translateX + SIDEBAR_WIDTH) / SIDEBAR_WIDTH
       this.overlayTarget.classList.remove("hidden")
-      this.overlayTarget.style.opacity = String((translateX + SIDEBAR_WIDTH) / SIDEBAR_WIDTH)
+      this.overlayTarget.style.transition = "none"
+      this.overlayTarget.style.opacity = String(Math.max(0, progress))
       document.body.classList.add("overflow-hidden")
     }
   }
@@ -198,49 +251,79 @@ export default class extends Controller {
     if (!this.swipeState) return
     if (this.isDesktop()) return
 
-    const touch = event.changedTouches[0]
-    if (!touch) {
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId)
+      this.rafId = null
+    }
+
+    if (!this.swipeState.direction) {
       this.swipeState = null
       return
     }
 
-    const x = touch.clientX
+    const touch = event.changedTouches?.[0]
+    const x = touch ? touch.clientX : this.swipeState.lastX
     const deltaX = x - this.swipeState.startX
     const deltaTime = Date.now() - this.swipeState.startTime
     const velocity = deltaTime > 0 ? deltaX / deltaTime : 0
 
-    const currentTranslate = parseFloat(this.sidebarTarget.style.transform?.replace("translateX(", "").replace("px)", "")) || -SIDEBAR_WIDTH
+    const currentTranslate = Math.max(-SIDEBAR_WIDTH, Math.min(0, x - SIDEBAR_WIDTH))
     const openRatio = (currentTranslate + SIDEBAR_WIDTH) / SIDEBAR_WIDTH
-    const totalMovement = Math.abs(deltaX)
 
     let shouldOpen
     if (this.swipeState.isOpening) {
-      shouldOpen = openRatio > 0.25 || velocity > VELOCITY_THRESHOLD
+      shouldOpen = openRatio > 0.3 || velocity > VELOCITY_THRESHOLD
     } else {
-      shouldOpen = totalMovement < 10 ? false : openRatio > 0.75 || velocity > VELOCITY_THRESHOLD
+      shouldOpen = openRatio > 0.5 && velocity > -VELOCITY_THRESHOLD
     }
 
-    this.sidebarTarget.style.transition = ""
-    this.sidebarTarget.style.transform = ""
-
-    if (shouldOpen) {
-      this.sidebarTarget.classList.remove("-translate-x-full")
-      this.sidebarTarget.classList.add("translate-x-0")
-      if (this.hasOverlayTarget) {
-        this.overlayTarget.classList.remove("hidden")
-        this.overlayTarget.style.opacity = ""
-        document.body.classList.add("overflow-hidden")
-      }
-    } else {
-      this.sidebarTarget.classList.add("-translate-x-full")
-      this.sidebarTarget.classList.remove("translate-x-0")
-      if (this.hasOverlayTarget) {
-        this.overlayTarget.classList.add("hidden")
-        this.overlayTarget.style.opacity = ""
-        document.body.classList.remove("overflow-hidden")
-      }
-    }
-
+    this.animateSnap(shouldOpen, currentTranslate)
     this.swipeState = null
+  }
+
+  animateSnap(shouldOpen, fromTranslate) {
+    const targetTranslate = shouldOpen ? 0 : -SIDEBAR_WIDTH
+    const targetOpacity = shouldOpen ? 1 : 0
+    const distance = Math.abs(targetTranslate - fromTranslate)
+    const durationMs = Math.max(100, Math.min(250, (distance / SIDEBAR_WIDTH) * 250))
+    const duration = `${Math.round(durationMs)}ms`
+
+    this.sidebarTarget.style.transition = `transform ${duration} ${SNAP_EASING}`
+    this.sidebarTarget.style.transform = `translateX(${targetTranslate}px)`
+
+    if (this.hasOverlayTarget) {
+      this.overlayTarget.style.transition = `opacity ${duration} ${SNAP_EASING}`
+      this.overlayTarget.style.opacity = String(targetOpacity)
+    }
+
+    const cleanup = () => {
+      this.sidebarTarget.removeEventListener("transitionend", cleanup)
+      this.sidebarTarget.style.transition = ""
+      this.sidebarTarget.style.transform = ""
+
+      if (shouldOpen) {
+        this.sidebarTarget.classList.remove("-translate-x-full")
+        this.sidebarTarget.classList.add("translate-x-0")
+      } else {
+        this.sidebarTarget.classList.add("-translate-x-full")
+        this.sidebarTarget.classList.remove("translate-x-0")
+      }
+
+      if (this.hasOverlayTarget) {
+        this.overlayTarget.style.transition = ""
+        this.overlayTarget.style.opacity = ""
+        if (shouldOpen) {
+          this.overlayTarget.classList.remove("hidden")
+          document.body.classList.add("overflow-hidden")
+        } else {
+          this.overlayTarget.classList.add("hidden")
+          document.body.classList.remove("overflow-hidden")
+        }
+      }
+    }
+
+    this.sidebarTarget.addEventListener("transitionend", cleanup, { once: true })
+
+    setTimeout(cleanup, durationMs + 50)
   }
 }

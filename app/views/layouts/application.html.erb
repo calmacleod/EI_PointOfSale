@@ -2,10 +2,13 @@
 <html data-theme="<%= Current.user&.theme || 'light' %>" data-font-size="<%= Current.user&.font_size || 'default' %>">
   <head>
     <title><%= content_for(:title) || "Ei Point Of Sale" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Ei Point Of Sale">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="application-name" content="EI Point of Sale">
     <meta name="mobile-web-app-capable" content="yes">
+    <% theme_colors = { "light" => "#f0f0f0", "dark" => "#1e1e1e", "dim" => "#2a2a2a" } %>
+    <meta name="theme-color" content="<%= theme_colors[Current.user&.theme] || '#f0f0f0' %>">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
@@ -28,7 +31,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-page text-body overflow-x-hidden">
+  <body class="bg-page text-body overflow-x-hidden" data-controller="pwa">
     <% if authenticated? %>
       <% sidebar_collapsed = Current.user&.sidebar_collapsed == true %>
       <div class="flex h-screen min-h-0 w-full flex-col overflow-hidden lg:flex-row <%= 'sidebar-collapsed' if sidebar_collapsed %>" data-controller="sidebar confirm-modal search-modal" data-sidebar-collapsed-value="<%= sidebar_collapsed %>" data-sidebar-profile-path-value="<%= profile_display_preferences_path %>">

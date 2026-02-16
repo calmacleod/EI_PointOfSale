@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Offline — EI Point of Sale</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: #f0f0f0;
+      color: #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100dvh;
+      padding: 1.5rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    .card {
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 0.5rem;
+      padding: 2.5rem 2rem;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 3rem;
+      height: 3rem;
+      border-radius: 0.5rem;
+      background: #0d9488;
+      color: #f0f0f0;
+      font-size: 0.875rem;
+      font-weight: 700;
+      margin-bottom: 1.25rem;
+    }
+    h1 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    p {
+      font-size: 0.875rem;
+      color: #666;
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+    }
+    .icon {
+      display: block;
+      margin: 0 auto 1rem;
+      width: 3rem;
+      height: 3rem;
+      color: #999;
+    }
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.375rem;
+      min-height: 2rem;
+      padding: 0.375rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      font-family: inherit;
+      color: #f0f0f0;
+      background: #0d9488;
+      border: none;
+      border-radius: 0.375rem;
+      cursor: pointer;
+      transition: background 150ms;
+    }
+    button:hover { background: #0f766e; }
+    button:active { background: #115e59; }
+    button svg { width: 1rem; height: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">EI</div>
+    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M18.364 5.636a9 9 0 11-12.728 0M12 2v6m-3.5 4.5a3.5 3.5 0 107 0"/>
+    </svg>
+    <h1>You're offline</h1>
+    <p>It looks like your device lost its connection. Check your network and try again.</p>
+    <button onclick="window.location.reload()">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      Retry
+    </button>
+  </div>
+</body>
+</html>
