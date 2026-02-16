@@ -14,36 +14,22 @@ module AdminArea
       assert_includes response.body, "Admin settings"
     end
 
-    test "show displays accent colour swatches" do
+    test "show displays store details card" do
       get admin_settings_path
       assert_response :success
-      Store::ACCENT_COLOR_NAMES.each do |color|
-        assert_includes response.body, "data-color=\"#{color}\""
-      end
+      assert_includes response.body, "Store details"
     end
 
-    test "update changes the accent colour" do
-      patch admin_settings_path, params: { store: { accent_color: "blue" } }
-      assert_redirected_to admin_settings_path
-      assert_equal "blue", Store.current.reload.accent_color
-    end
-
-    test "update rejects invalid accent colour" do
-      patch admin_settings_path, params: { store: { accent_color: "neon_pink" } }
-      assert_response :unprocessable_entity
-    end
-
-    test "update can upload a store logo" do
-      logo = fixture_file_upload("test_logo_square.png", "image/png")
-      patch admin_settings_path, params: { store: { logo: logo } }
-      assert_redirected_to admin_settings_path
-      assert Store.current.reload.logo.attached?
-    end
-
-    test "show displays logo upload field" do
+    test "show displays all admin section cards" do
       get admin_settings_path
       assert_response :success
-      assert_includes response.body, "Store logo"
+      assert_includes response.body, "Users"
+      assert_includes response.body, "Tax codes"
+      assert_includes response.body, "Suppliers"
+      assert_includes response.body, "Receipt Templates"
+      assert_includes response.body, "Audit trail"
+      assert_includes response.body, "Backups"
+      assert_includes response.body, "Data export"
     end
 
     test "non-admin cannot access settings" do

@@ -10,6 +10,21 @@
   <%= render "shared/page_header", title: "Admin settings", description: "Configure the application and manage reference data." %>
 
   <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+    <%= link_to admin_store_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Store details</h2>
+          <p class="mt-0.5 text-xs text-muted">Name, contact info, logo, and accent colour.</p>
+          <p class="mt-1.5 text-xs font-medium text-accent">Edit store →</p>
+        </div>
+        <div class="rounded-md bg-[var(--color-border)]/30 p-1 group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+    <% end %>
+
     <%= link_to admin_users_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
       <div class="flex items-start justify-between gap-2">
         <div>
@@ -56,6 +71,21 @@
       </div>
     <% end %>
 
+    <%= link_to admin_receipt_templates_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Receipt Templates</h2>
+          <p class="mt-0.5 text-xs text-muted">Configure layouts for your thermal receipt printer.</p>
+          <p class="mt-1.5 text-xs font-medium text-accent">Manage templates →</p>
+        </div>
+        <div class="rounded-md bg-[var(--color-border)]/30 p-1 group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+    <% end %>
+
     <%= link_to admin_audits_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
       <div class="flex items-start justify-between gap-2">
         <div>
@@ -86,21 +116,6 @@
       </div>
     <% end %>
 
-    <%= link_to admin_receipt_templates_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
-      <div class="flex items-start justify-between gap-2">
-        <div>
-          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Receipt Templates</h2>
-          <p class="mt-0.5 text-xs text-muted">Configure layouts for your thermal receipt printer.</p>
-          <p class="mt-1.5 text-xs font-medium text-accent">Manage templates →</p>
-        </div>
-        <div class="rounded-md bg-[var(--color-border)]/30 p-1 group-hover:bg-[var(--color-accent)]/10">
-          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd"/>
-          </svg>
-        </div>
-      </div>
-    <% end %>
-
     <%= link_to admin_data_export_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
       <div class="flex items-start justify-between gap-2">
         <div>
@@ -116,174 +131,4 @@
       </div>
     <% end %>
   </div>
-
-  <%= form_with model: @store, url: admin_settings_path, method: :patch, class: "mt-3 rounded-lg border border-theme bg-surface p-2.5", data: { controller: "address-autofill", address_autofill_token_value: mapbox_access_token } do |f| %>
-    <% if @store.errors.any? %>
-      <div class="mb-2.5 rounded-md border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2">
-        <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-        <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
-          <% @store.errors.full_messages.each do |message| %>
-            <li><%= message %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
-
-    <h2 class="text-sm font-semibold text-body">Store information</h2>
-    <p class="mt-0.5 text-xs text-muted">Contact details shown on receipts and in the app.</p>
-
-    <%# ── Store logo ── %>
-    <div class="mt-3 rounded-md border border-theme bg-[var(--color-border)]/10 p-2.5">
-      <h3 class="text-sm font-semibold text-body">Store logo</h3>
-      <p class="mt-0.5 text-xs text-muted">Upload a square image (PNG, JPEG, or WebP). This will be printed on receipts.</p>
-
-      <div class="mt-2 flex items-start gap-3">
-        <% if @store.logo.attached? %>
-          <div class="shrink-0">
-            <%= image_tag @store.logo.variant(resize_to_limit: [80, 80]),
-                class: "h-16 w-16 rounded-md border border-theme object-cover",
-                alt: "Store logo" %>
-          </div>
-        <% else %>
-          <div class="flex h-16 w-16 shrink-0 items-center justify-center rounded-md border-2 border-dashed border-[var(--color-border)] bg-surface">
-            <svg class="h-6 w-6 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z"/>
-            </svg>
-          </div>
-        <% end %>
-
-        <div class="flex-1">
-          <%= f.file_field :logo,
-              accept: "image/png,image/jpeg,image/gif,image/webp",
-              class: "block w-full text-sm text-body file:mr-2 file:rounded-md file:border-0 file:bg-accent file:px-2.5 file:py-1 file:text-sm file:font-semibold file:text-[color:var(--color-page)] hover:file:bg-[var(--color-accent-hover)] file:cursor-pointer" %>
-          <p class="mt-1 text-xs text-muted">Recommended: 512x512 px square image. Max 2 MB.</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-      <div class="sm:col-span-2">
-        <%= f.label :name, "Store name", class: "text-sm font-medium text-body" %>
-        <%= f.text_field :name,
-            placeholder: "e.g. Acme Comics & Games",
-            class: "input-field mt-0.5 w-full min-h-[30px]" %>
-        <p class="mt-0.5 text-xs text-muted">Shown on receipts and in the app header.</p>
-      </div>
-
-      <div>
-        <%= f.label :phone, "Phone", class: "text-sm font-medium text-body" %>
-        <%= f.telephone_field :phone,
-            placeholder: "e.g. 1-416-555-0100",
-            class: "input-field mt-0.5 w-full min-h-[30px]" %>
-      </div>
-
-      <div>
-        <%= f.label :email, "Email", class: "text-sm font-medium text-body" %>
-        <%= f.email_field :email,
-            placeholder: "e.g. store@example.com",
-            class: "input-field mt-0.5 w-full min-h-[30px]" %>
-      </div>
-
-      <div class="sm:col-span-2">
-        <label for="address_search" class="text-sm font-medium text-body">Address</label>
-        <input type="text"
-            id="address_search"
-            autocomplete="address-line1"
-            placeholder="Start typing to search for your address..."
-            class="input-field mt-0.5 w-full min-h-[30px]"
-            data-address-autofill-target="searchInput">
-        <p class="mt-0.5 text-xs text-muted">Select a suggestion to fill the fields below, or type manually.</p>
-      </div>
-
-      <div class="sm:col-span-2">
-        <%= f.label :address_line1, "Address line 1", class: "text-sm font-medium text-body" %>
-        <%= f.text_field :address_line1,
-            autocomplete: "off",
-            placeholder: "Street address",
-            class: "input-field mt-0.5 w-full min-h-[30px]",
-            data: { address_autofill_target: "addressLine1" } %>
-      </div>
-
-      <div class="sm:col-span-2">
-        <%= f.label :address_line2, "Address line 2", class: "text-sm font-medium text-body" %>
-        <%= f.text_field :address_line2,
-            autocomplete: "off",
-            placeholder: "Suite, unit, building (optional)",
-            class: "input-field mt-0.5 w-full min-h-[30px]",
-            data: { address_autofill_target: "addressLine2" } %>
-      </div>
-
-      <div>
-        <%= f.label :city, "City", class: "text-sm font-medium text-body" %>
-        <%= f.text_field :city,
-            autocomplete: "off",
-            placeholder: "City",
-            class: "input-field mt-0.5 w-full min-h-[30px]",
-            data: { address_autofill_target: "city" } %>
-      </div>
-
-      <div>
-        <%= f.label :province, "Province", class: "text-sm font-medium text-body" %>
-        <%= f.text_field :province,
-            autocomplete: "off",
-            placeholder: "Province",
-            class: "input-field mt-0.5 w-full min-h-[30px]",
-            data: { address_autofill_target: "province" } %>
-      </div>
-
-      <div>
-        <%= f.label :postal_code, "Postal code", class: "text-sm font-medium text-body" %>
-        <%= f.text_field :postal_code,
-            autocomplete: "off",
-            placeholder: "A1A 1A1",
-            class: "input-field mt-0.5 w-full min-h-[30px]",
-            data: { address_autofill_target: "postalCode" } %>
-      </div>
-
-      <div>
-        <%= f.label :country, "Country", class: "text-sm font-medium text-body" %>
-        <%= f.text_field :country,
-            autocomplete: "off",
-            placeholder: "Canada",
-            class: "input-field mt-0.5 w-full min-h-[30px]",
-            data: { address_autofill_target: "country" } %>
-      </div>
-
-    </div>
-
-    <div class="mt-3 border-t border-theme pt-3" data-controller="color-picker">
-      <h2 class="text-sm font-semibold text-body">Accent colour</h2>
-      <p class="mt-0.5 text-xs text-muted">Choose the primary colour used for buttons, links, and active navigation.</p>
-
-      <%= f.hidden_field :accent_color, data: { color_picker_target: "input" } %>
-
-      <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Accent colour">
-        <% Store::ACCENT_COLORS.each do |name, palette| %>
-          <% selected = @store.accent_color == name %>
-          <button type="button"
-                  data-action="click->color-picker#select"
-                  data-color="<%= name %>"
-                  data-color-picker-target="swatch"
-                  aria-checked="<%= selected %>"
-                  aria-label="<%= palette[:label] %>"
-                  role="radio"
-                  class="group relative flex h-9 w-9 items-center justify-center rounded-full border-2 transition-all
-                         <%= selected ? 'ring-2 ring-offset-1' : '' %>"
-                  style="background-color: <%= palette[:swatch] %>; border-color: <%= palette[:swatch] %>; --tw-ring-color: <%= palette[:swatch] %>;">
-            <svg data-check class="h-4 w-4 text-white <%= 'hidden' unless selected %>" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-            </svg>
-            <span class="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-medium text-muted">
-              <%= palette[:label] %>
-            </span>
-          </button>
-        <% end %>
-      </div>
-    </div>
-
-    <div class="mt-6 flex items-center justify-end">
-      <%= f.submit "Save settings",
-          class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:opacity-90" %>
-    </div>
-  <% end %>
 </div>
