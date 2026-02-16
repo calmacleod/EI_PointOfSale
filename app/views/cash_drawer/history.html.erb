@@ -16,75 +16,25 @@
   <% end %>
 
   <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
-    <%= render "shared/table_filters",
-        search_path: history_cash_drawer_path,
-        turbo_frame: "cash_drawer_history",
-        label: "Filter sessions",
-        placeholder: "Filter by date..." %>
+    <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
 
-    <%= turbo_frame_tag "cash_drawer_history", class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
-      <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto">
-        <table class="min-w-full divide-y divide-[var(--color-border)]">
-          <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
-            <tr>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Opened", :opened_at %></th>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Opened By</th>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Closed", :closed_at %></th>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Closed By</th>
-              <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Opening", :opening_total_cents %></th>
-              <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Closing", :closing_total_cents %></th>
-              <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted">Diff</th>
-              <th class="px-3 py-1"></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[var(--color-border)] bg-surface">
-            <% @sessions.each do |sess| %>
-              <tr>
-                <td class="px-3 py-1.5 text-sm text-body"><%= local_time(sess.opened_at, format: :short) %></td>
-                <td class="px-3 py-1.5 text-sm text-muted"><%= sess.opened_by.name.presence || sess.opened_by.email_address %></td>
-                <td class="px-3 py-1.5 text-sm text-body">
-                  <% if sess.closed? %>
-                    <%= local_time(sess.closed_at, format: :short) %>
-                  <% else %>
-                    <%= status_chip("Open", :success) %>
-                  <% end %>
-                </td>
-                <td class="px-3 py-1.5 text-sm text-muted">
-                  <% if sess.closed_by %>
-                    <%= sess.closed_by.name.presence || sess.closed_by.email_address %>
-                  <% else %>
-                    —
-                  <% end %>
-                </td>
-                <td class="px-3 py-1.5 text-right text-sm text-body tabular-nums"><%= number_to_currency(sess.opening_total) %></td>
-                <td class="px-3 py-1.5 text-right text-sm text-body tabular-nums">
-                  <%= sess.closed? ? number_to_currency(sess.closing_total) : "—" %>
-                </td>
-                <td class="px-3 py-1.5 text-right text-sm font-medium tabular-nums">
-                  <% if sess.closed? %>
-                    <span class="<%= sess.discrepancy_cents == 0 ? 'text-body' : (sess.discrepancy_cents > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') %>">
-                      <%= number_to_currency(sess.discrepancy) %>
-                    </span>
-                  <% else %>
-                    —
-                  <% end %>
-                </td>
-                <td class="px-3 py-1.5 text-right">
-                  <%= link_to "View", session_detail_cash_drawer_path(sess),
-                      class: "text-xs font-medium text-accent hover:opacity-80",
-                      data: { turbo_frame: "_top", turbo_prefetch: true } %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-
-      <% if @sessions.empty? %>
-        <p class="mt-2 text-sm text-muted">No cash drawer sessions yet.</p>
-      <% end %>
-
-      <%= render "shared/pagy_nav" %>
+    <%= render "shared/data_table", config: @filter_config, records: @sessions, pagy: @pagy,
+               empty_message: "No cash drawer sessions yet." do |t| %>
+      <% t.cell(:opened_at) { |sess| local_time(sess.opened_at, format: :short) } %>
+      <% t.cell(:opened_by) { |sess| content_tag(:span, sess.opened_by.name.presence || sess.opened_by.email_address, class: "text-muted") } %>
+      <% t.cell(:closed_at) { |sess| sess.closed? ? local_time(sess.closed_at, format: :short) : status_chip("Open", :success) } %>
+      <% t.cell(:closed_by) { |sess| sess.closed_by ? content_tag(:span, sess.closed_by.name.presence || sess.closed_by.email_address, class: "text-muted") : "—" } %>
+      <% t.cell(:opening_total_cents) { |sess| content_tag(:span, number_to_currency(sess.opening_total), class: "tabular-nums") } %>
+      <% t.cell(:closing_total_cents) { |sess| content_tag(:span, sess.closed? ? number_to_currency(sess.closing_total) : "—", class: "tabular-nums") } %>
+      <% t.cell(:diff) { |sess|
+           if sess.closed?
+             color = sess.discrepancy_cents == 0 ? "text-body" : (sess.discrepancy_cents > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400")
+             content_tag(:span, number_to_currency(sess.discrepancy), class: "font-medium tabular-nums #{color}")
+           else
+             "—"
+           end
+         } %>
+      <% t.cell(:actions) { |sess| link_to("View", session_detail_cash_drawer_path(sess), class: "text-xs font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>
 </div>

@@ -16,58 +16,22 @@
   <% end %>
 
   <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
-    <%= turbo_frame_tag "receipt_templates_table", class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
-      <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto">
-        <table class="min-w-full divide-y divide-[var(--color-border)]">
-          <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
-            <tr>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Name", :name %></th>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Paper Width", :paper_width_mm %></th>
-              <th class="px-3 py-1 text-center text-xs font-medium uppercase tracking-wider text-muted">Status</th>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Created", :created_at %></th>
-              <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted">Actions</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[var(--color-border)] bg-surface">
-            <% @receipt_templates.each do |template| %>
-              <tr>
-                <td class="px-3 py-1.5 text-sm font-medium text-body">
-                  <%= link_to template.name, admin_receipt_template_path(template), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
-                </td>
-                <td class="px-3 py-1.5 text-sm text-body">
-                  <%= ReceiptTemplate::PAPER_WIDTHS.dig(template.paper_width_mm, :label) || "#{template.paper_width_mm} mm" %>
-                </td>
-                <td class="px-3 py-1.5 text-center text-sm">
-                  <% if template.active? %>
-                    <%= status_chip("Active", :success) %>
-                  <% else %>
-                    <%= status_chip("Inactive", :neutral) %>
-                  <% end %>
-                </td>
-                <td class="px-3 py-1.5 text-sm text-muted"><%= local_time(template.created_at, format: :short) %></td>
-                <td class="px-3 py-1.5 text-right text-sm">
-                  <div class="flex items-center justify-end gap-2">
-                    <% unless template.active? %>
-                      <%= button_to "Activate", activate_admin_receipt_template_path(template),
-                          method: :patch,
-                          class: "text-xs font-medium text-green-600 dark:text-green-400 hover:opacity-80" %>
-                    <% end %>
-                    <%= link_to "Edit", edit_admin_receipt_template_path(template),
-                        class: "text-xs font-medium text-accent hover:opacity-80",
-                        data: { turbo_frame: "_top", turbo_prefetch: true } %>
-                  </div>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
+    <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
 
-      <% if @receipt_templates.empty? %>
-        <p class="mt-2 text-sm text-muted">No receipt templates yet. Add one to get started.</p>
-      <% end %>
-
-      <%= render "shared/pagy_nav" %>
+    <%= render "shared/data_table", config: @filter_config, records: @receipt_templates, pagy: @pagy,
+               empty_message: "No receipt templates yet. Add one to get started." do |t| %>
+      <% t.cell(:name) { |template| link_to template.name, admin_receipt_template_path(template), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <% t.cell(:paper_width_mm) { |template| ReceiptTemplate::PAPER_WIDTHS.dig(template.paper_width_mm, :label) || "#{template.paper_width_mm} mm" } %>
+      <% t.cell(:chars_per_line) { |template| template.chars_per_line } %>
+      <% t.cell(:active) { |template| template.active? ? status_chip("Active", :success) : status_chip("Inactive", :neutral) } %>
+      <% t.cell(:created_at) { |template| local_time(template.created_at, format: :short) } %>
+      <% t.cell(:actions) { |template|
+           capture do
+             concat(button_to("Activate", activate_admin_receipt_template_path(template), method: :patch, class: "text-xs font-medium text-green-600 dark:text-green-400 hover:opacity-80")) unless template.active?
+             concat(" ")
+             concat(link_to("Edit", edit_admin_receipt_template_path(template), class: "text-xs font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }))
+           end
+         } %>
     <% end %>
   </div>
 </div>

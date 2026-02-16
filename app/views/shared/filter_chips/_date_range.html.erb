@@ -1,0 +1,34 @@
+<%# Date range filter chip: renders preset select + optional custom date inputs. %>
+<% preset_key = "#{filter.key}_preset" %>
+<% from_key = "#{filter.key}_from" %>
+<% to_key = "#{filter.key}_to" %>
+<% current_preset = params[preset_key] || (params[from_key].present? || params[to_key].present? ? "custom" : "") %>
+<div class="inline-flex items-center gap-1 rounded-full border border-theme bg-[var(--color-border)]/20 px-2 py-0.5"
+     data-controller="date-range-filter"
+     data-filter-key="<%= filter.key %>">
+  <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
+  <select name="<%= preset_key %>"
+          form="<%= local_assigns[:form_id] %>"
+          class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0"
+          data-date-range-filter-target="presetSelect"
+          data-action="change->date-range-filter#presetChanged change->filter-builder#handleFilterChange">
+    <% FilterConfig::DATE_PRESET_LABELS.each do |label, value| %>
+      <option value="<%= value %>" <%= "selected" if current_preset == value %>><%= label %></option>
+    <% end %>
+  </select>
+  <div data-date-range-filter-target="customFields" class="<%= 'hidden' unless current_preset == 'custom' %> flex items-center gap-1">
+    <input type="date" name="<%= from_key %>" value="<%= params[from_key] %>"
+           form="<%= local_assigns[:form_id] %>"
+           class="input-field-compact h-6 w-28 px-1 py-0 text-xs"
+           data-action="change->filter-builder#handleFilterChange">
+    <span class="text-xs text-muted">–</span>
+    <input type="date" name="<%= to_key %>" value="<%= params[to_key] %>"
+           form="<%= local_assigns[:form_id] %>"
+           class="input-field-compact h-6 w-28 px-1 py-0 text-xs"
+           data-action="change->filter-builder#handleFilterChange">
+  </div>
+  <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="<%= filter.key %>"
+          class="ml-0.5 text-muted hover:text-body" title="Remove filter">
+    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+</div>

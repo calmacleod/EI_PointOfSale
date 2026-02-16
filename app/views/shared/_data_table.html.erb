@@ -1,0 +1,96 @@
+<%# Generic data table with column toggling, sortable headers, and pagination.
+    Requires: config (FilterConfig), records (collection), pagy (Pagy instance).
+    Usage:
+      render "shared/data_table", config: @filter_config, records: @products, pagy: @pagy do |t|
+        t.cell(:code) { |p| link_to p.code, product_path(p), ... }
+        t.cell(:name) { |p| link_to p.name, product_path(p), ... }
+      end
+%>
+<% config = local_assigns[:config] || @filter_config %>
+<% records = local_assigns[:records] %>
+<% pagy_obj = local_assigns[:pagy] || @pagy %>
+<% empty_message = local_assigns[:empty_message] || "No records found." %>
+<% turbo_frame = config.resource_name + "_table" %>
+
+<% table = DataTableHelper::DataTableBuilder.new(records, self) %>
+<% yield table if block_given? %>
+
+<%= turbo_frame_tag turbo_frame, class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
+  <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto"
+       data-controller="column-toggle"
+       data-column-toggle-resource-value="<%= config.resource_name %>"
+       data-column-toggle-columns-value="<%= config.columns_json %>">
+
+    <%# Column toggle button %>
+    <div class="flex items-center justify-end border-b border-theme bg-surface-alt px-2 py-1">
+      <div class="relative">
+        <button type="button" data-action="click->column-toggle#togglePopover"
+                class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body"
+                title="Toggle columns">
+          <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          <span>Columns</span>
+        </button>
+        <div data-column-toggle-target="popover"
+             class="absolute right-0 z-20 mt-1 hidden min-w-[180px] rounded-lg border border-theme bg-surface py-1 shadow-lg">
+          <% config.columns.each do |col| %>
+            <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-[var(--color-border)]">
+              <input type="checkbox" data-action="change->column-toggle#toggleColumn"
+                     data-column-key="<%= col.key %>"
+                     checked
+                     class="rounded border-theme text-accent focus:ring-accent">
+              <%= col.label %>
+            </label>
+          <% end %>
+          <div class="border-t border-theme px-3 py-1">
+            <button type="button" data-action="click->column-toggle#resetDefaults"
+                    class="text-xs font-medium text-muted hover:text-body">Reset to defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="min-w-full divide-y divide-[var(--color-border)]" data-column-toggle-target="table">
+      <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
+        <tr>
+          <% config.columns.each do |col| %>
+            <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted" data-column="<%= col.key %>">
+              <% if col.sortable %>
+                <%= sort_link col.label, col.key %>
+              <% else %>
+                <%= col.label %>
+              <% end %>
+            </th>
+          <% end %>
+          <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted" data-column="actions"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+        <% records.each do |record| %>
+          <tr>
+            <% config.columns.each do |col| %>
+              <td class="px-3 py-1.5 text-sm text-body" data-column="<%= col.key %>">
+                <% if table.cell_defined?(col.key) %>
+                  <%= table.render_cell(col.key, record) %>
+                <% end %>
+              </td>
+            <% end %>
+            <td class="px-3 py-1.5 text-right text-sm" data-column="actions">
+              <% if table.cell_defined?(:actions) %>
+                <%= table.render_cell(:actions, record) %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if records.empty? %>
+    <p class="mt-2 text-sm text-muted"><%= empty_message %></p>
+  <% end %>
+
+  <%= render "shared/pagy_nav" %>
+<% end %>

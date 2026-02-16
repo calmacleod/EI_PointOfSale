@@ -6,15 +6,28 @@ class CustomersController < ApplicationController
   load_and_authorize_resource
 
   def index
+    @filter_config = FilterConfig.new(:customers, customers_path,
+                                      sort_default: "name", sort_default_direction: "asc",
+                                      search_placeholder: "Search customers...") do |f|
+      f.boolean    :active,     label: "Active"
+      f.date_range :created_at, label: "Created"
+      f.date_range :updated_at, label: "Updated"
+
+      f.column :name,          label: "Customer",  default: true,  sortable: true
+      f.column :member_number, label: "Member #",   default: true,  sortable: true
+      f.column :phone,         label: "Phone",      default: true
+      f.column :email,         label: "Email",      default: true
+      f.column :city,          label: "City",       default: false
+      f.column :province,      label: "Province",   default: false
+      f.column :active,        label: "Status",     default: true,  sortable: true
+      f.column :created_at,    label: "Created",    default: true,  sortable: true
+      f.column :updated_at,    label: "Updated",    default: false, sortable: true
+    end
+    @saved_queries = current_user.saved_queries.for_resource("customers")
+
     @pagy, @customers = filter_and_paginate(
       @customers.kept.includes(:added_by),
-      sort_allowed: %w[name member_number email active created_at],
-      sort_default: "name", sort_default_direction: "asc",
-      filters: ->(scope) {
-        scope = scope.where(active: true) if params[:filter] == "active"
-        scope = scope.where(active: false) if params[:filter] == "inactive"
-        scope
-      }
+      config: @filter_config
     )
   end
 

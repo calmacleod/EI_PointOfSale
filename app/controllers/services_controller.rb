@@ -6,10 +6,27 @@ class ServicesController < ApplicationController
   load_and_authorize_resource
 
   def index
+    @filter_config = FilterConfig.new(:services, services_path,
+                                      sort_default: "name", sort_default_direction: "asc",
+                                      search_placeholder: "Search services...") do |f|
+      f.association  :tax_code_id, label: "Tax Code", collection: -> { TaxCode.kept.order(:code) }, display: :code
+      f.number_range :price,       label: "Price"
+      f.date_range   :created_at,  label: "Created"
+      f.date_range   :updated_at,  label: "Updated"
+
+      f.column :name,        label: "Service",     default: true,  sortable: true
+      f.column :code,        label: "Code",        default: true,  sortable: true
+      f.column :price,       label: "Price",       default: true,  sortable: true
+      f.column :tax_code,    label: "Tax",         default: true
+      f.column :description, label: "Description", default: false
+      f.column :created_at,  label: "Created",     default: true,  sortable: true
+      f.column :updated_at,  label: "Updated",     default: false, sortable: true
+    end
+    @saved_queries = current_user.saved_queries.for_resource("services")
+
     @pagy, @services = filter_and_paginate(
       @services.kept.includes(:tax_code),
-      sort_allowed: %w[name code price created_at],
-      sort_default: "name", sort_default_direction: "asc"
+      config: @filter_config
     )
   end
 

@@ -1,0 +1,14 @@
+<%= tag.div id: dom_id(saved_query), class: "flex items-center gap-1" do %>
+  <%= link_to saved_query.name,
+      url_for(controller: saved_query.resource_type, action: :index, **saved_query.query_params.symbolize_keys),
+      class: "flex-1 truncate text-sm text-body hover:text-accent" %>
+  <%= button_to saved_query_path(saved_query),
+      method: :delete,
+      class: "shrink-0 text-muted hover:text-red-500",
+      form: { data: { turbo_stream: true } },
+      title: "Delete" do %>
+    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  <% end %>
+<% end %>

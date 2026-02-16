@@ -94,7 +94,7 @@ class CustomersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index filters by active" do
-    get customers_path, params: { filter: "active" }
+    get customers_path, params: { active: "true" }
 
     assert_response :success
     assert_includes response.body, customers(:acme_corp).name
@@ -103,7 +103,7 @@ class CustomersControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "index filters by inactive" do
-    get customers_path, params: { filter: "inactive" }
+    get customers_path, params: { active: "false" }
 
     assert_response :success
     assert_includes response.body, customers(:inactive_customer).name

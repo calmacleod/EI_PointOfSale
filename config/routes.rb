@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     member { patch :mark_read }
   end
   resources :push_subscriptions, only: [ :create, :destroy ]
+  resources :saved_queries, only: %i[create destroy]
 
   resource :cash_drawer, only: [ :show ], controller: "cash_drawer" do
     get :open, action: :new_open

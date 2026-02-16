@@ -7,10 +7,22 @@ module AdminArea
     before_action :set_supplier, only: %i[ show edit update destroy ]
 
     def index
+      @filter_config = FilterConfig.new(:suppliers, admin_suppliers_path,
+                                        sort_default: "name", sort_default_direction: "asc",
+                                        search_placeholder: "Search suppliers...") do |f|
+        f.date_range :created_at, label: "Created"
+        f.date_range :updated_at, label: "Updated"
+
+        f.column :name,       label: "Name",    default: true, sortable: true
+        f.column :phone,      label: "Phone",   default: true, sortable: true
+        f.column :created_at, label: "Created", default: true, sortable: true
+        f.column :updated_at, label: "Updated", default: false, sortable: true
+      end
+      @saved_queries = current_user.saved_queries.for_resource("suppliers")
+
       @pagy, @suppliers = filter_and_paginate(
         Supplier.kept,
-        sort_allowed: %w[name phone created_at],
-        sort_default: "name", sort_default_direction: "asc"
+        config: @filter_config
       )
     end
 

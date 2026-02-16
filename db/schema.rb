@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_145535) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_160704) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -269,6 +269,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_145535) do
     t.index ["status"], name: "index_reports_on_status"
   end
 
+  create_table "saved_queries", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.jsonb "query_params", default: {}, null: false
+    t.string "resource_type", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "resource_type"], name: "index_saved_queries_on_user_id_and_resource_type"
+    t.index ["user_id"], name: "index_saved_queries_on_user_id"
+  end
+
   create_table "services", force: :cascade do |t|
     t.bigint "added_by_id"
     t.string "code"
@@ -485,6 +496,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_145535) do
   add_foreign_key "products", "users", column: "added_by_id"
   add_foreign_key "push_subscriptions", "users"
   add_foreign_key "reports", "users", column: "generated_by_id"
+  add_foreign_key "saved_queries", "users"
   add_foreign_key "services", "tax_codes"
   add_foreign_key "services", "users", column: "added_by_id"
   add_foreign_key "sessions", "users"

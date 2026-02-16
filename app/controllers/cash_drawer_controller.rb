@@ -79,12 +79,23 @@ class CashDrawerController < ApplicationController
 
   # GET /cash_drawer/history
   def history
+    @filter_config = FilterConfig.new(:cash_drawer_history, history_cash_drawer_path,
+                                      search: false) do |f|
+      f.date_range :opened_at, label: "Opened"
+
+      f.column :opened_at,            label: "Opened",     default: true, sortable: true
+      f.column :opened_by,            label: "Opened by",  default: true
+      f.column :closed_at,            label: "Closed",     default: true, sortable: true
+      f.column :closed_by,            label: "Closed by",  default: true
+      f.column :opening_total_cents,  label: "Opening",    default: true, sortable: true
+      f.column :closing_total_cents,  label: "Closing",    default: true, sortable: true
+      f.column :diff,                 label: "Diff",       default: true
+    end
+    @saved_queries = current_user.saved_queries.for_resource("cash_drawer_history")
+
     @pagy, @sessions = filter_and_paginate(
       CashDrawerSession.includes(:opened_by, :closed_by),
-      search: false,
-      sort_allowed: %w[opened_at closed_at opening_total_cents closing_total_cents],
-      sort_default: "opened_at",
-      sort_default_direction: "desc"
+      config: @filter_config
     )
   end
 

@@ -2,6 +2,8 @@
 
 module AdminArea
   class AuditsController < BaseController
+    include Filterable
+
     AUDIT_ACTIONS = %w[create update destroy].freeze
 
     def show
@@ -9,61 +11,43 @@ module AdminArea
     end
 
     def index
-      scope = Audited::Audit.reorder(created_at: :desc)
-      scope = apply_audit_filters(scope)
+      @filter_config = FilterConfig.new(:audits, admin_audits_path,
+                                        sort_default: "created_at", sort_default_direction: "desc",
+                                        search: false) do |f|
+        f.select :action, label: "Action",
+                 options: AUDIT_ACTIONS.map { |a| [ a.capitalize, a ] }
 
-      @audit_action_options = [ [ "All actions", "" ] ] + AUDIT_ACTIONS.map { |a| [ a.capitalize, a ] }
-      @auditable_type_options = [ [ "All models", "" ] ] + Audited::Audit.distinct.pluck(:auditable_type).compact.sort.map { |t| [ t, t ] }
-      @user_options = [ [ "All users", "" ] ] + users_with_audits
+        f.select :auditable_type, label: "Model",
+                 options: Audited::Audit.distinct.pluck(:auditable_type).compact.sort.map { |t| [ t, t ] }
 
-      @pagy, @audits = pagy(scope, items: 25)
+        f.association :user_id, label: "User",
+                      collection: -> { users_with_audits_collection },
+                      display: :email_address,
+                      scope: ->(s, v) { s.where(user_type: "User", user_id: v) }
+
+        f.date_range :created_at, label: "Date"
+
+        f.column :created_at,     label: "When",    default: true,  sortable: true
+        f.column :action,         label: "Action",  default: true
+        f.column :auditable_type, label: "Model",   default: true
+        f.column :record,         label: "Record",  default: true
+        f.column :user,           label: "User",    default: true
+        f.column :details,        label: "Details", default: true
+      end
+      @saved_queries = current_user.saved_queries.for_resource("audits")
+
+      @pagy, @audits = filter_and_paginate(
+        Audited::Audit.all,
+        config: @filter_config,
+        items: 25
+      )
     end
 
     private
 
-      def apply_audit_filters(scope)
-        scope = scope.where(action: params[:audit_action]) if params[:audit_action].present?
-        scope = scope.where(auditable_type: params[:auditable_type]) if params[:auditable_type].present?
-        scope = apply_user_filter(scope)
-        scope = apply_date_filter(scope)
-        scope
-      end
-
-      def apply_user_filter(scope)
-        return scope unless params[:user_id].present?
-
-        scope.where(user_type: "User", user_id: params[:user_id])
-      end
-
-      def apply_date_filter(scope)
-        return scope unless params[:created_at_from].present? || params[:created_at_to].present?
-
-        scope = scope.where("created_at >= ?", parse_date_start(params[:created_at_from])) if params[:created_at_from].present?
-        scope = scope.where("created_at <= ?", parse_date_end(params[:created_at_to])) if params[:created_at_to].present?
-        scope
-      end
-
-      def parse_date_start(value)
-        return nil if value.blank?
-
-        Time.zone.parse(value.to_s).beginning_of_day
-      rescue ArgumentError
-        nil
-      end
-
-      def parse_date_end(value)
-        return nil if value.blank?
-
-        Time.zone.parse(value.to_s).end_of_day
-      rescue ArgumentError
-        nil
-      end
-
-      def users_with_audits
+      def users_with_audits_collection
         User.where(id: Audited::Audit.where(user_type: "User").select(:user_id).distinct)
             .order(:email_address)
-            .pluck(:email_address, :id)
-            .map { |email, id| [ email, id.to_s ] }
       end
   end
 end

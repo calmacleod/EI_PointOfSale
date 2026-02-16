@@ -1,0 +1,20 @@
+product_filter:
+  name: "Low stock products"
+  resource_type: "products"
+  query_params:
+    stock_level_max: "10"
+  user: one
+
+customer_active:
+  name: "Active customers"
+  resource_type: "customers"
+  query_params:
+    active: "true"
+  user: one
+
+admin_filter:
+  name: "Admin products"
+  resource_type: "products"
+  query_params:
+    sync_to_shopify: "true"
+  user: admin

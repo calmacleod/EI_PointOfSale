@@ -1,0 +1,115 @@
+<%# Generic filter bar. Requires @filter_config (FilterConfig) and @saved_queries (ActiveRecord::Relation). %>
+<% config = local_assigns[:config] || @filter_config %>
+<% saved_queries = local_assigns[:saved_queries] || @saved_queries || [] %>
+<% turbo_frame = config.resource_name + "_table" %>
+<% active_filter_keys = config.active_filters(params).map { |f| f.key.to_s } %>
+<% form_id = "#{config.resource_name}_filter_form" %>
+
+<div data-controller="filter-builder"
+     data-filter-builder-resource-value="<%= config.resource_name %>"
+     data-filter-builder-search-path-value="<%= config.search_path %>"
+     data-filter-builder-filters-value="<%= config.filters_json %>"
+     data-filter-builder-active-keys-value="<%= active_filter_keys.to_json %>"
+     data-filter-builder-turbo-frame-value="<%= turbo_frame %>">
+
+  <aside class="flex flex-col gap-1.5 rounded-lg border border-theme bg-surface px-2 py-1.5" aria-label="Filters">
+    <%# Hidden form that owns the search input and filter chip inputs %>
+    <%= form_with url: config.search_path,
+        method: :get,
+        id: form_id,
+        data: {
+          filter_builder_target: "form",
+          turbo_frame: turbo_frame
+        },
+        class: "hidden" do %>
+    <% end %>
+
+    <%# Row 1: search + action buttons %>
+    <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
+      <input type="search" name="q" value="<%= params[:q] %>"
+             id="<%= turbo_frame %>_search"
+             form="<%= form_id %>"
+             placeholder="<%= config.search_placeholder %>"
+             autocomplete="off"
+             class="input-field min-h-[30px] min-w-0 flex-1 basis-48 px-2 py-1"
+             data-filter-builder-target="searchInput"
+             data-action="input->filter-builder#handleSearchInput">
+
+      <%# Add filter dropdown %>
+      <div class="relative shrink-0" data-filter-builder-target="addFilterWrapper">
+        <button type="button"
+                data-action="click->filter-builder#toggleAddFilter"
+                class="inline-flex min-h-[30px] items-center gap-1 rounded-md border border-theme bg-surface px-2 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body">
+          <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+          <span>Add filter</span>
+        </button>
+        <div data-filter-builder-target="addFilterDropdown"
+             class="absolute left-0 z-20 mt-1 hidden min-w-[180px] rounded-lg border border-theme bg-surface py-1 shadow-lg">
+          <% config.filters.each do |filter| %>
+            <button type="button"
+                    data-action="click->filter-builder#addFilter"
+                    data-filter-key="<%= filter.key %>"
+                    class="block w-full px-3 py-1.5 text-left text-sm text-body hover:bg-[var(--color-border)] disabled:opacity-40 disabled:pointer-events-none"
+                    <%= "disabled" if active_filter_keys.include?(filter.key.to_s) %>>
+              <%= filter.label %>
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <%# Saved queries dropdown %>
+      <div class="relative shrink-0" data-controller="saved-query"
+           data-saved-query-resource-value="<%= config.resource_name %>"
+           data-saved-query-search-path-value="<%= config.search_path %>">
+        <button type="button"
+                data-action="click->saved-query#toggle"
+                class="inline-flex min-h-[30px] items-center gap-1 rounded-md border border-theme bg-surface px-2 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body">
+          <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+          <span>Saved</span>
+        </button>
+        <div data-saved-query-target="dropdown"
+             class="absolute right-0 z-20 mt-1 hidden min-w-[220px] rounded-lg border border-theme bg-surface shadow-lg">
+          <div class="border-b border-theme px-3 py-2">
+            <div class="flex items-center gap-1">
+              <input type="text" data-saved-query-target="nameInput"
+                     placeholder="Save current filters as…"
+                     class="input-field min-h-[26px] min-w-0 flex-1 px-2 py-0.5 text-xs"
+                     data-action="keydown.enter->saved-query#save">
+              <button type="button" data-action="click->saved-query#save"
+                      class="shrink-0 rounded-md bg-accent px-2 py-0.5 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]">
+                Save
+              </button>
+            </div>
+          </div>
+          <div id="saved_queries_list" class="max-h-48 overflow-y-auto" data-saved-query-target="list">
+            <% if saved_queries.any? %>
+              <% saved_queries.each do |sq| %>
+                <div class="border-b border-theme px-3 py-1.5 last:border-0">
+                  <%= render "saved_queries/saved_query", saved_query: sq %>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="px-3 py-2 text-xs text-muted" data-saved-query-target="emptyMessage">No saved queries yet.</p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <%# Clear button %>
+      <button type="button"
+              data-action="click->filter-builder#clearAll"
+              data-filter-builder-target="clearButton"
+              class="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body <%= 'hidden' unless config.active_filters(params).any? || params[:q].present? %>">
+        Clear
+      </button>
+    </div>
+
+    <%# Row 2: active filter chips (inputs use form= attribute to associate with the hidden form) %>
+    <div data-filter-builder-target="chipsContainer" class="flex flex-wrap gap-1.5 <%= 'hidden' if active_filter_keys.empty? %>">
+      <% config.filters.each do |filter| %>
+        <% next unless active_filter_keys.include?(filter.key.to_s) %>
+        <%= render "shared/filter_chips/#{filter.type}", filter: filter, params: params, config: config, form_id: form_id %>
+      <% end %>
+    </div>
+  </aside>
+</div>

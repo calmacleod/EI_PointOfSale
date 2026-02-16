@@ -4,10 +4,11 @@ class Ability
   def initialize(user)
     user ||= User.new
 
-    # All authenticated users can manage their own notifications and push subscriptions.
+    # All authenticated users can manage their own notifications, push subscriptions, and saved queries.
     if user.persisted?
       can :manage, Notification, user_id: user.id
       can :manage, PushSubscription, user_id: user.id
+      can :manage, SavedQuery, user_id: user.id
       can :manage, CashDrawerSession
     end
 

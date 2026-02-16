@@ -7,10 +7,25 @@ module AdminArea
     before_action :set_tax_code, only: %i[ show edit update destroy ]
 
     def index
+      @filter_config = FilterConfig.new(:tax_codes, admin_tax_codes_path,
+                                        sort_default: "code", sort_default_direction: "asc",
+                                        search_placeholder: "Search tax codes...") do |f|
+        f.number_range :rate,       label: "Rate"
+        f.date_range   :created_at, label: "Created"
+
+        f.column :code,            label: "Code",      default: true,  sortable: true
+        f.column :name,            label: "Name",      default: true,  sortable: true
+        f.column :rate,            label: "Rate",      default: true,  sortable: true
+        f.column :exemption_type,  label: "Exemption", default: false
+        f.column :province_code,   label: "Province",  default: false
+        f.column :created_at,      label: "Created",   default: true,  sortable: true
+        f.column :updated_at,      label: "Updated",   default: false, sortable: true
+      end
+      @saved_queries = current_user.saved_queries.for_resource("tax_codes")
+
       @pagy, @tax_codes = filter_and_paginate(
         TaxCode.kept,
-        sort_allowed: %w[code name rate created_at],
-        sort_default: "code", sort_default_direction: "asc"
+        config: @filter_config
       )
     end
 

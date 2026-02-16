@@ -1,0 +1,16 @@
+<%# Boolean filter chip: renders Yes/No select inside a pill. %>
+<div class="inline-flex items-center gap-1 rounded-full border border-theme bg-[var(--color-border)]/20 px-2 py-0.5"
+     data-filter-key="<%= filter.key %>">
+  <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
+  <select name="<%= filter.key %>"
+          form="<%= local_assigns[:form_id] %>"
+          class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0"
+          data-action="change->filter-builder#handleFilterChange">
+    <option value="true" <%= "selected" if params[filter.key.to_s] == "true" %>>Yes</option>
+    <option value="false" <%= "selected" if params[filter.key.to_s] == "false" %>>No</option>
+  </select>
+  <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="<%= filter.key %>"
+          class="ml-0.5 text-muted hover:text-body" title="Remove filter">
+    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+</div>

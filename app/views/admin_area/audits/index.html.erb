@@ -7,9 +7,6 @@
   <li aria-current="page" class="text-muted">Audit trail</li>
 <% end %>
 
-<% filter_params = %w[audit_action auditable_type user_id created_at_from created_at_to] %>
-<% has_active_filters = filter_params.any? { |p| params[p].present? } %>
-
 <div class="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
   <%= render "shared/page_header", title: "Audit trail", description: "All changes across the application." do %>
     <%= link_to "Back to admin settings", admin_settings_path,
@@ -17,95 +14,39 @@
         data: { turbo_prefetch: true } %>
   <% end %>
 
-  <%= form_with url: admin_audits_path, method: :get, class: "mt-2" do |f| %>
-    <aside class="flex flex-col gap-1.5 rounded-lg border border-theme bg-surface px-2 py-1.5">
-      <div class="flex flex-wrap items-end gap-1.5">
-        <div class="flex flex-col">
-          <label for="audit_action" class="text-xs font-medium text-muted">Action</label>
-          <%= f.select :audit_action,
-              options_for_select(@audit_action_options, params[:audit_action]),
-              {},
-              id: "audit_action",
-              class: "input-field mt-0.5 h-7 w-32 cursor-pointer text-xs" %>
-        </div>
-        <div class="flex flex-col">
-          <label for="auditable_type" class="text-xs font-medium text-muted">Model</label>
-          <%= f.select :auditable_type,
-              options_for_select(@auditable_type_options, params[:auditable_type]),
-              {},
-              id: "auditable_type",
-              class: "input-field mt-0.5 h-7 w-36 cursor-pointer text-xs" %>
-        </div>
-        <div class="flex flex-col">
-          <label for="user_id" class="text-xs font-medium text-muted">User</label>
-          <%= f.select :user_id,
-              options_for_select(@user_options, params[:user_id]),
-              {},
-              id: "user_id",
-              class: "input-field mt-0.5 h-7 w-44 cursor-pointer text-xs" %>
-        </div>
-        <div class="flex flex-col">
-          <label for="created_at_from" class="text-xs font-medium text-muted">From date</label>
-          <%= f.date_field :created_at_from, value: params[:created_at_from], id: "created_at_from", class: "input-field mt-0.5 h-7 w-32 text-xs" %>
-        </div>
-        <div class="flex flex-col">
-          <label for="created_at_to" class="text-xs font-medium text-muted">To date</label>
-          <%= f.date_field :created_at_to, value: params[:created_at_to], id: "created_at_to", class: "input-field mt-0.5 h-7 w-32 text-xs" %>
-        </div>
-        <%= f.submit "Apply", class: "h-7 rounded-md bg-accent px-2.5 py-0.5 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
-        <% if has_active_filters %>
-          <%= link_to "Clear", admin_audits_path, class: "h-7 rounded-md px-2 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)]/30 hover:text-body" %>
-        <% end %>
-      </div>
-    </aside>
-  <% end %>
+  <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
+    <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
 
-  <div class="mt-2 overflow-x-auto rounded-lg border border-theme bg-surface lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
-    <table class="min-w-full divide-y divide-[var(--color-border)]">
-      <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
-        <tr>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">When</th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Action</th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Model</th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Record</th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">User</th>
-          <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted">Details</th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-[var(--color-border)] bg-surface">
-        <% @audits.each do |audit| %>
-          <tr>
-            <td class="px-3 py-1.5 text-sm text-muted"><%= local_time(audit.created_at, format: :short) %></td>
-            <td class="px-3 py-1.5 text-sm font-medium capitalize text-body"><%= audit.action %></td>
-            <td class="px-3 py-1.5 text-sm text-body"><%= audit.auditable_type %></td>
-            <td class="px-3 py-1.5 text-sm text-body">
-              <% path = audit_auditable_path(audit) %>
-              <% if path %>
-                <%= link_to audit_auditable_label(audit), path, class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
-              <% else %>
-                <%= audit_auditable_label(audit) %>
-              <% end %>
-            </td>
-            <td class="px-3 py-1.5 text-sm text-muted">
-              <%= audit.user.present? ? (audit.user.respond_to?(:email_address) ? audit.user.email_address : audit.user.to_s) : "—" %>
-            </td>
-            <td class="px-3 py-1.5 text-right">
-              <%= link_to admin_audit_path(audit), class: "inline-flex items-center justify-center text-accent hover:opacity-70", aria: { label: "View changes" }, data: { turbo_frame: "_top", turbo_prefetch: true } do %>
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                </svg>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+    <%= render "shared/data_table", config: @filter_config, records: @audits, pagy: @pagy,
+               empty_message: "No audit events yet." do |t| %>
+      <% t.cell(:created_at) { |audit| content_tag(:span, local_time(audit.created_at, format: :short), class: "text-muted") } %>
+      <% t.cell(:action) { |audit| content_tag(:span, audit.action.capitalize, class: "font-medium capitalize") } %>
+      <% t.cell(:auditable_type) { |audit| audit.auditable_type } %>
+      <% t.cell(:record) { |audit|
+           path = audit_auditable_path(audit)
+           if path
+             link_to audit_auditable_label(audit), path, class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true }
+           else
+             audit_auditable_label(audit)
+           end
+         } %>
+      <% t.cell(:user) { |audit|
+           if audit.user.present?
+             audit.user.respond_to?(:email_address) ? audit.user.email_address : audit.user.to_s
+           else
+             "—"
+           end
+         } %>
+      <% t.cell(:details) { |audit|
+           link_to admin_audit_path(audit), class: "inline-flex items-center justify-center text-accent hover:opacity-70", aria: { label: "View changes" }, data: { turbo_frame: "_top", turbo_prefetch: true } do
+             tag.svg(class: "h-4 w-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", aria: { hidden: true }) do
+               safe_join([
+                 tag.path("stroke-linecap": "round", "stroke-linejoin": "round", "stroke-width": "2", d: "M15 12a3 3 0 11-6 0 3 3 0 016 0z"),
+                 tag.path("stroke-linecap": "round", "stroke-linejoin": "round", "stroke-width": "2", d: "M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z")
+               ])
+             end
+           end
+         } %>
+    <% end %>
   </div>
-
-  <% if @audits.empty? %>
-    <p class="mt-2 text-sm text-muted">No audit events yet.</p>
-  <% end %>
-
-  <%= render "shared/pagy_nav" %>
 </div>

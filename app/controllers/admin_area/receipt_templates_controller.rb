@@ -7,11 +7,24 @@ module AdminArea
     before_action :set_receipt_template, only: %i[show edit update destroy activate preview]
 
     def index
+      @filter_config = FilterConfig.new(:receipt_templates, admin_receipt_templates_path,
+                                        sort_default: "name", sort_default_direction: "asc",
+                                        search: false) do |f|
+        f.boolean :active,         label: "Active"
+        f.select  :paper_width_mm, label: "Paper Width", options: [ [ "58mm", "58" ], [ "80mm", "80" ] ]
+        f.date_range :created_at,  label: "Created"
+
+        f.column :name,           label: "Name",       default: true, sortable: true
+        f.column :paper_width_mm, label: "Paper Width", default: true, sortable: true
+        f.column :chars_per_line, label: "Chars/Line", default: true
+        f.column :active,         label: "Active",     default: true, sortable: true
+        f.column :created_at,     label: "Created",    default: true, sortable: true
+      end
+      @saved_queries = current_user.saved_queries.for_resource("receipt_templates")
+
       @pagy, @receipt_templates = filter_and_paginate(
         ReceiptTemplate.all,
-        search: false,
-        sort_allowed: %w[name paper_width_mm active created_at],
-        sort_default: "name", sort_default_direction: "asc"
+        config: @filter_config
       )
     end
 

@@ -15,47 +15,15 @@
   <% end %>
 
   <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
-    <%= render "shared/table_filters",
-        search_path: admin_suppliers_path,
-        turbo_frame: "suppliers_table",
-        label: "Search suppliers",
-        placeholder: "Search suppliers…" %>
+    <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
 
-    <%= turbo_frame_tag "suppliers_table", class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
-      <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto">
-        <table class="min-w-full divide-y divide-[var(--color-border)]">
-          <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
-            <tr>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Name", :name %></th>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Phone", :phone %></th>
-              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Created", :created_at %></th>
-              <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted"></th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-[var(--color-border)] bg-surface">
-            <% @suppliers.each do |supplier| %>
-              <tr>
-                <td class="px-3 py-1.5 text-sm font-medium text-body">
-                  <%= link_to supplier.name, admin_supplier_path(supplier), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
-                </td>
-                <td class="px-3 py-1.5 text-sm text-body"><%= supplier.phone.presence || "—" %></td>
-                <td class="px-3 py-1.5 text-sm text-muted"><%= local_time(supplier.created_at, format: :short) %></td>
-                <td class="px-3 py-1.5 text-right text-sm">
-                  <%= link_to "Edit", edit_admin_supplier_path(supplier),
-                      class: "font-medium text-accent hover:opacity-80",
-                      data: { turbo_frame: "_top", turbo_prefetch: true } %>
-                </td>
-              </tr>
-            <% end %>
-          </tbody>
-        </table>
-      </div>
-
-      <% if @suppliers.empty? %>
-        <p class="mt-2 text-sm text-muted">No suppliers yet. Add one to get started.</p>
-      <% end %>
-
-      <%= render "shared/pagy_nav" %>
+    <%= render "shared/data_table", config: @filter_config, records: @suppliers, pagy: @pagy,
+               empty_message: "No suppliers yet. Add one to get started." do |t| %>
+      <% t.cell(:name) { |supplier| link_to supplier.name, admin_supplier_path(supplier), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <% t.cell(:phone) { |supplier| supplier.phone.presence || "—" } %>
+      <% t.cell(:created_at) { |supplier| local_time(supplier.created_at, format: :short) } %>
+      <% t.cell(:updated_at) { |supplier| local_time(supplier.updated_at, format: :short) } %>
+      <% t.cell(:actions) { |supplier| link_to("Edit", edit_admin_supplier_path(supplier), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>
 </div>

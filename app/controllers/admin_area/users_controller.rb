@@ -7,10 +7,26 @@ module AdminArea
     load_and_authorize_resource
 
     def index
+      @filter_config = FilterConfig.new(:users, admin_users_path,
+                                        sort_default: "email_address", sort_default_direction: "asc",
+                                        search_placeholder: "Search users...") do |f|
+        f.select   :type,   label: "Type",   options: [ %w[Admin Admin], %w[Common Common] ]
+        f.boolean  :active, label: "Active"
+        f.date_range :created_at, label: "Created"
+
+        f.column :name,          label: "Name",    default: true,  sortable: true
+        f.column :email_address, label: "Email",   default: true,  sortable: true
+        f.column :type,          label: "Type",    default: true,  sortable: true
+        f.column :phone,         label: "Phone",   default: false
+        f.column :active,        label: "Active",  default: true
+        f.column :created_at,    label: "Created", default: true,  sortable: true
+        f.column :updated_at,    label: "Updated", default: false, sortable: true
+      end
+      @saved_queries = current_user.saved_queries.for_resource("users")
+
       @pagy, @users = filter_and_paginate(
         @users,
-        sort_allowed: %w[name email_address type created_at],
-        sort_default: "email_address", sort_default_direction: "asc"
+        config: @filter_config
       )
     end
 

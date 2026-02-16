@@ -15,49 +15,18 @@
   <% end %>
 
   <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
-    <%= render "shared/table_filters",
-        search_path: admin_users_path,
-        turbo_frame: "users_table",
-        label: "Search users",
-        placeholder: "Search users…" %>
+    <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
 
-    <%= turbo_frame_tag "users_table", class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
-  <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto">
-    <table class="min-w-full divide-y divide-[var(--color-border)]">
-      <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
-        <tr>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Name", :name %></th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Email", :email_address %></th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Type", :type %></th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Active</th>
-          <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"><%= sort_link "Created", :created_at %></th>
-          <th class="px-3 py-1"></th>
-        </tr>
-      </thead>
-      <tbody class="divide-y divide-[var(--color-border)] bg-surface">
-        <% @users.each do |user| %>
-          <tr>
-            <td class="px-3 py-1.5 text-sm text-body">
-              <%= link_to (user.name.presence || "—"), admin_user_path(user), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
-            </td>
-            <td class="px-3 py-1.5 text-sm text-body">
-              <%= link_to user.email_address, admin_user_path(user), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } %>
-            </td>
-            <td class="px-3 py-1.5 text-sm text-body"><%= user.type %></td>
-            <td class="px-3 py-1.5 text-sm text-body"><%= user.active? ? "Yes" : "No" %></td>
-            <td class="px-3 py-1.5 text-sm text-muted"><%= local_time(user.created_at, format: :short) %></td>
-            <td class="px-3 py-1.5 text-right text-sm">
-              <%= link_to "Edit", edit_admin_user_path(user),
-                  class: "font-medium text-accent hover:opacity-80",
-                  data: { turbo_frame: "_top", turbo_prefetch: true } %>
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-
-  <%= render "shared/pagy_nav" %>
+    <%= render "shared/data_table", config: @filter_config, records: @users, pagy: @pagy,
+               empty_message: "No users found." do |t| %>
+      <% t.cell(:name) { |user| link_to((user.name.presence || "—"), admin_user_path(user), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
+      <% t.cell(:email_address) { |user| link_to user.email_address, admin_user_path(user), class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <% t.cell(:type) { |user| user.type } %>
+      <% t.cell(:phone) { |user| user.phone.presence || "—" } %>
+      <% t.cell(:active) { |user| user.active? ? "Yes" : "No" } %>
+      <% t.cell(:created_at) { |user| local_time(user.created_at, format: :short) } %>
+      <% t.cell(:updated_at) { |user| local_time(user.updated_at, format: :short) } %>
+      <% t.cell(:actions) { |user| link_to("Edit", edit_admin_user_path(user), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>
 </div>
