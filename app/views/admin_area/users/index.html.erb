@@ -8,7 +8,11 @@
 <% end %>
 
 <div class="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
-  <%= render "shared/page_header", title: "Users" %>
+  <%= render "shared/page_header", title: "Users" do %>
+    <%= link_to "Add user", new_admin_user_path,
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
+        data: { turbo_prefetch: true } %>
+  <% end %>
 
   <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
     <%= render "shared/table_filters",

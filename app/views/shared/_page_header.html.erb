@@ -5,9 +5,9 @@
       <p class="mt-0.5 text-xs text-muted"><%= description %></p>
     <% end %>
   </div>
-  <% if content_for?(:page_actions) %>
+  <% if block_given? %>
     <div class="flex items-center gap-1.5">
-      <%= yield :page_actions %>
+      <%= yield %>
     </div>
   <% end %>
 </div>

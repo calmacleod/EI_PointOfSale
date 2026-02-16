@@ -1,0 +1,121 @@
+<% content_for :title, "New user" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Users", admin_users_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">New user</li>
+<% end %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: "New user", description: "Create a new staff account." %>
+
+  <div class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+    <%= form_with model: @user, url: admin_users_path, class: "divide-y divide-[var(--color-border)]" do |f| %>
+      <% if @user.errors.any? %>
+        <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
+          <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+          <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
+            <% @user.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="px-3 py-2.5">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Profile</h2>
+        <p class="text-xs text-muted">Basic contact details shown across the app.</p>
+
+        <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div class="sm:col-span-1">
+            <%= f.label :name, class: "text-sm font-medium text-body" %>
+            <%= f.text_field :name,
+                placeholder: "Full name",
+                class: "input-field min-h-[30px] w-full" %>
+          </div>
+
+          <div class="sm:col-span-1">
+            <%= f.label :email_address, "Email", class: "text-sm font-medium text-body" %>
+            <%= f.email_field :email_address,
+                autocomplete: "email",
+                class: "input-field min-h-[30px] w-full" %>
+            <p class="mt-0.5 text-xs text-muted">Used for signing in and notifications.</p>
+          </div>
+
+          <div class="sm:col-span-1">
+            <%= f.label :phone, class: "text-sm font-medium text-body" %>
+            <%= f.telephone_field :phone,
+                placeholder: "(555) 555-5555",
+                autocomplete: "tel",
+                class: "input-field min-h-[30px] w-full" %>
+          </div>
+
+          <div class="sm:col-span-1">
+            <%= f.label :type, "Role", class: "text-sm font-medium text-body" %>
+            <%= f.select :type, ["Common", "Admin"], {},
+                class: "input-field min-h-[30px] w-full" %>
+            <p class="mt-0.5 text-xs text-muted">Admins can manage users and settings.</p>
+          </div>
+
+          <div class="sm:col-span-2">
+            <div class="flex min-h-[30px] items-center justify-between rounded-md border border-theme bg-[var(--color-border)]/20 px-3 py-1.5">
+              <div>
+                <p class="text-sm font-medium text-body">Active</p>
+                <p class="text-xs text-muted">Inactive users cannot sign in.</p>
+              </div>
+              <div class="pt-0.5">
+                <%= f.check_box :active, { checked: true },
+                    class: "h-4 w-4 border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-3 py-2.5">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Password</h2>
+        <p class="text-xs text-muted">Set the initial password for this account.</p>
+
+        <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
+          <div class="sm:col-span-1">
+            <%= f.label :password, class: "text-sm font-medium text-body" %>
+            <%= f.password_field :password,
+                autocomplete: "new-password",
+                class: "input-field min-h-[30px] w-full" %>
+          </div>
+
+          <div class="sm:col-span-1">
+            <%= f.label :password_confirmation, "Confirm password", class: "text-sm font-medium text-body" %>
+            <%= f.password_field :password_confirmation,
+                autocomplete: "new-password",
+                class: "input-field min-h-[30px] w-full" %>
+          </div>
+        </div>
+      </div>
+
+      <div class="px-3 py-2.5">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Notes</h2>
+        <p class="text-xs text-muted">Internal notes (not shown to the user).</p>
+
+        <div class="mt-2">
+          <%= f.label :notes, class: "sr-only" %>
+          <%= f.text_area :notes, rows: 4,
+              placeholder: "Add any helpful context…",
+              class: "input-field w-full" %>
+        </div>
+      </div>
+
+      <div class="px-3 py-2">
+        <div class="flex items-center justify-end gap-2">
+          <%= link_to "Cancel", admin_users_path,
+              class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30" %>
+          <%= f.submit "Create user",
+              class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

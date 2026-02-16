@@ -11,6 +11,7 @@ class User < ApplicationRecord
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 
+  validates :email_address, presence: true, uniqueness: true
   validates :theme, inclusion: { in: %w[light dark dim] }, allow_nil: false
   validates :font_size, inclusion: { in: %w[default large xlarge] }, allow_nil: false
 

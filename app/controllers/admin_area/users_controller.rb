@@ -17,6 +17,17 @@ module AdminArea
     def show
     end
 
+    def new
+    end
+
+    def create
+      if @user.save
+        redirect_to admin_user_path(@user), notice: "User created."
+      else
+        render :new, status: :unprocessable_entity
+      end
+    end
+
     def edit
     end
 

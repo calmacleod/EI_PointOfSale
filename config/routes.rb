@@ -21,7 +21,7 @@ Rails.application.routes.draw do
       get :oauth_callback, on: :member
       delete :disconnect, on: :member
     end
-    resources :users, only: %i[index show edit update]
+    resources :users, only: %i[index show new create edit update]
     resources :tax_codes
     resources :suppliers
     resources :audits, only: %i[index show], path: "audits"

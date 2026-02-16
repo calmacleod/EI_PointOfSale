@@ -93,5 +93,92 @@ module AdminArea
       assert_equal "Updated Name", updated_user.name
       assert_equal "Admin", updated_user.type
     end
+
+    test "admin can access new user form" do
+      sign_in_as(users(:admin))
+
+      get new_admin_user_path
+      assert_response :success
+    end
+
+    test "admin can create a user" do
+      sign_in_as(users(:admin))
+
+      assert_difference "User.count", 1 do
+        post admin_users_path, params: {
+          user: {
+            name: "New Staff",
+            email_address: "newstaff@example.com",
+            password: "password123",
+            password_confirmation: "password123",
+            type: "Common"
+          }
+        }
+      end
+
+      new_user = User.find_by(email_address: "newstaff@example.com")
+      assert_not_nil new_user
+      assert_equal "New Staff", new_user.name
+      assert_equal "Common", new_user.type
+      assert_redirected_to admin_user_path(new_user)
+    end
+
+    test "admin sees errors when creating user with invalid data" do
+      sign_in_as(users(:admin))
+
+      assert_no_difference "User.count" do
+        post admin_users_path, params: {
+          user: {
+            name: "No Password",
+            email_address: "nopass@example.com",
+            password: "",
+            password_confirmation: ""
+          }
+        }
+      end
+
+      assert_response :unprocessable_entity
+    end
+
+    test "admin sees errors when creating user with duplicate email" do
+      sign_in_as(users(:admin))
+
+      assert_no_difference "User.count" do
+        post admin_users_path, params: {
+          user: {
+            name: "Duplicate",
+            email_address: "one@example.com",
+            password: "password123",
+            password_confirmation: "password123"
+          }
+        }
+      end
+
+      assert_response :unprocessable_entity
+    end
+
+    test "non-admin cannot access new user form" do
+      sign_in_as(users(:one))
+
+      get new_admin_user_path
+      assert_redirected_to root_path
+    end
+
+    test "non-admin cannot create a user" do
+      sign_in_as(users(:one))
+
+      assert_no_difference "User.count" do
+        post admin_users_path, params: {
+          user: {
+            name: "Sneaky",
+            email_address: "sneaky@example.com",
+            password: "password123",
+            password_confirmation: "password123"
+          }
+        }
+      end
+
+      assert_redirected_to root_path
+    end
   end
 end
