@@ -3,6 +3,12 @@
 require "test_helper"
 
 class ReportChartRendererTest < ActiveSupport::TestCase
+  setup do
+    unless ENV["BROWSER_TESTS"]
+      skip "Requires headless browser (run with BROWSER_TESTS=1)"
+    end
+  end
+
   def sample_bar_chart_data
     {
       labels: [ "2026-02-10", "2026-02-11", "2026-02-12", "2026-02-13", "2026-02-14" ],

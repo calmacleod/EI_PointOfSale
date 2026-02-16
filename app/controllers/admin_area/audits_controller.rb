@@ -14,8 +14,9 @@ module AdminArea
       @filter_config = FilterConfig.new(:audits, admin_audits_path,
                                         sort_default: "created_at", sort_default_direction: "desc",
                                         search: false) do |f|
-        f.select :action, label: "Action",
-                 options: AUDIT_ACTIONS.map { |a| [ a.capitalize, a ] }
+        f.select :audit_action, label: "Action",
+                 options: AUDIT_ACTIONS.map { |a| [ a.capitalize, a ] },
+                 scope: ->(s, v) { s.where(action: v) }
 
         f.select :auditable_type, label: "Model",
                  options: Audited::Audit.distinct.pluck(:auditable_type).compact.sort.map { |t| [ t, t ] }

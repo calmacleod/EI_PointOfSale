@@ -43,6 +43,7 @@ class ServicesController < ApplicationController
   end
 
   def show
+    fresh_when @service
   end
 
   def edit

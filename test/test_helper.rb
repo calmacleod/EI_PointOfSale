@@ -21,6 +21,10 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Add more helper methods to be used by all tests here...
+    # 1x1 transparent PNG (68 bytes) used to stub browser-based chart rendering in tests.
+    DUMMY_PNG = Base64.decode64(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQI12NgAAIABQAB" \
+      "Nl7BcQAAAABJRU5ErkJggg=="
+    ).freeze
   end
 end

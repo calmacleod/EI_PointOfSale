@@ -20,150 +20,162 @@
   <% end %>
 
   <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
-    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-details-heading">
-      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-        <h2 id="product-details-heading" class="text-sm font-semibold text-body">Details</h2>
-        <p class="text-xs text-muted">Product identification and classification</p>
-      </div>
-      <dl class="divide-y divide-[var(--color-border)]">
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Code</dt>
-          <dd class="mt-0.5 text-sm font-mono text-body sm:col-span-2 sm:mt-0"><%= @product.code %></dd>
+    <% cache [@product, @product.tax_code, @product.product_group, "details"] do %>
+      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-details-heading">
+        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+          <h2 id="product-details-heading" class="text-sm font-semibold text-body">Details</h2>
+          <p class="text-xs text-muted">Product identification and classification</p>
         </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Name</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.name %></dd>
-        </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Tax code</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.tax_code&.code || "—" %></dd>
-        </div>
-        <% if @product.categories.any? %>
+        <dl class="divide-y divide-[var(--color-border)]">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-            <dt class="text-xs font-medium text-muted">Categories</dt>
-            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.categories.pluck(:name).join(", ") %></dd>
+            <dt class="text-xs font-medium text-muted">Code</dt>
+            <dd class="mt-0.5 text-sm font-mono text-body sm:col-span-2 sm:mt-0"><%= @product.code %></dd>
           </div>
-        <% end %>
-        <% if @product.product_group.present? %>
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-            <dt class="text-xs font-medium text-muted">Product group</dt>
-            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.product_group.name %></dd>
+            <dt class="text-xs font-medium text-muted">Name</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.name %></dd>
           </div>
-        <% end %>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Product URL</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
-            <%= @product.product_url.present? ? link_to(@product.product_url, @product.product_url, class: "text-accent hover:underline break-all", target: "_blank", rel: "noopener") : "—" %>
-          </dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-pricing-heading">
-      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-        <h2 id="product-pricing-heading" class="text-sm font-semibold text-body">Pricing</h2>
-        <p class="text-xs text-muted">Cost and selling prices</p>
-      </div>
-      <dl class="divide-y divide-[var(--color-border)]">
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Selling price</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.selling_price) || "—" %></dd>
-        </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Purchase price</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.purchase_price) || "—" %></dd>
-        </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Unit cost</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.unit_cost) || "—" %></dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-inventory-heading">
-      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-        <h2 id="product-inventory-heading" class="text-sm font-semibold text-body">Inventory</h2>
-        <p class="text-xs text-muted">Stock levels and ordering</p>
-      </div>
-      <dl class="divide-y divide-[var(--color-border)]">
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Stock level</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.stock_level %></dd>
-        </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Reorder level</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.reorder_level %></dd>
-        </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Items per unit</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.items_per_unit || "—" %></dd>
-        </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Order quantity</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.order_quantity || "—" %></dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-supplier-heading">
-      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-        <h2 id="product-supplier-heading" class="text-sm font-semibold text-body">Supplier</h2>
-        <p class="text-xs text-muted">Procurement details</p>
-      </div>
-      <dl class="divide-y divide-[var(--color-border)]">
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Supplier</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.supplier&.name || "—" %></dd>
-        </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Supplier reference</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.supplier_reference.presence || "—" %></dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-notes-heading">
-      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-        <h2 id="product-notes-heading" class="text-sm font-semibold text-body">Notes</h2>
-        <p class="text-xs text-muted">Internal notes and reference</p>
-      </div>
-      <dl class="divide-y divide-[var(--color-border)]">
-        <div class="px-3 py-1.5">
-          <dd class="text-sm text-body"><%= @product.notes.present? ? simple_format(@product.notes) : "—" %></dd>
-        </div>
-      </dl>
-    </section>
-
-    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-meta-heading">
-      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-        <h2 id="product-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
-        <p class="text-xs text-muted">Timestamps and provenance</p>
-      </div>
-      <dl class="divide-y divide-[var(--color-border)]">
-        <% if @product.added_by.present? %>
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-            <dt class="text-xs font-medium text-muted">Added by</dt>
-            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.added_by.email_address %></dd>
+            <dt class="text-xs font-medium text-muted">Tax code</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.tax_code&.code || "—" %></dd>
           </div>
-        <% end %>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Created</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product.created_at, format: :long) %></dd>
-        </div>
-        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-          <dt class="text-xs font-medium text-muted">Last updated</dt>
-          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product.updated_at, format: :long) %></dd>
-        </div>
-        <% if @product.sync_to_shopify? %>
+          <% if @product.categories.any? %>
+            <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+              <dt class="text-xs font-medium text-muted">Categories</dt>
+              <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.categories.pluck(:name).join(", ") %></dd>
+            </div>
+          <% end %>
+          <% if @product.product_group.present? %>
+            <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+              <dt class="text-xs font-medium text-muted">Product group</dt>
+              <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.product_group.name %></dd>
+            </div>
+          <% end %>
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
-            <dt class="text-xs font-medium text-muted">Shopify synced</dt>
-            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.shopify_synced_at ? local_time(@product.shopify_synced_at, format: :long) : "Not yet synced" %></dd>
+            <dt class="text-xs font-medium text-muted">Product URL</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+              <%= @product.product_url.present? ? link_to(@product.product_url, @product.product_url, class: "text-accent hover:underline break-all", target: "_blank", rel: "noopener") : "—" %>
+            </dd>
           </div>
-        <% end %>
-      </dl>
-    </section>
+        </dl>
+      </section>
+    <% end %>
 
-    <%# ── Full-width: Images ─────────────────────────────────────── %>
+    <% cache [@product, "pricing"] do %>
+      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-pricing-heading">
+        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+          <h2 id="product-pricing-heading" class="text-sm font-semibold text-body">Pricing</h2>
+          <p class="text-xs text-muted">Cost and selling prices</p>
+        </div>
+        <dl class="divide-y divide-[var(--color-border)]">
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Selling price</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.selling_price) || "—" %></dd>
+          </div>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Purchase price</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.purchase_price) || "—" %></dd>
+          </div>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Unit cost</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.unit_cost) || "—" %></dd>
+          </div>
+        </dl>
+      </section>
+    <% end %>
+
+    <% cache [@product, "inventory"] do %>
+      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-inventory-heading">
+        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+          <h2 id="product-inventory-heading" class="text-sm font-semibold text-body">Inventory</h2>
+          <p class="text-xs text-muted">Stock levels and ordering</p>
+        </div>
+        <dl class="divide-y divide-[var(--color-border)]">
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Stock level</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.stock_level %></dd>
+          </div>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Reorder level</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.reorder_level %></dd>
+          </div>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Items per unit</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.items_per_unit || "—" %></dd>
+          </div>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Order quantity</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.order_quantity || "—" %></dd>
+          </div>
+        </dl>
+      </section>
+    <% end %>
+
+    <% cache [@product, @product.supplier, "supplier"] do %>
+      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-supplier-heading">
+        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+          <h2 id="product-supplier-heading" class="text-sm font-semibold text-body">Supplier</h2>
+          <p class="text-xs text-muted">Procurement details</p>
+        </div>
+        <dl class="divide-y divide-[var(--color-border)]">
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Supplier</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.supplier&.name || "—" %></dd>
+          </div>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Supplier reference</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.supplier_reference.presence || "—" %></dd>
+          </div>
+        </dl>
+      </section>
+    <% end %>
+
+    <% cache [@product, "notes"] do %>
+      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-notes-heading">
+        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+          <h2 id="product-notes-heading" class="text-sm font-semibold text-body">Notes</h2>
+          <p class="text-xs text-muted">Internal notes and reference</p>
+        </div>
+        <dl class="divide-y divide-[var(--color-border)]">
+          <div class="px-3 py-1.5">
+            <dd class="text-sm text-body"><%= @product.notes.present? ? simple_format(@product.notes) : "—" %></dd>
+          </div>
+        </dl>
+      </section>
+    <% end %>
+
+    <% cache [@product, @product.added_by, "meta"] do %>
+      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-meta-heading">
+        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+          <h2 id="product-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
+          <p class="text-xs text-muted">Timestamps and provenance</p>
+        </div>
+        <dl class="divide-y divide-[var(--color-border)]">
+          <% if @product.added_by.present? %>
+            <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+              <dt class="text-xs font-medium text-muted">Added by</dt>
+              <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.added_by.email_address %></dd>
+            </div>
+          <% end %>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Created</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product.created_at, format: :long) %></dd>
+          </div>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Last updated</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@product.updated_at, format: :long) %></dd>
+          </div>
+          <% if @product.sync_to_shopify? %>
+            <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+              <dt class="text-xs font-medium text-muted">Shopify synced</dt>
+              <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.shopify_synced_at ? local_time(@product.shopify_synced_at, format: :long) : "Not yet synced" %></dd>
+            </div>
+          <% end %>
+        </dl>
+      </section>
+    <% end %>
+
+    <%# Images section not cached — contains generated URLs that change per request %>
     <% if @product.images.attached? %>
       <section class="overflow-hidden rounded-lg border border-theme bg-surface lg:col-span-2"
                aria-labelledby="product-images-heading"

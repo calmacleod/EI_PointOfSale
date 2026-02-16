@@ -89,7 +89,9 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   # ── Export PDF ─────────────────────────────────────────────────────
 
   test "admin: export_pdf downloads a PDF for completed report" do
-    get export_pdf_report_path(reports(:completed_report))
+    ReportChartRenderer.stub(:render, DUMMY_PNG) do
+      get export_pdf_report_path(reports(:completed_report))
+    end
     assert_response :success
     assert_equal "application/pdf", response.content_type
     assert_match(/attachment/, response.headers["Content-Disposition"])
@@ -139,7 +141,9 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
 
   test "common user: can export PDF" do
     sign_in_as(users(:one))
-    get export_pdf_report_path(reports(:completed_report))
+    ReportChartRenderer.stub(:render, DUMMY_PNG) do
+      get export_pdf_report_path(reports(:completed_report))
+    end
     assert_response :success
     assert_equal "application/pdf", response.content_type
   end

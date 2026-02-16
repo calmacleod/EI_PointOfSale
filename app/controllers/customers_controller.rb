@@ -44,6 +44,7 @@ class CustomersController < ApplicationController
   end
 
   def show
+    fresh_when @customer
   end
 
   def edit

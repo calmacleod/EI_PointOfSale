@@ -9,12 +9,16 @@ require "prawn/table"
 #   pdf_data = ReportPdfExporter.generate(report)
 #
 class ReportPdfExporter
+  FONT_DIR = Rails.root.join("app/assets/fonts")
+
   class << self
     def generate(report)
       template = report.template
       result   = report.result_data.deep_symbolize_keys
 
       Prawn::Document.new(page_size: "LETTER", page_layout: :landscape) do |pdf|
+        register_fonts(pdf)
+
         # Title
         pdf.text report.title, size: 18, style: :bold
         pdf.move_down 4
@@ -51,6 +55,18 @@ class ReportPdfExporter
     end
 
     private
+
+      def register_fonts(pdf)
+        pdf.font_families.update(
+          "Inter" => {
+            normal:      FONT_DIR.join("Inter-Regular.ttf").to_s,
+            bold:        FONT_DIR.join("Inter-Bold.ttf").to_s,
+            italic:      FONT_DIR.join("Inter-Italic.ttf").to_s,
+            bold_italic: FONT_DIR.join("Inter-BoldItalic.ttf").to_s
+          }
+        )
+        pdf.font "Inter"
+      end
 
       def render_summary(pdf, summary)
         pdf.text "Summary", size: 13, style: :bold

@@ -21,11 +21,9 @@ module DataTableHelper
 
     def render_cell(key, record)
       renderer = @cell_renderers[key.to_sym]
-      if renderer
-        @view.capture { renderer.call(record) }
-      else
-        ""
-      end
+      return "" unless renderer
+
+      renderer.call(record).to_s
     end
 
     def cell_defined?(key)

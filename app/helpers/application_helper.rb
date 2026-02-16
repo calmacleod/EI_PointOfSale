@@ -29,6 +29,8 @@ module ApplicationHelper
     when "Customer" then record.name
     else "#{audit.auditable_type} ##{audit.auditable_id}"
     end
+  rescue NameError
+    "#{audit.auditable_type} ##{audit.auditable_id}"
   end
 
   def audit_auditable_path(audit)
@@ -46,6 +48,8 @@ module ApplicationHelper
     when "Customer" then customer_path(record)
     else nil
     end
+  rescue NameError
+    nil
   end
 
   def format_audit_value(value)

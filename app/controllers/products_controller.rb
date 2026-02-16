@@ -54,6 +54,7 @@ class ProductsController < ApplicationController
   end
 
   def show
+    fresh_when @product
   end
 
   def edit
