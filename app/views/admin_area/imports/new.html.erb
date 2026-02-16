@@ -24,11 +24,11 @@
         <p class="mt-0.5 text-xs text-muted">Expected format: Stock_Code, Product_Name, Selling_Price, Purchase_Price, etc.</p>
       </div>
       <div class="flex gap-2">
-        <%= submit_tag "Preview", name: "preview", value: "1",
-            class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30 cursor-pointer" %>
-        <%= submit_tag "Import now", name: "import", value: "1",
-            data: { turbo_confirm: "This will start importing the CSV immediately. Continue?" },
-            class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)] cursor-pointer" %>
+        <button type="submit" name="preview" value="1"
+            class="inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30 cursor-pointer">Preview</button>
+        <button type="submit" name="import" value="1"
+            data-turbo-confirm="This will start importing the CSV immediately. Continue?"
+            class="inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)] cursor-pointer">Import now</button>
       </div>
     <% end %>
   </section>
