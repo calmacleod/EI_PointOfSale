@@ -144,17 +144,24 @@
     <%# ── Full-width: Images ─────────────────────────────────────── %>
 
     <% if @product_variant.images.attached? %>
-      <section class="overflow-hidden rounded-lg border border-theme bg-surface lg:col-span-2" aria-labelledby="variant-images-heading">
+      <section class="overflow-hidden rounded-lg border border-theme bg-surface lg:col-span-2"
+               aria-labelledby="variant-images-heading"
+               data-controller="image-lightbox"
+               data-image-lightbox-urls-value="<%= @product_variant.images.map { |img| url_for(img) }.to_json %>">
         <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
           <h2 id="variant-images-heading" class="text-sm font-semibold text-body">Images</h2>
           <p class="text-xs text-muted"><%= pluralize(@product_variant.images.count, "image") %> attached</p>
         </div>
         <div class="flex flex-wrap gap-2 px-3 py-2">
-          <% @product_variant.images.each do |image| %>
-            <%= link_to url_for(image), target: "_blank", rel: "noopener" do %>
+          <% @product_variant.images.each_with_index do |image, index| %>
+            <button type="button"
+                    data-action="click->image-lightbox#open"
+                    data-image-lightbox-index-param="<%= index %>"
+                    data-image-lightbox-url-param="<%= url_for(image) %>"
+                    class="cursor-pointer rounded-md focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2">
               <%= image_tag image.representation(resize_to_limit: [ 160, 160 ]),
                   class: "h-[160px] w-[160px] rounded-md border border-theme object-cover bg-surface-alt hover:opacity-80 transition-opacity" %>
-            <% end %>
+            </button>
           <% end %>
         </div>
       </section>
