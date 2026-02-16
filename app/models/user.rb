@@ -11,6 +11,7 @@ class User < ApplicationRecord
   has_many :notifications, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
   has_many :saved_queries, dependent: :destroy
+  has_many :store_tasks, foreign_key: :assigned_to_id, dependent: :nullify, inverse_of: :assigned_to
 
   normalizes :email_address, with: ->(e) { e.strip.downcase }
 

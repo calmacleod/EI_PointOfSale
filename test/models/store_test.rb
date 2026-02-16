@@ -18,6 +18,42 @@ class StoreTest < ActiveSupport::TestCase
     assert_equal "456 Oak Ave, Vancouver, BC", store.address
   end
 
+  # ── receipt_address_lines ──────────────────────────────────────────
+
+  test "receipt_address_lines groups street, locale, and country" do
+    store = Store.new(
+      address_line1: "110 Place d'Orléans Drive",
+      city: "Orléans",
+      province: "Ontario",
+      postal_code: "K1E 1E1",
+      country: "Canada"
+    )
+    expected = [
+      "110 Place d'Orléans Drive",
+      "Orléans, Ontario, K1E 1E1",
+      "Canada"
+    ]
+    assert_equal expected, store.receipt_address_lines
+  end
+
+  test "receipt_address_lines omits blank groups" do
+    store = Store.new(address_line1: "456 Oak Ave", city: "Vancouver", province: "BC")
+    expected = [ "456 Oak Ave", "Vancouver, BC" ]
+    assert_equal expected, store.receipt_address_lines
+  end
+
+  test "receipt_address_lines combines address_line1 and address_line2" do
+    store = Store.new(
+      address_line1: "123 Main St",
+      address_line2: "Suite 100",
+      city: "Toronto",
+      province: "ON",
+      postal_code: "M5V 1A1",
+      country: "Canada"
+    )
+    assert_equal "123 Main St, Suite 100", store.receipt_address_lines.first
+  end
+
   test "valid accent color is accepted" do
     store = stores(:one)
     Store::ACCENT_COLOR_NAMES.each do |color|
@@ -115,6 +151,22 @@ class StoreTest < ActiveSupport::TestCase
     )
     variant = store.logo_for_receipt(paper_width_mm: 80)
     assert_not_nil variant
+  end
+
+  test "logo_for_receipt with trim returns a variant when logo is attached" do
+    store = stores(:one)
+    store.logo.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_logo_square.png")),
+      filename: "logo.png",
+      content_type: "image/png"
+    )
+    variant = store.logo_for_receipt(paper_width_mm: 80, trim: true)
+    assert_not_nil variant
+  end
+
+  test "logo_for_receipt with trim returns nil when no logo attached" do
+    store = stores(:one)
+    assert_nil store.logo_for_receipt(trim: true)
   end
 
   test "thermal_logo returns nil when no logo attached" do

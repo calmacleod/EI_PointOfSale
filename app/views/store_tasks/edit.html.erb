@@ -1,0 +1,16 @@
+<% content_for :title, "Edit Task" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Store Tasks", store_tasks_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Edit</li>
+<% end %>
+
+<div class="mx-auto max-w-2xl">
+  <%= render "shared/page_header", title: "Edit Task", description: "Update #{@store_task.title}." %>
+
+  <div class="mt-2 form-card overflow-hidden rounded-lg border border-theme bg-surface">
+    <%= render "form", store_task: @store_task %>
+  </div>
+</div>

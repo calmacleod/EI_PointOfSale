@@ -147,6 +147,55 @@ class ReceiptTemplateTest < ActiveSupport::TestCase
     end
   end
 
+  # ── center_wrap word-wrapping ─────────────────────────────────────
+
+  test "address wraps at word boundaries instead of mid-word" do
+    template = receipt_templates(:narrow) # 32 chars wide
+    template.show_store_address = true
+    store = Store.current
+    store.update!(
+      address_line1: "123 Main Street",
+      city: "Springfield",
+      province: "IL",
+      postal_code: "62704",
+      country: "United States"
+    )
+
+    lines = template.formatted_preview(store: store)
+    address_lines = lines.select { |l| l.strip.match?(/Main|Springfield|United/) }
+
+    address_lines.each do |line|
+      # Each word in the line should be whole (no split postal codes, city names, etc.)
+      words = line.strip.split(/[\s,]+/).reject(&:empty?)
+      words.each do |word|
+        full_address = store.address
+        assert full_address.include?(word),
+               "Word '#{word}' appears split from the original address: #{full_address}"
+      end
+    end
+  end
+
+  test "postal code is not split across receipt lines" do
+    template = receipt_templates(:narrow) # 32 chars wide
+    template.show_store_address = true
+    store = Store.current
+    store.update!(
+      address_line1: "456 Longview Boulevard",
+      city: "Charlottetown",
+      province: "PE",
+      postal_code: "C1A 4N6",
+      country: "Canada"
+    )
+
+    lines = template.formatted_preview(store: store)
+
+    # Both halves of the postal code "C1A 4N6" must appear on the same line
+    postal_line = lines.find { |l| l.include?("C1A") }
+    assert_not_nil postal_line, "Postal code should appear in the receipt"
+    assert_includes postal_line, "4N6",
+                    "Both halves of postal code must be on the same line, got: #{postal_line.inspect}"
+  end
+
   # ── show_logo ─────────────────────────────────────────────────────
 
   test "show_logo defaults to true" do
@@ -157,6 +206,18 @@ class ReceiptTemplateTest < ActiveSupport::TestCase
   test "show_logo can be set to false" do
     template = ReceiptTemplate.new(name: "Test", paper_width_mm: 80, show_logo: false, active: false)
     assert_not template.show_logo?
+  end
+
+  # ── trim_logo ─────────────────────────────────────────────────────
+
+  test "trim_logo defaults to false" do
+    template = ReceiptTemplate.new(name: "Test", paper_width_mm: 80, active: false)
+    assert_not template.trim_logo?
+  end
+
+  test "trim_logo can be set to true" do
+    template = ReceiptTemplate.new(name: "Test", paper_width_mm: 80, trim_logo: true, active: false)
+    assert template.trim_logo?
   end
 
   # ── activate! ──────────────────────────────────────────────────────

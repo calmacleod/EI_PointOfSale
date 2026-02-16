@@ -1,0 +1,65 @@
+<%= form_with model: store_task, class: "divide-y divide-[var(--color-border)]" do |f| %>
+  <% if store_task.errors.any? %>
+    <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
+      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
+        <% store_task.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="px-3 py-2.5 space-y-2">
+    <div>
+      <%= f.label :title, class: "text-sm font-medium text-body" %>
+      <%= f.text_field :title,
+          placeholder: "e.g. Restock shelves in aisle 3",
+          class: "input-field min-h-[30px] w-full" %>
+    </div>
+
+    <div>
+      <%= f.label :body, "Description", class: "text-sm font-medium text-body" %>
+      <%= f.text_area :body,
+          rows: 4,
+          placeholder: "Add details about what needs to be done...",
+          class: "input-field w-full" %>
+    </div>
+
+    <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+      <div>
+        <%= f.label :status, class: "text-sm font-medium text-body" %>
+        <%= f.select :status,
+            StoreTask.statuses.keys.map { |s| [s.humanize.titleize, s] },
+            {},
+            class: "input-field min-h-[30px] w-full" %>
+      </div>
+
+      <div>
+        <%= f.label :assigned_to_id, "Assign to", class: "text-sm font-medium text-body" %>
+        <%= f.select :assigned_to_id,
+            User.order(:name).map { |u| [u.name.presence || u.email_address, u.id] },
+            { include_blank: "— Unassigned —" },
+            class: "input-field min-h-[30px] w-full" %>
+      </div>
+
+      <div>
+        <%= f.label :due_date, "Due date", class: "text-sm font-medium text-body" %>
+        <%= f.date_field :due_date,
+            class: "input-field min-h-[30px] w-full" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between px-3 py-2">
+    <% if store_task.persisted? %>
+      <%= button_to "Delete", store_task_path(store_task), method: :delete,
+          data: { turbo_confirm: "Delete this task? This cannot be undone." },
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+    <% else %>
+      <span></span>
+    <% end %>
+    <%= f.submit store_task.persisted? ? "Save changes" : "Create task",
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)] cursor-pointer" %>
+  </div>
+<% end %>

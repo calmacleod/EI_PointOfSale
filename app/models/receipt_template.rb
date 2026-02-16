@@ -45,8 +45,10 @@ class ReceiptTemplate < ApplicationRecord
       lines.concat(center_wrap(store.name.upcase, width))
     end
 
-    if show_store_address && store.address.present?
-      lines.concat(center_wrap(store.address, width))
+    if show_store_address
+      store.receipt_address_lines.each do |addr_line|
+        lines.concat(center_wrap(addr_line, width))
+      end
     end
 
     if show_store_phone && store.phone.present?
@@ -128,7 +130,30 @@ class ReceiptTemplate < ApplicationRecord
     def center_wrap(text, width)
       return [ "".center(width) ] if text.blank?
 
-      text.scan(/.{1,#{width}}/).map { |chunk| chunk.center(width) }
+      words = text.split(/\s+/)
+      lines = []
+      current_line = +""
+
+      words.each do |word|
+        if word.length > width
+          # Flush the accumulated line before hard-splitting an overlong word
+          unless current_line.empty?
+            lines << current_line.center(width)
+            current_line = +""
+          end
+          word.scan(/.{1,#{width}}/).each { |chunk| lines << chunk.center(width) }
+        elsif current_line.empty?
+          current_line = word.dup
+        elsif (current_line.length + 1 + word.length) <= width
+          current_line << " " << word
+        else
+          lines << current_line.center(width)
+          current_line = word.dup
+        end
+      end
+
+      lines << current_line.center(width) unless current_line.empty?
+      lines.presence || [ "".center(width) ]
     end
 
     def left_right(left, right, width)

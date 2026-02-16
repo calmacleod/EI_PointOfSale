@@ -1,10 +1,11 @@
 <%# Locals: receipt_template, store %>
 <div class="grid grid-cols-1 gap-3 lg:grid-cols-2" data-controller="receipt-preview"
      data-receipt-preview-store-name-value="<%= store.name %>"
-     data-receipt-preview-store-address-value="<%= store.address %>"
+     data-receipt-preview-store-address-value="<%= store.receipt_address_lines.join("\n") %>"
      data-receipt-preview-store-phone-value="<%= store.phone %>"
      data-receipt-preview-store-email-value="<%= store.email %>"
-     data-receipt-preview-logo-url-value="<%= store.logo.attached? ? url_for(store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm || 80)) : '' %>">
+     data-receipt-preview-logo-url-value="<%= store.logo.attached? ? url_for(store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm || 80)) : '' %>"
+     data-receipt-preview-trimmed-logo-url-value="<%= store.logo.attached? ? url_for(store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm || 80, trim: true)) : '' %>">
 
   <%# ── Left: Form fields ── %>
   <div>
@@ -54,6 +55,13 @@
             <% unless store.logo.attached? %>
               <span class="text-xs text-muted">(upload in Settings first)</span>
             <% end %>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer pl-6">
+            <%= f.check_box :trim_logo, class: "rounded border-[var(--color-border)] text-accent",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "trimLogo" } %>
+            <span class="text-sm text-body">Trim logo whitespace</span>
+            <span class="text-xs text-muted">(removes blank borders)</span>
           </label>
 
           <label class="flex items-center gap-2 cursor-pointer">
@@ -145,7 +153,7 @@
           <div class="px-2 py-4">
             <% if receipt_template.show_logo? && store.logo.attached? %>
               <div data-receipt-preview-target="logoContainer" class="mb-2 flex justify-center">
-                <%= image_tag store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm),
+                <%= image_tag store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm, trim: receipt_template.trim_logo?),
                     class: "max-w-full",
                     style: "width: 50%; filter: grayscale(1) contrast(1.8);",
                     alt: "Store logo",
@@ -154,7 +162,7 @@
             <% else %>
               <div data-receipt-preview-target="logoContainer" class="mb-2 flex justify-center hidden">
                 <% if store.logo.attached? %>
-                  <%= image_tag store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm),
+                  <%= image_tag store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm, trim: receipt_template.trim_logo?),
                       class: "max-w-full",
                       style: "width: 50%; filter: grayscale(1) contrast(1.8);",
                       alt: "Store logo",

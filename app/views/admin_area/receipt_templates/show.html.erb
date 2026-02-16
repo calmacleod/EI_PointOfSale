@@ -71,6 +71,10 @@
             <dd class="text-sm font-medium text-body"><%= @receipt_template.show_logo? ? "Yes" : "No" %></dd>
           </div>
           <div class="flex justify-between">
+            <dt class="text-sm text-muted">Trim logo whitespace</dt>
+            <dd class="text-sm font-medium text-body"><%= @receipt_template.trim_logo? ? "Yes" : "No" %></dd>
+          </div>
+          <div class="flex justify-between">
             <dt class="text-sm text-muted">Date &amp; time</dt>
             <dd class="text-sm font-medium text-body"><%= @receipt_template.show_date_time? ? "Yes" : "No" %></dd>
           </div>
@@ -106,7 +110,7 @@
           <div class="px-2 py-4">
             <% if @receipt_template.show_logo? && @store.logo.attached? %>
               <div class="mb-2 flex justify-center">
-                <%= image_tag @store.logo_for_receipt(paper_width_mm: @receipt_template.paper_width_mm),
+                <%= image_tag @store.logo_for_receipt(paper_width_mm: @receipt_template.paper_width_mm, trim: @receipt_template.trim_logo?),
                     class: "max-w-full",
                     style: "width: 50%; filter: grayscale(1) contrast(1.8);",
                     alt: "Store logo" %>

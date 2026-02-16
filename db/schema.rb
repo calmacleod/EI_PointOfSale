@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_160704) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_173318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -248,6 +248,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_160704) do
     t.boolean "show_store_email", default: false, null: false
     t.boolean "show_store_name", default: true, null: false
     t.boolean "show_store_phone", default: true, null: false
+    t.boolean "trim_logo", default: false, null: false
     t.datetime "updated_at", null: false
   end
 
@@ -427,6 +428,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_160704) do
     t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
+  create_table "store_tasks", force: :cascade do |t|
+    t.bigint "assigned_to_id"
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.date "due_date"
+    t.integer "status", default: 0, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["assigned_to_id"], name: "index_store_tasks_on_assigned_to_id"
+    t.index ["due_date"], name: "index_store_tasks_on_due_date"
+    t.index ["status"], name: "index_store_tasks_on_status"
+  end
+
   create_table "stores", force: :cascade do |t|
     t.string "accent_color", default: "teal", null: false
     t.string "address_line1"
@@ -506,4 +520,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_160704) do
   add_foreign_key "solid_queue_ready_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
+  add_foreign_key "store_tasks", "users", column: "assigned_to_id"
 end

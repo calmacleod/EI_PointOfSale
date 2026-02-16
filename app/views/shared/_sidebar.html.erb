@@ -102,6 +102,20 @@
         <span class="sidebar-text min-w-0 truncate">Cash Drawer</span>
       <% end %>
 
+      <%= link_to store_tasks_path,
+          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          class: [
+            "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
+            (nav_section_active?(store_tasks_path) ?
+              "bg-[var(--sidebar-active)] text-[var(--sidebar-text-bright)]" :
+              "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-bright)]")
+          ].join(" ") do %>
+        <svg class="h-4 w-4 shrink-0 <%= nav_section_active?(store_tasks_path) ? 'opacity-100' : 'opacity-50 group-hover:opacity-80' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+        </svg>
+        <span class="sidebar-text min-w-0 truncate">Store Tasks</span>
+      <% end %>
+
       <%= link_to reports_path,
           data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
           class: [

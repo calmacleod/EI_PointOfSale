@@ -232,3 +232,95 @@ unless CashDrawerSession.exists?
   )
   puts "  Created open session (today)"
 end
+
+# ── Store Tasks ───────────────────────────────────────────────────
+puts "Seeding store tasks..."
+
+unless StoreTask.exists?
+  admin = User.find_by!(email_address: "admin@example.com")
+  alice = User.find_by(email_address: "alice@example.com")
+  bob   = User.find_by(email_address: "bob@example.com")
+  charlie = User.find_by(email_address: "charlie@example.com")
+
+  StoreTask.create!(
+    title: "Restock card sleeves display",
+    body: "Dragon Shield sleeves are almost sold out on the floor. Restock from the back room — check red, blue, and black.",
+    status: :not_started,
+    assigned_to: alice,
+    due_date: 2.days.from_now.to_date
+  )
+
+  StoreTask.create!(
+    title: "Clean front display case",
+    body: "Fingerprints on the glass from the weekend rush. Give it a good wipe with the glass cleaner.",
+    status: :not_started,
+    assigned_to: bob,
+    due_date: Date.current
+  )
+
+  StoreTask.create!(
+    title: "Update price tags for hockey cards",
+    body: "2024 Upper Deck Series 1 packs went up to $5.49. Replace all shelf tags in the hockey aisle.",
+    status: :in_progress,
+    assigned_to: alice,
+    due_date: 1.day.from_now.to_date
+  )
+
+  StoreTask.create!(
+    title: "Fix cash drawer sticking",
+    body: "The cash drawer has been sticking when opening. Try cleaning the rails or call for a repair if that doesn't work.",
+    status: :blocked,
+    assigned_to: admin,
+    due_date: 1.day.ago.to_date
+  )
+
+  StoreTask.create!(
+    title: "Order new shopping bags",
+    body: "We're almost out of both small and large branded bags. Place an order with the supplier — at least 500 of each.",
+    status: :not_started,
+    assigned_to: charlie,
+    due_date: 3.days.ago.to_date
+  )
+
+  StoreTask.create!(
+    title: "Inventory count — trading cards section",
+    body: "Quarterly count for all TCG products: MTG, Pokémon, and Upper Deck. Use the inventory sheet on the clipboard behind the counter.",
+    status: :not_started,
+    assigned_to: nil,
+    due_date: 5.days.from_now.to_date
+  )
+
+  StoreTask.create!(
+    title: "Set up weekend sale signage",
+    body: "Print and hang the 15% off comics promotion signs. Place one at the entrance, one in the comics aisle, and one at the register.",
+    status: :done,
+    assigned_to: bob,
+    due_date: 2.days.ago.to_date
+  )
+
+  StoreTask.create!(
+    title: "Replace burned-out light in aisle 2",
+    body: "The fluorescent tube above the dice and miniatures section is flickering. Replacements are in the storage closet.",
+    status: :not_started,
+    assigned_to: alice,
+    due_date: 4.days.from_now.to_date
+  )
+
+  StoreTask.create!(
+    title: "Reorganize back room shelving",
+    body: "The back room is getting cluttered after recent shipments. Sort by category: TCG, comics, sports, and novelties. Label each shelf.",
+    status: :in_progress,
+    assigned_to: charlie,
+    due_date: 1.week.from_now.to_date
+  )
+
+  StoreTask.create!(
+    title: "Call Diamond Comics about late shipment",
+    body: "Last week's comic shipment still hasn't arrived. Call Diamond and get a tracking number. Reference order #DC-2026-0847.",
+    status: :not_started,
+    assigned_to: admin,
+    due_date: 2.days.ago.to_date
+  )
+
+  puts "  Created #{StoreTask.count} store tasks"
+end

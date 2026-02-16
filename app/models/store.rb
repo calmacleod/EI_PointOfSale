@@ -53,9 +53,21 @@ class Store < ApplicationRecord
 
   # ── Instance methods ───────────────────────────────────────────────
 
-  # Formatted full address for display (e.g. receipts, headers).
+  # Formatted full address as a single string for general display.
   def address
     [ address_line1, address_line2, city, province, postal_code, country ].compact_blank.join(", ")
+  end
+
+  # Address split into logical lines for receipt formatting.
+  # Groups related fields so postal codes and city names stay intact.
+  def receipt_address_lines
+    lines = []
+    street = [ address_line1, address_line2 ].compact_blank.join(", ")
+    lines << street if street.present?
+    locale = [ city, province, postal_code ].compact_blank.join(", ")
+    lines << locale if locale.present?
+    lines << country if country.present?
+    lines
   end
 
   # Returns the colour definition hash for the current accent_color.
@@ -65,11 +77,18 @@ class Store < ApplicationRecord
 
   # Returns a resized, square variant of the logo suitable for display
   # in receipt previews. Size is determined by paper width.
-  def logo_for_receipt(paper_width_mm: 80)
+  # When trim is true, whitespace borders are stripped via libvips
+  # before resizing, reducing wasted paper on thermal printers.
+  def logo_for_receipt(paper_width_mm: 80, trim: false)
     return nil unless logo.attached?
 
     size = THERMAL_LOGO_WIDTHS.fetch(paper_width_mm, 384)
-    logo.variant(resize_to_limit: [ size, size ])
+
+    if trim
+      logo.variant(trim_whitespace: true, resize_to_limit: [ size, size ])
+    else
+      logo.variant(resize_to_limit: [ size, size ])
+    end
   end
 
   # Returns a monochrome (1-bit dithered) variant of the logo optimised

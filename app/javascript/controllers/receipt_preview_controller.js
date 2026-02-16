@@ -6,7 +6,7 @@ export default class extends Controller {
   static targets = [
     "output", "paper", "paperWidth",
     "showStoreName", "showStoreAddress", "showStorePhone", "showStoreEmail",
-    "showLogo", "logoContainer", "logoImage",
+    "showLogo", "trimLogo", "logoContainer", "logoImage",
     "showDateTime", "showCashierName",
     "headerText", "footerText"
   ]
@@ -16,7 +16,8 @@ export default class extends Controller {
     storeAddress: String,
     storePhone: String,
     storeEmail: String,
-    logoUrl: String
+    logoUrl: String,
+    trimmedLogoUrl: String
   }
 
   connect() {
@@ -33,7 +34,9 @@ export default class extends Controller {
       lines.push(...this.centerWrap(this.storeNameValue.toUpperCase(), chars))
     }
     if (this.isChecked("showStoreAddress") && this.storeAddressValue) {
-      lines.push(...this.centerWrap(this.storeAddressValue, chars))
+      this.storeAddressValue.split("\n").forEach(addrLine => {
+        lines.push(...this.centerWrap(addrLine, chars))
+      })
     }
     if (this.isChecked("showStorePhone") && this.storePhoneValue) {
       lines.push(this.center(`Tel: ${this.storePhoneValue}`, chars))
@@ -95,10 +98,20 @@ export default class extends Controller {
       this.outputTarget.style.width = `${chars}ch`
     }
 
-    // Toggle logo visibility
+    // Toggle logo visibility and swap src for trim setting
     if (this.hasLogoContainerTarget) {
       const showLogo = this.isChecked("showLogo") && this.logoUrlValue
       this.logoContainerTarget.classList.toggle("hidden", !showLogo)
+
+      if (showLogo && this.hasLogoImageTarget) {
+        const trimmed = this.isChecked("trimLogo")
+        const url = trimmed && this.trimmedLogoUrlValue
+          ? this.trimmedLogoUrlValue
+          : this.logoUrlValue
+        if (this.logoImageTarget.src !== url) {
+          this.logoImageTarget.src = url
+        }
+      }
     }
   }
 
@@ -139,12 +152,32 @@ export default class extends Controller {
 
   centerWrap(text, width) {
     if (!text || text.length === 0) return [" ".repeat(width)]
+
+    const words = text.split(/\s+/)
     const lines = []
-    for (let i = 0; i < text.length; i += width) {
-      const chunk = text.slice(i, i + width)
-      lines.push(this.center(chunk, width))
+    let currentLine = ""
+
+    for (const word of words) {
+      if (word.length > width) {
+        if (currentLine) {
+          lines.push(this.center(currentLine, width))
+          currentLine = ""
+        }
+        for (let i = 0; i < word.length; i += width) {
+          lines.push(this.center(word.slice(i, i + width), width))
+        }
+      } else if (currentLine === "") {
+        currentLine = word
+      } else if (currentLine.length + 1 + word.length <= width) {
+        currentLine += " " + word
+      } else {
+        lines.push(this.center(currentLine, width))
+        currentLine = word
+      }
     }
-    return lines
+
+    if (currentLine) lines.push(this.center(currentLine, width))
+    return lines.length > 0 ? lines : [" ".repeat(width)]
   }
 
   leftRight(left, right, width) {

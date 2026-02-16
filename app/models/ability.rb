@@ -10,6 +10,7 @@ class Ability
       can :manage, PushSubscription, user_id: user.id
       can :manage, SavedQuery, user_id: user.id
       can :manage, CashDrawerSession
+      can :manage, StoreTask
     end
 
     if user.is_a?(Admin)

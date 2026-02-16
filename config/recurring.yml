@@ -15,11 +15,21 @@ development:
     schedule: every 15 minutes
     queue: low
 
+  overdue_store_tasks_notification:
+    class: OverdueStoreTasksNotificationJob
+    schedule: at 8am every day
+    queue: default
+
 production:
   refresh_dashboard_metrics:
     class: RefreshDashboardMetricsJob
     schedule: every 15 minutes
     queue: low
+
+  overdue_store_tasks_notification:
+    class: OverdueStoreTasksNotificationJob
+    schedule: at 8am every day
+    queue: default
 
   clear_solid_queue_finished_jobs:
     command: "SolidQueue::Job.clear_finished_in_batches(sleep_between_batches: 0.3)"

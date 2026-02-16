@@ -1,0 +1,33 @@
+clean_shelves:
+  title: Clean shelves
+  body: Wipe down all display shelves in aisle 3
+  status: 0
+  assigned_to_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  due_date: <%= 2.days.from_now.to_date %>
+
+restock_register:
+  title: Restock register supplies
+  body: Paper rolls and receipt tape running low
+  status: 1
+  assigned_to_id: <%= ActiveRecord::FixtureSet.identify(:two) %>
+  due_date: <%= 1.day.from_now.to_date %>
+
+fix_sign:
+  title: Fix front door sign
+  body: The open/closed sign keeps falling off
+  status: 2
+  assigned_to_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  due_date: <%= 1.day.ago.to_date %>
+
+inventory_count:
+  title: Complete inventory count
+  body: Quarterly inventory count for all products
+  status: 3
+  due_date: <%= 3.days.ago.to_date %>
+
+overdue_task:
+  title: Order new bags
+  body: We are running low on shopping bags
+  status: 0
+  assigned_to_id: <%= ActiveRecord::FixtureSet.identify(:one) %>
+  due_date: <%= 5.days.ago.to_date %>

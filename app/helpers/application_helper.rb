@@ -27,6 +27,7 @@ module ApplicationHelper
     when "Category" then record.name
     when "Store" then record.name.presence || "Store"
     when "Customer" then record.name
+    when "StoreTask" then record.title
     else "#{audit.auditable_type} ##{audit.auditable_id}"
     end
   rescue NameError
@@ -46,6 +47,7 @@ module ApplicationHelper
     when "Category" then nil
     when "Store" then admin_store_path
     when "Customer" then customer_path(record)
+    when "StoreTask" then store_task_path(record)
     else nil
     end
   rescue NameError
