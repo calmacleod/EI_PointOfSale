@@ -228,34 +228,25 @@ class FilterConfig
     end
 
     def apply_number_range_filter(scope, filter, params)
-      min_key = "#{filter.key}_min"
-      max_key = "#{filter.key}_max"
-      min_val = params[min_key]
-      max_val = params[max_key]
+      min_val = params["#{filter.key}_min"]
+      max_val = params["#{filter.key}_max"]
 
-      scope = scope.where("#{filter.key} >= ?", min_val.to_f) if min_val.present?
-      scope = scope.where("#{filter.key} <= ?", max_val.to_f) if max_val.present?
+      scope = scope.where(filter.key => min_val.to_f..) if min_val.present?
+      scope = scope.where(filter.key => ..max_val.to_f) if max_val.present?
       scope
     end
 
     def apply_date_range_filter(scope, filter, params)
-      preset_key = "#{filter.key}_preset"
-      from_key = "#{filter.key}_from"
-      to_key = "#{filter.key}_to"
-      column = filter.key.to_s
+      preset = params["#{filter.key}_preset"]
 
-      preset = params[preset_key]
       if preset.present? && preset != "custom"
         range = self.class.resolve_date_preset(preset)
-        if range
-          scope = scope.where("#{column} >= ?", range[0])
-          scope = scope.where("#{column} <= ?", range[1])
-        end
+        scope = scope.where(filter.key => range[0]..range[1]) if range
       else
-        from_val = parse_date_beginning(params[from_key])
-        to_val = parse_date_end(params[to_key])
-        scope = scope.where("#{column} >= ?", from_val) if from_val
-        scope = scope.where("#{column} <= ?", to_val) if to_val
+        from_val = parse_date_beginning(params["#{filter.key}_from"])
+        to_val = parse_date_end(params["#{filter.key}_to"])
+        scope = scope.where(filter.key => from_val..) if from_val
+        scope = scope.where(filter.key => ..to_val) if to_val
       end
       scope
     end

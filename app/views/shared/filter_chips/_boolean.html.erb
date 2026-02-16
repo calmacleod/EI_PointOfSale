@@ -6,8 +6,8 @@
           form="<%= local_assigns[:form_id] %>"
           class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0"
           data-action="change->filter-builder#handleFilterChange">
-    <option value="true" <%= "selected" if params[filter.key.to_s] == "true" %>>Yes</option>
-    <option value="false" <%= "selected" if params[filter.key.to_s] == "false" %>>No</option>
+    <%= tag.option "Yes", value: "true", selected: params[filter.key.to_s] == "true" %>
+    <%= tag.option "No", value: "false", selected: params[filter.key.to_s] == "false" %>
   </select>
   <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="<%= filter.key %>"
           class="ml-0.5 text-muted hover:text-body" title="Remove filter">

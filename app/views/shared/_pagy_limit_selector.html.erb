@@ -13,7 +13,7 @@
               class="pagy-limit-select select input-field min-h-[28px] w-auto min-w-[3.5rem] cursor-pointer py-0.5 pl-2 text-xs"
               onchange="this.form.requestSubmit()">
         <% page_sizes.each do |size| %>
-          <option value="<%= size %>" <%= "selected" if @pagy.limit == size %>><%= size %></option>
+          <%= tag.option size, value: size, selected: @pagy.limit == size %>
         <% end %>
       </select>
     <% end %>

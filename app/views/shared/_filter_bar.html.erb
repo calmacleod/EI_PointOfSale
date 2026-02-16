@@ -46,13 +46,11 @@
         <div data-filter-builder-target="addFilterDropdown"
              class="absolute left-0 z-20 mt-1 hidden min-w-[180px] rounded-lg border border-theme bg-surface py-1 shadow-lg">
           <% config.filters.each do |filter| %>
-            <button type="button"
-                    data-action="click->filter-builder#addFilter"
-                    data-filter-key="<%= filter.key %>"
-                    class="block w-full px-3 py-1.5 text-left text-sm text-body hover:bg-[var(--color-border)] disabled:opacity-40 disabled:pointer-events-none"
-                    <%= "disabled" if active_filter_keys.include?(filter.key.to_s) %>>
-              <%= filter.label %>
-            </button>
+            <%= tag.button filter.label,
+                  type: "button",
+                  data: { action: "click->filter-builder#addFilter", filter_key: filter.key },
+                  class: "block w-full px-3 py-1.5 text-left text-sm text-body hover:bg-[var(--color-border)] disabled:opacity-40 disabled:pointer-events-none",
+                  disabled: active_filter_keys.include?(filter.key.to_s) %>
           <% end %>
         </div>
       </div>
@@ -73,6 +71,7 @@
             <div class="flex items-center gap-1">
               <input type="text" data-saved-query-target="nameInput"
                      placeholder="Save current filters as…"
+                     autocomplete="off"
                      class="input-field min-h-[26px] min-w-0 flex-1 px-2 py-0.5 text-xs"
                      data-action="keydown.enter->saved-query#save">
               <button type="button" data-action="click->saved-query#save"

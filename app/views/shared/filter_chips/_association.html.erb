@@ -9,7 +9,7 @@
           class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0"
           data-action="change->filter-builder#handleFilterChange">
     <% items.each do |item| %>
-      <option value="<%= item.id %>" <%= "selected" if params[filter.key.to_s] == item.id.to_s %>><%= item.public_send(display) %></option>
+      <%= tag.option item.public_send(display), value: item.id, selected: params[filter.key.to_s] == item.id.to_s %>
     <% end %>
   </select>
   <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="<%= filter.key %>"

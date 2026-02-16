@@ -7,7 +7,7 @@
           class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0"
           data-action="change->filter-builder#handleFilterChange">
     <% filter.options[:choices].each do |label, value| %>
-      <option value="<%= value %>" <%= "selected" if params[filter.key.to_s] == value.to_s %>><%= label %></option>
+      <%= tag.option label, value: value, selected: params[filter.key.to_s] == value.to_s %>
     <% end %>
   </select>
   <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="<%= filter.key %>"

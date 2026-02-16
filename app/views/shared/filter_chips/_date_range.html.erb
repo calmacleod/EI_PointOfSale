@@ -13,17 +13,19 @@
           data-date-range-filter-target="presetSelect"
           data-action="change->date-range-filter#presetChanged change->filter-builder#handleFilterChange">
     <% FilterConfig::DATE_PRESET_LABELS.each do |label, value| %>
-      <option value="<%= value %>" <%= "selected" if current_preset == value %>><%= label %></option>
+      <%= tag.option label, value: value, selected: current_preset == value %>
     <% end %>
   </select>
   <div data-date-range-filter-target="customFields" class="<%= 'hidden' unless current_preset == 'custom' %> flex items-center gap-1">
     <input type="date" name="<%= from_key %>" value="<%= params[from_key] %>"
            form="<%= local_assigns[:form_id] %>"
+           autocomplete="off"
            class="input-field-compact h-6 w-28 px-1 py-0 text-xs"
            data-action="change->filter-builder#handleFilterChange">
     <span class="text-xs text-muted">–</span>
     <input type="date" name="<%= to_key %>" value="<%= params[to_key] %>"
            form="<%= local_assigns[:form_id] %>"
+           autocomplete="off"
            class="input-field-compact h-6 w-28 px-1 py-0 text-xs"
            data-action="change->filter-builder#handleFilterChange">
   </div>

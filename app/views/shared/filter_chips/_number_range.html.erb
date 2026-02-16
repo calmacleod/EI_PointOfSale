@@ -6,13 +6,13 @@
   <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
   <input type="number" name="<%= min_key %>" value="<%= params[min_key] %>"
          form="<%= local_assigns[:form_id] %>"
-         placeholder="min" step="any"
+         placeholder="min" step="any" autocomplete="off"
          class="w-16 border-0 bg-transparent px-1 py-0 text-xs font-medium text-body focus:ring-0"
          data-action="change->filter-builder#handleFilterChange">
   <span class="text-xs text-muted">–</span>
   <input type="number" name="<%= max_key %>" value="<%= params[max_key] %>"
          form="<%= local_assigns[:form_id] %>"
-         placeholder="max" step="any"
+         placeholder="max" step="any" autocomplete="off"
          class="w-16 border-0 bg-transparent px-1 py-0 text-xs font-medium text-body focus:ring-0"
          data-action="change->filter-builder#handleFilterChange">
   <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="<%= filter.key %>"

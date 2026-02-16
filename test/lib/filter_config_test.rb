@@ -110,8 +110,9 @@ class FilterConfigTest < ActiveSupport::TestCase
     scope = @config.apply_filters(Product.all, params)
     sql = scope.to_sql
 
-    assert_match(/price >= /, sql)
-    assert_match(/price <= /, sql)
+    assert_match(/price/, sql)
+    assert_match(/5\.0/, sql)
+    assert_match(/20\.0/, sql)
   end
 
   test "apply_filters ignores blank values" do
@@ -158,8 +159,8 @@ class FilterConfigTest < ActiveSupport::TestCase
     scope = @config.apply_filters(Product.all, params)
     sql = scope.to_sql
 
-    assert_match(/created_at >=/, sql)
-    assert_match(/created_at <=/, sql)
+    assert_match(/created_at/, sql)
+    assert_match(/BETWEEN/, sql)
   end
 
   test "apply_filters with date_range custom from/to" do
@@ -171,8 +172,9 @@ class FilterConfigTest < ActiveSupport::TestCase
     scope = @config.apply_filters(Product.all, params)
     sql = scope.to_sql
 
-    assert_match(/created_at >=/, sql)
-    assert_match(/created_at <=/, sql)
+    assert_match(/created_at/, sql)
+    assert_match(/2025-01-01/, sql)
+    assert_match(/2025-12-31/, sql)
   end
 
   # --- JSON serialization ---
