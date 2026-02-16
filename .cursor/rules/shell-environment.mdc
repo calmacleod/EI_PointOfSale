@@ -1,0 +1,31 @@
+---
+description: Activate mise environment before running shell commands
+alwaysApply: true
+---
+
+# Shell Environment Setup
+
+This project uses **mise** for managing runtime versions (Ruby, Node, etc.).
+
+## Before Running Shell Commands
+
+Prefix every Shell tool invocation with mise activation:
+
+```bash
+source ~/.zshrc && eval "$(mise activate zsh)" && <your_command>
+```
+
+This ensures the correct Ruby, Node, and other tool versions are available.
+
+## Examples
+
+```bash
+# Running tests
+source ~/.zshrc && eval "$(mise activate zsh)" && bin/rails test
+
+# Running rubocop
+source ~/.zshrc && eval "$(mise activate zsh)" && bin/rubocop
+
+# Running migrations
+source ~/.zshrc && eval "$(mise activate zsh)" && bin/rails db:migrate
+```

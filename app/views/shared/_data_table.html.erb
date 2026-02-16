@@ -16,13 +16,13 @@
 <% yield table if block_given? %>
 
 <%= turbo_frame_tag turbo_frame, data: { turbo_action: "advance" }, class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
-  <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto"
+  <div class="rounded-lg border border-theme bg-surface lg:flex lg:min-h-0 lg:flex-1 lg:flex-col"
        data-controller="column-toggle"
        data-column-toggle-resource-value="<%= config.resource_name %>"
        data-column-toggle-columns-value="<%= config.columns_json %>">
 
     <%# Column toggle button %>
-    <div class="flex items-center justify-end border-b border-theme bg-surface-alt px-2 py-1">
+    <div class="flex items-center justify-end rounded-t-lg border-b border-theme bg-surface-alt px-2 py-1">
       <div class="relative">
         <button type="button" data-action="click->column-toggle#togglePopover"
                 class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body"
@@ -52,11 +52,18 @@
       </div>
     </div>
 
-    <table class="min-w-full divide-y divide-[var(--color-border)]" data-column-toggle-target="table">
+    <%# Scrollable table area %>
+    <div class="relative rounded-b-lg lg:flex lg:min-h-0 lg:flex-1 lg:flex-col"
+         data-controller="scroll-shadow">
+      <div class="overflow-x-auto lg:flex-1 lg:overflow-y-auto"
+           data-scroll-shadow-target="scroller">
+      <table class="min-w-full divide-y divide-[var(--color-border)]" data-column-toggle-target="table">
       <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
         <tr>
           <% config.columns.each do |col| %>
-            <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted" data-column="<%= col.key %>">
+            <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted"
+                data-column="<%= col.key %>"
+                style="<%= "min-width:#{col.width};width:#{col.width}" if col.width %>">
               <% if col.sortable %>
                 <%= sort_link col.label, col.key %>
               <% else %>
@@ -64,14 +71,14 @@
               <% end %>
             </th>
           <% end %>
-          <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted" data-column="actions"></th>
+          <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted" style="min-width:4rem;width:4rem" data-column="actions"></th>
         </tr>
       </thead>
       <tbody class="divide-y divide-[var(--color-border)] bg-surface">
         <% records.each do |record| %>
           <tr>
             <% config.columns.each do |col| %>
-              <td class="px-3 py-1.5 text-sm text-body" data-column="<%= col.key %>">
+              <td class="whitespace-nowrap px-3 py-1.5 text-sm text-body" data-column="<%= col.key %>">
                 <% if table.cell_defined?(col.key) %>
                   <%= table.render_cell(col.key, record) %>
                 <% end %>
@@ -86,6 +93,8 @@
         <% end %>
       </tbody>
     </table>
+      </div>
+    </div>
   </div>
 
   <% if records.empty? %>

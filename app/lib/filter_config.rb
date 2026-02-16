@@ -28,7 +28,7 @@ class FilterConfig
     end
   end
 
-  ColumnDefinition = Data.define(:key, :label, :default, :sortable)
+  ColumnDefinition = Data.define(:key, :label, :default, :sortable, :width)
 
   DATE_PRESETS = {
     "today"       => -> { [ Time.zone.now.beginning_of_day, Time.zone.now.end_of_day ] },
@@ -117,12 +117,13 @@ class FilterConfig
 
   # --- Column DSL ---
 
-  def column(key, label:, default: true, sortable: false)
+  def column(key, label:, default: true, sortable: false, width: nil)
     @columns << ColumnDefinition.new(
       key: key.to_sym,
       label: label,
       default: default,
-      sortable: sortable
+      sortable: sortable,
+      width: width
     )
   end
 
@@ -183,7 +184,9 @@ class FilterConfig
 
   def columns_json
     @columns.map { |c|
-      { key: c.key, label: c.label, default: c.default, sortable: c.sortable }
+      hash = { key: c.key, label: c.label, default: c.default, sortable: c.sortable }
+      hash[:width] = c.width if c.width
+      hash
     }.to_json
   end
 

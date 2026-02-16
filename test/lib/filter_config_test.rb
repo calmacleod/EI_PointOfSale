@@ -191,4 +191,32 @@ class FilterConfigTest < ActiveSupport::TestCase
     assert_equal 3, json.size
     assert_equal "name", json.first["key"]
   end
+
+  # --- Column width ---
+
+  test "column width defaults to nil" do
+    col = @config.columns.first
+    assert_nil col.width
+  end
+
+  test "column accepts optional width" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.column :code, label: "Code", width: "10%"
+      f.column :name, label: "Name"
+    end
+
+    assert_equal "10%", config.columns.first.width
+    assert_nil config.columns.last.width
+  end
+
+  test "columns_json includes width only when set" do
+    config = FilterConfig.new(:test, "/test") do |f|
+      f.column :code, label: "Code", width: "10%"
+      f.column :name, label: "Name"
+    end
+
+    json = JSON.parse(config.columns_json)
+    assert_equal "10%", json.first["width"]
+    assert_nil json.last["width"]
+  end
 end

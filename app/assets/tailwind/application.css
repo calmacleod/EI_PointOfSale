@@ -308,6 +308,46 @@ html {
   .sidebar-mini .collapse-icon { display: none !important; }
 }
 
+/* ── Scroll shadows — indicate overflowing content ───────────────── */
+[data-controller="scroll-shadow"] {
+  position: relative;
+}
+[data-controller="scroll-shadow"]::before,
+[data-controller="scroll-shadow"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 16px;
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+[data-controller="scroll-shadow"]::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.1), transparent);
+}
+[data-controller="scroll-shadow"]::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.1), transparent);
+}
+[data-controller="scroll-shadow"].shadow-scroll-left::before { opacity: 1; }
+[data-controller="scroll-shadow"].shadow-scroll-right::after { opacity: 1; }
+
+[data-theme="dark"] [data-controller="scroll-shadow"]::before {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.3), transparent);
+}
+[data-theme="dark"] [data-controller="scroll-shadow"]::after {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.3), transparent);
+}
+[data-theme="dim"] [data-controller="scroll-shadow"]::before {
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.25), transparent);
+}
+[data-theme="dim"] [data-controller="scroll-shadow"]::after {
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.25), transparent);
+}
+
 /* ── Table rows — subtle zebra stripe + hover ────────────────────── */
 tbody tr:nth-child(even) {
   background-color: var(--color-surface-alt);

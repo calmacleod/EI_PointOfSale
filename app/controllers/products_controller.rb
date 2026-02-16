@@ -18,18 +18,18 @@ class ProductsController < ApplicationController
       f.date_range   :created_at,       label: "Created"
       f.date_range   :updated_at,       label: "Updated"
 
-      f.column :code,           label: "Code",     default: true,  sortable: true
-      f.column :name,           label: "Product",  default: true,  sortable: true
-      f.column :selling_price,  label: "Price",    default: true,  sortable: true
-      f.column :stock_level,    label: "Stock",    default: true,  sortable: true
-      f.column :supplier,       label: "Supplier", default: true
-      f.column :tax_code,       label: "Tax",      default: false
-      f.column :purchase_price, label: "Cost",     default: false, sortable: true
-      f.column :reorder_level,  label: "Reorder",  default: false, sortable: true
-      f.column :product_group,  label: "Group",    default: false
-      f.column :sync_to_shopify, label: "Shopify", default: false
-      f.column :created_at,     label: "Created",  default: true,  sortable: true
-      f.column :updated_at,     label: "Updated",  default: false, sortable: true
+      f.column :code,            label: "Code",     default: true,  sortable: true,  width: "7rem"
+      f.column :name,            label: "Product",  default: true,  sortable: true,  width: "18rem"
+      f.column :selling_price,   label: "Price",    default: true,  sortable: true,  width: "5rem"
+      f.column :stock_level,     label: "Stock",    default: true,  sortable: true,  width: "4.5rem"
+      f.column :supplier,        label: "Supplier", default: true,                   width: "12rem"
+      f.column :tax_code,        label: "Tax",      default: false,                  width: "4.5rem"
+      f.column :purchase_price,  label: "Cost",     default: false, sortable: true,  width: "5rem"
+      f.column :reorder_level,   label: "Reorder",  default: false, sortable: true,  width: "5.5rem"
+      f.column :product_group,   label: "Group",    default: false,                  width: "10rem"
+      f.column :sync_to_shopify, label: "Shopify",  default: false,                  width: "5rem"
+      f.column :created_at,      label: "Created",  default: true,  sortable: true,  width: "8.5rem"
+      f.column :updated_at,      label: "Updated",  default: false, sortable: true,  width: "8.5rem"
     end
     @saved_queries = current_user.saved_queries.for_resource("products")
 

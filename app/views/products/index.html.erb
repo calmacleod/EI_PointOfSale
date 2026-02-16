@@ -20,7 +20,7 @@
     <%= render "shared/data_table", config: @filter_config, records: @products, pagy: @pagy,
                empty_message: "No products yet. Add one to get started." do |t| %>
       <% t.cell(:code) { |product| link_to product.code, product_path(product), class: "font-mono text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
-      <% t.cell(:name) { |product| link_to product.name, product_path(product), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <% t.cell(:name) { |product| link_to product.name, product_path(product), class: "block whitespace-normal break-words font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
       <% t.cell(:selling_price) { |product| number_to_currency(product.selling_price) || "—" } %>
       <% t.cell(:stock_level) { |product| product.stock_level } %>
       <% t.cell(:supplier) { |product| product.supplier&.name || "—" } %>
