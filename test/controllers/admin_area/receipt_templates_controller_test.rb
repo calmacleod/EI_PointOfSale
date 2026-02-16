@@ -53,6 +53,22 @@ module AdminArea
       assert_redirected_to admin_receipt_templates_path
     end
 
+    test "create with show_logo param" do
+      assert_difference("ReceiptTemplate.count", 1) do
+        post admin_receipt_templates_path, params: {
+          receipt_template: {
+            name: "Logo Test",
+            paper_width_mm: 80,
+            show_logo: true,
+            show_store_name: true
+          }
+        }
+      end
+
+      template = ReceiptTemplate.order(:created_at).last
+      assert template.show_logo?
+    end
+
     test "create with invalid params renders new" do
       assert_no_difference("ReceiptTemplate.count") do
         post admin_receipt_templates_path, params: {

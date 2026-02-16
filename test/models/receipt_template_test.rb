@@ -147,6 +147,18 @@ class ReceiptTemplateTest < ActiveSupport::TestCase
     end
   end
 
+  # ── show_logo ─────────────────────────────────────────────────────
+
+  test "show_logo defaults to true" do
+    template = ReceiptTemplate.new(name: "Test", paper_width_mm: 80, active: false)
+    assert template.show_logo?
+  end
+
+  test "show_logo can be set to false" do
+    template = ReceiptTemplate.new(name: "Test", paper_width_mm: 80, show_logo: false, active: false)
+    assert_not template.show_logo?
+  end
+
   # ── activate! ──────────────────────────────────────────────────────
 
   test "activate! makes this template active and deactivates others" do

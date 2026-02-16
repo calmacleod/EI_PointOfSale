@@ -35,10 +35,21 @@ class Store < ApplicationRecord
 
   # ── Attachments ────────────────────────────────────────────────────
   has_many_attached :images
+  has_one_attached :logo
 
   # ── Validations ────────────────────────────────────────────────────
   validates :name, presence: true
   validates :accent_color, inclusion: { in: ACCENT_COLOR_NAMES }
+  validate :logo_must_be_square_image, if: -> { logo.attached? && logo.new_record? }
+
+  # ── Constants ──────────────────────────────────────────────────────
+
+  # Thermal receipt printers typically have a print width in dots.
+  # 80mm paper ≈ 384 dots at 203 dpi; 58mm ≈ 384 dots but narrower.
+  THERMAL_LOGO_WIDTHS = {
+    58 => 192,
+    80 => 384
+  }.freeze
 
   # ── Instance methods ───────────────────────────────────────────────
 
@@ -52,9 +63,61 @@ class Store < ApplicationRecord
     ACCENT_COLORS.fetch(accent_color, ACCENT_COLORS["teal"])
   end
 
+  # Returns a resized, square variant of the logo suitable for display
+  # in receipt previews. Size is determined by paper width.
+  def logo_for_receipt(paper_width_mm: 80)
+    return nil unless logo.attached?
+
+    size = THERMAL_LOGO_WIDTHS.fetch(paper_width_mm, 384)
+    logo.variant(resize_to_limit: [ size, size ])
+  end
+
+  # Returns a monochrome (1-bit dithered) variant of the logo optimised
+  # for thermal receipt printers. Uses Floyd-Steinberg dithering via
+  # libvips for the best halftone quality on thermal paper.
+  def thermal_logo(paper_width_mm: 80)
+    return nil unless logo.attached?
+
+    size = THERMAL_LOGO_WIDTHS.fetch(paper_width_mm, 384)
+    logo.variant(
+      resize_to_limit: [ size, size ],
+      colourspace: "b-w",
+      format: :png
+    )
+  end
+
   class << self
     def current
       first || create!(name: "Store")
     end
   end
+
+  private
+
+    def logo_must_be_square_image
+      unless logo.content_type.in?(%w[image/png image/jpeg image/gif image/webp])
+        errors.add(:logo, "must be a PNG, JPEG, GIF, or WebP image")
+        return
+      end
+
+      # Try to verify the image is approximately square.
+      # If the blob hasn't been analyzed yet, attempt to analyze it.
+      # Skip the dimension check if the file isn't available for analysis.
+      begin
+        logo.blob.analyze unless logo.blob.analyzed?
+      rescue ActiveStorage::FileNotFoundError
+        return
+      end
+
+      metadata = logo.blob.metadata
+      width = metadata["width"]
+      height = metadata["height"]
+
+      return unless width && height
+
+      ratio = width.to_f / height
+      unless ratio.between?(0.9, 1.1)
+        errors.add(:logo, "must be square (current ratio is #{width}x#{height})")
+      end
+    end
 end

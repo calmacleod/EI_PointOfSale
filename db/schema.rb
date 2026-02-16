@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_050715) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_141509) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -224,6 +224,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_050715) do
     t.integer "paper_width_mm", default: 80, null: false
     t.boolean "show_cashier_name", default: true, null: false
     t.boolean "show_date_time", default: true, null: false
+    t.boolean "show_logo", default: true, null: false
     t.boolean "show_store_address", default: true, null: false
     t.boolean "show_store_email", default: false, null: false
     t.boolean "show_store_name", default: true, null: false

@@ -88,4 +88,53 @@ class StoreTest < ActiveSupport::TestCase
     end
     assert_equal 2, store.images.count
   end
+
+  # ── Logo attachment ─────────────────────────────────────────────────
+
+  test "can attach a logo" do
+    store = stores(:one)
+    store.logo.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_logo_square.png")),
+      filename: "logo.png",
+      content_type: "image/png"
+    )
+    assert store.logo.attached?
+  end
+
+  test "logo_for_receipt returns nil when no logo attached" do
+    store = stores(:one)
+    assert_nil store.logo_for_receipt
+  end
+
+  test "logo_for_receipt returns a variant when logo is attached" do
+    store = stores(:one)
+    store.logo.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_logo_square.png")),
+      filename: "logo.png",
+      content_type: "image/png"
+    )
+    variant = store.logo_for_receipt(paper_width_mm: 80)
+    assert_not_nil variant
+  end
+
+  test "thermal_logo returns nil when no logo attached" do
+    store = stores(:one)
+    assert_nil store.thermal_logo
+  end
+
+  test "thermal_logo returns a variant when logo is attached" do
+    store = stores(:one)
+    store.logo.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_logo_square.png")),
+      filename: "logo.png",
+      content_type: "image/png"
+    )
+    variant = store.thermal_logo(paper_width_mm: 80)
+    assert_not_nil variant
+  end
+
+  test "THERMAL_LOGO_WIDTHS has entries for both paper widths" do
+    assert_equal 192, Store::THERMAL_LOGO_WIDTHS[58]
+    assert_equal 384, Store::THERMAL_LOGO_WIDTHS[80]
+  end
 end

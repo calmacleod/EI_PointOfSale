@@ -33,6 +33,9 @@ class ReceiptTemplate < ApplicationRecord
 
   # Returns an array of strings representing each line of the receipt.
   # Pass a Store instance to populate store info.
+  # Whether the logo should be displayed in the receipt preview.
+  # This is handled as an <img> element in the HTML preview, not as text.
+  # This method provides only the text portion of the receipt.
   def formatted_preview(store: nil)
     store ||= Store.current
     lines = []

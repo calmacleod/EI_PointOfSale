@@ -33,6 +33,19 @@ module AdminArea
       assert_response :unprocessable_entity
     end
 
+    test "update can upload a store logo" do
+      logo = fixture_file_upload("test_logo_square.png", "image/png")
+      patch admin_settings_path, params: { store: { logo: logo } }
+      assert_redirected_to admin_settings_path
+      assert Store.current.reload.logo.attached?
+    end
+
+    test "show displays logo upload field" do
+      get admin_settings_path
+      assert_response :success
+      assert_includes response.body, "Store logo"
+    end
+
     test "non-admin cannot access settings" do
       sign_in_as(users(:one))
       get admin_settings_path

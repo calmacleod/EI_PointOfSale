@@ -3,7 +3,8 @@
      data-receipt-preview-store-name-value="<%= store.name %>"
      data-receipt-preview-store-address-value="<%= store.address %>"
      data-receipt-preview-store-phone-value="<%= store.phone %>"
-     data-receipt-preview-store-email-value="<%= store.email %>">
+     data-receipt-preview-store-email-value="<%= store.email %>"
+     data-receipt-preview-logo-url-value="<%= store.logo.attached? ? url_for(store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm || 80)) : '' %>">
 
   <%# ── Left: Form fields ── %>
   <div>
@@ -46,6 +47,15 @@
         <p class="mt-0.5 text-xs text-muted">Choose which store details appear on the receipt.</p>
 
         <div class="mt-2 space-y-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= f.check_box :show_logo, class: "rounded border-[var(--color-border)] text-accent",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "showLogo" } %>
+            <span class="text-sm text-body">Store logo</span>
+            <% unless store.logo.attached? %>
+              <span class="text-xs text-muted">(upload in Settings first)</span>
+            <% end %>
+          </label>
+
           <label class="flex items-center gap-2 cursor-pointer">
             <%= f.check_box :show_store_name, class: "rounded border-[var(--color-border)] text-accent",
                 data: { action: "change->receipt-preview#update", receipt_preview_target: "showStoreName" } %>
@@ -133,6 +143,25 @@
         <div data-receipt-preview-target="paper"
              class="receipt-paper shrink-0 rounded-t-sm bg-white shadow-lg">
           <div class="px-2 py-4">
+            <% if receipt_template.show_logo? && store.logo.attached? %>
+              <div data-receipt-preview-target="logoContainer" class="mb-2 flex justify-center">
+                <%= image_tag store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm),
+                    class: "max-w-full",
+                    style: "width: 50%; filter: grayscale(1) contrast(1.8);",
+                    alt: "Store logo",
+                    data: { receipt_preview_target: "logoImage" } %>
+              </div>
+            <% else %>
+              <div data-receipt-preview-target="logoContainer" class="mb-2 flex justify-center hidden">
+                <% if store.logo.attached? %>
+                  <%= image_tag store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm),
+                      class: "max-w-full",
+                      style: "width: 50%; filter: grayscale(1) contrast(1.8);",
+                      alt: "Store logo",
+                      data: { receipt_preview_target: "logoImage" } %>
+                <% end %>
+              </div>
+            <% end %>
             <pre data-receipt-preview-target="output"
                  class="whitespace-pre font-mono text-black leading-snug"
                  style="font-size: 11px; width: <%= receipt_template.chars_per_line %>ch;"><%= receipt_template.formatted_preview(store: store).join("\n") %></pre>

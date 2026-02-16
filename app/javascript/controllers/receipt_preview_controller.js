@@ -6,6 +6,7 @@ export default class extends Controller {
   static targets = [
     "output", "paper", "paperWidth",
     "showStoreName", "showStoreAddress", "showStorePhone", "showStoreEmail",
+    "showLogo", "logoContainer", "logoImage",
     "showDateTime", "showCashierName",
     "headerText", "footerText"
   ]
@@ -14,7 +15,8 @@ export default class extends Controller {
     storeName: String,
     storeAddress: String,
     storePhone: String,
-    storeEmail: String
+    storeEmail: String,
+    logoUrl: String
   }
 
   connect() {
@@ -91,6 +93,12 @@ export default class extends Controller {
       this.outputTarget.textContent = lines.join("\n")
       this.outputTarget.style.fontSize = "11px"
       this.outputTarget.style.width = `${chars}ch`
+    }
+
+    // Toggle logo visibility
+    if (this.hasLogoContainerTarget) {
+      const showLogo = this.isChecked("showLogo") && this.logoUrlValue
+      this.logoContainerTarget.classList.toggle("hidden", !showLogo)
     }
   }
 
