@@ -1,0 +1,95 @@
+<% content_for :title, "Shopify Integration" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Shopify</li>
+<% end %>
+
+<div class="mx-auto max-w-3xl">
+  <%= render "shared/page_header", title: "Shopify Integration", description: "Manage Shopify product synchronisation and connection settings." %>
+
+  <%# ── Connection status ──────────────────────────────────────────── %>
+  <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 class="text-sm font-semibold text-body">Connection</h2>
+      <p class="text-xs text-muted">Shopify API credentials and connection status</p>
+    </div>
+    <div class="px-3 py-2.5 space-y-2">
+      <% if @configured %>
+        <div class="flex items-center gap-2">
+          <span class="inline-block h-2.5 w-2.5 rounded-full bg-green-500"></span>
+          <span class="text-sm font-medium text-body">Credentials configured</span>
+        </div>
+        <div class="flex gap-2">
+          <%= button_to "Test connection", test_connection_admin_shopify_path, method: :post,
+              class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30" %>
+        </div>
+      <% else %>
+        <div class="flex items-center gap-2">
+          <span class="inline-block h-2.5 w-2.5 rounded-full bg-[var(--color-border)]"></span>
+          <span class="text-sm font-medium text-body">Not configured</span>
+        </div>
+        <div class="rounded-md bg-[var(--color-border)]/10 px-3 py-2">
+          <p class="text-sm text-body font-medium">Setup instructions</p>
+          <ol class="mt-1 list-decimal pl-5 text-sm text-muted space-y-1">
+            <li>Go to <strong>Shopify Admin</strong> > Settings > Apps and sales channels > Develop apps</li>
+            <li>Create a custom app with these Admin API scopes: <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_products</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">write_products</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_inventory</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">write_inventory</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_orders</code></li>
+            <li>Install the app and copy the Admin API access token</li>
+            <li>Run <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">bin/rails credentials:edit</code> and add:</li>
+          </ol>
+          <pre class="mt-2 rounded bg-surface-alt px-3 py-2 text-xs text-body overflow-x-auto"><code>shopify:
+  shop_domain: "yourstore.myshopify.com"
+  api_key: "your-api-key"
+  api_secret: "your-api-secret"
+  access_token: "shpat_xxxxxxxx"
+  api_version: "2025-10"</code></pre>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <%# ── Sync status ────────────────────────────────────────────────── %>
+  <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 class="text-sm font-semibold text-body">Sync status</h2>
+      <p class="text-xs text-muted">Products flagged for Shopify synchronisation</p>
+    </div>
+    <dl class="divide-y divide-[var(--color-border)]">
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Products to sync</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @synced_count %></dd>
+      </div>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Last synced</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+          <%= @last_synced ? local_time(@last_synced, format: :long) : "Never" %>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <%# ── Actions ────────────────────────────────────────────────────── %>
+  <% if @configured %>
+    <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 class="text-sm font-semibold text-body">Actions</h2>
+        <p class="text-xs text-muted">Manual sync operations</p>
+      </div>
+      <div class="px-3 py-2.5 flex flex-wrap gap-2">
+        <%= button_to "Sync all products", sync_all_admin_shopify_path, method: :post,
+            data: { turbo_confirm: "This will enqueue sync jobs for all products flagged for Shopify. Continue?" },
+            class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+      </div>
+    </section>
+  <% end %>
+
+  <%# ── Per-product toggle hint ────────────────────────────────────── %>
+  <div class="mt-2 rounded-lg border border-theme bg-[var(--color-border)]/10 px-3 py-2.5 text-center">
+    <p class="text-sm text-muted">
+      To flag individual products for Shopify sync, use the
+      <strong class="text-body">"Sync to Shopify"</strong> checkbox on each product's edit page.
+    </p>
+  </div>
+</div>

@@ -16,7 +16,7 @@ class DevToolsController < ApplicationController
   end
 
   def reindex_search
-    models = [ Product, ProductVariant, Service, Customer, User, Category, Supplier, TaxCode ]
+    models = [ Product, Service, Customer, User, Category, Supplier, TaxCode ]
     count = 0
 
     models.each do |model|

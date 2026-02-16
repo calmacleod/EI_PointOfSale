@@ -4,22 +4,21 @@ class SearchTest < ActiveSupport::TestCase
   parallelize(workers: 1)
 
   test "Product.search finds products by name" do
-    product = Product.create!(name: "Unique Searchable Widget")
+    product = Product.create!(code: "SRCH-WIDG-001", name: "Unique Searchable Widget")
     assert_includes Product.search("Widget"), product
     assert_includes Product.search("Unique"), product
     assert_includes Product.search("Searchable"), product
-    # Prefix search: partial word matches
     assert_includes Product.search("Uniq"), product
     assert_includes Product.search("Widg"), product
   end
 
   test "Product.search returns nothing for non-matching query" do
-    Product.create!(name: "Unique Searchable Widget")
+    Product.create!(code: "SRCH-WIDG-002", name: "Unique Searchable Widget")
     assert_empty Product.search("nonexistent")
   end
 
   test "Product.search excludes discarded products" do
-    product = Product.create!(name: "Discarded Soon Widget")
+    product = Product.create!(code: "SRCH-DISC-001", name: "Discarded Soon Widget")
     assert_includes Product.kept.search("Widget"), product
 
     product.discard
@@ -27,8 +26,18 @@ class SearchTest < ActiveSupport::TestCase
     assert_includes Product.unscoped.search("Widget"), product
   end
 
+  test "Product.search finds products by code" do
+    product = Product.create!(code: "SRCH-CODE-999", name: "Code Search Test")
+    assert_includes Product.search("SRCH-CODE"), product
+    assert_includes Product.search("SRCH-CODE-999"), product
+  end
+
+  test "Product.search finds products by notes" do
+    product = Product.create!(code: "SRCH-NOTE-001", name: "Notes Search Test", notes: "Special search notes")
+    assert_includes Product.search("Special search"), product
+  end
+
   test "User.search finds users by name and email" do
-    # Create a new user (avoids fixture/transaction visibility issues with pg_search subqueries)
     user = User.create!(
       name: "Qwerty Searchable User",
       email_address: "qwerty.search.test@example.com",
@@ -74,19 +83,6 @@ class SearchTest < ActiveSupport::TestCase
     assert_includes Service.search("testing search"), service
   end
 
-  test "ProductVariant.search finds variants by name, code, and notes" do
-    product = products(:dragon_shield)
-    variant = ProductVariant.create!(
-      product: product,
-      code: "SRCH-VAR-999",
-      name: "Searchable Variant",
-      notes: "Test notes for search"
-    )
-    assert_includes ProductVariant.search("SRCH-VAR"), variant
-    assert_includes ProductVariant.search("Searchable"), variant
-    assert_includes ProductVariant.search("Test notes"), variant
-  end
-
   test "TaxCode.search finds tax codes by code, name, and notes" do
     tax_code = TaxCode.create!(code: "SRCH-TAX", name: "Searchable Tax", notes: "Test tax notes")
     assert_includes TaxCode.search("SRCH-TAX"), tax_code
@@ -94,11 +90,10 @@ class SearchTest < ActiveSupport::TestCase
     assert_includes TaxCode.search("Test tax"), tax_code
   end
 
-  test "ProductVariant.search finds variants by code containing dashes" do
-    product = products(:dragon_shield)
-    variant = ProductVariant.create!(product: product, code: "WH-BLK-001", name: "Warehouse Black")
-    assert_includes ProductVariant.search("WH-BLK-001"), variant
-    assert_includes ProductVariant.search("WH-BLK"), variant
+  test "Product.search finds products by code containing dashes" do
+    product = Product.create!(code: "WH-BLK-001", name: "Warehouse Black")
+    assert_includes Product.search("WH-BLK-001"), product
+    assert_includes Product.search("WH-BLK"), product
   end
 
   test "Service.search finds services by code containing dashes" do
@@ -118,25 +113,23 @@ class SearchTest < ActiveSupport::TestCase
     assert_includes Supplier.search("04-555-1234"), supplier
   end
 
-  test "ProductVariant.find_by_exact_code returns exact match" do
-    product = products(:dragon_shield)
-    variant = ProductVariant.create!(product: product, code: "EXACT-SCAN-001", name: "Scannable")
+  test "Product.find_by_exact_code returns exact match" do
+    product = Product.create!(code: "EXACT-SCAN-001", name: "Scannable")
 
-    assert_equal variant, ProductVariant.find_by_exact_code("EXACT-SCAN-001")
-    assert_nil ProductVariant.find_by_exact_code("EXACT-SCAN")
-    assert_nil ProductVariant.find_by_exact_code("exact-scan-001")
+    assert_equal product, Product.find_by_exact_code("EXACT-SCAN-001")
+    assert_nil Product.find_by_exact_code("EXACT-SCAN")
+    assert_nil Product.find_by_exact_code("exact-scan-001")
   end
 
-  test "ProductVariant.find_by_exact_code excludes discarded variants" do
-    product = products(:dragon_shield)
-    variant = ProductVariant.create!(product: product, code: "DISCARD-SCAN-001", name: "Discardable")
-    variant.discard
+  test "Product.find_by_exact_code excludes discarded products" do
+    product = Product.create!(code: "DISCARD-SCAN-001", name: "Discardable")
+    product.discard
 
-    assert_nil ProductVariant.find_by_exact_code("DISCARD-SCAN-001")
+    assert_nil Product.find_by_exact_code("DISCARD-SCAN-001")
   end
 
   test "PgSearch.multisearch finds records across models" do
-    product = Product.create!(name: "Multisearch Widget")
+    product = Product.create!(code: "MULTI-001", name: "Multisearch Widget")
     user = User.create!(
       name: "Multisearch User",
       email_address: "multisearch@example.com",
@@ -153,7 +146,7 @@ class SearchTest < ActiveSupport::TestCase
   end
 
   test "PgSearch.multisearch returns PgSearch::Document with searchable association" do
-    product = Product.create!(name: "Document Test Product")
+    product = Product.create!(code: "DOC-TEST-001", name: "Document Test Product")
     results = PgSearch.multisearch("Document Test")
     assert results.any?
     doc = results.first
@@ -162,7 +155,7 @@ class SearchTest < ActiveSupport::TestCase
   end
 
   test "PgSearch.multisearch excludes discarded records from Discard models" do
-    product = Product.create!(name: "Multisearch Discardable")
+    product = Product.create!(code: "MULTI-DISC-001", name: "Multisearch Discardable")
     assert PgSearch.multisearch("Discardable").any? { |d| d.searchable == product }
 
     product.discard

@@ -3,7 +3,7 @@ require "test_helper"
 class CategorizationTest < ActiveSupport::TestCase
   test "belongs to categorizable polymorphic" do
     cat = categorizations(:product_card_sleeves)
-    assert_equal products(:dragon_shield), cat.categorizable
+    assert_equal products(:dragon_shield_red), cat.categorizable
   end
 
   test "belongs to category" do

@@ -18,7 +18,7 @@ class DatabaseExportService
     users
     customers
     products
-    product_variants
+    product_groups
     services
     categories
     categorizations

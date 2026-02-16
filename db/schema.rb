@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_141509) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_145535) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -140,6 +140,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_141509) do
     t.index ["key"], name: "index_dashboard_metrics_on_key", unique: true
   end
 
+  create_table "data_imports", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "created_count", default: 0
+    t.integer "error_count", default: 0
+    t.jsonb "errors_log", default: []
+    t.string "file_name"
+    t.bigint "imported_by_id"
+    t.integer "processed_rows", default: 0
+    t.string "status", default: "pending"
+    t.integer "total_rows"
+    t.datetime "updated_at", null: false
+    t.integer "updated_count", default: 0
+    t.index ["imported_by_id"], name: "index_data_imports_on_imported_by_id"
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.text "body"
     t.string "category"
@@ -163,42 +179,45 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_141509) do
     t.index ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable"
   end
 
-  create_table "product_variants", force: :cascade do |t|
-    t.string "code", null: false
+  create_table "product_groups", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.datetime "discarded_at"
-    t.decimal "items_per_unit", precision: 12, scale: 4
-    t.string "name"
-    t.text "notes"
-    t.jsonb "option_values", default: {}
-    t.decimal "order_quantity", precision: 12, scale: 4
-    t.bigint "product_id", null: false
-    t.decimal "purchase_price", precision: 10, scale: 2
-    t.integer "reorder_level", default: 0, null: false
-    t.decimal "selling_price", precision: 10, scale: 2
-    t.integer "stock_level", default: 0, null: false
-    t.bigint "supplier_id"
-    t.string "supplier_reference"
-    t.decimal "unit_cost", precision: 10, scale: 2
+    t.string "name", null: false
+    t.string "shopify_product_id"
     t.datetime "updated_at", null: false
-    t.index ["code"], name: "index_product_variants_on_code", unique: true
-    t.index ["discarded_at"], name: "index_product_variants_on_discarded_at"
-    t.index ["product_id"], name: "index_product_variants_on_product_id"
-    t.index ["supplier_id"], name: "index_product_variants_on_supplier_id"
   end
 
   create_table "products", force: :cascade do |t|
     t.bigint "added_by_id"
+    t.string "code", null: false
     t.datetime "created_at", null: false
     t.datetime "discarded_at"
+    t.integer "items_per_unit", default: 1
     t.jsonb "metadata", default: {}
     t.string "name", null: false
+    t.text "notes"
+    t.integer "order_quantity"
+    t.bigint "product_group_id"
     t.string "product_url"
+    t.decimal "purchase_price", precision: 10, scale: 2
+    t.integer "reorder_level", default: 0
+    t.decimal "selling_price", precision: 10, scale: 2
+    t.string "shopify_inventory_item_id"
+    t.string "shopify_product_id"
+    t.datetime "shopify_synced_at"
+    t.string "shopify_variant_id"
+    t.integer "stock_level", default: 0
     t.bigint "supplier_id"
+    t.string "supplier_reference"
+    t.boolean "sync_to_shopify", default: false
     t.bigint "tax_code_id"
+    t.decimal "unit_cost", precision: 10, scale: 2
     t.datetime "updated_at", null: false
     t.index ["added_by_id"], name: "index_products_on_added_by_id"
+    t.index ["code"], name: "index_products_on_code", unique: true
     t.index ["discarded_at"], name: "index_products_on_discarded_at"
+    t.index ["product_group_id"], name: "index_products_on_product_group_id"
+    t.index ["shopify_product_id"], name: "index_products_on_shopify_product_id"
+    t.index ["shopify_variant_id"], name: "index_products_on_shopify_variant_id"
     t.index ["supplier_id"], name: "index_products_on_supplier_id"
     t.index ["tax_code_id"], name: "index_products_on_tax_code_id"
   end
@@ -458,9 +477,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_141509) do
   add_foreign_key "cash_drawer_sessions", "users", column: "opened_by_id"
   add_foreign_key "categorizations", "categories"
   add_foreign_key "customers", "users", column: "added_by_id"
+  add_foreign_key "data_imports", "users", column: "imported_by_id"
   add_foreign_key "notifications", "users"
-  add_foreign_key "product_variants", "products"
-  add_foreign_key "product_variants", "suppliers"
+  add_foreign_key "products", "product_groups"
   add_foreign_key "products", "suppliers"
   add_foreign_key "products", "tax_codes"
   add_foreign_key "products", "users", column: "added_by_id"

@@ -16,6 +16,15 @@ Rails.application.routes.draw do
     resource :settings, only: %i[show]
     resource :store, only: %i[show update], controller: "store"
     resource :data_export, only: %i[show create]
+    resources :imports, only: %i[new create show] do
+      member do
+        patch :execute
+      end
+    end
+    resource :shopify, only: %i[show], controller: "shopify" do
+      post :sync_all, on: :member
+      post :test_connection, on: :member
+    end
     resource :backups, only: %i[ show ] do
       get :download, on: :member
       get :authorize, on: :member
@@ -59,10 +68,8 @@ Rails.application.routes.draw do
     end
   end
   resources :products do
-    resources :product_variants, only: %i[ show new create edit update destroy ] do
-      member do
-        delete :purge_image
-      end
+    member do
+      delete :purge_image
     end
   end
   resources :services

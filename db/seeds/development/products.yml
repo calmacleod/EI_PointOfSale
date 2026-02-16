@@ -1,52 +1,117 @@
 options:
-  find_existing_by: ['name']
+  find_existing_by: ['code']
 
 records:
-  - sprig_id: upper_deck_series1
-    name: 2024 Upper Deck Series 1
+  - sprig_id: ud_series1_base
+    code: UD-2024-001
+    name: 2024 Upper Deck Series 1 Base Pack
+    selling_price: 4.99
+    purchase_price: 2.50
+    stock_level: 50
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :upper_deck).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
 
-  - sprig_id: dragon_shield
-    name: Dragon Shield Matte Sleeves
+  - sprig_id: ds_red
+    code: DS-MAT-RED
+    name: Dragon Shield Matte Sleeves - Red
+    selling_price: 14.99
+    purchase_price: 7.50
+    stock_level: 24
+    product_url: https://www.dragonshield.com
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: ds_blue
+    code: DS-MAT-BLU
+    name: Dragon Shield Matte Sleeves - Blue
+    selling_price: 14.99
+    purchase_price: 7.50
+    stock_level: 18
+    product_url: https://www.dragonshield.com
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: ds_green
+    code: DS-MAT-GRN
+    name: Dragon Shield Matte Sleeves - Green
+    selling_price: 14.99
+    purchase_price: 7.50
+    stock_level: 12
+    product_url: https://www.dragonshield.com
+    tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
+    supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
+    added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
+
+  - sprig_id: ds_black
+    code: DS-MAT-BLK
+    name: Dragon Shield Matte Sleeves - Black
+    selling_price: 14.99
+    purchase_price: 7.50
+    stock_level: 30
     product_url: https://www.dragonshield.com
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
 
   - sprig_id: spiderman_reprint
+    code: ASM-001-REPRINT
     name: Amazing Spider-Man #1 Reprint
+    selling_price: 12.99
+    purchase_price: 6.50
+    stock_level: 5
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
 
-  - sprig_id: nhl_puck_leafs
+  - sprig_id: nhl_puck
+    code: NHL-PUCK-001
     name: NHL Team Puck - Maple Leafs
+    selling_price: 7.99
+    purchase_price: 3.95
+    stock_level: 10
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :jf_sports).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
 
-  - sprig_id: mtg_booster_box
+  - sprig_id: mtg_booster
+    code: MTG-DOM-BOX
     name: MTG Dominaria United Booster Box
+    selling_price: 149.99
+    purchase_price: 95.00
+    stock_level: 8
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
 
   - sprig_id: pokemon_etb
+    code: PKM-SV-ETB
     name: Pokemon Scarlet & Violet Elite Trainer Box
+    selling_price: 64.99
+    purchase_price: 42.00
+    stock_level: 15
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :upper_deck).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
 
-  - sprig_id: playmat_generic
+  - sprig_id: playmat
+    code: PLAYMAT-GENERIC
     name: Generic Gaming Playmat
+    selling_price: 24.99
+    purchase_price: 12.00
+    stock_level: 20
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"
 
   - sprig_id: dice_set
+    code: DND-DICE-PREM
     name: D&D Premium Dice Set
+    selling_price: 19.99
+    purchase_price: 8.50
+    stock_level: 35
     tax_code_id: <%= sprig_record(TaxCode, :hst).id %>
     supplier_id: <%= sprig_record(Supplier, :diamond_comics).id %>
     added_by_id: "<%= User.find_by!(email_address: 'admin@example.com').id %>"

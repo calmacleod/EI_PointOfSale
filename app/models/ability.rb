@@ -13,7 +13,7 @@ class Ability
 
     if user.is_a?(Admin)
       can :manage, User
-      can :manage, [ TaxCode, Supplier, Category, Product, ProductVariant, Service, Customer, Report, ReceiptTemplate ]
+      can :manage, [ TaxCode, Supplier, Category, Product, ProductGroup, Service, Customer, Report, ReceiptTemplate, DataImport ]
       return
     end
 
@@ -21,7 +21,7 @@ class Ability
     can %i[edit update], User, id: user.id if user.persisted?
 
     # Common users can read products, services, and customers.
-    can :read, [ Product, ProductVariant, Service, Customer ] if user.persisted?
+    can :read, [ Product, Service, Customer ] if user.persisted?
 
     # Common users can view and export reports, but not create or delete them.
     can %i[read export_pdf export_excel], Report if user.persisted?

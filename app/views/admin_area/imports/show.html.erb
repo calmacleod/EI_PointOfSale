@@ -1,0 +1,115 @@
+<% content_for :title, "Import ##{@data_import.id}" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Data Import", new_admin_import_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Import #<%= @data_import.id %></li>
+<% end %>
+
+<div class="mx-auto max-w-3xl"
+     <% if @data_import.processing? %>data-controller="poll" data-poll-interval-value="3000" data-poll-url-value="<%= admin_import_path(@data_import) %>"<% end %>>
+  <%= render "shared/page_header", title: "Import: #{@data_import.file_name}" do %>
+    <%= link_to "New import", new_admin_import_path,
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30" %>
+  <% end %>
+
+  <%# ── Status ───────────────────────────────────────────────────── %>
+  <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 class="text-sm font-semibold text-body">Status</h2>
+    </div>
+    <dl class="divide-y divide-[var(--color-border)]">
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Status</dt>
+        <dd class="mt-0.5 text-sm sm:col-span-2 sm:mt-0">
+          <% case @data_import.status %>
+          <% when "completed" %>
+            <%= status_chip("Completed", :success) %>
+          <% when "processing" %>
+            <%= status_chip("Processing", :info) %>
+          <% when "failed" %>
+            <%= status_chip("Failed", :error) %>
+          <% else %>
+            <%= status_chip("Pending", :neutral) %>
+          <% end %>
+        </dd>
+      </div>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">File</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @data_import.file_name %></dd>
+      </div>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Progress</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+          <div class="flex items-center gap-2">
+            <div class="flex-1 h-2 rounded-full bg-[var(--color-border)]/30 overflow-hidden">
+              <div class="h-full rounded-full bg-accent transition-all"
+                   style="width: <%= @data_import.progress_percentage %>%;"></div>
+            </div>
+            <span class="text-xs text-muted"><%= @data_import.progress_percentage %>%</span>
+          </div>
+          <p class="mt-0.5 text-xs text-muted"><%= number_with_delimiter(@data_import.processed_rows) %> / <%= number_with_delimiter(@data_import.total_rows || 0) %> rows</p>
+        </dd>
+      </div>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Created</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @data_import.created_count %> products</dd>
+      </div>
+      <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+        <dt class="text-xs font-medium text-muted">Updated</dt>
+        <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @data_import.updated_count %> products</dd>
+      </div>
+      <% if @data_import.error_count > 0 %>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Errors</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @data_import.error_count %></dd>
+        </div>
+      <% end %>
+      <% if @data_import.imported_by.present? %>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Imported by</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @data_import.imported_by.email_address %></dd>
+        </div>
+      <% end %>
+      <% if @data_import.completed_at.present? %>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Completed at</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@data_import.completed_at, format: :long) %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </section>
+
+  <%# ── Error log ────────────────────────────────────────────────── %>
+  <% if @data_import.errors_log.present? && @data_import.errors_log.any? %>
+    <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 class="text-sm font-semibold text-body">Error log</h2>
+        <p class="text-xs text-muted">Showing first <%= [ @data_import.errors_log.size, 50 ].min %> errors</p>
+      </div>
+      <div class="max-h-80 overflow-y-auto">
+        <table class="min-w-full divide-y divide-[var(--color-border)]">
+          <thead class="bg-surface-alt sticky top-0">
+            <tr>
+              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Row</th>
+              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Code</th>
+              <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Error</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+            <% @data_import.errors_log.first(50).each do |err| %>
+              <tr>
+                <td class="px-3 py-1.5 text-xs text-muted"><%= err["row"] || "—" %></td>
+                <td class="px-3 py-1.5 text-xs font-mono text-body"><%= err["code"] || "—" %></td>
+                <td class="px-3 py-1.5 text-xs text-[var(--color-error-text)]"><%= err["error"] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  <% end %>
+</div>

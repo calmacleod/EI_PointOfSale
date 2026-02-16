@@ -125,3 +125,5 @@ gem "audited"
 
 # Client-side local time display
 gem "local_time"
+
+gem "shopify_api", "~> 16.1"

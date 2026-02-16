@@ -3,15 +3,21 @@ require "bcrypt"
 include Sprig::Helpers
 
 sprig [ TaxCode, Supplier, Category, User ]
-sprig [ Product, ProductVariant, Service ]
+sprig [ Product, Service ]
 sprig [ Customer ]
 
 # Categorizations (polymorphic - easier in Ruby)
 product_category_map = {
-  "Dragon Shield Matte Sleeves" => %w[Card Sleeves TCG],
-  "2024 Upper Deck Series 1" => %w[Trading Cards],
+  "Dragon Shield Matte Sleeves - Red" => %w[Card Sleeves TCG],
+  "Dragon Shield Matte Sleeves - Blue" => %w[Card Sleeves TCG],
+  "Dragon Shield Matte Sleeves - Green" => %w[Card Sleeves TCG],
+  "Dragon Shield Matte Sleeves - Black" => %w[Card Sleeves TCG],
+  "2024 Upper Deck Series 1 Base Pack" => %w[Trading Cards],
   "Amazing Spider-Man #1 Reprint" => %w[Comics],
-  "NHL Team Puck - Maple Leafs" => %w[NHL Novelties]
+  "NHL Team Puck - Maple Leafs" => %w[NHL Novelties],
+  "MTG Dominaria United Booster Box" => %w[TCG],
+  "Pokemon Scarlet & Violet Elite Trainer Box" => %w[TCG],
+  "D&D Premium Dice Set" => %w[Novelties]
 }
 
 product_category_map.each do |product_name, category_names|
@@ -34,34 +40,34 @@ end
 
 # ── Seed images ─────────────────────────────────────────────────────
 # Attach product images from db/seeds/images/ (free Pexels photos).
-# Skips if variant already has images (safe to re-run).
+# Skips if product already has images (safe to re-run).
 
 images_dir = Rails.root.join("db/seeds/images")
 
-variant_images = {
-  "UD-2024-001"    => "hockey_cards.jpg",
-  "DS-MAT-RED"     => "card_sleeves_red.jpg",
-  "DS-MAT-BLU"     => "card_sleeves_red.jpg",
-  "DS-MAT-GRN"     => "card_sleeves_red.jpg",
-  "DS-MAT-BLK"     => "card_sleeves_red.jpg",
+product_images = {
+  "UD-2024-001"     => "hockey_cards.jpg",
+  "DS-MAT-RED"      => "card_sleeves_red.jpg",
+  "DS-MAT-BLU"      => "card_sleeves_red.jpg",
+  "DS-MAT-GRN"      => "card_sleeves_red.jpg",
+  "DS-MAT-BLK"      => "card_sleeves_red.jpg",
   "ASM-001-REPRINT" => "comic_books.jpg",
-  "NHL-PUCK-001"   => "hockey_puck.jpg"
+  "NHL-PUCK-001"    => "hockey_puck.jpg"
 }
 
-variant_images.each do |code, filename|
-  variant = ProductVariant.find_by(code: code)
-  next unless variant
-  next if variant.images.attached?
+product_images.each do |code, filename|
+  product = Product.find_by(code: code)
+  next unless product
+  next if product.images.attached?
 
   path = images_dir.join(filename)
   next unless File.exist?(path)
 
-  variant.images.attach(
+  product.images.attach(
     io: File.open(path),
     filename: filename,
     content_type: "image/jpeg"
   )
-  puts "  Attached #{filename} to variant #{code}"
+  puts "  Attached #{filename} to product #{code}"
 end
 
 # Attach a store image
@@ -82,9 +88,10 @@ end
 admin = User.find_by!(email_address: "admin@example.com")
 Audited.audit_class.as_user(admin) do
   # Product updates
-  Product.find_by(name: "Dragon Shield Matte Sleeves")&.update!(product_url: "https://www.dragonshield.com/products")
-  Product.find_by(name: "2024 Upper Deck Series 1")&.update!(name: "2024 Upper Deck Series 1 Hockey")
-  Product.find_by(name: "MTG Dominaria United Booster Box")&.update!(name: "MTG Dominaria United Draft Booster Box")
+  Product.find_by(code: "DS-MAT-RED")&.update!(selling_price: 15.99, stock_level: 20)
+  Product.find_by(code: "DS-MAT-RED")&.update!(stock_level: 22)
+  Product.find_by(code: "UD-2024-001")&.update!(selling_price: 5.49)
+  Product.find_by(code: "MTG-DOM-BOX")&.update!(name: "MTG Dominaria United Draft Booster Box")
 
   # Service updates
   Service.find_by(code: "SVC-REFILL-SM")&.update!(price: 14.99)
@@ -93,13 +100,6 @@ Audited.audit_class.as_user(admin) do
   # User updates
   User.find_by(email_address: "alice@example.com")&.update!(name: "Alice Johnson", notes: "Primary contact for orders")
   User.find_by(email_address: "bob@example.com")&.update!(name: "Bob Smith")
-
-  # Product variant updates
-  pv = ProductVariant.find_by(code: "DS-MAT-RED")
-  pv&.update!(selling_price: 15.99, stock_level: 20)
-  pv&.update!(stock_level: 22)
-
-  ProductVariant.find_by(code: "UD-2024-001")&.update!(selling_price: 5.49)
 
   # Tax code update
   TaxCode.find_by(code: "HST")&.update!(notes: "Combined federal and provincial tax for Ontario")

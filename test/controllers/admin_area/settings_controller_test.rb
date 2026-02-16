@@ -30,6 +30,8 @@ module AdminArea
       assert_includes response.body, "Audit trail"
       assert_includes response.body, "Backups"
       assert_includes response.body, "Data export"
+      assert_includes response.body, "Data import"
+      assert_includes response.body, "Shopify"
     end
 
     test "non-admin cannot access settings" do

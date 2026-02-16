@@ -20,8 +20,7 @@ module ApplicationHelper
 
     case audit.auditable_type
     when "User" then record.name.presence || record.email_address
-    when "Product" then record.name
-    when "ProductVariant" then record.code.presence || record.name.presence || "Variant ##{record.id}"
+    when "Product" then record.name.presence || record.code
     when "Service" then record.name
     when "TaxCode" then record.code
     when "Supplier" then record.name
@@ -39,7 +38,6 @@ module ApplicationHelper
     case audit.auditable_type
     when "User" then admin_user_path(record)
     when "Product" then product_path(record)
-    when "ProductVariant" then record.product ? product_product_variant_path(record.product, record) : nil
     when "Service" then service_path(record)
     when "TaxCode" then admin_tax_code_path(record)
     when "Supplier" then admin_supplier_path(record)

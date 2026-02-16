@@ -37,8 +37,8 @@ class SearchController < ApplicationController
 
       results = []
 
-      if (variant = ProductVariant.kept.find_by(code: query))
-        results << build_result(variant, "ProductVariant")
+      if (product = Product.kept.find_by(code: query))
+        results << build_result(product, "Product")
       end
 
       if (service = Service.kept.find_by(code: query))
@@ -73,9 +73,8 @@ class SearchController < ApplicationController
     def search_label_for(record, type)
       case type
       when "User" then record.email_address.presence || record.name.presence || "User ##{record.id}"
-      when "Product" then record.name
+      when "Product" then record.name.presence || record.code
       when "Service" then record.name
-      when "ProductVariant" then record.code.presence || record.name.presence || "Variant ##{record.id}"
       when "Category" then record.name
       when "Supplier" then record.name
       when "TaxCode" then "#{record.code} - #{record.name}"
@@ -88,7 +87,6 @@ class SearchController < ApplicationController
       case type
       when "User" then record.name.presence
       when "Product" then record.supplier&.name
-      when "ProductVariant" then record.product&.name
       when "TaxCode" then nil
       else nil
       end
@@ -99,7 +97,6 @@ class SearchController < ApplicationController
       when "Product" then product_path(record)
       when "Service" then service_path(record)
       when "User" then admin_user_path(record)
-      when "ProductVariant" then product_product_variant_path(record.product, record)
       when "TaxCode" then admin_tax_code_path(record)
       when "Category", "Supplier" then products_path
       when "Customer" then customer_path(record)

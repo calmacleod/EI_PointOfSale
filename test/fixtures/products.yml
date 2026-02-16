@@ -1,11 +1,30 @@
-dragon_shield:
-  name: Dragon Shield Matte Sleeves
+dragon_shield_red:
+  code: DS-MAT-RED
+  name: Dragon Shield Matte Sleeves - Red
+  selling_price: 14.99
+  purchase_price: 7.50
+  stock_level: 24
+  reorder_level: 5
   tax_code: one
   supplier: diamond_comics
   added_by: admin
 
-simple_product:
+dragon_shield_blue:
+  code: DS-MAT-BLU
+  name: Dragon Shield Matte Sleeves - Blue
+  selling_price: 14.99
+  purchase_price: 7.50
+  stock_level: 18
+  tax_code: one
+  supplier: diamond_comics
+  added_by: admin
+
+nhl_puck:
+  code: NHL-PUCK-001
   name: NHL Team Puck - Maple Leafs
+  selling_price: 7.99
+  purchase_price: 3.95
+  stock_level: 10
   tax_code: one
   supplier: jf_sports
   added_by: admin
