@@ -3,7 +3,7 @@
 class StoreTasksController < ApplicationController
   include Filterable
 
-  before_action :set_store_task, only: %i[show edit update destroy]
+  load_and_authorize_resource
 
   def index
     @filter_config = FilterConfig.new(:store_tasks, store_tasks_path,
@@ -32,12 +32,9 @@ class StoreTasksController < ApplicationController
 
   def show; end
 
-  def new
-    @store_task = StoreTask.new
-  end
+  def new; end
 
   def create
-    @store_task = StoreTask.new(store_task_params)
     if @store_task.save
       redirect_to store_tasks_path, notice: "Task created."
     else
@@ -61,10 +58,6 @@ class StoreTasksController < ApplicationController
   end
 
   private
-
-    def set_store_task
-      @store_task = StoreTask.find(params[:id])
-    end
 
     def store_task_params
       params.require(:store_task).permit(:title, :body, :status, :assigned_to_id, :due_date)
