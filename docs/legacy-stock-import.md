@@ -42,10 +42,11 @@ CSV Row (Stock_Code: "880025", Product_Name: "Brat Player Boston")
 
 The legacy `Tax_Applied` values map to tax codes:
 
-| Tax_Applied | Tax Code | Description |
-|-------------|----------|-------------|
-| `"1"` | EXEMPT | Books / tax-exempt items |
-| `"2"` | HST | Standard HST (13%) |
+| Tax_Applied | Tax Code | Rate | Description |
+|-------------|----------|------|-------------|
+| `"0"` | EXEMPT | 0% | No tax |
+| `"1"` | GST | 5% | Federal GST |
+| `"2"` | HST | 13% | Ontario HST |
 
 The importer will find-or-create these TaxCode records automatically.
 

@@ -101,6 +101,26 @@ module Importers
       end
     end
 
+    test "execute maps tax codes correctly" do
+      csv = <<~CSV
+        Stock_Code,Product_Name,Selling_Price,Purchase_Price,Stock_Level,Tax_Applied,Date_Added,Added_By,Fr_Rent_Pts,Pts_To_Rent,Stock_Cat,Reorder_Level,Supplier,Supp_Phone,Order2_Level,OUnit_Cost,Items_Unit,Supp_Ref,Addit_Info,I_Image
+        TAX-0,No Tax Item,5.00,2.50,10,0,,,,,"Comics",0,"Diamond Comics","555-1234",0,0,1,,,
+        TAX-1,GST Item,10.00,5.00,10,1,,,,,"Comics",0,"Diamond Comics","555-1234",0,0,1,,,
+        TAX-2,HST Item,15.00,7.50,10,2,,,,,"Comics",0,"Diamond Comics","555-1234",0,0,1,,,
+      CSV
+
+      importer = Importers::StockImporter.new(@data_import)
+      importer.execute(csv)
+
+      exempt = TaxCode.find_by(code: "EXEMPT")
+      gst = TaxCode.find_by(code: "GST")
+      hst = TaxCode.find_by(code: "HST")
+
+      assert_equal exempt, Product.find_by(code: "TAX-0").tax_code, "Tax_Applied 0 should map to EXEMPT"
+      assert_equal gst, Product.find_by(code: "TAX-1").tax_code, "Tax_Applied 1 should map to GST"
+      assert_equal hst, Product.find_by(code: "TAX-2").tax_code, "Tax_Applied 2 should map to HST"
+    end
+
     test "execute handles re-import (upsert)" do
       Product.create!(code: "IMP-001", name: "Old Name", selling_price: 5.99)
 

@@ -210,12 +210,14 @@ module Importers
 
       def build_tax_code_map
         map = {}
-        # Map Tax_Applied values: "1" => books/exempt, "2" => standard/HST
-        books_tax = TaxCode.find_by(code: "EXEMPT") || TaxCode.find_or_create_by!(code: "EXEMPT", name: "Exempt (Books)", rate: 0.0)
-        standard_tax = TaxCode.find_by(code: "HST") || TaxCode.find_or_create_by!(code: "HST", name: "HST", rate: 13.0)
+        # Legacy Tax_Applied values: "0" => no tax, "1" => GST (5%), "2" => HST (13%)
+        exempt_tax = TaxCode.find_by(code: "EXEMPT") || TaxCode.find_or_create_by!(code: "EXEMPT", name: "Exempt (no tax)", rate: 0.0)
+        gst = TaxCode.find_by(code: "GST") || TaxCode.find_or_create_by!(code: "GST", name: "Federal GST", rate: 0.05)
+        hst = TaxCode.find_by(code: "HST") || TaxCode.find_or_create_by!(code: "HST", name: "Ontario HST", rate: 0.13)
 
-        map["1"] = books_tax.id
-        map["2"] = standard_tax.id
+        map["0"] = exempt_tax.id
+        map["1"] = gst.id
+        map["2"] = hst.id
         map
       end
   end
