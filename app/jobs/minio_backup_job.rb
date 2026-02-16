@@ -23,6 +23,7 @@ class MinioBackupJob < ApplicationJob
       upload_to_drive(archive_path)
       prune_old_backups
       Rails.logger.info { "[MinioBackupJob] Backup completed: #{filename}" }
+      notify_admins("Storage backup complete", "Nightly MinIO backup uploaded to Google Drive.")
     ensure
       FileUtils.rm_f(archive_path)
     end
@@ -65,6 +66,12 @@ class MinioBackupJob < ApplicationJob
     def upload_to_drive(archive_path)
       result = GoogleDriveService.upload(archive_path, content_type: "application/gzip")
       Rails.logger.info { "[MinioBackupJob] Uploaded to Drive: #{result.name} (id: #{result.id})" }
+    end
+
+    def notify_admins(title, body)
+      User.where(type: "Admin").find_each do |admin|
+        NotifyService.call(user: admin, title:, body:, category: "backup", persistent: false)
+      end
     end
 
     def prune_old_backups

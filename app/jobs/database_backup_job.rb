@@ -22,6 +22,7 @@ class DatabaseBackupJob < ApplicationJob
       upload_to_drive(dump_path)
       prune_old_backups
       Rails.logger.info { "[DatabaseBackupJob] Backup completed: #{filename}" }
+      notify_admins("Database backup complete", "Nightly database backup uploaded to Google Drive.")
     ensure
       FileUtils.rm_f(raw_dump)
       FileUtils.rm_f(dump_path)
@@ -63,6 +64,12 @@ class DatabaseBackupJob < ApplicationJob
     def upload_to_drive(dump_path)
       result = GoogleDriveService.upload(dump_path, content_type: "application/gzip")
       Rails.logger.info { "[DatabaseBackupJob] Uploaded to Drive: #{result.name} (id: #{result.id})" }
+    end
+
+    def notify_admins(title, body)
+      User.where(type: "Admin").find_each do |admin|
+        NotifyService.call(user: admin, title:, body:, category: "backup", persistent: false)
+      end
     end
 
     def prune_old_backups

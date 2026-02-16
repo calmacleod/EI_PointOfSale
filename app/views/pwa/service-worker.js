@@ -66,3 +66,32 @@ async function staleWhileRevalidate(request) {
 
   return cached || fetchPromise
 }
+
+// ── Web Push Notifications ──────────────────────────────────────────
+
+self.addEventListener("push", (event) => {
+  const data = event.data?.json() || {}
+  event.waitUntil(
+    self.registration.showNotification(data.title || "EI POS", {
+      body: data.body,
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      data: { url: data.url }
+    })
+  )
+})
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close()
+  const url = event.notification.data?.url || "/"
+  event.waitUntil(
+    clients.matchAll({ type: "window" }).then((list) => {
+      for (const client of list) {
+        if (new URL(client.url).pathname === url && "focus" in client) {
+          return client.focus()
+        }
+      }
+      return clients.openWindow(url)
+    })
+  )
+})

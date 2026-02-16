@@ -100,6 +100,26 @@
     </div>
   </div>
 
+  <div class="px-3 py-2.5" data-controller="push-permission" data-push-permission-vapid-public-key-value="<%= ENV['VAPID_PUBLIC_KEY'] %>">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Push Notifications</h2>
+    <p class="text-xs text-muted">Receive browser notifications when reports finish or backups complete.</p>
+
+    <div class="mt-2">
+      <div class="flex min-h-[30px] items-center justify-between rounded-md border border-theme bg-[var(--color-border)]/20 px-3 py-1.5">
+        <div>
+          <p class="text-sm font-medium text-body">Enable push notifications</p>
+          <p class="text-xs text-muted" data-push-permission-target="status">Checking status...</p>
+        </div>
+        <div class="pt-0.5">
+          <input type="checkbox"
+                 data-push-permission-target="toggle"
+                 data-action="change->push-permission#togglePush"
+                 class="h-4 w-4 border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]">
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="px-3 py-2.5">
     <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Password</h2>
     <p class="text-xs text-muted">Leave blank to keep your current password.</p>

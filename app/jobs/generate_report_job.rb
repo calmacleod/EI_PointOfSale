@@ -12,6 +12,15 @@ class GenerateReportJob < ApplicationJob
 
     result = template.generate(report.parameters.symbolize_keys)
     report.update!(status: "completed", result_data: result, completed_at: Time.current)
+
+    NotifyService.call(
+      user: report.generated_by,
+      title: "Report ready",
+      body: "#{report.title} has finished generating.",
+      category: "report",
+      url: Rails.application.routes.url_helpers.report_path(report),
+      persistent: true
+    )
   rescue StandardError => e
     report&.update!(status: "failed", error_message: e.message, completed_at: Time.current)
     raise

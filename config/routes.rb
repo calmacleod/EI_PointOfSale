@@ -27,6 +27,15 @@ Rails.application.routes.draw do
     resources :audits, only: %i[index show], path: "audits"
   end
 
+  resources :notifications, only: [ :index, :destroy ] do
+    collection do
+      patch :mark_all_read
+      delete :clear_all
+    end
+    member { patch :mark_read }
+  end
+  resources :push_subscriptions, only: [ :create, :destroy ]
+
   resources :reports, only: %i[index new create show destroy] do
     member do
       get :export_pdf

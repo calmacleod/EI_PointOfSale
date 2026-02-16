@@ -1,0 +1,64 @@
+<%= turbo_frame_tag "notifications_popover" do %>
+  <div class="w-80 max-h-96 overflow-y-auto rounded-lg border border-theme bg-surface shadow-lg">
+    <div class="flex items-center justify-between border-b border-theme px-3 py-2">
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted">Notifications</h3>
+      <div class="flex items-center gap-2">
+        <% if @unread_count > 0 %>
+          <button type="button"
+                  class="text-xs font-medium text-accent hover:opacity-80"
+                  data-action="click->notifications#markAllReadAndRefresh">
+            Mark all read
+          </button>
+        <% end %>
+        <% if @notifications.any? %>
+          <button type="button"
+                  class="text-xs font-medium text-muted hover:text-body"
+                  data-action="click->notifications#clearAllNotifications">
+            Clear all
+          </button>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @notifications.any? %>
+      <div class="divide-y divide-[var(--color-border)]">
+        <% @notifications.each do |notification| %>
+          <div class="group relative <%= 'bg-[var(--color-accent)]/5' unless notification.read? %>">
+            <% if notification.url.present? %>
+              <%= link_to notification.url,
+                  class: "block px-3 py-2 pr-8 hover:bg-[var(--color-border)]/20 transition-colors",
+                  data: { turbo_frame: "_top", action: "click->notifications#markRead", notification_id: notification.id } do %>
+                <p class="text-sm font-medium text-body <%= 'font-semibold' unless notification.read? %>"><%= notification.title %></p>
+                <% if notification.body.present? %>
+                  <p class="mt-0.5 text-xs text-muted line-clamp-2"><%= notification.body %></p>
+                <% end %>
+                <p class="mt-0.5 text-[11px] text-muted"><%= local_time_ago(notification.created_at) %></p>
+              <% end %>
+            <% else %>
+              <div class="px-3 py-2 pr-8">
+                <p class="text-sm font-medium text-body <%= 'font-semibold' unless notification.read? %>"><%= notification.title %></p>
+                <% if notification.body.present? %>
+                  <p class="mt-0.5 text-xs text-muted line-clamp-2"><%= notification.body %></p>
+                <% end %>
+                <p class="mt-0.5 text-[11px] text-muted"><%= local_time_ago(notification.created_at) %></p>
+              </div>
+            <% end %>
+            <button type="button"
+                    class="absolute top-2 right-2 hidden h-5 w-5 items-center justify-center rounded text-muted hover:text-body hover:bg-[var(--color-border)]/30 group-hover:flex"
+                    data-action="click->notifications#dismissNotification"
+                    data-notification-id="<%= notification.id %>"
+                    aria-label="Dismiss notification">
+              <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="px-3 py-6 text-center">
+        <p class="text-sm text-muted">No notifications yet.</p>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -124,6 +124,9 @@ bin/ci
 | `GOOGLE_CLIENT_ID` | Google OAuth 2.0 client ID for Drive backups |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 client secret for Drive backups |
 | `GOOGLE_DRIVE_BACKUP_FOLDER_ID` | Google Drive folder ID where backups are stored |
+| `VAPID_PUBLIC_KEY` | VAPID public key for Web Push notifications |
+| `VAPID_PRIVATE_KEY` | VAPID private key for Web Push notifications |
+| `VAPID_CONTACT` | VAPID contact URI (e.g. `mailto:admin@example.com`) |
 | `DEV_ADMIN_EMAIL` | Admin email for development seeds (optional) |
 | `DEV_ADMIN_PASSWORD` | Admin password for development seeds (optional) |
 | `DEV_ADMIN_NAME` | Admin display name for development seeds (optional) |
@@ -146,6 +149,7 @@ Once configured, connect your Google account from **Admin Settings > Backups**.
 - [Products and variants](docs/products-and-variants.md)
 - [Services](docs/services.md)
 - [Google Drive backups](docs/google-drive-backups.md) — Nightly backup setup and troubleshooting
+- [Notifications & Web Push](docs/notifications.md) — Real-time notifications and push setup
 - [Style guide](docs/styleguide.md)
 
 ---

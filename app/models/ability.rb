@@ -4,6 +4,12 @@ class Ability
   def initialize(user)
     user ||= User.new
 
+    # All authenticated users can manage their own notifications and push subscriptions.
+    if user.persisted?
+      can :manage, Notification, user_id: user.id
+      can :manage, PushSubscription, user_id: user.id
+    end
+
     if user.is_a?(Admin)
       can :manage, User
       can :manage, [ TaxCode, Supplier, Category, Product, ProductVariant, Service, Customer, Report ]

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_15_222710) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_042505) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -122,6 +122,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_15_222710) do
     t.index ["key"], name: "index_dashboard_metrics_on_key", unique: true
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.text "body"
+    t.string "category"
+    t.datetime "created_at", null: false
+    t.boolean "persistent", default: true, null: false
+    t.datetime "read_at"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.string "url"
+    t.bigint "user_id", null: false
+    t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "pg_search_documents", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
@@ -169,6 +183,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_15_222710) do
     t.index ["discarded_at"], name: "index_products_on_discarded_at"
     t.index ["supplier_id"], name: "index_products_on_supplier_id"
     t.index ["tax_code_id"], name: "index_products_on_tax_code_id"
+  end
+
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.string "auth_key", null: false
+    t.datetime "created_at", null: false
+    t.text "endpoint", null: false
+    t.string "p256dh_key", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "endpoint"], name: "index_push_subscriptions_on_user_id_and_endpoint", unique: true
+    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
   end
 
   create_table "reports", force: :cascade do |t|
@@ -395,11 +420,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_15_222710) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "categorizations", "categories"
   add_foreign_key "customers", "users", column: "added_by_id"
+  add_foreign_key "notifications", "users"
   add_foreign_key "product_variants", "products"
   add_foreign_key "product_variants", "suppliers"
   add_foreign_key "products", "suppliers"
   add_foreign_key "products", "tax_codes"
   add_foreign_key "products", "users", column: "added_by_id"
+  add_foreign_key "push_subscriptions", "users"
   add_foreign_key "reports", "users", column: "generated_by_id"
   add_foreign_key "services", "tax_codes"
   add_foreign_key "services", "users", column: "added_by_id"
