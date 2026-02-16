@@ -10,17 +10,17 @@
 <div>
   <%= render "shared/page_header", title: @service.name, description: "Service details and pricing." do %>
     <div class="flex items-center gap-1.5">
-      <%= link_to "Back to services", services_path, class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
+      <%= link_to "Back to services", services_path, class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
       <% if can? :update, @service %>
         <%= link_to "Edit", edit_service_path(@service),
-            class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
+            class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
             data: { turbo_prefetch: true } %>
       <% end %>
     </div>
   <% end %>
 
   <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
-    <section class="overflow-hidden border border-theme bg-surface" aria-labelledby="service-details-heading">
+    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="service-details-heading">
       <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
         <h2 id="service-details-heading" class="text-sm font-semibold text-body">Details</h2>
         <p class="text-xs text-muted">Service information and pricing</p>

@@ -12,10 +12,10 @@
 <div class="mx-auto max-w-2xl">
   <%= render "shared/page_header", title: "Edit user", description: "Update profile details and permissions for #{@user.email_address}." %>
 
-  <div class="mt-2 overflow-hidden border border-theme bg-surface">
+  <div class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
     <%= form_with model: @user, url: admin_user_path(@user), class: "divide-y divide-[var(--color-border)]" do |f| %>
       <% if @user.errors.any? %>
-        <div class="bg-[var(--color-error-bg)] px-3 py-2">
+        <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
           <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
           <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
             <% @user.errors.full_messages.each do |message| %>
@@ -68,7 +68,7 @@
           </div>
 
           <div class="sm:col-span-2">
-            <div class="flex min-h-[30px] items-center justify-between border border-theme bg-[var(--color-border)]/20 px-3 py-1.5">
+            <div class="flex min-h-[30px] items-center justify-between rounded-md border border-theme bg-[var(--color-border)]/20 px-3 py-1.5">
               <div>
                 <p class="text-sm font-medium text-body">Active</p>
                 <p class="text-xs text-muted">Inactive users should not be able to sign in.</p>
@@ -97,7 +97,7 @@
       <div class="px-3 py-2">
         <div class="flex items-center justify-end">
           <%= f.submit "Save changes",
-              class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+              class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
         </div>
       </div>
     <% end %>

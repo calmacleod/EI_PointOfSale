@@ -9,7 +9,7 @@
   <%= render "shared/page_header", title: "Services" do %>
     <% if can? :create, Service %>
       <%= link_to "Add service", new_service_path,
-          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
           data: { turbo_prefetch: true } %>
     <% end %>
   <% end %>
@@ -22,7 +22,7 @@
         placeholder: "Search services…" %>
 
     <%= turbo_frame_tag "services_table", class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
-  <div class="overflow-x-auto border border-theme bg-surface lg:flex-1 lg:overflow-y-auto">
+  <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto">
     <table class="min-w-full divide-y divide-[var(--color-border)]">
       <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
         <tr>

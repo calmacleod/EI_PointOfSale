@@ -10,7 +10,7 @@
      data-table-filters-persistence-storage-key-value="<%= storage_key %>"
      data-table-filters-persistence-search-path-value="<%= search_path %>"
      data-table-filters-persistence-filter-params-value="<%= filter_params.to_json %>">
-  <aside class="table-filters-panel flex flex-col gap-1.5 border border-theme bg-surface px-2 py-1.5" aria-labelledby="<%= turbo_frame %>_filters_heading">
+  <aside class="table-filters-panel flex flex-col gap-1.5 rounded-lg border border-theme bg-surface px-2 py-1.5" aria-labelledby="<%= turbo_frame %>_filters_heading">
     <%= form_with url: search_path,
         method: :get,
         data: {
@@ -37,13 +37,13 @@
         <button type="button"
                 data-action="click->table-filters-persistence#clearFilters"
                 data-table-search-target="clear"
-                class="shrink-0 px-2 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body <%= 'hidden' unless has_active_filters %>">
+                class="shrink-0 rounded-md px-2 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body <%= 'hidden' unless has_active_filters %>">
           Clear
         </button>
       </div>
 
       <%= tag.details(class: "group/details", open: has_date_filters) do %>
-        <summary class="flex w-fit cursor-pointer list-none items-center gap-1 px-1.5 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body [&::-webkit-details-marker]:hidden">
+        <summary class="flex w-fit cursor-pointer list-none items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body [&::-webkit-details-marker]:hidden">
           <span>Dates</span>
           <% if has_date_filters %>
             <span class="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>

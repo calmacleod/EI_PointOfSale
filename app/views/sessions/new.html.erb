@@ -8,14 +8,14 @@
 <div class="w-full flex items-start justify-center">
   <div class="w-full max-w-sm">
     <% if flash[:alert].present? %>
-      <div class="mb-2 border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2 text-sm text-[var(--color-error-text)]">
+      <div class="mb-2 rounded-md border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2 text-sm text-[var(--color-error-text)]">
         <p class="font-medium">Sign in failed</p>
         <p class="mt-0.5"><%= flash[:alert] %></p>
       </div>
     <% end %>
 
     <% if flash[:notice].present? %>
-      <div class="mb-2 border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-3 py-2 text-sm text-[var(--color-success-text)]">
+      <div class="mb-2 rounded-md border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-3 py-2 text-sm text-[var(--color-success-text)]">
         <p class="font-medium">Success</p>
         <p class="mt-0.5"><%= flash[:notice] %></p>
       </div>
@@ -58,7 +58,7 @@
                     data-password-toggle-target="toggle"
                     data-action="click->password-toggle#toggleVisibility"
                     aria-label="Show password"
-                    class="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center text-muted hover:bg-[var(--color-border)] hover:text-body">
+                    class="absolute right-1.5 top-1/2 -translate-y-1/2 flex h-7 w-7 items-center justify-center rounded-md text-muted hover:bg-[var(--color-border)] hover:text-body">
               <svg data-password-toggle-target="showIcon" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -72,7 +72,7 @@
 
         <div class="pt-0.5">
           <%= form.submit "Sign in",
-              class: "inline-flex w-full min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+              class: "inline-flex w-full min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
         </div>
       <% end %>
 
@@ -81,13 +81,13 @@
       </p>
 
       <% if Rails.env.development? %>
-        <div class="mt-2 flex flex-col items-center gap-1 border border-theme bg-[var(--color-page)] px-2 py-1.5 text-center text-xs text-muted">
+        <div class="mt-2 flex flex-col items-center gap-1 rounded-md border border-theme bg-[var(--color-page)] px-2 py-1.5 text-center text-xs text-muted">
           <p>
             <strong class="text-body">Dev credentials:</strong> <%= ENV.fetch("DEV_ADMIN_EMAIL", "admin@example.com") %> / <%= ENV.fetch("DEV_ADMIN_PASSWORD", "password123!") %>
           </p>
           <button type="button"
                   data-action="click->dev-credentials#autofill"
-                  class="border border-theme bg-surface px-2 py-0.5 text-xs text-body hover:bg-[var(--color-border)]">
+                  class="rounded-md border border-theme bg-surface px-2 py-0.5 text-xs text-body hover:bg-[var(--color-border)]">
             Auto-fill
           </button>
         </div>

@@ -88,6 +88,20 @@
         <span class="sidebar-text min-w-0 truncate">Customers</span>
       <% end %>
 
+      <%= link_to reports_path,
+          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          class: [
+            "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
+            (nav_section_active?(reports_path) ?
+              "bg-[var(--sidebar-active)] text-[var(--sidebar-text-bright)]" :
+              "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-bright)]")
+          ].join(" ") do %>
+        <svg class="h-4 w-4 shrink-0 <%= nav_section_active?(reports_path) ? 'opacity-100' : 'opacity-50 group-hover:opacity-80' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+        </svg>
+        <span class="sidebar-text min-w-0 truncate">Reports</span>
+      <% end %>
+
       <% if Current.user.is_a?(Admin) %>
         <div class="mt-3 mb-0.5 border-t border-[var(--sidebar-border)] pt-2">
           <p class="sidebar-section-label px-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--sidebar-text-muted)] opacity-70">

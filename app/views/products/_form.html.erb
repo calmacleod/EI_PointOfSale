@@ -1,6 +1,6 @@
 <%= form_with model: product, class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if product.errors.any? %>
-    <div class="bg-[var(--color-error-bg)] px-3 py-2">
+    <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
       <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
       <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
         <% product.errors.full_messages.each do |message| %>
@@ -51,11 +51,11 @@
     <% if product.persisted? && can?(:destroy, product) %>
       <%= button_to "Remove", product_path(product), method: :delete,
           data: { turbo_confirm: "Remove this product and its variants?" },
-          class: "inline-flex min-h-[30px] items-center justify-center px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
     <% else %>
       <span></span>
     <% end %>
     <%= f.submit product.persisted? ? "Save changes" : "Create product",
-        class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
   </div>
 <% end %>

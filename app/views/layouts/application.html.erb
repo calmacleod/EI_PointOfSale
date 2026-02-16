@@ -14,6 +14,10 @@
 
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
@@ -31,7 +35,7 @@
         <header class="fixed inset-x-0 top-0 z-50 flex h-9 items-center gap-2 border-b border-theme bg-surface px-2 lg:hidden">
           <button type="button"
                   data-action="click->sidebar#toggle"
-                  class="flex h-7 w-7 -ml-0.5 items-center justify-center text-body hover:bg-[var(--color-border)]"
+                  class="flex h-7 w-7 -ml-0.5 items-center justify-center rounded-md text-body hover:bg-[var(--color-border)]"
                   aria-label="Open menu">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>

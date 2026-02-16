@@ -1,6 +1,6 @@
 <%= form_with model: tax_code, url: tax_code.persisted? ? admin_tax_code_path(tax_code) : admin_tax_codes_path, class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if tax_code.errors.any? %>
-    <div class="bg-[var(--color-error-bg)] px-3 py-2">
+    <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
       <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
       <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
         <% tax_code.errors.full_messages.each do |message| %>
@@ -65,11 +65,11 @@
     <% if tax_code.persisted? %>
       <%= button_to "Remove", admin_tax_code_path(tax_code), method: :delete,
           data: { turbo_confirm: "Remove this tax code? Products and services using it will need to be updated." },
-          class: "inline-flex min-h-[30px] items-center justify-center px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
     <% else %>
       <span></span>
     <% end %>
     <%= f.submit tax_code.persisted? ? "Save changes" : "Create tax code",
-        class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
   </div>
 <% end %>

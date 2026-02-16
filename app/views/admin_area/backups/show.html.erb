@@ -11,17 +11,17 @@
 <div class="mx-auto max-w-6xl">
   <%= render "shared/page_header", title: "Backups", description: "Google Drive integration status and nightly backup files." do %>
     <%= link_to "Back to admin settings", admin_settings_path,
-        class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30",
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30",
         data: { turbo_prefetch: true } %>
   <% end %>
 
   <%# ── Integration Status ── %>
-  <div class="mt-3 border border-theme bg-surface p-2.5">
+  <div class="mt-3 rounded-lg border border-theme bg-surface p-2.5">
     <h2 class="text-sm font-semibold text-body">Google Drive integration</h2>
 
     <% if @credentials_error %>
       <%# Hard error from the service %>
-      <div class="mt-2 flex items-start gap-2 border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2">
+      <div class="mt-2 flex items-start gap-2 rounded-md border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2">
         <svg class="mt-0.5 h-4 w-4 shrink-0 text-[var(--color-error-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
         </svg>
@@ -30,7 +30,7 @@
 
     <% elsif !@credentials[:configured] %>
       <%# OAuth client credentials not set %>
-      <div class="mt-2 flex items-start gap-2 border border-[var(--color-border)] bg-surface-alt px-3 py-2">
+      <div class="mt-2 flex items-start gap-2 rounded-md border border-[var(--color-border)] bg-surface-alt px-3 py-2">
         <svg class="mt-0.5 h-4 w-4 shrink-0 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
@@ -42,7 +42,7 @@
 
     <% elsif !@credentials[:connected] %>
       <%# Configured but not yet authorized (or token expired) %>
-      <div class="mt-2 flex items-start gap-2 border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800 dark:bg-amber-950">
+      <div class="mt-2 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800 dark:bg-amber-950">
         <svg class="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
@@ -51,7 +51,7 @@
           <p class="mt-0.5 text-xs text-amber-600 dark:text-amber-400"><%= @credentials[:error] %></p>
           <div class="mt-2">
             <%= link_to authorize_admin_backups_path,
-                class: "inline-flex min-h-[30px] items-center gap-1.5 bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:opacity-90" do %>
+                class: "inline-flex min-h-[30px] items-center gap-1.5 rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:opacity-90" do %>
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
               </svg>
@@ -63,7 +63,7 @@
 
     <% else %>
       <%# Connected and working %>
-      <div class="mt-2 flex items-start justify-between gap-2 border border-green-200 bg-green-50 px-3 py-2 dark:border-green-800 dark:bg-green-950">
+      <div class="mt-2 flex items-start justify-between gap-2 rounded-md border border-green-200 bg-green-50 px-3 py-2 dark:border-green-800 dark:bg-green-950">
         <div class="flex items-start gap-2">
           <svg class="mt-0.5 h-4 w-4 shrink-0 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
@@ -79,7 +79,7 @@
           </div>
         </div>
         <%= button_to disconnect_admin_backups_path, method: :delete,
-            class: "inline-flex min-h-[26px] items-center justify-center border border-green-300 bg-transparent px-2 py-0.5 text-xs font-medium text-green-700 hover:bg-green-100 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900",
+            class: "inline-flex min-h-[26px] items-center justify-center rounded-md border border-green-300 bg-transparent px-2 py-0.5 text-xs font-medium text-green-700 hover:bg-green-100 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900",
             data: { turbo_confirm: "Disconnect Google Drive? Nightly backups will stop until you reconnect." } do %>
           Disconnect
         <% end %>
@@ -89,7 +89,7 @@
 
   <%# ── Last Backup Summary ── %>
   <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
-    <div class="border border-theme bg-surface p-2.5">
+    <div class="rounded-lg border border-theme bg-surface p-2.5">
       <div class="flex items-center gap-2">
         <svg class="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
@@ -111,7 +111,7 @@
       <% end %>
     </div>
 
-    <div class="border border-theme bg-surface p-2.5">
+    <div class="rounded-lg border border-theme bg-surface p-2.5">
       <div class="flex items-center gap-2">
         <svg class="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
@@ -135,7 +135,7 @@
   </div>
 
   <%# ── Database Backups Table ── %>
-  <div class="mt-3 border border-theme bg-surface">
+  <div class="mt-3 overflow-hidden rounded-lg border border-theme bg-surface">
     <div class="border-b border-theme px-2.5 py-2">
       <h2 class="text-sm font-semibold text-body">Database backups</h2>
       <p class="mt-0.5 text-xs text-muted">Nightly PostgreSQL dumps uploaded to Google Drive.</p>
@@ -182,7 +182,7 @@
   </div>
 
   <%# ── MinIO Backups Table ── %>
-  <div class="mt-2 border border-theme bg-surface">
+  <div class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
     <div class="border-b border-theme px-2.5 py-2">
       <h2 class="text-sm font-semibold text-body">MinIO bucket backups</h2>
       <p class="mt-0.5 text-xs text-muted">Nightly archives of all uploaded files.</p>

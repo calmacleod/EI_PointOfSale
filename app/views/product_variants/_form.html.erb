@@ -1,6 +1,6 @@
 <%= form_with model: [ product, product_variant ], class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if product_variant.errors.any? %>
-    <div class="bg-[var(--color-error-bg)] px-3 py-2">
+    <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
       <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
       <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
         <% product_variant.errors.full_messages.each do |message| %>
@@ -104,7 +104,7 @@
                 <%= button_to purge_image_product_product_variant_path(product, product_variant, image_id: image.id),
                     method: :delete,
                     data: { turbo_confirm: "Remove this image?" },
-                    class: "absolute -top-1.5 -right-1.5 hidden group-hover:flex h-5 w-5 items-center justify-center bg-[var(--color-error-text)] text-white text-xs font-bold leading-none" do %>
+                    class: "absolute -top-1.5 -right-1.5 hidden group-hover:flex h-5 w-5 items-center justify-center rounded-full bg-[var(--color-error-text)] text-white text-xs font-bold leading-none" do %>
                   &times;
                 <% end %>
               <% end %>
@@ -125,15 +125,15 @@
     <% if product_variant.persisted? && can?(:destroy, product_variant) %>
       <%= button_to "Remove", product_product_variant_path(product, product_variant), method: :delete,
           data: { turbo_confirm: "Remove this variant?" },
-          class: "inline-flex min-h-[30px] items-center justify-center px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
     <% else %>
       <span></span>
     <% end %>
     <div class="flex gap-2">
       <%= link_to "Cancel", edit_product_path(product),
-          class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]" %>
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]" %>
       <%= f.submit product_variant.persisted? ? "Save changes" : "Add variant",
-          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
     </div>
   </div>
 <% end %>

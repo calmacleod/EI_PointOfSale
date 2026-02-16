@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
-/* ── Theme: Native desktop POS ───────────────────────────────────── */
-/* Sharp edges, recessed inputs, flat panels, instant state changes.  */
-/* Designed to feel like a native desktop application, not a website. */
+/* ── Theme: Refined POS ──────────────────────────────────────────── */
+/* Subtle rounding, soft hover states, clean typography hierarchy.    */
+/* Compact and professional — feels like a polished native app.       */
 
 :root,
 [data-theme="light"] {
@@ -86,12 +86,13 @@
   --color-inset-shadow: inset 0 1px 2px rgba(0,0,0,0.20);
 }
 
-/* System font + crisp rendering — match the OS, not a website */
+/* Inter — clean, modern UI typeface designed for screens */
 html {
   font-size: 16px;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 [data-font-size="large"]  { font-size: 18px; }
@@ -120,6 +121,7 @@ html {
     font-weight: 600;
     line-height: 1.25rem;
     border: 1px solid;
+    border-radius: 9999px;
   }
   .status-chip-success {
     background-color: var(--color-success-bg);
@@ -148,11 +150,11 @@ html {
   }
 }
 
-/* ── Form inputs — recessed, native feel ─────────────────────────── */
+/* ── Form inputs — subtle inset, rounded ─────────────────────────── */
 .input-field {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 1px;
+  border-radius: 0.375rem;
   color: var(--color-text);
   padding: 0.3125rem 0.5rem;
   font-size: 0.875rem;
@@ -169,7 +171,7 @@ html {
 .input-field-compact {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 1px;
+  border-radius: 0.375rem;
   color: var(--color-text);
   font-size: 0.8125rem;
   box-shadow: var(--color-inset-shadow);
@@ -181,13 +183,11 @@ html {
   box-shadow: var(--color-inset-shadow), 0 0 0 1px var(--color-accent);
 }
 
-/* Form cards — sharp panels */
-.form-card { border-radius: 0; }
+/* Form cards — subtle rounding */
+.form-card { border-radius: 0.5rem; }
 
-/* ── Buttons — no transition, instant feedback ───────────────────── */
-button, a, [role="button"] {
-  transition: none !important;
-}
+/* ── Buttons — minimal transitions ────────────────────────────────── */
+/* Allow subtle color transitions on interactive elements */
 
 /* Confirm modal — no scale animation, just appear */
 .confirm-modal-overlay > div:first-of-type { transition: none; }
@@ -308,19 +308,23 @@ button, a, [role="button"] {
   .sidebar-mini .collapse-icon { display: none !important; }
 }
 
-/* ── Table rows — zebra stripe + hover ─────────────────────────── */
+/* ── Table rows — subtle zebra stripe + hover ────────────────────── */
 tbody tr:nth-child(even) {
   background-color: var(--color-surface-alt);
 }
 tbody tr:hover {
-  background-color: var(--color-border);
+  background-color: rgba(0, 0, 0, 0.03);
+}
+[data-theme="dark"] tbody tr:hover,
+[data-theme="dim"] tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
-/* ── Pagination — flat, sharp ────────────────────────────────────── */
+/* ── Pagination — rounded, spaced ────────────────────────────────── */
 .pagy-nav .pagy {
-  --spacing: 0px;
+  --spacing: 0.25rem;
   --padding: 0.375rem;
-  --rounding: 0;
+  --rounding: 0.25rem;
   --border-width: 1px;
   --text: var(--color-text);
   --text-hover: var(--color-text);
@@ -345,12 +349,9 @@ tbody tr:hover {
   text-decoration: none;
   background-color: var(--background);
   border: var(--border-width) solid var(--color-border);
-  border-radius: 0;
+  border-radius: var(--rounding);
   color: var(--text);
-  /* Collapse double borders between adjacent buttons */
-  margin-left: -1px;
 }
-.pagy-nav .pagy a:first-child { margin-left: 0; }
 .pagy-nav .pagy a[href]:hover {
   background-color: var(--background-hover);
   color: var(--text-hover);

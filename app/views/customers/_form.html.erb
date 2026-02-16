@@ -1,6 +1,6 @@
 <%= form_with model: customer, class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if customer.errors.any? %>
-    <div class="bg-[var(--color-error-bg)] px-3 py-2">
+    <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
       <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
       <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
         <% customer.errors.full_messages.each do |message| %>
@@ -128,11 +128,11 @@
     <% if customer.persisted? && can?(:destroy, customer) %>
       <%= button_to "Remove", customer_path(customer), method: :delete,
           data: { turbo_confirm: "Remove this customer?" },
-          class: "inline-flex min-h-[30px] items-center justify-center px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
     <% else %>
       <span></span>
     <% end %>
     <%= f.submit customer.persisted? ? "Save changes" : "Create customer",
-        class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
   </div>
 <% end %>

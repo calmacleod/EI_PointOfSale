@@ -18,7 +18,7 @@
   <% end %>
 
   <%= form_with url: admin_audits_path, method: :get, class: "mt-2" do |f| %>
-    <aside class="flex flex-col gap-1.5 border border-theme bg-surface px-2 py-1.5">
+    <aside class="flex flex-col gap-1.5 rounded-lg border border-theme bg-surface px-2 py-1.5">
       <div class="flex flex-wrap items-end gap-1.5">
         <div class="flex flex-col">
           <label for="audit_action" class="text-xs font-medium text-muted">Action</label>
@@ -52,15 +52,15 @@
           <label for="created_at_to" class="text-xs font-medium text-muted">To date</label>
           <%= f.date_field :created_at_to, value: params[:created_at_to], id: "created_at_to", class: "input-field mt-0.5 h-7 w-32 text-xs" %>
         </div>
-        <%= f.submit "Apply", class: "h-7 bg-accent px-2.5 py-0.5 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        <%= f.submit "Apply", class: "h-7 rounded-md bg-accent px-2.5 py-0.5 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
         <% if has_active_filters %>
-          <%= link_to "Clear", admin_audits_path, class: "h-7 px-2 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)]/30 hover:text-body" %>
+          <%= link_to "Clear", admin_audits_path, class: "h-7 rounded-md px-2 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)]/30 hover:text-body" %>
         <% end %>
       </div>
     </aside>
   <% end %>
 
-  <div class="mt-2 overflow-x-auto border border-theme bg-surface lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+  <div class="mt-2 overflow-x-auto rounded-lg border border-theme bg-surface lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
     <table class="min-w-full divide-y divide-[var(--color-border)]">
       <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
         <tr>

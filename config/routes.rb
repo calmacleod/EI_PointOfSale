@@ -15,12 +15,6 @@ Rails.application.routes.draw do
   scope :admin, as: :admin, module: :admin_area do
     resource :settings, only: %i[ show update ]
     resource :data_export, only: %i[ show create ]
-    resources :reports, only: %i[ index new create show destroy ] do
-      member do
-        get :export_pdf
-        get :export_excel
-      end
-    end
     resource :backups, only: %i[ show ] do
       get :download, on: :member
       get :authorize, on: :member
@@ -33,6 +27,12 @@ Rails.application.routes.draw do
     resources :audits, only: %i[index show], path: "audits"
   end
 
+  resources :reports, only: %i[index new create show destroy] do
+    member do
+      get :export_pdf
+      get :export_excel
+    end
+  end
   resources :products do
     resources :product_variants, only: %i[ show new create edit update destroy ] do
       member do

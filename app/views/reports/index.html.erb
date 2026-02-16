@@ -3,8 +3,6 @@
 <% content_for :breadcrumbs do %>
   <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
   <li><span aria-hidden="true">›</span></li>
-  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
-  <li><span aria-hidden="true">›</span></li>
   <li aria-current="page" class="text-muted">Reports</li>
 <% end %>
 
@@ -12,29 +10,31 @@
   <%= render "shared/page_header", title: "Reports", description: "Generate and view business reports." %>
 
   <%# ── Available report templates ──────────────────────────────────── %>
-  <div class="mt-2 border border-theme bg-surface p-2.5">
-    <h2 class="text-sm font-semibold text-body">New report</h2>
-    <p class="mt-0.5 text-xs text-muted">Choose a report template to generate a new report.</p>
+  <% if can? :create, Report %>
+    <div class="mt-2 rounded-lg border border-theme bg-surface p-2.5">
+      <h2 class="text-sm font-semibold text-body">New report</h2>
+      <p class="mt-0.5 text-xs text-muted">Choose a report template to generate a new report.</p>
 
-    <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-      <% @templates.each do |template| %>
-        <%= link_to new_admin_report_path(template: template.key),
-            class: "group block border border-theme p-2.5 transition hover:border-[var(--color-accent)]",
-            data: { turbo_prefetch: true } do %>
-          <h3 class="text-sm font-semibold text-body group-hover:text-accent"><%= template.title %></h3>
-          <p class="mt-0.5 text-xs text-muted"><%= template.description %></p>
-          <p class="mt-1.5 text-xs font-medium text-accent">Generate →</p>
+      <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        <% @templates.each do |template| %>
+          <%= link_to new_report_path(template: template.key),
+              class: "group block rounded-lg border border-theme p-2.5 transition hover:border-[var(--color-accent)]",
+              data: { turbo_prefetch: true } do %>
+            <h3 class="text-sm font-semibold text-body group-hover:text-accent"><%= template.title %></h3>
+            <p class="mt-0.5 text-xs text-muted"><%= template.description %></p>
+            <p class="mt-1.5 text-xs font-medium text-accent">Generate →</p>
+          <% end %>
         <% end %>
-      <% end %>
+      </div>
     </div>
-  </div>
+  <% end %>
 
   <%# ── Previously generated reports ────────────────────────────────── %>
   <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
     <h2 class="text-sm font-semibold text-body">Generated reports</h2>
 
     <%= render "shared/table_filters",
-        search_path: admin_reports_path,
+        search_path: reports_path,
         turbo_frame: "reports_table",
         label: "Search reports",
         placeholder: "Search reports…",
@@ -66,7 +66,7 @@
     <% end %>
 
     <%= turbo_frame_tag "reports_table", class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
-      <div class="overflow-x-auto border border-theme bg-surface lg:flex-1 lg:overflow-y-auto">
+      <div class="overflow-x-auto rounded-lg border border-theme bg-surface lg:flex-1 lg:overflow-y-auto">
         <table class="min-w-full divide-y divide-[var(--color-border)]">
           <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
             <tr>
@@ -82,7 +82,7 @@
             <% @reports.each do |report| %>
               <tr>
                 <td class="px-3 py-1.5 text-sm font-medium text-body">
-                  <%= link_to report.title.truncate(50), admin_report_path(report),
+                  <%= link_to report.title.truncate(50), report_path(report),
                       class: "text-accent hover:underline",
                       data: { turbo_frame: "_top", turbo_prefetch: true } %>
                 </td>
@@ -99,7 +99,7 @@
                   <%= time_tag report.created_at, report.created_at.strftime("%b %d, %Y %l:%M %p") %>
                 </td>
                 <td class="px-3 py-1.5 text-right text-sm">
-                  <%= link_to "View", admin_report_path(report),
+                  <%= link_to "View", report_path(report),
                       class: "font-medium text-accent hover:underline",
                       data: { turbo_frame: "_top", turbo_prefetch: true } %>
                 </td>

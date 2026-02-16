@@ -15,11 +15,11 @@
           <button type="button"
                   data-action="click->confirm-modal#close"
                   data-autofocus
-                  class="border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]">
+                  class="rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]">
             Cancel
           </button>
           <%= button_to session_path, method: :delete,
-              class: "bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" do %>
+              class: "rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" do %>
             Sign out
           <% end %>
         </div>
