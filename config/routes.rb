@@ -25,6 +25,12 @@ Rails.application.routes.draw do
     resources :tax_codes
     resources :suppliers
     resources :audits, only: %i[index show], path: "audits"
+    resources :receipt_templates do
+      member do
+        patch :activate
+        get :preview
+      end
+    end
   end
 
   resources :notifications, only: [ :index, :destroy ] do
@@ -35,6 +41,15 @@ Rails.application.routes.draw do
     member { patch :mark_read }
   end
   resources :push_subscriptions, only: [ :create, :destroy ]
+
+  resource :cash_drawer, only: [ :show ], controller: "cash_drawer" do
+    get :open, action: :new_open
+    post :open, action: :create_open
+    get :close, action: :new_close
+    post :close, action: :create_close
+    get :history
+    get "history/:id", action: :session_detail, as: :session_detail
+  end
 
   resources :reports, only: %i[index new create show destroy] do
     member do

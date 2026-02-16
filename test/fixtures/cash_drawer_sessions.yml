@@ -1,0 +1,16 @@
+open_session:
+  opened_by: admin
+  opened_at: <%= 2.hours.ago.iso8601 %>
+  opening_counts: <%= { "25c" => 40, "$1" => 20, "$2" => 10, "$5" => 5, "$10" => 3, "$20" => 5 }.to_json %>
+  opening_total_cents: 18500
+
+closed_session:
+  opened_by: admin
+  closed_by: one
+  opened_at: <%= 1.day.ago.iso8601 %>
+  closed_at: <%= 12.hours.ago.iso8601 %>
+  opening_counts: <%= { "25c" => 40, "$1" => 20, "$2" => 10, "$20" => 5 }.to_json %>
+  opening_total_cents: 14000
+  closing_counts: <%= { "25c" => 38, "$1" => 22, "$2" => 9, "$20" => 5 }.to_json %>
+  closing_total_cents: 14050
+  notes: "End of day close"

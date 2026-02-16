@@ -1,0 +1,110 @@
+<% content_for :title, "Session Detail" %>
+
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Cash Drawer", cash_drawer_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "History", history_cash_drawer_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Session Detail</li>
+<% end %>
+
+<div class="mx-auto max-w-4xl">
+  <%= render "shared/page_header", title: "Session Detail" do %>
+    <%= link_to "Back to History", history_cash_drawer_path,
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30",
+        data: { turbo_prefetch: true } %>
+  <% end %>
+
+  <%# ── Status badge ── %>
+  <div class="mt-2">
+    <% if @session.open? %>
+      <%= status_chip("Open", :success) %>
+    <% else %>
+      <%= status_chip("Closed", :neutral) %>
+    <% end %>
+  </div>
+
+  <%# ── Summary cards ── %>
+  <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+    <div class="rounded-lg border border-theme bg-surface p-3">
+      <p class="text-xs font-medium text-muted">Opening Total</p>
+      <p class="mt-0.5 text-lg font-bold text-body tabular-nums"><%= number_to_currency(@session.opening_total) %></p>
+      <p class="mt-1 text-xs text-muted">
+        by <strong><%= @session.opened_by.name.presence || @session.opened_by.email_address %></strong>
+      </p>
+      <p class="text-xs text-muted"><%= local_time(@session.opened_at, format: :short) %></p>
+    </div>
+
+    <% if @session.closed? %>
+      <div class="rounded-lg border border-theme bg-surface p-3">
+        <p class="text-xs font-medium text-muted">Closing Total</p>
+        <p class="mt-0.5 text-lg font-bold text-body tabular-nums"><%= number_to_currency(@session.closing_total) %></p>
+        <p class="mt-1 text-xs text-muted">
+          by <strong><%= @session.closed_by.name.presence || @session.closed_by.email_address %></strong>
+        </p>
+        <p class="text-xs text-muted"><%= local_time(@session.closed_at, format: :short) %></p>
+      </div>
+
+      <div class="rounded-lg border-2 p-3 <%= @session.discrepancy_cents == 0 ? 'border-theme' : (@session.discrepancy_cents > 0 ? 'border-green-300 dark:border-green-700' : 'border-red-300 dark:border-red-700') %>">
+        <p class="text-xs font-medium text-muted">Discrepancy</p>
+        <p class="mt-0.5 text-lg font-bold tabular-nums <%= @session.discrepancy_cents == 0 ? 'text-body' : (@session.discrepancy_cents > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') %>">
+          <%= @session.discrepancy >= 0 ? "+" : "" %><%= number_to_currency(@session.discrepancy) %>
+        </p>
+        <p class="mt-1 text-xs text-muted">
+          <% if @session.discrepancy_cents == 0 %>
+            Exact match
+          <% elsif @session.discrepancy_cents > 0 %>
+            Over by <%= number_to_currency(@session.discrepancy) %>
+          <% else %>
+            Short by <%= number_to_currency(@session.discrepancy.abs) %>
+          <% end %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ── Denomination breakdowns ── %>
+  <div class="mt-3 grid grid-cols-1 gap-3 <%= @session.closed? ? 'lg:grid-cols-2' : '' %>">
+    <%# Opening breakdown %>
+    <div class="rounded-lg border border-theme bg-surface p-3">
+      <h3 class="text-sm font-semibold text-body">Opening Count</h3>
+      <div class="mt-2 space-y-0.5">
+        <% (@session.opening_counts || {}).each do |denom, qty| %>
+          <% value = CashDrawerSession::DENOMINATIONS[denom] %>
+          <% next unless value %>
+          <div class="flex items-center justify-between text-sm">
+            <span class="text-muted"><%= denom_label(denom) %></span>
+            <span class="tabular-nums text-body"><%= qty %> &times; <%= number_to_currency(value) %> = <strong><%= number_to_currency(qty.to_i * value) %></strong></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# Closing breakdown %>
+    <% if @session.closed? && @session.closing_counts.present? %>
+      <div class="rounded-lg border border-theme bg-surface p-3">
+        <h3 class="text-sm font-semibold text-body">Closing Count</h3>
+        <div class="mt-2 space-y-0.5">
+          <% (@session.closing_counts || {}).each do |denom, qty| %>
+            <% value = CashDrawerSession::DENOMINATIONS[denom] %>
+            <% next unless value %>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-muted"><%= denom_label(denom) %></span>
+              <span class="tabular-nums text-body"><%= qty %> &times; <%= number_to_currency(value) %> = <strong><%= number_to_currency(qty.to_i * value) %></strong></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ── Notes ── %>
+  <% if @session.notes.present? %>
+    <div class="mt-3 rounded-lg border border-theme bg-surface p-3">
+      <h3 class="text-sm font-semibold text-body">Notes</h3>
+      <p class="mt-1 whitespace-pre-wrap text-sm text-muted"><%= @session.notes %></p>
+    </div>
+  <% end %>
+</div>

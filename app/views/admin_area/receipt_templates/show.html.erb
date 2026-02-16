@@ -1,0 +1,111 @@
+<% content_for :title, @receipt_template.name %>
+
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Receipt Templates", admin_receipt_templates_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted"><%= @receipt_template.name %></li>
+<% end %>
+
+<div class="mx-auto max-w-4xl">
+  <%= render "shared/page_header", title: @receipt_template.name do %>
+    <%= link_to "Edit", edit_admin_receipt_template_path(@receipt_template),
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
+        data: { turbo_prefetch: true } %>
+    <% unless @receipt_template.active? %>
+      <%= button_to "Set as Active", activate_admin_receipt_template_path(@receipt_template),
+          method: :patch,
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30" %>
+    <% end %>
+    <%= button_to "Delete", admin_receipt_template_path(@receipt_template),
+        method: :delete,
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-red-300 dark:border-red-700 bg-surface px-2.5 py-1 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20",
+        data: { turbo_confirm: "Are you sure you want to delete this template?" } %>
+  <% end %>
+
+  <div class="mt-2">
+    <% if @receipt_template.active? %>
+      <%= status_chip("Active", :success) %>
+    <% else %>
+      <%= status_chip("Inactive", :neutral) %>
+    <% end %>
+  </div>
+
+  <div class="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-2">
+    <%# ── Settings summary ── %>
+    <div class="space-y-2">
+      <div class="rounded-lg border border-theme bg-surface p-3">
+        <h3 class="text-sm font-semibold text-body">Settings</h3>
+        <dl class="mt-2 space-y-1.5">
+          <div class="flex justify-between">
+            <dt class="text-sm text-muted">Paper width</dt>
+            <dd class="text-sm font-medium text-body">
+              <%= ReceiptTemplate::PAPER_WIDTHS.dig(@receipt_template.paper_width_mm, :label) || "#{@receipt_template.paper_width_mm} mm" %>
+            </dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-muted">Characters per line</dt>
+            <dd class="text-sm font-medium text-body"><%= @receipt_template.chars_per_line %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-muted">Store name</dt>
+            <dd class="text-sm font-medium text-body"><%= @receipt_template.show_store_name? ? "Yes" : "No" %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-muted">Store address</dt>
+            <dd class="text-sm font-medium text-body"><%= @receipt_template.show_store_address? ? "Yes" : "No" %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-muted">Store phone</dt>
+            <dd class="text-sm font-medium text-body"><%= @receipt_template.show_store_phone? ? "Yes" : "No" %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-muted">Store email</dt>
+            <dd class="text-sm font-medium text-body"><%= @receipt_template.show_store_email? ? "Yes" : "No" %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-muted">Date &amp; time</dt>
+            <dd class="text-sm font-medium text-body"><%= @receipt_template.show_date_time? ? "Yes" : "No" %></dd>
+          </div>
+          <div class="flex justify-between">
+            <dt class="text-sm text-muted">Cashier name</dt>
+            <dd class="text-sm font-medium text-body"><%= @receipt_template.show_cashier_name? ? "Yes" : "No" %></dd>
+          </div>
+        </dl>
+      </div>
+
+      <% if @receipt_template.header_text.present? %>
+        <div class="rounded-lg border border-theme bg-surface p-3">
+          <h3 class="text-sm font-semibold text-body">Header Text</h3>
+          <p class="mt-1 whitespace-pre-wrap text-sm text-muted"><%= @receipt_template.header_text %></p>
+        </div>
+      <% end %>
+
+      <% if @receipt_template.footer_text.present? %>
+        <div class="rounded-lg border border-theme bg-surface p-3">
+          <h3 class="text-sm font-semibold text-body">Footer Text</h3>
+          <p class="mt-1 whitespace-pre-wrap text-sm text-muted"><%= @receipt_template.footer_text %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <%# ── Receipt preview ── %>
+    <div>
+      <h3 class="text-sm font-semibold text-body">Preview</h3>
+      <p class="mt-0.5 text-xs text-muted">Simulated thermal receipt output.</p>
+
+      <div class="mt-2 flex justify-center overflow-x-auto">
+        <div class="receipt-paper shrink-0 rounded-t-sm bg-white shadow-lg">
+          <div class="px-2 py-4">
+            <pre class="whitespace-pre font-mono text-black leading-snug"
+                 style="font-size: 11px; width: <%= @receipt_template.chars_per_line %>ch;"><%= @preview_lines.join("\n") %></pre>
+          </div>
+          <div class="h-4 bg-white" style="mask-image: url('data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 10&quot;><path d=&quot;M0,0 Q5,10 10,0 Q15,10 20,0 Q25,10 30,0 Q35,10 40,0 Q45,10 50,0 Q55,10 60,0 Q65,10 70,0 Q75,10 80,0 Q85,10 90,0 Q95,10 100,0&quot; fill=&quot;white&quot;/></svg>'); mask-size: 100% 100%; -webkit-mask-image: url('data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 10&quot;><path d=&quot;M0,0 Q5,10 10,0 Q15,10 20,0 Q25,10 30,0 Q35,10 40,0 Q45,10 50,0 Q55,10 60,0 Q65,10 70,0 Q75,10 80,0 Q85,10 90,0 Q95,10 100,0&quot; fill=&quot;white&quot;/></svg>'); -webkit-mask-size: 100% 100%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

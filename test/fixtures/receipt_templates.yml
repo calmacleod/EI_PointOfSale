@@ -1,0 +1,25 @@
+standard:
+  name: "Standard 80mm"
+  paper_width_mm: 80
+  chars_per_line: 48
+  show_store_name: true
+  show_store_address: true
+  show_store_phone: true
+  show_store_email: false
+  header_text: "Welcome to our store!"
+  footer_text: "Thank you for shopping with us!\nReturns within 30 days with receipt."
+  show_date_time: true
+  show_cashier_name: true
+  active: true
+
+narrow:
+  name: "Narrow 58mm"
+  paper_width_mm: 58
+  chars_per_line: 32
+  show_store_name: true
+  show_store_address: false
+  show_store_phone: true
+  show_store_email: false
+  show_date_time: true
+  show_cashier_name: false
+  active: false

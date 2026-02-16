@@ -8,11 +8,12 @@ class Ability
     if user.persisted?
       can :manage, Notification, user_id: user.id
       can :manage, PushSubscription, user_id: user.id
+      can :manage, CashDrawerSession
     end
 
     if user.is_a?(Admin)
       can :manage, User
-      can :manage, [ TaxCode, Supplier, Category, Product, ProductVariant, Service, Customer, Report ]
+      can :manage, [ TaxCode, Supplier, Category, Product, ProductVariant, Service, Customer, Report, ReceiptTemplate ]
       return
     end
 
@@ -24,5 +25,8 @@ class Ability
 
     # Common users can view and export reports, but not create or delete them.
     can %i[read export_pdf export_excel], Report if user.persisted?
+
+    # Common users can view receipt templates (for printing receipts).
+    can :read, ReceiptTemplate if user.persisted?
   end
 end

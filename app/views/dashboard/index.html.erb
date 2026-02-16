@@ -21,6 +21,31 @@
   <% dashboard_description = Current.user ? "Welcome back, #{Current.user.email_address}." : "Overview and shortcuts for your point of sale." %>
   <%= render "shared/page_header", title: "Dashboard", description: dashboard_description %>
 
+  <% if Current.user %>
+    <% drawer_session = CashDrawerSession.current %>
+    <div class="mt-1 flex items-center gap-2 rounded-lg border border-theme bg-surface px-3 py-1.5">
+      <% if drawer_session %>
+        <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
+        <span class="text-xs font-medium text-body">Register open</span>
+        <span class="text-xs text-muted">
+          &mdash; <%= number_to_currency(drawer_session.opening_total) %> float,
+          opened <%= time_ago_in_words(drawer_session.opened_at) %> ago
+        </span>
+        <span class="ml-auto">
+          <%= link_to "Close", close_cash_drawer_path,
+              class: "text-xs font-medium text-accent hover:opacity-80" %>
+        </span>
+      <% else %>
+        <span class="flex h-2 w-2 rounded-full bg-amber-500"></span>
+        <span class="text-xs font-medium text-body">Register closed</span>
+        <span class="ml-auto">
+          <%= link_to "Open Register", open_cash_drawer_path,
+              class: "text-xs font-medium text-accent hover:opacity-80" %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
+
   <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-12">
     <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:col-span-12 lg:grid-cols-4">
       <div class="rounded-lg border border-theme bg-surface p-2.5">

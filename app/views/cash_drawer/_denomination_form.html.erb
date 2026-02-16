@@ -1,0 +1,90 @@
+<%# Shared denomination counting form for open/close %>
+<%# Locals: action_path (String), submit_label (String), existing_counts (Hash, optional) %>
+
+<div data-controller="denomination-counter" class="space-y-3">
+  <%# ── Coins ── %>
+  <div class="rounded-lg border border-theme bg-surface p-3">
+    <h3 class="text-xs font-semibold uppercase tracking-wider text-muted">Coins</h3>
+    <div class="mt-2 space-y-1.5">
+      <% CashDrawerSession::COINS.each do |key, value| %>
+        <div class="flex items-center gap-3" data-denomination-counter-target="row">
+          <span class="w-14 text-sm font-medium text-body"><%= key %></span>
+          <input type="number" name="counts[<%= key %>]" min="0" step="1" value="<%= existing_counts&.dig(key) || 0 %>"
+                 autocomplete="off"
+                 data-denomination-counter-target="input"
+                 data-value="<%= (value * 100).round %>"
+                 data-action="input->denomination-counter#calculate"
+                 class="input-field w-20 min-h-[30px] text-center tabular-nums">
+          <span class="w-6 text-xs text-muted">&times;</span>
+          <span class="w-16 text-right text-sm text-muted"><%= number_to_currency(value) %></span>
+          <span class="w-2 text-xs text-muted">=</span>
+          <span data-denomination-counter-target="subtotal" class="w-20 text-right text-sm font-medium text-body tabular-nums">
+            <%= number_to_currency((existing_counts&.dig(key).to_i || 0) * value) %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Bills ── %>
+  <div class="rounded-lg border border-theme bg-surface p-3">
+    <h3 class="text-xs font-semibold uppercase tracking-wider text-muted">Bills</h3>
+    <div class="mt-2 space-y-1.5">
+      <% CashDrawerSession::BILLS.each do |key, value| %>
+        <div class="flex items-center gap-3" data-denomination-counter-target="row">
+          <span class="w-14 text-sm font-medium text-body"><%= key %></span>
+          <input type="number" name="counts[<%= key %>]" min="0" step="1" value="<%= existing_counts&.dig(key) || 0 %>"
+                 autocomplete="off"
+                 data-denomination-counter-target="input"
+                 data-value="<%= (value * 100).round %>"
+                 data-action="input->denomination-counter#calculate"
+                 class="input-field w-20 min-h-[30px] text-center tabular-nums">
+          <span class="w-6 text-xs text-muted">&times;</span>
+          <span class="w-16 text-right text-sm text-muted"><%= number_to_currency(value) %></span>
+          <span class="w-2 text-xs text-muted">=</span>
+          <span data-denomination-counter-target="subtotal" class="w-20 text-right text-sm font-medium text-body tabular-nums">
+            <%= number_to_currency((existing_counts&.dig(key).to_i || 0) * value) %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Coin Rolls ── %>
+  <div class="rounded-lg border border-theme bg-surface p-3">
+    <h3 class="text-xs font-semibold uppercase tracking-wider text-muted">Coin Rolls</h3>
+    <div class="mt-2 space-y-1.5">
+      <% CashDrawerSession::COIN_ROLLS.each do |key, info| %>
+        <div class="flex items-center gap-3" data-denomination-counter-target="row">
+          <span class="w-36 text-sm font-medium text-body"><%= info[:label] %></span>
+          <input type="number" name="counts[<%= key %>]" min="0" step="1" value="<%= existing_counts&.dig(key) || 0 %>"
+                 autocomplete="off"
+                 data-denomination-counter-target="input"
+                 data-value="<%= (info[:value] * 100).round %>"
+                 data-action="input->denomination-counter#calculate"
+                 class="input-field w-20 min-h-[30px] text-center tabular-nums">
+          <span class="w-6 text-xs text-muted">&times;</span>
+          <span class="w-16 text-right text-sm text-muted"><%= number_to_currency(info[:value]) %></span>
+          <span class="w-2 text-xs text-muted">=</span>
+          <span data-denomination-counter-target="subtotal" class="w-20 text-right text-sm font-medium text-body tabular-nums">
+            <%= number_to_currency((existing_counts&.dig(key).to_i || 0) * info[:value]) %>
+          </span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Grand total ── %>
+  <div class="flex items-center justify-between rounded-lg border-2 border-accent/30 bg-surface p-3">
+    <span class="text-sm font-semibold text-body">Grand Total</span>
+    <span data-denomination-counter-target="grandTotal" class="text-xl font-bold text-accent tabular-nums">$0.00</span>
+  </div>
+
+  <%# ── Notes ── %>
+  <div>
+    <label for="session_notes" class="text-sm font-medium text-body">Notes <span class="text-muted">(optional)</span></label>
+    <textarea name="notes" id="session_notes" rows="2"
+              class="input-field mt-0.5 w-full"
+              placeholder="Any notes about this count..."></textarea>
+  </div>
+</div>

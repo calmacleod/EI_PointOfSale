@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_042505) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_050715) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -63,6 +63,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_042505) do
     t.index ["created_at"], name: "index_audits_on_created_at"
     t.index ["request_uuid"], name: "index_audits_on_request_uuid"
     t.index ["user_id", "user_type"], name: "user_index"
+  end
+
+  create_table "cash_drawer_sessions", force: :cascade do |t|
+    t.datetime "closed_at"
+    t.bigint "closed_by_id"
+    t.jsonb "closing_counts"
+    t.integer "closing_total_cents"
+    t.datetime "created_at", null: false
+    t.text "notes"
+    t.datetime "opened_at", null: false
+    t.bigint "opened_by_id", null: false
+    t.jsonb "opening_counts", default: {}, null: false
+    t.integer "opening_total_cents", null: false
+    t.datetime "updated_at", null: false
+    t.index ["closed_at"], name: "index_cash_drawer_sessions_on_closed_at"
+    t.index ["closed_by_id"], name: "index_cash_drawer_sessions_on_closed_by_id"
+    t.index ["opened_at"], name: "index_cash_drawer_sessions_on_opened_at"
+    t.index ["opened_by_id"], name: "index_cash_drawer_sessions_on_opened_by_id"
   end
 
   create_table "categories", force: :cascade do |t|
@@ -194,6 +212,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_042505) do
     t.bigint "user_id", null: false
     t.index ["user_id", "endpoint"], name: "index_push_subscriptions_on_user_id_and_endpoint", unique: true
     t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
+  end
+
+  create_table "receipt_templates", force: :cascade do |t|
+    t.boolean "active", default: false, null: false
+    t.integer "chars_per_line", default: 48, null: false
+    t.datetime "created_at", null: false
+    t.text "footer_text"
+    t.text "header_text"
+    t.string "name", null: false
+    t.integer "paper_width_mm", default: 80, null: false
+    t.boolean "show_cashier_name", default: true, null: false
+    t.boolean "show_date_time", default: true, null: false
+    t.boolean "show_store_address", default: true, null: false
+    t.boolean "show_store_email", default: false, null: false
+    t.boolean "show_store_name", default: true, null: false
+    t.boolean "show_store_phone", default: true, null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "reports", force: :cascade do |t|
@@ -418,6 +453,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_042505) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "cash_drawer_sessions", "users", column: "closed_by_id"
+  add_foreign_key "cash_drawer_sessions", "users", column: "opened_by_id"
   add_foreign_key "categorizations", "categories"
   add_foreign_key "customers", "users", column: "added_by_id"
   add_foreign_key "notifications", "users"

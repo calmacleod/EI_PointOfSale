@@ -1,0 +1,146 @@
+<%# Locals: receipt_template, store %>
+<div class="grid grid-cols-1 gap-3 lg:grid-cols-2" data-controller="receipt-preview"
+     data-receipt-preview-store-name-value="<%= store.name %>"
+     data-receipt-preview-store-address-value="<%= store.address %>"
+     data-receipt-preview-store-phone-value="<%= store.phone %>"
+     data-receipt-preview-store-email-value="<%= store.email %>">
+
+  <%# ── Left: Form fields ── %>
+  <div>
+    <%= form_with model: [:admin, receipt_template], class: "space-y-3" do |f| %>
+      <% if receipt_template.errors.any? %>
+        <div class="rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2">
+          <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+          <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
+            <% receipt_template.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="rounded-lg border border-theme bg-surface p-3">
+        <h3 class="text-sm font-semibold text-body">Template Settings</h3>
+
+        <div class="mt-2 space-y-2">
+          <div>
+            <%= f.label :name, "Template name", class: "text-sm font-medium text-body" %>
+            <%= f.text_field :name,
+                placeholder: "e.g. Standard 80mm",
+                class: "input-field mt-0.5 w-full min-h-[30px]" %>
+          </div>
+
+          <div>
+            <%= f.label :paper_width_mm, "Paper width", class: "text-sm font-medium text-body" %>
+            <%= f.select :paper_width_mm,
+                ReceiptTemplate::PAPER_WIDTHS.map { |w, info| [info[:label], w] },
+                {},
+                class: "input-field mt-0.5 w-full min-h-[30px]",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "paperWidth" } %>
+          </div>
+        </div>
+      </div>
+
+      <div class="rounded-lg border border-theme bg-surface p-3">
+        <h3 class="text-sm font-semibold text-body">Store Information</h3>
+        <p class="mt-0.5 text-xs text-muted">Choose which store details appear on the receipt.</p>
+
+        <div class="mt-2 space-y-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= f.check_box :show_store_name, class: "rounded border-[var(--color-border)] text-accent",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "showStoreName" } %>
+            <span class="text-sm text-body">Store name</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= f.check_box :show_store_address, class: "rounded border-[var(--color-border)] text-accent",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "showStoreAddress" } %>
+            <span class="text-sm text-body">Store address</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= f.check_box :show_store_phone, class: "rounded border-[var(--color-border)] text-accent",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "showStorePhone" } %>
+            <span class="text-sm text-body">Phone number</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= f.check_box :show_store_email, class: "rounded border-[var(--color-border)] text-accent",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "showStoreEmail" } %>
+            <span class="text-sm text-body">Email address</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="rounded-lg border border-theme bg-surface p-3">
+        <h3 class="text-sm font-semibold text-body">Transaction Details</h3>
+
+        <div class="mt-2 space-y-2">
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= f.check_box :show_date_time, class: "rounded border-[var(--color-border)] text-accent",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "showDateTime" } %>
+            <span class="text-sm text-body">Date and time</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer">
+            <%= f.check_box :show_cashier_name, class: "rounded border-[var(--color-border)] text-accent",
+                data: { action: "change->receipt-preview#update", receipt_preview_target: "showCashierName" } %>
+            <span class="text-sm text-body">Cashier name</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="rounded-lg border border-theme bg-surface p-3">
+        <h3 class="text-sm font-semibold text-body">Custom Text</h3>
+
+        <div class="mt-2 space-y-2">
+          <div>
+            <%= f.label :header_text, "Header text", class: "text-sm font-medium text-body" %>
+            <p class="text-xs text-muted">Appears below the store info, above items.</p>
+            <%= f.text_area :header_text, rows: 2,
+                placeholder: "e.g. Welcome to our store!",
+                class: "input-field mt-0.5 w-full",
+                data: { action: "input->receipt-preview#update", receipt_preview_target: "headerText" } %>
+          </div>
+
+          <div>
+            <%= f.label :footer_text, "Footer text", class: "text-sm font-medium text-body" %>
+            <p class="text-xs text-muted">Appears at the bottom of the receipt.</p>
+            <%= f.text_area :footer_text, rows: 2,
+                placeholder: "e.g. Thank you for your purchase!\nReturns accepted within 30 days.",
+                class: "input-field mt-0.5 w-full",
+                data: { action: "input->receipt-preview#update", receipt_preview_target: "footerText" } %>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-2">
+        <%= link_to "Cancel", admin_receipt_templates_path,
+            class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30" %>
+        <%= f.submit receipt_template.persisted? ? "Update template" : "Create template",
+            class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)] cursor-pointer" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%# ── Right: Live preview ── %>
+  <div>
+    <div class="sticky top-2">
+      <h3 class="text-sm font-semibold text-body">Live Preview</h3>
+      <p class="mt-0.5 text-xs text-muted">This simulates what the receipt will look like when printed.</p>
+
+      <div class="mt-2 flex justify-center overflow-x-auto">
+        <div data-receipt-preview-target="paper"
+             class="receipt-paper shrink-0 rounded-t-sm bg-white shadow-lg">
+          <div class="px-2 py-4">
+            <pre data-receipt-preview-target="output"
+                 class="whitespace-pre font-mono text-black leading-snug"
+                 style="font-size: 11px; width: <%= receipt_template.chars_per_line %>ch;"><%= receipt_template.formatted_preview(store: store).join("\n") %></pre>
+          </div>
+          <%# Torn edge effect %>
+          <div class="h-4 bg-white" style="mask-image: url('data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 10&quot;><path d=&quot;M0,0 Q5,10 10,0 Q15,10 20,0 Q25,10 30,0 Q35,10 40,0 Q45,10 50,0 Q55,10 60,0 Q65,10 70,0 Q75,10 80,0 Q85,10 90,0 Q95,10 100,0&quot; fill=&quot;white&quot;/></svg>'); mask-size: 100% 100%; -webkit-mask-image: url('data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 10&quot;><path d=&quot;M0,0 Q5,10 10,0 Q15,10 20,0 Q25,10 30,0 Q35,10 40,0 Q45,10 50,0 Q55,10 60,0 Q65,10 70,0 Q75,10 80,0 Q85,10 90,0 Q95,10 100,0&quot; fill=&quot;white&quot;/></svg>'); -webkit-mask-size: 100% 100%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
