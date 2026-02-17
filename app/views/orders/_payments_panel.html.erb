@@ -1,0 +1,73 @@
+<div id="order_payments_panel" class="border-b border-theme p-4">
+  <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Payments</h3>
+
+  <% order.order_payments.each do |payment| %>
+    <div class="flex items-center justify-between rounded-md border border-theme bg-surface px-3 py-1.5 mb-1.5 text-xs">
+      <div>
+        <span class="font-medium text-body"><%= payment.display_method %></span>
+        <% if payment.reference.present? %>
+          <span class="text-muted">(ref: <%= payment.reference %>)</span>
+        <% end %>
+        <% if payment.cash? && payment.amount_tendered.present? %>
+          <div class="text-[10px] text-muted mt-0.5">
+            Tendered: <%= number_to_currency(payment.amount_tendered) %> |
+            Change: <%= number_to_currency(payment.change_given || 0) %>
+          </div>
+        <% end %>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-medium text-body"><%= number_to_currency(payment.amount) %></span>
+        <% if order.draft? %>
+          <%= button_to order_payment_path(payment), method: :delete, class: "text-muted hover:text-red-500", data: { turbo_stream: true } do %>
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if order.draft? && order.order_lines.any? %>
+    <details class="mt-2" data-controller="payment-form" data-payment-form-remaining-value="<%= order.amount_remaining %>">
+      <summary class="cursor-pointer text-xs font-medium text-accent hover:underline">+ Add Payment</summary>
+      <div class="mt-2">
+        <%= form_with url: order_order_payments_path(order), class: "space-y-2", data: { turbo_stream: true } do |f| %>
+          <select name="order_payment[payment_method]" class="input-field w-full text-xs"
+                  data-payment-form-target="methodSelect"
+                  data-action="change->payment-form#methodChanged">
+            <% OrderPayment.payment_methods.keys.each do |method| %>
+              <option value="<%= method %>"><%= method.humanize %></option>
+            <% end %>
+          </select>
+
+          <div class="flex gap-2">
+            <input type="number" name="order_payment[amount]" step="0.01" min="0"
+                   value="<%= order.amount_remaining %>"
+                   class="input-field flex-1 text-xs"
+                   placeholder="Amount"
+                   data-payment-form-target="amountInput"
+                   required>
+          </div>
+
+          <%# Cash tendered section (shown only for cash) %>
+          <div data-payment-form-target="cashSection" class="hidden space-y-2">
+            <input type="number" name="order_payment[amount_tendered]" step="0.01" min="0"
+                   class="input-field w-full text-xs"
+                   placeholder="Amount tendered"
+                   data-payment-form-target="tenderedInput"
+                   data-action="input->payment-form#calculateChange">
+            <div class="flex justify-between rounded-md bg-surface px-3 py-1.5 text-xs">
+              <span class="text-muted">Change due:</span>
+              <span class="font-bold text-body" data-payment-form-target="changeDisplay">$0.00</span>
+            </div>
+          </div>
+
+          <input type="text" name="order_payment[reference]" placeholder="Reference (optional)" class="input-field w-full text-xs">
+
+          <button type="submit" class="w-full rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
+            Record Payment
+          </button>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
+</div>

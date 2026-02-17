@@ -1,0 +1,34 @@
+<div id="order_totals" class="border-b border-theme p-4">
+  <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Totals</h3>
+  <div class="space-y-1">
+    <div class="flex justify-between text-sm text-body">
+      <span>Subtotal</span>
+      <span><%= number_to_currency(order.subtotal) %></span>
+    </div>
+    <% if order.discount_total > 0 %>
+      <div class="flex justify-between text-sm text-green-600">
+        <span>Discount</span>
+        <span>-<%= number_to_currency(order.discount_total) %></span>
+      </div>
+    <% end %>
+    <div class="flex justify-between text-sm text-body">
+      <span>Tax</span>
+      <span><%= number_to_currency(order.tax_total) %></span>
+    </div>
+    <div class="flex justify-between border-t border-theme pt-1 text-base font-bold text-body">
+      <span>Total</span>
+      <span><%= number_to_currency(order.total) %></span>
+    </div>
+    <% if order.amount_remaining > 0 && order.order_lines.any? %>
+      <div class="flex justify-between text-sm font-medium text-red-600">
+        <span>Remaining</span>
+        <span><%= number_to_currency(order.amount_remaining) %></span>
+      </div>
+    <% elsif order.order_payments.any? && order.amount_remaining == 0 %>
+      <div class="flex justify-between text-sm font-medium text-green-600">
+        <span>Paid</span>
+        <span><%= number_to_currency(order.amount_paid) %></span>
+      </div>
+    <% end %>
+  </div>
+</div>

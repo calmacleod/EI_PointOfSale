@@ -1,0 +1,29 @@
+draft_order:
+  number: ORD-000001
+  status: 0
+  created_by: admin
+  subtotal: 0
+  discount_total: 0
+  tax_total: 0
+  total: 0
+
+held_order:
+  number: ORD-000002
+  status: 1
+  created_by: one
+  held_at: <%= 1.hour.ago %>
+  subtotal: 14.99
+  discount_total: 0
+  tax_total: 1.95
+  total: 16.94
+
+completed_order:
+  number: ORD-000003
+  status: 2
+  created_by: admin
+  customer: acme_corp
+  completed_at: <%= 1.day.ago %>
+  subtotal: 29.98
+  discount_total: 0
+  tax_total: 3.90
+  total: 33.88

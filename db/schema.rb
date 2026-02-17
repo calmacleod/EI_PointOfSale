@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_173318) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_16_200006) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -125,10 +125,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_173318) do
     t.string "phone"
     t.string "postal_code"
     t.string "province"
+    t.string "status_card_number"
+    t.bigint "tax_code_id"
     t.datetime "updated_at", null: false
     t.index ["added_by_id"], name: "index_customers_on_added_by_id"
     t.index ["discarded_at"], name: "index_customers_on_discarded_at"
     t.index ["member_number"], name: "index_customers_on_member_number", unique: true
+    t.index ["tax_code_id"], name: "index_customers_on_tax_code_id"
   end
 
   create_table "dashboard_metrics", force: :cascade do |t|
@@ -168,6 +171,104 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_173318) do
     t.bigint "user_id", null: false
     t.index ["user_id", "read_at"], name: "index_notifications_on_user_id_and_read_at"
     t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
+  create_table "order_discount_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "order_discount_id", null: false
+    t.bigint "order_line_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_discount_id", "order_line_id"], name: "idx_discount_items_uniqueness", unique: true
+    t.index ["order_discount_id"], name: "index_order_discount_items_on_order_discount_id"
+    t.index ["order_line_id"], name: "index_order_discount_items_on_order_line_id"
+  end
+
+  create_table "order_discounts", force: :cascade do |t|
+    t.bigint "applied_by_id"
+    t.decimal "calculated_amount", precision: 10, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.integer "discount_type", null: false
+    t.string "name", null: false
+    t.bigint "order_id", null: false
+    t.integer "scope", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.decimal "value", precision: 10, scale: 2, null: false
+    t.index ["applied_by_id"], name: "index_order_discounts_on_applied_by_id"
+    t.index ["order_id"], name: "index_order_discounts_on_order_id"
+  end
+
+  create_table "order_events", force: :cascade do |t|
+    t.bigint "actor_id", null: false
+    t.datetime "created_at", null: false
+    t.jsonb "data", default: {}
+    t.string "event_type", null: false
+    t.bigint "order_id", null: false
+    t.index ["actor_id"], name: "index_order_events_on_actor_id"
+    t.index ["order_id", "created_at"], name: "index_order_events_on_order_id_and_created_at"
+    t.index ["order_id"], name: "index_order_events_on_order_id"
+  end
+
+  create_table "order_lines", force: :cascade do |t|
+    t.string "code"
+    t.datetime "created_at", null: false
+    t.decimal "discount_amount", precision: 10, scale: 2, default: "0.0"
+    t.decimal "line_total", precision: 10, scale: 2, null: false
+    t.string "name", null: false
+    t.bigint "order_id", null: false
+    t.integer "position", default: 0
+    t.integer "quantity", default: 1, null: false
+    t.bigint "sellable_id", null: false
+    t.string "sellable_type", null: false
+    t.decimal "tax_amount", precision: 10, scale: 2, default: "0.0"
+    t.bigint "tax_code_id"
+    t.decimal "tax_rate", precision: 5, scale: 4, default: "0.0"
+    t.decimal "unit_price", precision: 10, scale: 2, null: false
+    t.datetime "updated_at", null: false
+    t.index ["order_id", "position"], name: "index_order_lines_on_order_id_and_position"
+    t.index ["order_id"], name: "index_order_lines_on_order_id"
+    t.index ["sellable_type", "sellable_id"], name: "index_order_lines_on_sellable"
+    t.index ["tax_code_id"], name: "index_order_lines_on_tax_code_id"
+  end
+
+  create_table "order_payments", force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.decimal "amount_tendered", precision: 10, scale: 2
+    t.decimal "change_given", precision: 10, scale: 2
+    t.datetime "created_at", null: false
+    t.bigint "order_id", null: false
+    t.integer "payment_method", null: false
+    t.bigint "received_by_id"
+    t.string "reference"
+    t.datetime "updated_at", null: false
+    t.index ["order_id"], name: "index_order_payments_on_order_id"
+    t.index ["received_by_id"], name: "index_order_payments_on_received_by_id"
+  end
+
+  create_table "orders", force: :cascade do |t|
+    t.bigint "cash_drawer_session_id"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id", null: false
+    t.bigint "customer_id"
+    t.datetime "discarded_at"
+    t.decimal "discount_total", precision: 10, scale: 2, default: "0.0"
+    t.datetime "held_at"
+    t.text "notes"
+    t.string "number", null: false
+    t.integer "status", default: 0, null: false
+    t.decimal "subtotal", precision: 10, scale: 2, default: "0.0"
+    t.boolean "tax_exempt", default: false, null: false
+    t.string "tax_exempt_number"
+    t.decimal "tax_total", precision: 10, scale: 2, default: "0.0"
+    t.decimal "total", precision: 10, scale: 2, default: "0.0"
+    t.datetime "updated_at", null: false
+    t.index ["cash_drawer_session_id"], name: "index_orders_on_cash_drawer_session_id"
+    t.index ["completed_at"], name: "index_orders_on_completed_at"
+    t.index ["created_by_id"], name: "index_orders_on_created_by_id"
+    t.index ["customer_id"], name: "index_orders_on_customer_id"
+    t.index ["discarded_at"], name: "index_orders_on_discarded_at"
+    t.index ["number"], name: "index_orders_on_number", unique: true
+    t.index ["status"], name: "index_orders_on_status"
   end
 
   create_table "pg_search_documents", force: :cascade do |t|
@@ -250,6 +351,29 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_173318) do
     t.boolean "show_store_phone", default: true, null: false
     t.boolean "trim_logo", default: false, null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "refund_lines", force: :cascade do |t|
+    t.decimal "amount", precision: 10, scale: 2, null: false
+    t.bigint "order_line_id", null: false
+    t.integer "quantity", null: false
+    t.bigint "refund_id", null: false
+    t.boolean "restock", default: false, null: false
+    t.index ["order_line_id"], name: "index_refund_lines_on_order_line_id"
+    t.index ["refund_id"], name: "index_refund_lines_on_refund_id"
+  end
+
+  create_table "refunds", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "order_id", null: false
+    t.bigint "processed_by_id", null: false
+    t.text "reason"
+    t.string "refund_number", null: false
+    t.integer "refund_type", null: false
+    t.decimal "total", precision: 10, scale: 2, null: false
+    t.index ["order_id"], name: "index_refunds_on_order_id"
+    t.index ["processed_by_id"], name: "index_refunds_on_processed_by_id"
+    t.index ["refund_number"], name: "index_refunds_on_refund_number", unique: true
   end
 
   create_table "reports", force: :cascade do |t|
@@ -501,14 +625,32 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_173318) do
   add_foreign_key "cash_drawer_sessions", "users", column: "closed_by_id"
   add_foreign_key "cash_drawer_sessions", "users", column: "opened_by_id"
   add_foreign_key "categorizations", "categories"
+  add_foreign_key "customers", "tax_codes"
   add_foreign_key "customers", "users", column: "added_by_id"
   add_foreign_key "data_imports", "users", column: "imported_by_id"
   add_foreign_key "notifications", "users"
+  add_foreign_key "order_discount_items", "order_discounts"
+  add_foreign_key "order_discount_items", "order_lines"
+  add_foreign_key "order_discounts", "orders"
+  add_foreign_key "order_discounts", "users", column: "applied_by_id"
+  add_foreign_key "order_events", "orders"
+  add_foreign_key "order_events", "users", column: "actor_id"
+  add_foreign_key "order_lines", "orders"
+  add_foreign_key "order_lines", "tax_codes"
+  add_foreign_key "order_payments", "orders"
+  add_foreign_key "order_payments", "users", column: "received_by_id"
+  add_foreign_key "orders", "cash_drawer_sessions"
+  add_foreign_key "orders", "customers"
+  add_foreign_key "orders", "users", column: "created_by_id"
   add_foreign_key "products", "product_groups"
   add_foreign_key "products", "suppliers"
   add_foreign_key "products", "tax_codes"
   add_foreign_key "products", "users", column: "added_by_id"
   add_foreign_key "push_subscriptions", "users"
+  add_foreign_key "refund_lines", "order_lines"
+  add_foreign_key "refund_lines", "refunds"
+  add_foreign_key "refunds", "orders"
+  add_foreign_key "refunds", "users", column: "processed_by_id"
   add_foreign_key "reports", "users", column: "generated_by_id"
   add_foreign_key "saved_queries", "users"
   add_foreign_key "services", "tax_codes"

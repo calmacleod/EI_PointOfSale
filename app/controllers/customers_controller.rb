@@ -3,7 +3,7 @@
 class CustomersController < ApplicationController
   include Filterable
 
-  load_and_authorize_resource
+  load_and_authorize_resource except: [ :search ]
 
   def index
     @filter_config = FilterConfig.new(:customers, customers_path,
@@ -44,7 +44,60 @@ class CustomersController < ApplicationController
   end
 
   def show
-    fresh_when @customer
+    respond_to do |format|
+      format.html { fresh_when @customer }
+      format.json {
+        render json: {
+          id: @customer.id,
+          name: @customer.name,
+          member_number: @customer.member_number,
+          phone: @customer.phone,
+          email: @customer.email,
+          tax_code: @customer.tax_code&.name,
+          status_card_number: @customer.status_card_number,
+          alert: @customer.alert
+        }
+      }
+    end
+  end
+
+  def search
+    authorize! :search, Customer
+
+    query = params[:q].to_s.strip
+    filter = params[:filter].to_s
+
+    if query.length < 1
+      render json: { results: [] }
+      return
+    end
+
+    customers = Customer.kept
+      .where(
+        "LOWER(name) LIKE :q OR LOWER(email) LIKE :q OR LOWER(phone) LIKE :q OR LOWER(member_number) LIKE :q",
+        q: "%#{query.downcase}%"
+      )
+
+    customers = customers.where(active: true) if filter == "active"
+    customers = customers.where.not(tax_code_id: nil) if filter == "tax_exempt"
+
+    customers = customers.includes(:tax_code).order(:name).limit(15)
+
+    results = customers.map do |c|
+      {
+        id: c.id,
+        name: c.name,
+        member_number: c.member_number,
+        phone: c.phone,
+        email: c.email,
+        active: c.active?,
+        has_tax_code: c.tax_code.present?,
+        tax_code_name: c.tax_code&.name,
+        has_alert: c.alert.present?
+      }
+    end
+
+    render json: { results: results }
   end
 
   def edit

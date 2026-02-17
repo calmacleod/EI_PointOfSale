@@ -1,0 +1,38 @@
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Order History", orders_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to @order.number, order_path(@order), class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Receipt</li>
+<% end %>
+
+<div class="mx-auto max-w-lg p-4 lg:p-6 space-y-4">
+  <%= render "shared/page_header", title: "Receipt — #{@order.number}" do %>
+    <%= link_to "Back to Order", order_path(@order), class: "rounded-lg border border-theme px-3 py-1.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] transition" %>
+    <button onclick="window.print()" class="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
+      Print Receipt
+    </button>
+  <% end %>
+
+  <%# Thermal receipt preview %>
+  <div class="mx-auto flex justify-center overflow-x-auto">
+    <div class="receipt-paper shrink-0 rounded-t-sm bg-white shadow-lg">
+      <div class="px-2 py-4">
+        <% if @template&.show_logo? && @store&.logo&.attached? %>
+          <div class="mb-2 flex justify-center">
+            <%= image_tag @store.logo_for_receipt(paper_width_mm: @template.paper_width_mm, trim: @template.trim_logo?),
+                class: "max-w-full",
+                style: "width: 50%; filter: grayscale(1) contrast(1.8);",
+                alt: "Store logo" %>
+          </div>
+        <% end %>
+        <pre class="whitespace-pre font-mono text-black leading-snug"
+             style="font-size: 11px;<%= " width: #{@template.chars_per_line}ch;" if @template&.chars_per_line %>"><% @receipt_lines.each do |line| %><%= line %>
+<% end %></pre>
+      </div>
+      <div class="h-4 bg-white" style="mask-image: url('data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 10&quot;><path d=&quot;M0,0 Q5,10 10,0 Q15,10 20,0 Q25,10 30,0 Q35,10 40,0 Q45,10 50,0 Q55,10 60,0 Q65,10 70,0 Q75,10 80,0 Q85,10 90,0 Q95,10 100,0&quot; fill=&quot;white&quot;/></svg>'); mask-size: 100% 100%; -webkit-mask-image: url('data:image/svg+xml,<svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 100 10&quot;><path d=&quot;M0,0 Q5,10 10,0 Q15,10 20,0 Q25,10 30,0 Q35,10 40,0 Q45,10 50,0 Q55,10 60,0 Q65,10 70,0 Q75,10 80,0 Q85,10 90,0 Q95,10 100,0&quot; fill=&quot;white&quot;/></svg>'); -webkit-mask-size: 100% 100%;"></div>
+    </div>
+  </div>
+</div>

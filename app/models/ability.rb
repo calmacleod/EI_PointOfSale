@@ -11,11 +11,23 @@ class Ability
       can :manage, SavedQuery, user_id: user.id
       can :manage, CashDrawerSession
       can :manage, StoreTask
+
+      # Register (POS cashier workspace)
+      can :show, :register
+      can :new_order, :register
+
+      # Orders are store-wide: any authenticated user can create, edit, hold, resume, and complete orders.
+      can %i[read create update hold resume complete cancel quick_lookup assign_customer remove_customer held], Order
+      can :manage, [ OrderLine, OrderPayment, OrderDiscount ]
     end
 
     if user.is_a?(Admin)
       can :manage, User
       can :manage, [ TaxCode, Supplier, Category, Product, ProductGroup, Service, Customer, Report, ReceiptTemplate, DataImport ]
+      # Admins can also void orders, process refunds, and view the full event audit trail.
+      can %i[void refund_form process_refund receipt], Order
+      can :read, OrderEvent
+      can :read, Refund
       return
     end
 
@@ -23,12 +35,15 @@ class Ability
     can %i[edit update], User, id: user.id if user.persisted?
 
     # Common users can read products, services, and customers.
-    can :read, [ Product, Service, Customer ] if user.persisted?
+    can %i[read search], [ Product, Service, Customer ] if user.persisted?
 
     # Common users can view and export reports, but not create or delete them.
     can %i[read export_pdf export_excel], Report if user.persisted?
 
     # Common users can view receipt templates (for printing receipts).
     can :read, ReceiptTemplate if user.persisted?
+
+    # Common users can view receipts for completed orders.
+    can :receipt, Order if user.persisted?
   end
 end

@@ -3,6 +3,7 @@ class Product < ApplicationRecord
 
   include Discard::Model
   include Categorizable
+  include Sellable
   include PgSearch::Model
 
   multisearchable against: [ :name, :code, :notes ], if: :kept?
@@ -22,5 +23,9 @@ class Product < ApplicationRecord
   # Barcode scan lookup — uses the unique index on `code`.
   def self.find_by_exact_code(code)
     kept.find_by(code: code.to_s.strip)
+  end
+
+  def sellable_price
+    selling_price || 0
   end
 end

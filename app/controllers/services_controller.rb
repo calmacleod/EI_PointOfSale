@@ -46,7 +46,20 @@ class ServicesController < ApplicationController
   end
 
   def show
-    fresh_when @service
+    respond_to do |format|
+      format.html { fresh_when @service }
+      format.json {
+        render json: {
+          id: @service.id,
+          name: @service.name,
+          code: @service.code,
+          price: @service.price,
+          tax_code: @service.tax_code ? "#{@service.tax_code.name} (#{(@service.tax_code.rate * 100).round(1)}%)" : nil,
+          description: @service.description,
+          category: @service.categories.first&.name
+        }
+      }
+    end
   end
 
   def edit

@@ -46,6 +46,32 @@
         <span class="sidebar-text min-w-0 truncate">Dashboard</span>
       <% end %>
 
+      <% register_draft_count = Order.draft.count %>
+      <% register_held_count = Order.held.count %>
+      <%= link_to register_path,
+          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          class: [
+            "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
+            (nav_section_active?(register_path) ?
+              "bg-[var(--sidebar-active)] text-[var(--sidebar-text-bright)]" :
+              "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-bright)]")
+          ].join(" ") do %>
+        <svg class="h-4 w-4 shrink-0 <%= nav_section_active?(register_path) ? 'opacity-100' : 'opacity-50 group-hover:opacity-80' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <span class="sidebar-text min-w-0 flex-1 truncate">Register</span>
+        <% if register_draft_count > 0 || register_held_count > 0 %>
+          <span class="sidebar-text flex items-center gap-1">
+            <% if register_draft_count > 0 %>
+              <span class="flex h-4 min-w-4 items-center justify-center rounded-full bg-blue-500 px-1 text-[9px] font-bold text-white"><%= register_draft_count %></span>
+            <% end %>
+            <% if register_held_count > 0 %>
+              <span class="flex h-4 min-w-4 items-center justify-center rounded-full bg-yellow-500 px-1 text-[9px] font-bold text-white"><%= register_held_count %></span>
+            <% end %>
+          </span>
+        <% end %>
+      <% end %>
+
       <%= link_to products_path,
           data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
           class: [
@@ -100,6 +126,20 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
         </svg>
         <span class="sidebar-text min-w-0 truncate">Cash Drawer</span>
+      <% end %>
+
+      <%= link_to orders_path,
+          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          class: [
+            "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
+            (nav_section_active?(orders_path) ?
+              "bg-[var(--sidebar-active)] text-[var(--sidebar-text-bright)]" :
+              "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-bright)]")
+          ].join(" ") do %>
+        <svg class="h-4 w-4 shrink-0 <%= nav_section_active?(orders_path) ? 'opacity-100' : 'opacity-50 group-hover:opacity-80' %>" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+        </svg>
+        <span class="sidebar-text min-w-0 truncate">Order History</span>
       <% end %>
 
       <%= link_to store_tasks_path,

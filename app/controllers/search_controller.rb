@@ -5,15 +5,18 @@ class SearchController < ApplicationController
     raw_query = params[:q].to_s.strip
     query = sanitize_search_query(raw_query)
     limit = [ (params[:limit] || 10).to_i, 25 ].min
+    type_filter = params[:type].to_s.presence
 
     # Fast path: exact code match for barcode scans
-    exact = exact_code_matches(raw_query)
+    exact = exact_code_matches(raw_query, type_filter:)
 
     # Fill remaining slots with fuzzy pg_search results
     remaining = limit - exact.size
     if remaining > 0 && query.present?
       exact_keys = exact.map { |r| [ r[:type], r[:record_id] ] }.to_set
-      docs = PgSearch.multisearch(query).limit(limit)
+      docs = PgSearch.multisearch(query)
+      docs = docs.where(searchable_type: type_filter) if type_filter.present?
+      docs = docs.limit(limit)
       fuzzy = docs.filter_map { |doc| search_result_for(doc) }
       fuzzy.reject! { |r| exact_keys.include?([ r[:type], r[:record_id] ]) }
       @results = exact + fuzzy.first(remaining)
@@ -32,17 +35,21 @@ class SearchController < ApplicationController
 
     # Exact code lookup against indexed code columns.
     # Uses the raw (unsanitized) query so "WH-BLK-001" matches the stored code exactly.
-    def exact_code_matches(query)
+    def exact_code_matches(query, type_filter: nil)
       return [] if query.blank?
 
       results = []
 
-      if (product = Product.kept.find_by(code: query))
-        results << build_result(product, "Product")
+      if type_filter.nil? || type_filter == "Product"
+        if (product = Product.kept.find_by(code: query))
+          results << build_result(product, "Product")
+        end
       end
 
-      if (service = Service.kept.find_by(code: query))
-        results << build_result(service, "Service")
+      if type_filter.nil? || type_filter == "Service"
+        if (service = Service.kept.find_by(code: query))
+          results << build_result(service, "Service")
+        end
       end
 
       results

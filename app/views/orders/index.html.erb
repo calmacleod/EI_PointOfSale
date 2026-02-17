@@ -1,0 +1,33 @@
+<div class="flex h-full flex-col gap-3 p-4 lg:p-6">
+  <%= render "shared/page_header", title: "Order History" %>
+
+  <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
+
+  <%= render "shared/data_table", config: @filter_config, records: @orders, pagy: @pagy do |t|
+    t.cell(:number) { |o| link_to o.number, order_path(o), class: "font-mono text-accent hover:underline", data: { turbo_frame: "_top" } }
+    t.cell(:status) { |o|
+      status_class = case o.status
+                     when "draft" then "bg-blue-100 text-blue-800"
+                     when "held" then "bg-yellow-100 text-yellow-800"
+                     when "completed" then "bg-green-100 text-green-800"
+                     when "voided" then "bg-red-100 text-red-800"
+                     when "refunded" then "bg-purple-100 text-purple-800"
+                     when "partially_refunded" then "bg-orange-100 text-orange-800"
+                     end
+      tag.span o.display_status, class: "rounded-full px-2 py-0.5 text-xs font-medium #{status_class}"
+    }
+    t.cell(:customer) { |o| o.customer_name }
+    t.cell(:items_count) { |o| o.order_lines.size }
+    t.cell(:total) { |o| number_to_currency(o.total) }
+    t.cell(:created_by) { |o| o.created_by.name || o.created_by.email_address }
+    t.cell(:created_at) { |o| o.created_at.strftime("%b %d, %Y %H:%M") }
+    t.cell(:completed_at) { |o| o.completed_at&.strftime("%b %d, %Y %H:%M") || "—" }
+    t.cell(:actions) { |o|
+      if o.held?
+        link_to "Resume", register_path(order_id: o.id), class: "text-accent hover:underline text-xs", data: { turbo_frame: "_top" }
+      else
+        link_to "View", order_path(o), class: "text-accent hover:underline text-xs", data: { turbo_frame: "_top" }
+      end
+    }
+  end %>
+</div>

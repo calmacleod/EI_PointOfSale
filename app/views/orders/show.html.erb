@@ -1,0 +1,189 @@
+<div class="mx-auto max-w-4xl p-4 lg:p-6 space-y-6">
+  <%= render "shared/page_header", title: "Order #{@order.number}" do %>
+    <% if @order.completed? || @order.partially_refunded? %>
+      <%= link_to "Receipt", receipt_order_path(@order), class: "rounded-lg border border-theme px-3 py-1.5 text-xs font-medium text-body hover:bg-[var(--color-border)] transition" %>
+    <% end %>
+    <% if can?(:process_refund, @order) && (@order.completed? || @order.partially_refunded?) %>
+      <%= link_to "Refund", refund_form_order_path(@order), class: "rounded-lg border border-red-300 bg-red-50 px-3 py-1.5 text-xs font-medium text-red-800 hover:bg-red-100 transition" %>
+    <% end %>
+    <%= link_to "All Orders", orders_path, class: "rounded-lg border border-theme px-3 py-1.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] transition" %>
+  <% end %>
+
+  <%# Status + metadata %>
+  <div class="rounded-lg border border-theme bg-surface p-4">
+    <div class="flex flex-wrap gap-4 text-sm">
+      <div>
+        <span class="text-muted">Status:</span>
+        <span class="ml-1 rounded-full px-2 py-0.5 text-xs font-medium
+          <%= case @order.status
+              when 'completed' then 'bg-green-100 text-green-800'
+              when 'refunded' then 'bg-purple-100 text-purple-800'
+              when 'partially_refunded' then 'bg-orange-100 text-orange-800'
+              when 'voided' then 'bg-red-100 text-red-800'
+              else 'bg-gray-100 text-gray-800'
+              end %>">
+          <%= @order.display_status %>
+        </span>
+      </div>
+      <div><span class="text-muted">Customer:</span> <span class="text-body"><%= @order.customer_name %></span></div>
+      <div><span class="text-muted">Cashier:</span> <span class="text-body"><%= @order.created_by.name || @order.created_by.email_address %></span></div>
+      <div><span class="text-muted">Date:</span> <span class="text-body"><%= @order.created_at.strftime("%b %d, %Y at %H:%M") %></span></div>
+      <% if @order.completed_at %>
+        <div><span class="text-muted">Completed:</span> <span class="text-body"><%= @order.completed_at.strftime("%b %d, %Y at %H:%M") %></span></div>
+      <% end %>
+    </div>
+    <% if @order.notes.present? %>
+      <p class="mt-2 text-sm text-muted"><%= @order.notes %></p>
+    <% end %>
+  </div>
+
+  <%# Line items %>
+  <div class="rounded-lg border border-theme bg-surface overflow-hidden">
+    <div class="border-b border-theme bg-surface-alt px-4 py-2">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Line Items</h2>
+    </div>
+    <table class="min-w-full divide-y divide-[var(--color-border)]">
+      <thead class="bg-surface-alt">
+        <tr>
+          <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Code</th>
+          <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Item</th>
+          <th class="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-muted">Qty</th>
+          <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">Unit Price</th>
+          <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">Tax</th>
+          <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">Total</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[var(--color-border)]">
+        <% @order.order_lines.each do |line| %>
+          <tr>
+            <td class="px-4 py-2 text-xs font-mono text-muted"><%= line.code %></td>
+            <td class="px-4 py-2 text-sm text-body"><%= line.name %></td>
+            <td class="px-4 py-2 text-center text-sm text-body"><%= line.quantity %></td>
+            <td class="px-4 py-2 text-right text-sm text-body"><%= number_to_currency(line.unit_price) %></td>
+            <td class="px-4 py-2 text-right text-sm text-muted"><%= number_to_currency(line.tax_amount) %></td>
+            <td class="px-4 py-2 text-right text-sm font-medium text-body"><%= number_to_currency(line.line_total) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot class="border-t-2 border-theme bg-surface-alt">
+        <tr>
+          <td colspan="5" class="px-4 py-2 text-right text-sm font-medium text-body">Subtotal</td>
+          <td class="px-4 py-2 text-right text-sm font-medium text-body"><%= number_to_currency(@order.subtotal) %></td>
+        </tr>
+        <% if @order.discount_total > 0 %>
+          <tr>
+            <td colspan="5" class="px-4 py-2 text-right text-sm text-green-600">Discount</td>
+            <td class="px-4 py-2 text-right text-sm text-green-600">-<%= number_to_currency(@order.discount_total) %></td>
+          </tr>
+        <% end %>
+        <tr>
+          <td colspan="5" class="px-4 py-2 text-right text-sm text-body">Tax</td>
+          <td class="px-4 py-2 text-right text-sm text-body"><%= number_to_currency(@order.tax_total) %></td>
+        </tr>
+        <tr>
+          <td colspan="5" class="px-4 py-2 text-right text-base font-bold text-body">Total</td>
+          <td class="px-4 py-2 text-right text-base font-bold text-body"><%= number_to_currency(@order.total) %></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <%# Discounts %>
+  <% if @order.order_discounts.any? %>
+    <div class="rounded-lg border border-green-200 bg-green-50 overflow-hidden">
+      <div class="border-b border-green-200 px-4 py-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-green-800">Discounts Applied</h2>
+      </div>
+      <div class="divide-y divide-green-200">
+        <% @order.order_discounts.each do |discount| %>
+          <div class="flex items-center justify-between px-4 py-2.5 text-sm">
+            <div>
+              <span class="font-medium text-green-900"><%= discount.name %></span>
+              <span class="text-green-700 text-xs ml-1">
+                (<%= discount.display_value %><%= " on #{discount.scope.humanize.downcase}" unless discount.applies_to_all_items? %>)
+              </span>
+            </div>
+            <span class="font-medium text-green-700">-<%= number_to_currency(discount.calculated_amount) %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Payments %>
+  <% if @order.order_payments.any? %>
+    <div class="rounded-lg border border-theme bg-surface overflow-hidden">
+      <div class="border-b border-theme bg-surface-alt px-4 py-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Payments</h2>
+      </div>
+      <div class="divide-y divide-[var(--color-border)]">
+        <% @order.order_payments.each do |payment| %>
+          <div class="flex items-center justify-between px-4 py-2.5 text-sm">
+            <div>
+              <span class="font-medium text-body"><%= payment.display_method %></span>
+              <% if payment.reference.present? %>
+                <span class="text-muted">(ref: <%= payment.reference %>)</span>
+              <% end %>
+            </div>
+            <div class="text-right">
+              <span class="font-medium text-body"><%= number_to_currency(payment.amount) %></span>
+              <% if payment.cash? && payment.amount_tendered.present? %>
+                <div class="text-xs text-muted">
+                  Tendered: <%= number_to_currency(payment.amount_tendered) %> |
+                  Change: <%= number_to_currency(payment.change_given || 0) %>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Refunds %>
+  <% if @order.refunds.any? %>
+    <div class="rounded-lg border border-red-200 bg-red-50 overflow-hidden">
+      <div class="border-b border-red-200 px-4 py-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-red-800">Refunds</h2>
+      </div>
+      <% @order.refunds.includes(refund_lines: :order_line).each do |refund| %>
+        <div class="border-b border-red-200 px-4 py-3">
+          <div class="flex items-center justify-between">
+            <span class="font-mono text-sm text-red-800"><%= refund.refund_number %></span>
+            <span class="text-sm font-medium text-red-800">-<%= number_to_currency(refund.total) %></span>
+          </div>
+          <p class="text-xs text-red-600 mt-1"><%= refund.refund_type.humanize %> — <%= refund.created_at.strftime("%b %d, %Y %H:%M") %></p>
+          <% if refund.reason.present? %>
+            <p class="text-xs text-red-700 mt-1">Reason: <%= refund.reason %></p>
+          <% end %>
+          <% refund.refund_lines.each do |rl| %>
+            <div class="flex items-center justify-between mt-1 text-xs text-red-700">
+              <span><%= rl.order_line.name %> x<%= rl.quantity %><%= " (restocked)" if rl.restock? %></span>
+              <span>-<%= number_to_currency(rl.amount) %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Event audit trail (admin only) %>
+  <% if can?(:read, OrderEvent) && @order.order_events.any? %>
+    <details class="rounded-lg border border-theme bg-surface overflow-hidden">
+      <summary class="cursor-pointer border-b border-theme bg-surface-alt px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted">
+        Event History (<%= @order.order_events.count %>)
+      </summary>
+      <div class="divide-y divide-[var(--color-border)] max-h-64 overflow-y-auto">
+        <% @order.order_events.chronological.each do |event| %>
+          <div class="flex items-center justify-between px-4 py-2 text-xs">
+            <span class="text-body"><%= event.description %></span>
+            <div class="text-right text-muted">
+              <span><%= event.actor.name || event.actor.email_address %></span>
+              <span class="ml-2"><%= event.created_at.strftime("%H:%M:%S") %></span>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
+</div>

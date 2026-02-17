@@ -53,6 +53,10 @@ Rails.application.routes.draw do
   resources :push_subscriptions, only: [ :create, :destroy ]
   resources :saved_queries, only: %i[create destroy]
 
+  resource :register, only: [ :show ], controller: "register" do
+    post :new_order, on: :member
+  end
+
   resource :cash_drawer, only: [ :show ], controller: "cash_drawer" do
     get :open, action: :new_open
     post :open, action: :create_open
@@ -68,13 +72,38 @@ Rails.application.routes.draw do
       get :export_excel
     end
   end
+  resources :orders do
+    resources :order_lines, only: %i[create update destroy], shallow: true
+    resources :order_payments, only: %i[create destroy], shallow: true
+    resources :order_discounts, only: %i[create destroy], shallow: true
+    member do
+      post :hold
+      post :resume
+      post :complete
+      delete :cancel
+      patch :assign_customer
+      delete :remove_customer
+      get :receipt
+      get :refund_form
+      post :process_refund
+    end
+    collection do
+      get :held
+      post :quick_lookup
+    end
+  end
+
   resources :products do
     member do
       delete :purge_image
     end
   end
   resources :services
-  resources :customers
+  resources :customers do
+    collection do
+      get :search
+    end
+  end
   resources :store_tasks
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

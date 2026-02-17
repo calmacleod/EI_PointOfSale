@@ -1,0 +1,13 @@
+draft_created:
+  order: draft_order
+  event_type: created
+  actor: admin
+  data: {}
+  created_at: <%= 1.hour.ago %>
+
+completed_created:
+  order: completed_order
+  event_type: completed
+  actor: admin
+  data: { total: "33.88" }
+  created_at: <%= 1.day.ago %>

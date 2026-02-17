@@ -1,0 +1,27 @@
+held_line:
+  order: held_order
+  sellable_type: Product
+  sellable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield_red) %>
+  code: DS-MAT-RED
+  name: Dragon Shield Matte Sleeves - Red
+  quantity: 1
+  unit_price: 14.99
+  tax_rate: 0.13
+  tax_amount: 1.95
+  line_total: 16.94
+  tax_code: one
+  position: 1
+
+completed_line_one:
+  order: completed_order
+  sellable_type: Product
+  sellable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield_red) %>
+  code: DS-MAT-RED
+  name: Dragon Shield Matte Sleeves - Red
+  quantity: 2
+  unit_price: 14.99
+  tax_rate: 0.13
+  tax_amount: 3.90
+  line_total: 33.88
+  tax_code: one
+  position: 1

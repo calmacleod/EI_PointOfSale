@@ -1,0 +1,71 @@
+<div class="mx-auto max-w-3xl p-4 lg:p-6 space-y-4">
+  <%= render "shared/page_header", title: "Refund — #{@order.number}" do %>
+    <%= link_to "Cancel", order_path(@order), class: "rounded-lg border border-theme px-3 py-1.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] transition" %>
+  <% end %>
+
+  <%= form_with url: process_refund_order_path(@order), method: :post, class: "space-y-4" do |f| %>
+    <div class="rounded-lg border border-theme bg-surface overflow-hidden">
+      <div class="border-b border-theme bg-surface-alt px-4 py-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Select Items to Refund</h2>
+      </div>
+      <table class="min-w-full divide-y divide-[var(--color-border)]">
+        <thead class="bg-surface-alt">
+          <tr>
+            <th class="px-4 py-2 text-center" style="width:3rem"></th>
+            <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Item</th>
+            <th class="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-muted">Orig Qty</th>
+            <th class="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-muted">Refund Qty</th>
+            <th class="px-4 py-2 text-center text-xs font-medium uppercase tracking-wider text-muted">Restock</th>
+            <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">Unit Price</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[var(--color-border)]">
+          <% @order.order_lines.each_with_index do |line, idx| %>
+            <% already_refunded = line.refund_lines.sum(:quantity) rescue 0 %>
+            <% max_qty = line.quantity - already_refunded %>
+            <tr>
+              <td class="px-4 py-2 text-center">
+                <input type="checkbox" name="refund_lines[<%= idx %>][selected]" value="1"
+                       class="rounded border-theme text-accent focus:ring-accent"
+                       <%= "disabled" if max_qty <= 0 %>>
+                <input type="hidden" name="refund_lines[<%= idx %>][order_line_id]" value="<%= line.id %>">
+              </td>
+              <td class="px-4 py-2 text-sm text-body">
+                <%= line.name %>
+                <span class="text-xs text-muted font-mono ml-1"><%= line.code %></span>
+              </td>
+              <td class="px-4 py-2 text-center text-sm text-body"><%= line.quantity %></td>
+              <td class="px-4 py-2 text-center">
+                <input type="number" name="refund_lines[<%= idx %>][quantity]" value="<%= max_qty %>"
+                       min="1" max="<%= max_qty %>"
+                       class="w-16 rounded-md border border-theme bg-surface px-2 py-1 text-center text-sm text-body"
+                       <%= "disabled" if max_qty <= 0 %>>
+              </td>
+              <td class="px-4 py-2 text-center">
+                <% if line.sellable_type == "Product" %>
+                  <input type="checkbox" name="refund_lines[<%= idx %>][restock]" value="1" checked
+                         class="rounded border-theme text-accent focus:ring-accent"
+                         <%= "disabled" if max_qty <= 0 %>>
+                <% else %>
+                  <span class="text-xs text-muted">N/A</span>
+                <% end %>
+              </td>
+              <td class="px-4 py-2 text-right text-sm text-body"><%= number_to_currency(line.unit_price) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="rounded-lg border border-theme bg-surface p-4">
+      <label class="block text-xs font-medium text-muted mb-1">Reason for refund</label>
+      <textarea name="reason" rows="3" class="input-field w-full text-sm" placeholder="Why is this being refunded?"></textarea>
+    </div>
+
+    <div class="flex justify-end">
+      <button type="submit" class="rounded-lg bg-red-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-red-700 transition">
+        Process Refund
+      </button>
+    </div>
+  <% end %>
+</div>

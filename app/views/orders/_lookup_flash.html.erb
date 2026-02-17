@@ -1,0 +1,5 @@
+<% if local_assigns[:message].present? %>
+  <p class="text-xs <%= type == :success ? 'text-green-600' : 'text-amber-600' %>">
+    <%= message %>
+  </p>
+<% end %>

@@ -57,7 +57,25 @@ class ProductsController < ApplicationController
   end
 
   def show
-    fresh_when @product
+    respond_to do |format|
+      format.html { fresh_when @product }
+      format.json {
+        render json: {
+          id: @product.id,
+          name: @product.name,
+          code: @product.code,
+          selling_price: @product.selling_price,
+          cost_price: @product.purchase_price,
+          stock_level: @product.stock_level,
+          reorder_level: @product.reorder_level,
+          supplier: @product.supplier&.name,
+          category: @product.categories.first&.name,
+          tax_code: @product.tax_code ? "#{@product.tax_code.name} (#{(@product.tax_code.rate * 100).round(1)}%)" : nil,
+          description: @product.notes,
+          product_group: @product.product_group&.name
+        }
+      }
+    end
   end
 
   def edit

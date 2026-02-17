@@ -3,6 +3,7 @@ class Service < ApplicationRecord
 
   include Discard::Model
   include Categorizable
+  include Sellable
   include PgSearch::Model
 
   multisearchable against: [ :name, :code, :description ], if: :kept?
@@ -13,4 +14,8 @@ class Service < ApplicationRecord
 
   validates :name, presence: true
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
+
+  def sellable_price
+    price
+  end
 end

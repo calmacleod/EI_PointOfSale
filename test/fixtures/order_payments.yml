@@ -1,0 +1,7 @@
+completed_cash_payment:
+  order: completed_order
+  payment_method: 0
+  amount: 33.88
+  amount_tendered: 40.00
+  change_given: 6.12
+  received_by: admin

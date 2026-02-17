@@ -1,0 +1,45 @@
+<div id="order_discounts_panel" class="border-b border-theme p-4">
+  <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Discounts</h3>
+
+  <% order.order_discounts.each do |discount| %>
+    <div class="flex items-center justify-between rounded-md border border-theme bg-surface px-3 py-1.5 mb-1.5 text-xs">
+      <div>
+        <span class="font-medium text-body"><%= discount.name %></span>
+        <span class="text-muted">(<%= discount.display_value %><%= " on #{discount.scope.humanize.downcase}" unless discount.applies_to_all_items? %>)</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="font-medium text-green-600">-<%= number_to_currency(discount.calculated_amount) %></span>
+        <% if order.draft? %>
+          <%= button_to order_discount_path(discount), method: :delete, class: "text-muted hover:text-red-500", data: { turbo_stream: true } do %>
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if order.draft? %>
+    <details class="mt-2">
+      <summary class="cursor-pointer text-xs font-medium text-accent hover:underline">+ Add Discount</summary>
+      <div class="mt-2">
+        <%= form_with url: order_order_discounts_path(order), class: "space-y-2", data: { turbo_stream: true } do |f| %>
+          <input type="text" name="order_discount[name]" placeholder="Discount name" class="input-field w-full text-xs" required>
+          <div class="flex gap-2">
+            <select name="order_discount[discount_type]" class="input-field flex-1 text-xs">
+              <option value="percentage">Percentage</option>
+              <option value="fixed_amount">Fixed Amount</option>
+            </select>
+            <input type="number" name="order_discount[value]" step="0.01" min="0" placeholder="Value" class="input-field w-20 text-xs" required>
+          </div>
+          <select name="order_discount[scope]" class="input-field w-full text-xs">
+            <option value="all_items">All items</option>
+            <option value="specific_items">Specific items</option>
+          </select>
+          <button type="submit" class="w-full rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
+            Apply Discount
+          </button>
+        <% end %>
+      </div>
+    </details>
+  <% end %>
+</div>

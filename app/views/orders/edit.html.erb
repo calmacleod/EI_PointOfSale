@@ -1,0 +1,165 @@
+<div class="flex h-full flex-col" data-controller="order-form" data-order-form-order-id-value="<%= @order.id %>">
+  <%# ── Tab bar ─────────────────────────────────────────────────────── %>
+  <div class="flex items-center gap-1 border-b border-theme bg-surface-alt px-3 py-1.5 overflow-x-auto"
+       data-controller="order-tabs">
+    <% @active_orders.each do |o| %>
+      <%= link_to edit_order_path(o),
+          class: ["inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition",
+                  o.id == @order.id ? "bg-accent text-white" : "text-muted hover:bg-[var(--color-border)] hover:text-body"] do %>
+        <%= o.number %>
+        <% if o.held? %>
+          <span class="inline-block h-1.5 w-1.5 rounded-full bg-yellow-400" title="On hold"></span>
+        <% end %>
+        <span class="text-[10px] opacity-60">(<%= o.order_lines.size %>)</span>
+      <% end %>
+    <% end %>
+    <%= button_to orders_path, method: :post, class: "inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body" do %>
+      <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      New
+    <% end %>
+    <% held_count = Order.held.count %>
+    <% if held_count > 0 %>
+      <%= link_to held_orders_path, class: "ml-auto inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body" do %>
+        Held
+        <span class="rounded-full bg-yellow-100 px-1.5 py-0.5 text-[10px] font-bold text-yellow-800"><%= held_count %></span>
+      <% end %>
+    <% end %>
+  </div>
+
+  <%# ── Order status bar ────────────────────────────────────────────── %>
+  <div class="flex items-center justify-between border-b border-theme bg-surface px-4 py-2">
+    <div class="flex items-center gap-3">
+      <h1 class="text-sm font-semibold text-body"><%= @order.number %></h1>
+      <span class="rounded-full px-2 py-0.5 text-xs font-medium
+        <%= case @order.status
+            when 'draft' then 'bg-blue-100 text-blue-800'
+            when 'held' then 'bg-yellow-100 text-yellow-800'
+            when 'completed' then 'bg-green-100 text-green-800'
+            else 'bg-gray-100 text-gray-800'
+            end %>">
+        <%= @order.display_status %>
+      </span>
+    </div>
+    <span class="text-xs text-muted">Created by <%= @order.created_by.name || @order.created_by.email_address %></span>
+  </div>
+
+  <%# ── Main two-column layout ──────────────────────────────────────── %>
+  <div class="flex flex-1 overflow-hidden">
+    <%# Left column: code input + line items %>
+    <div class="flex flex-1 flex-col overflow-hidden border-r border-theme">
+      <%# Code lookup bar %>
+      <div class="border-b border-theme bg-surface px-4 py-3">
+        <%= form_with url: quick_lookup_orders_path, method: :post, data: { turbo_stream: true, action: "submit->order-form#handleLookup" } do |f| %>
+          <%= f.hidden_field :order_id, value: @order.id %>
+          <div class="flex gap-2">
+            <div class="relative flex-1">
+              <input type="text" name="code" id="code_lookup_input" autocomplete="off"
+                     class="input-field w-full pl-9 text-sm"
+                     placeholder="Scan barcode or type product code..."
+                     data-order-form-target="codeInput"
+                     data-action="keydown->order-form#handleCodeKeydown"
+                     autofocus>
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <svg class="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+            </div>
+            <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
+              Add
+            </button>
+            <button type="button" class="rounded-lg border border-theme px-3 py-2 text-xs font-medium text-muted hover:bg-[var(--color-border)] transition"
+                    data-action="click->order-form#openSearch">
+              Search
+            </button>
+          </div>
+        <% end %>
+        <div id="lookup_flash" class="mt-1 min-h-[1.25rem] text-xs"></div>
+      </div>
+
+      <%# Line items %>
+      <div class="flex-1 overflow-y-auto">
+        <div id="order_line_items">
+          <%= render "orders/line_items", order: @order %>
+        </div>
+      </div>
+    </div>
+
+    <%# Right column: customer, discounts, totals, payments, actions %>
+    <div class="flex w-80 flex-col overflow-y-auto bg-surface-alt">
+      <%# Customer panel %>
+      <div id="order_customer_panel">
+        <%= render "orders/customer_panel", order: @order %>
+      </div>
+
+      <%# Discounts panel %>
+      <div id="order_discounts_panel">
+        <%= render "orders/discounts_panel", order: @order %>
+      </div>
+
+      <%# Totals panel %>
+      <div id="order_totals">
+        <%= render "orders/totals_panel", order: @order %>
+      </div>
+
+      <%# Payments panel %>
+      <div id="order_payments_panel">
+        <%= render "orders/payments_panel", order: @order %>
+      </div>
+
+      <%# Action buttons %>
+      <div class="border-t border-theme p-4 space-y-2">
+        <% if @order.draft? %>
+          <div class="flex gap-2">
+            <%= button_to "Hold", hold_order_path(@order), method: :post,
+                class: "flex-1 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2.5 text-xs font-semibold text-yellow-800 hover:bg-yellow-100 transition" %>
+            <%= button_to "Complete", complete_order_path(@order), method: :post,
+                class: "flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-green-700 transition disabled:opacity-50",
+                disabled: !@order.payment_complete? || @order.order_lines.empty? %>
+          </div>
+        <% elsif @order.held? %>
+          <%= button_to "Resume Order", resume_order_path(@order), method: :post,
+              class: "w-full rounded-lg bg-accent px-4 py-2.5 text-xs font-semibold text-white hover:bg-[var(--color-accent-hover)] transition" %>
+        <% end %>
+
+        <% if @order.draft? || @order.held? %>
+          <%= form_with model: @order, class: "mt-2" do |f| %>
+            <%= f.text_area :notes, placeholder: "Order notes...", rows: 2,
+                class: "input-field w-full text-xs", data: { action: "blur->order-form#saveNotes" } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Product search modal ───────────────────────────────────────── %>
+  <div id="product_search_modal" class="fixed inset-0 z-50 hidden" role="dialog"
+       data-controller="product-search"
+       data-product-search-order-id-value="<%= @order.id %>">
+    <div class="fixed inset-0 bg-black/50" data-action="click->product-search#close"></div>
+    <div class="fixed inset-4 flex items-start justify-center pt-[10vh]">
+      <div class="w-full max-w-2xl rounded-xl border border-theme bg-surface shadow-2xl">
+        <div class="flex items-center gap-3 border-b border-theme px-4 py-3">
+          <svg class="h-5 w-5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          <input type="text" class="flex-1 bg-transparent text-sm text-body outline-none placeholder:text-muted"
+                 placeholder="Search products and services..."
+                 data-product-search-target="input"
+                 data-action="input->product-search#search keydown->product-search#navigate">
+          <kbd class="rounded border border-theme px-1.5 py-0.5 text-[10px] text-muted">ESC</kbd>
+        </div>
+        <div class="max-h-96 overflow-y-auto" data-product-search-target="results">
+          <div class="p-4 text-center text-sm text-muted">Type to search for products or services</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Product preview modal ──────────────────────────────────────── %>
+  <div id="product_preview_modal" class="fixed inset-0 z-[60] hidden" role="dialog"
+       data-controller="product-preview">
+    <div class="fixed inset-0 bg-black/30" data-action="click->product-preview#close"></div>
+    <div class="fixed inset-0 flex items-center justify-center p-8">
+      <div class="w-full max-w-md rounded-xl border border-theme bg-surface p-6 shadow-2xl"
+           data-product-preview-target="content">
+      </div>
+    </div>
+  </div>
+</div>
