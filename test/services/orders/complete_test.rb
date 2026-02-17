@@ -70,4 +70,45 @@ class Orders::CompleteTest < ActiveSupport::TestCase
     assert_equal "completed", event.event_type
     assert_equal @admin, event.actor
   end
+
+  test "completes held order with discount after discount is removed" do
+    # Apply the percentage discount to the order and calculate totals
+    Discounts::AutoApply.call(@order)
+    Orders::CalculateTotals.call(@order)
+    @order.reload
+
+    # Verify discount was applied
+    assert @order.order_discounts.any?, "Discount should be applied"
+    original_discount_total = @order.discount_total
+    assert original_discount_total > 0, "Discount total should be greater than 0"
+
+    # Hold the order
+    Orders::Hold.call(order: @order, actor: @admin)
+    assert @order.reload.held?
+
+    # Remove the original discount from the system
+    discount = discounts(:percentage_all)
+    discount.destroy!
+
+    # Resume and complete the order
+    Orders::Resume.call(order: @order, actor: @admin)
+    assert @order.reload.draft?
+
+    # Payment should account for the discounted total
+    discounted_total = @order.total
+    @order.order_payments.create!(
+      payment_method: :cash,
+      amount: discounted_total,
+      amount_tendered: discounted_total,
+      received_by: @admin
+    )
+
+    result = Orders::Complete.call(order: @order, actor: @admin)
+
+    assert result.success?, "Order should complete successfully"
+    assert @order.reload.completed?
+    # The discount should still be applied even though the original discount was removed
+    assert_equal original_discount_total, @order.discount_total
+    assert_equal discounted_total, @order.total
+  end
 end
