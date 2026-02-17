@@ -158,27 +158,32 @@
     <div class="fixed inset-0 bg-black/50" data-action="click->customer-search#close"></div>
     <div class="fixed inset-0 flex items-start justify-center pt-[10vh]" style="pointer-events: none;">
       <div class="w-full max-w-2xl rounded-xl bg-surface shadow-2xl overflow-hidden" style="pointer-events: auto; max-height: 70vh;">
-        <%# Search header %>
-        <div class="flex items-center gap-3 border-b border-theme px-4 py-3">
-          <svg class="h-5 w-5 shrink-0 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-          <input type="text" class="flex-1 bg-transparent text-sm text-body outline-none placeholder:text-muted"
-                 autocomplete="off"
-                 placeholder="Search by name, phone, email, or member #..."
-                 data-customer-search-target="input"
-                 data-action="input->customer-search#search keydown->customer-search#navigate">
-          <kbd class="rounded border border-theme px-1.5 py-0.5 text-[10px] text-muted">ESC</kbd>
-        </div>
-        <%# Filter pills %>
-        <div class="flex items-center gap-1.5 border-b border-theme px-4 py-2 bg-surface-alt" data-customer-search-target="filterBar">
-          <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition bg-accent text-white"
-                  data-action="click->customer-search#setFilter" data-filter="all">All</button>
-          <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-[var(--color-border)]"
-                  data-action="click->customer-search#setFilter" data-filter="active">Active</button>
-          <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-[var(--color-border)]"
-                  data-action="click->customer-search#setFilter" data-filter="tax_exempt">Tax Exempt</button>
-        </div>
+        <%= form_with url: search_customers_path, method: :get,
+              data: { turbo_stream: true, customer_search_target: "form",
+                      action: "turbo:submit-end->customer-search#onResultsLoaded" },
+              class: "contents" do |f| %>
+          <%# Search header %>
+          <div class="flex items-center gap-3 border-b border-theme px-4 py-3">
+            <svg class="h-5 w-5 shrink-0 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <%= f.text_field :q, class: "flex-1 bg-transparent text-sm text-body outline-none placeholder:text-muted",
+                  autocomplete: "off", placeholder: "Search by name, phone, email, or member #...",
+                  data: { customer_search_target: "input",
+                          action: "input->customer-search#search keydown->customer-search#navigate" } %>
+            <kbd class="rounded border border-theme px-1.5 py-0.5 text-[10px] text-muted">ESC</kbd>
+          </div>
+          <%# Filter pills %>
+          <div class="flex items-center gap-1.5 border-b border-theme px-4 py-2 bg-surface-alt" data-customer-search-target="filterBar">
+            <%= f.hidden_field :filter, value: "all", data: { customer_search_target: "filterInput" } %>
+            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition bg-accent text-white"
+                    data-action="click->customer-search#setFilter" data-filter="all">All</button>
+            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-[var(--color-border)]"
+                    data-action="click->customer-search#setFilter" data-filter="active">Active</button>
+            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-[var(--color-border)]"
+                    data-action="click->customer-search#setFilter" data-filter="tax_exempt">Tax Exempt</button>
+          </div>
+        <% end %>
         <%# Results %>
-        <div class="overflow-y-auto" style="max-height: calc(70vh - 6.5rem);" data-customer-search-target="results">
+        <div id="customer_search_results" class="overflow-y-auto" style="max-height: calc(70vh - 6.5rem);" data-customer-search-target="results">
           <div class="p-6 text-center text-sm text-muted">Type to search for customers</div>
         </div>
       </div>

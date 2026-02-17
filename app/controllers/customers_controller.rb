@@ -64,40 +64,32 @@ class CustomersController < ApplicationController
   def search
     authorize! :search, Customer
 
-    query = params[:q].to_s.strip
-    filter = params[:filter].to_s
+    @query = params[:q].to_s.strip
 
-    if query.length < 1
-      render json: { results: [] }
-      return
+    if @query.length >= 1
+      @customers = Customer.kept.search(@query)
+
+      filter = params[:filter].to_s
+      @customers = @customers.where(active: true) if filter == "active"
+      @customers = @customers.where.not(tax_code_id: nil) if filter == "tax_exempt"
+
+      @customers = @customers.includes(:tax_code).limit(15)
     end
 
-    customers = Customer.kept
-      .where(
-        "LOWER(name) LIKE :q OR LOWER(email) LIKE :q OR LOWER(phone) LIKE :q OR LOWER(member_number) LIKE :q",
-        q: "%#{query.downcase}%"
-      )
-
-    customers = customers.where(active: true) if filter == "active"
-    customers = customers.where.not(tax_code_id: nil) if filter == "tax_exempt"
-
-    customers = customers.includes(:tax_code).order(:name).limit(15)
-
-    results = customers.map do |c|
-      {
-        id: c.id,
-        name: c.name,
-        member_number: c.member_number,
-        phone: c.phone,
-        email: c.email,
-        active: c.active?,
-        has_tax_code: c.tax_code.present?,
-        tax_code_name: c.tax_code&.name,
-        has_alert: c.alert.present?
-      }
+    respond_to do |format|
+      format.turbo_stream
+      format.json do
+        results = (@customers || []).map do |c|
+          {
+            id: c.id, name: c.name, member_number: c.member_number,
+            phone: c.phone, email: c.email, active: c.active?,
+            has_tax_code: c.tax_code.present?, tax_code_name: c.tax_code&.name,
+            has_alert: c.alert.present?
+          }
+        end
+        render json: { results: results }
+      end
     end
-
-    render json: { results: results }
   end
 
   def edit

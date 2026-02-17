@@ -1,0 +1,12 @@
+<% if customers.nil? || (query.blank?) %>
+  <div class="p-6 text-center text-sm text-muted">Type to search for customers</div>
+<% elsif customers.empty? %>
+  <div class="p-6 text-center">
+    <p class="text-sm text-muted">No customers found</p>
+    <p class="mt-1 text-xs text-muted">Try a different name, phone, email, or member #</p>
+  </div>
+<% else %>
+  <% customers.each do |customer| %>
+    <%= render "customers/search_result", customer: customer %>
+  <% end %>
+<% end %>

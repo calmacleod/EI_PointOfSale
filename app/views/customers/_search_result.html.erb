@@ -1,0 +1,28 @@
+<button type="button"
+        class="customer-search-result flex w-full items-center justify-between px-4 py-3 text-left hover:bg-[var(--color-border)] transition border-l-2 border-l-transparent"
+        data-action="click->customer-search#selectCustomer"
+        data-customer-id="<%= customer.id %>">
+  <div class="min-w-0 flex-1">
+    <div class="flex items-center gap-2">
+      <span class="text-sm font-medium text-body"><%= customer.name %></span>
+      <% unless customer.active? %>
+        <span class="rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-600">Inactive</span>
+      <% end %>
+      <% if customer.tax_code.present? %>
+        <span class="rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-700"><%= customer.tax_code.name %></span>
+      <% end %>
+      <% if customer.alert.present? %>
+        <span class="rounded-full bg-yellow-100 px-1.5 py-0.5 text-[10px] font-medium text-yellow-700">Alert</span>
+      <% end %>
+    </div>
+    <% details = [
+      customer.member_number.present? ? "##{customer.member_number}" : nil,
+      customer.phone.presence,
+      customer.email.presence
+    ].compact %>
+    <% if details.any? %>
+      <p class="mt-0.5 text-xs text-muted truncate"><%= details.join(" \u00B7 ") %></p>
+    <% end %>
+  </div>
+  <svg class="h-4 w-4 shrink-0 text-muted opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+</button>
