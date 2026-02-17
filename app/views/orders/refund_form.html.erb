@@ -25,9 +25,13 @@
             <% max_qty = line.quantity - already_refunded %>
             <tr>
               <td class="px-4 py-2 text-center">
-                <input type="checkbox" name="refund_lines[<%= idx %>][selected]" value="1"
-                       class="rounded border-theme text-accent focus:ring-accent"
-                       <%= "disabled" if max_qty <= 0 %>>
+                <% if max_qty <= 0 %>
+                  <input type="checkbox" name="refund_lines[<%= idx %>][selected]" value="1"
+                         class="rounded border-theme text-accent focus:ring-accent" disabled>
+                <% else %>
+                  <input type="checkbox" name="refund_lines[<%= idx %>][selected]" value="1"
+                         class="rounded border-theme text-accent focus:ring-accent">
+                <% end %>
                 <input type="hidden" name="refund_lines[<%= idx %>][order_line_id]" value="<%= line.id %>">
               </td>
               <td class="px-4 py-2 text-sm text-body">
@@ -36,16 +40,26 @@
               </td>
               <td class="px-4 py-2 text-center text-sm text-body"><%= line.quantity %></td>
               <td class="px-4 py-2 text-center">
-                <input type="number" name="refund_lines[<%= idx %>][quantity]" value="<%= max_qty %>" autocomplete="off·"
-                       min="1" max="<%= max_qty %>"
-                       class="w-16 rounded-md border border-theme bg-surface px-2 py-1 text-center text-sm text-body"
-                       <%= "disabled" if max_qty <= 0 %>>
+                <% if max_qty <= 0 %>
+                  <input type="number" name="refund_lines[<%= idx %>][quantity]" value="<%= max_qty %>" autocomplete="off"
+                         min="1" max="<%= max_qty %>"
+                         class="w-16 rounded-md border border-theme bg-surface px-2 py-1 text-center text-sm text-body"
+                         disabled>
+                <% else %>
+                  <input type="number" name="refund_lines[<%= idx %>][quantity]" value="<%= max_qty %>" autocomplete="off"
+                         min="1" max="<%= max_qty %>"
+                         class="w-16 rounded-md border border-theme bg-surface px-2 py-1 text-center text-sm text-body">
+                <% end %>
               </td>
               <td class="px-4 py-2 text-center">
                 <% if line.sellable_type == "Product" %>
-                  <input type="checkbox" name="refund_lines[<%= idx %>][restock]" value="1" checked
-                         class="rounded border-theme text-accent focus:ring-accent"
-                         <%= "disabled" if max_qty <= 0 %>>
+                  <% if max_qty <= 0 %>
+                    <input type="checkbox" name="refund_lines[<%= idx %>][restock]" value="1" checked
+                           class="rounded border-theme text-accent focus:ring-accent" disabled>
+                  <% else %>
+                    <input type="checkbox" name="refund_lines[<%= idx %>][restock]" value="1" checked
+                           class="rounded border-theme text-accent focus:ring-accent">
+                  <% end %>
                 <% else %>
                   <span class="text-xs text-muted">N/A</span>
                 <% end %>

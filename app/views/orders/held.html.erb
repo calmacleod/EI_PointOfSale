@@ -20,7 +20,11 @@
       <select name="cashier_id" class="input-field text-xs min-w-[140px]">
         <option value="">All Cashiers</option>
         <% @cashiers.each do |cashier| %>
-          <option value="<%= cashier.id %>" <%= "selected" if params[:cashier_id].to_s == cashier.id.to_s %>><%= cashier.name || cashier.email_address %></option>
+          <% if params[:cashier_id].to_s == cashier.id.to_s %>
+            <option value="<%= cashier.id %>" selected><%= cashier.name || cashier.email_address %></option>
+          <% else %>
+            <option value="<%= cashier.id %>"><%= cashier.name || cashier.email_address %></option>
+          <% end %>
         <% end %>
       </select>
       <button type="submit" class="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
