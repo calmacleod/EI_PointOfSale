@@ -46,28 +46,30 @@
     </div>
   <% end %>
 
-  <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-12">
-    <div class="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:col-span-12 lg:grid-cols-4">
-      <div class="rounded-lg border border-theme bg-surface p-2.5">
+  <%# === Top metric cards === %>
+  <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
+    <div class="rounded-lg border border-theme bg-surface p-2.5">
       <div class="flex items-start justify-between gap-2">
         <div>
           <p class="text-xs font-medium text-muted">Today's sales</p>
-          <p class="mt-0.5 text-lg font-semibold text-body"><%= number_to_currency(0) %></p>
-          <p class="mt-0.5 text-xs text-muted">vs. yesterday: <span class="font-medium text-body">—</span></p>
+          <p class="mt-0.5 text-lg font-semibold text-body"><%= number_to_currency(@todays_sales) %></p>
+          <p class="mt-0.5 text-xs text-muted">vs. yesterday:
+            <span class="font-medium text-body"><%= number_to_currency(@yesterdays_sales) %></span>
+          </p>
         </div>
         <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
           <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M10 2a1 1 0 011 1v1.07A7 7 0 0117 11a7 7 0 11-7-6.93V3a1 1 0 011-1zm0 5a5 5 0 100 10 5 5 0 000-10z" />
+            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v1H8a1 1 0 000 2h1v1H8a1 1 0 000 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V9h1a1 1 0 100-2h-1V6z" />
           </svg>
         </div>
       </div>
-      </div>
+    </div>
 
-      <div class="rounded-lg border border-theme bg-surface p-2.5">
+    <div class="rounded-lg border border-theme bg-surface p-2.5">
       <div class="flex items-start justify-between gap-2">
         <div>
           <p class="text-xs font-medium text-muted">Transactions</p>
-          <p class="mt-0.5 text-lg font-semibold text-body">0</p>
+          <p class="mt-0.5 text-lg font-semibold text-body"><%= @todays_transactions %></p>
           <p class="mt-0.5 text-xs text-muted">Completed today</p>
         </div>
         <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
@@ -76,28 +78,28 @@
           </svg>
         </div>
       </div>
-      </div>
+    </div>
 
-      <div class="rounded-lg border border-theme bg-surface p-2.5">
+    <div class="rounded-lg border border-theme bg-surface p-2.5">
       <div class="flex items-start justify-between gap-2">
         <div>
           <p class="text-xs font-medium text-muted">Average ticket</p>
-          <p class="mt-0.5 text-lg font-semibold text-body"><%= number_to_currency(0) %></p>
+          <p class="mt-0.5 text-lg font-semibold text-body"><%= number_to_currency(@average_ticket) %></p>
           <p class="mt-0.5 text-xs text-muted">Per transaction</p>
         </div>
         <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
           <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v1H8a1 1 0 000 2h1v1H8a1 1 0 000 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V9h1a1 1 0 100-2h-1V6z" />
+            <path d="M10 2a1 1 0 011 1v1.07A7 7 0 0117 11a7 7 0 11-7-6.93V3a1 1 0 011-1zm0 5a5 5 0 100 10 5 5 0 000-10z" />
           </svg>
         </div>
       </div>
-      </div>
+    </div>
 
-      <div class="rounded-lg border border-theme bg-surface p-2.5">
+    <div class="rounded-lg border border-theme bg-surface p-2.5">
       <div class="flex items-start justify-between gap-2">
         <div>
           <p class="text-xs font-medium text-muted">Low stock</p>
-          <p class="mt-0.5 text-lg font-semibold text-body">0</p>
+          <p class="mt-0.5 text-lg font-semibold text-body"><%= @low_stock_count %></p>
           <p class="mt-0.5 text-xs text-muted">Items need attention</p>
         </div>
         <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
@@ -106,92 +108,132 @@
           </svg>
         </div>
       </div>
-      </div>
-
-      <% @visible_metrics.each do |metric| %>
-      <div class="rounded-lg border border-theme bg-surface p-2.5">
-        <div class="flex items-start justify-between gap-2">
-          <div>
-            <p class="text-xs font-medium text-muted"><%= metric[:label] %></p>
-            <p class="mt-0.5 text-lg font-semibold text-body"><%= metric[:value] || "—" %></p>
-            <% if metric[:description].present? %>
-              <p class="mt-0.5 text-xs text-muted"><%= metric[:description] %></p>
-            <% end %>
-          </div>
-          <% if metric[:icon].present? %>
-            <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
-              <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path d="<%= metric[:icon] %>" />
-              </svg>
-            </div>
-          <% end %>
-        </div>
-      </div>
-      <% end %>
     </div>
 
-    <div class="lg:col-span-8">
+    <% @visible_metrics.each do |metric| %>
+    <div class="rounded-lg border border-theme bg-surface p-2.5">
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <p class="text-xs font-medium text-muted"><%= metric[:label] %></p>
+          <p class="mt-0.5 text-lg font-semibold text-body">
+            <% if metric[:key].end_with?("revenue") || metric[:key].include?("revenue") %>
+              <%= number_to_currency(metric[:value] || 0) %>
+            <% else %>
+              <%= metric[:value] || "—" %>
+            <% end %>
+          </p>
+          <% if metric[:description].present? %>
+            <p class="mt-0.5 text-xs text-muted"><%= metric[:description] %></p>
+          <% end %>
+        </div>
+        <% if metric[:icon].present? %>
+          <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
+            <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="<%= metric[:icon] %>" />
+            </svg>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <% end %>
+  </div>
+
+  <div class="grid grid-cols-1 gap-2 lg:grid-cols-12">
+    <%# === Left column: Recent orders + Store tasks === %>
+    <div class="lg:col-span-8 flex flex-col gap-2">
+      <%# --- Recent orders table --- %>
       <div class="rounded-lg border border-theme bg-surface p-2.5">
         <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-sm font-semibold text-body">Sales trend</h2>
-            <p class="text-xs text-muted">Placeholder chart area (hook to orders later)</p>
-          </div>
-          <div class="flex items-center gap-1 text-xs">
-            <span class="rounded-full bg-[var(--color-border)]/50 px-2 py-0.5 font-medium text-body">7d</span>
-            <span class="rounded-full bg-surface px-2 py-0.5 font-medium text-muted ring-1 ring-inset border-theme">30d</span>
-            <span class="rounded-full bg-surface px-2 py-0.5 font-medium text-muted ring-1 ring-inset border-theme">90d</span>
-          </div>
-        </div>
-
-        <div class="mt-2 h-40 w-full rounded-md bg-[var(--color-border)]/20 ring-1 ring-inset border-theme">
-          <div class="flex h-full items-center justify-center">
-            <p class="text-sm font-medium text-muted">Chart placeholder</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-2 border border-theme bg-surface p-2.5">
-        <div class="flex items-center justify-between">
-          <h2 class="text-sm font-semibold text-body">Recent activity</h2>
-          <span class="text-xs text-muted">Last 24 hours</span>
+          <h2 class="text-sm font-semibold text-body">Recent orders</h2>
+          <%= link_to "View all", orders_path, class: "text-xs font-medium text-accent hover:opacity-80" %>
         </div>
 
         <div class="mt-2 overflow-hidden rounded-lg ring-1 ring-inset border-theme">
           <table class="min-w-full divide-y divide-[var(--color-border)]">
             <thead class="bg-surface-alt">
               <tr>
-                <th scope="col" class="px-3 py-1 text-left text-xs font-semibold text-body">Type</th>
-                <th scope="col" class="px-3 py-1 text-left text-xs font-semibold text-body">Details</th>
+                <th scope="col" class="px-3 py-1 text-left text-xs font-semibold text-body">Order</th>
+                <th scope="col" class="px-3 py-1 text-left text-xs font-semibold text-body">Customer</th>
+                <th scope="col" class="px-3 py-1 text-left text-xs font-semibold text-body">Status</th>
+                <th scope="col" class="px-3 py-1 text-right text-xs font-semibold text-body">Total</th>
                 <th scope="col" class="px-3 py-1 text-right text-xs font-semibold text-body">When</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[var(--color-border)] bg-surface">
-              <tr>
-                <td class="px-3 py-1.5 text-sm font-medium text-body">Setup</td>
-                <td class="px-3 py-1.5 text-sm text-muted">Dashboard scaffold created</td>
-                <td class="px-3 py-1.5 text-right text-sm text-muted">Just now</td>
-              </tr>
-              <tr>
-                <td class="px-3 py-1.5 text-sm font-medium text-body">Auth</td>
-                <td class="px-3 py-1.5 text-sm text-muted">Sign in to start tracking sales and customers</td>
-                <td class="px-3 py-1.5 text-right text-sm text-muted">—</td>
-              </tr>
-              <tr>
-                <td class="px-3 py-1.5 text-sm font-medium text-body">Next</td>
-                <td class="px-3 py-1.5 text-sm text-muted">Hook these panels up to real models (sales, inventory, customers)</td>
-                <td class="px-3 py-1.5 text-right text-sm text-muted">—</td>
-              </tr>
+              <% if @recent_orders.any? %>
+                <% @recent_orders.each do |order| %>
+                  <tr>
+                    <td class="px-3 py-1.5 text-sm font-medium text-body">
+                      <%= link_to order.number, order_path(order), class: "text-accent hover:opacity-80" %>
+                    </td>
+                    <td class="px-3 py-1.5 text-sm text-muted"><%= order.customer_name %></td>
+                    <td class="px-3 py-1.5 text-sm">
+                      <% variant = case order.status
+                                   when "draft" then :neutral
+                                   when "held" then :warning
+                                   when "completed" then :success
+                                   when "voided" then :error
+                                   when "refunded", "partially_refunded" then :info
+                                   end %>
+                      <%= status_chip(order.display_status, variant) %>
+                    </td>
+                    <td class="px-3 py-1.5 text-right text-sm font-medium text-body"><%= number_to_currency(order.total) %></td>
+                    <td class="px-3 py-1.5 text-right text-sm text-muted"><%= time_ago_in_words(order.created_at) %> ago</td>
+                  </tr>
+                <% end %>
+              <% else %>
+                <tr>
+                  <td colspan="5" class="px-3 py-4 text-center text-sm text-muted">No orders yet. Open the register to start selling.</td>
+                </tr>
+              <% end %>
             </tbody>
           </table>
         </div>
-
-        <p class="mt-2 text-xs text-muted">
-          Tip: once you add models for orders/inventory, we can replace these placeholders with real KPIs.
-        </p>
       </div>
+
+      <%# --- Store tasks (current user) --- %>
+      <% if Current.user && @my_tasks.present? %>
+        <div class="rounded-lg border border-theme bg-surface p-2.5">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-body">Your tasks</h2>
+            <%= link_to "All tasks", store_tasks_path, class: "text-xs font-medium text-accent hover:opacity-80" %>
+          </div>
+
+          <div class="mt-2 flex flex-col gap-1.5">
+            <% @my_tasks.each do |task| %>
+              <div class="flex items-start gap-2 rounded-lg px-2 py-1.5 ring-1 ring-inset border-theme <%= task.overdue? ? 'bg-[var(--color-error-bg)]' : '' %>">
+                <div class="mt-0.5 flex-shrink-0">
+                  <%
+                    task_dot_colors = {
+                      "not_started" => "bg-[var(--color-neutral-text)]",
+                      "in_progress" => "bg-[var(--color-info-text)]",
+                      "blocked" => "bg-[var(--color-warning-text)]"
+                    }
+                  %>
+                  <span class="flex h-2 w-2 rounded-full <%= task_dot_colors[task.status] || 'bg-[var(--color-neutral-text)]' %>"></span>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5">
+                    <%= link_to task.title, store_task_path(task), class: "text-sm font-medium text-body truncate hover:text-accent" %>
+                    <% if task.overdue? %>
+                      <%= status_chip("Overdue", :error) %>
+                    <% end %>
+                  </div>
+                  <div class="flex items-center gap-2 text-xs text-muted">
+                    <span><%= task.status_label %></span>
+                    <% if task.due_date.present? %>
+                      <span>&middot; Due <%= task.due_date.strftime("%b %e") %></span>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
 
+    <%# === Right column: Quick actions === %>
     <div class="lg:col-span-4">
       <div class="rounded-lg border border-theme bg-surface p-2.5">
         <div class="flex items-center justify-between">
@@ -200,6 +242,75 @@
         </div>
 
         <div class="mt-2 grid grid-cols-1 gap-1.5">
+          <%= link_to register_path,
+              data: { turbo_prefetch: true },
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+            <div class="flex items-center gap-2">
+              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v5a1 1 0 11-2 0V4H5v12h6a1 1 0 110 2H4a1 1 0 01-1-1V3z" />
+                  <path d="M14 12a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2h-2a1 1 0 110-2h2v-2a1 1 0 011-1z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-body">New sale</p>
+                <p class="text-xs text-muted">Open the register</p>
+              </div>
+            </div>
+            <span class="text-xs font-medium text-muted group-hover:text-body">Go</span>
+          <% end %>
+
+          <%= link_to orders_path,
+              data: { turbo_prefetch: true },
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+            <div class="flex items-center gap-2">
+              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 3a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-body">Orders</p>
+                <p class="text-xs text-muted">View all orders</p>
+              </div>
+            </div>
+            <span class="text-xs font-medium text-muted group-hover:text-body">View</span>
+          <% end %>
+
+          <%= link_to held_orders_path,
+              data: { turbo_prefetch: true },
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+            <div class="flex items-center gap-2">
+              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-body">Held orders</p>
+                <p class="text-xs text-muted">Resume a held order</p>
+              </div>
+            </div>
+            <span class="text-xs font-medium text-muted group-hover:text-body">View</span>
+          <% end %>
+
+          <%= link_to products_path,
+              data: { turbo_prefetch: true },
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+            <div class="flex items-center gap-2">
+              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M2 5a2 2 0 012-2h6a2 2 0 012 2v1h4a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2 0v10h12V8h-4a2 2 0 01-2-2V5H4z" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-body">Products</p>
+                <p class="text-xs text-muted">Manage inventory</p>
+              </div>
+            </div>
+            <span class="text-xs font-medium text-muted group-hover:text-body">View</span>
+          <% end %>
+
           <% if Current.user.is_a?(Admin) %>
             <%= link_to admin_users_path,
                 data: { turbo_prefetch: true },
@@ -219,37 +330,6 @@
             <% end %>
           <% end %>
 
-          <a href="#" class="group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30">
-            <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v5a1 1 0 11-2 0V4H5v12h6a1 1 0 110 2H4a1 1 0 01-1-1V3z" />
-                  <path d="M14 12a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2h-2a1 1 0 110-2h2v-2a1 1 0 011-1z" />
-                </svg>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-body">New sale</p>
-                <p class="text-xs text-muted">Start a transaction</p>
-              </div>
-            </div>
-            <span class="text-xs font-medium text-muted group-hover:text-body">Soon</span>
-          </a>
-
-          <a href="#" class="group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30">
-            <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
-                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path d="M2 5a2 2 0 012-2h6a2 2 0 012 2v1h4a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2 0v10h12V8h-4a2 2 0 01-2-2V5H4z" />
-                </svg>
-              </div>
-              <div>
-                <p class="text-sm font-medium text-body">Import catalog</p>
-                <p class="text-xs text-muted">Load items from a file</p>
-              </div>
-            </div>
-            <span class="text-xs font-medium text-muted group-hover:text-body">Soon</span>
-          </a>
-
           <%= link_to rails_health_check_path,
               data: { turbo_prefetch: true },
               class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
@@ -267,13 +347,6 @@
             <span class="text-xs font-medium text-muted group-hover:text-body">View</span>
           <% end %>
         </div>
-      </div>
-
-      <div class="mt-2 border border-theme bg-surface p-2.5">
-        <h2 class="text-sm font-semibold text-body">Notes</h2>
-        <p class="mt-1 text-sm text-muted">
-          Add inventory + orders models next; then we'll wire up sales totals, low-stock alerts, and real activity.
-        </p>
       </div>
     </div>
   </div>
