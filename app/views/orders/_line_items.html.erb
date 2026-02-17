@@ -40,7 +40,7 @@
                         data-action="click->inline-quantity#edit">
                   <%= line.quantity %>
                 </button>
-                <input type="number" min="1" value="<%= line.quantity %>"
+                <input type="number" min="1" value="<%= line.quantity %>" autocomplete="off"
                        class="hidden w-16 rounded-md border border-accent bg-surface px-2 py-0.5 text-center text-sm text-body focus:outline-none focus:ring-1 focus:ring-accent"
                        data-inline-quantity-target="input"
                        data-action="keydown->inline-quantity#handleKey blur->inline-quantity#cancel">

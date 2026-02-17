@@ -23,7 +23,6 @@ files:
 
 linter:
   enabled: true
-
   # # Exit with error code when diagnostics of this severity or higher are present
   # # Valid values: error (default), warning, info, hint
   # failLevel: warning
@@ -58,10 +57,9 @@ linter:
   #       - 'app/views/admin/**/*'
 
 formatter:
-  enabled: false
+  enabled: true
   indentWidth: 2
   maxLineLength: 80
-
   # # Additional patterns beyond the defaults for formatting
   # include:
   #   - '**/*.xml.erb'

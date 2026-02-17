@@ -40,7 +40,7 @@
           </select>
 
           <div class="flex gap-2">
-            <input type="number" name="order_payment[amount]" step="0.01" min="0"
+            <input type="number" name="order_payment[amount]" step="0.01" min="0" autocomplete="off"
                    value="<%= order.amount_remaining %>"
                    class="input-field flex-1 text-xs"
                    placeholder="Amount"
@@ -50,7 +50,7 @@
 
           <%# Cash tendered section (shown only for cash) %>
           <div data-payment-form-target="cashSection" class="hidden space-y-2">
-            <input type="number" name="order_payment[amount_tendered]" step="0.01" min="0"
+            <input type="number" name="order_payment[amount_tendered]" step="0.01" min="0" autocomplete="off"
                    class="input-field w-full text-xs"
                    placeholder="Amount tendered"
                    data-payment-form-target="tenderedInput"
@@ -61,7 +61,7 @@
             </div>
           </div>
 
-          <input type="text" name="order_payment[reference]" placeholder="Reference (optional)" class="input-field w-full text-xs">
+          <input type="text" name="order_payment[reference]" placeholder="Reference (optional)" autocomplete="off" class="input-field w-full text-xs">
 
           <button type="submit" class="w-full rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
             Record Payment

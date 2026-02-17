@@ -36,7 +36,7 @@
               </td>
               <td class="px-4 py-2 text-center text-sm text-body"><%= line.quantity %></td>
               <td class="px-4 py-2 text-center">
-                <input type="number" name="refund_lines[<%= idx %>][quantity]" value="<%= max_qty %>"
+                <input type="number" name="refund_lines[<%= idx %>][quantity]" value="<%= max_qty %>" autocomplete="off·"
                        min="1" max="<%= max_qty %>"
                        class="w-16 rounded-md border border-theme bg-surface px-2 py-1 text-center text-sm text-body"
                        <%= "disabled" if max_qty <= 0 %>>
