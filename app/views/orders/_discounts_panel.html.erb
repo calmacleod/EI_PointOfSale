@@ -2,13 +2,15 @@
   <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Discounts</h3>
 
   <% order.order_discounts.each do |discount| %>
-    <div class="flex items-center justify-between rounded-md border border-theme bg-surface px-3 py-1.5 mb-1.5 text-xs">
-      <div class="flex items-center gap-1.5 min-w-0">
-        <span class="font-medium text-body truncate"><%= discount.name %></span>
-        <span class="text-muted shrink-0">(<%= discount.display_value %><%= " on #{discount.scope.humanize.downcase}" unless discount.applies_to_all_items? %>)</span>
-        <% if discount.auto_applied? %>
-          <span class="shrink-0 rounded bg-blue-100 px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700">Auto</span>
-        <% end %>
+    <div class="flex items-start justify-between rounded-md border border-theme bg-surface px-3 py-1.5 mb-1.5 text-xs gap-2">
+      <div class="flex flex-col min-w-0">
+        <div class="flex items-center gap-1.5 min-w-0">
+          <span class="font-medium text-body truncate"><%= discount.name %></span>
+          <% if discount.auto_applied? %>
+            <span class="shrink-0 rounded bg-blue-100 px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700">Auto</span>
+          <% end %>
+        </div>
+        <span class="text-muted">(<%= discount.display_value %><%= " on #{discount.scope.humanize.downcase}" unless discount.applies_to_all_items? %>)</span>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <span class="font-medium text-green-600">-<%= number_to_currency(discount.calculated_amount) %></span>
