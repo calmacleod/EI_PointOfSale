@@ -86,6 +86,7 @@ Rails.application.routes.draw do
     resources :order_lines, only: %i[create update destroy], shallow: true
     resources :order_payments, only: %i[create destroy], shallow: true
     resources :order_discounts, only: %i[create destroy], shallow: true
+    resources :order_discount_overrides, only: %i[destroy]
     member do
       post :hold
       post :resume

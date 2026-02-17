@@ -23,6 +23,26 @@
     </div>
   <% end %>
 
+  <% overridden_ids = order.metadata["overridden_discount_ids"].presence %>
+  <% if overridden_ids && order.draft? %>
+    <% overridden_discounts = Discount.where(id: overridden_ids) %>
+    <% if overridden_discounts.any? %>
+      <div class="mt-2 border-t border-theme pt-2">
+        <p class="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1.5">Removed auto-discounts</p>
+        <% overridden_discounts.each do |discount| %>
+          <div class="flex items-center justify-between rounded-md border border-dashed border-theme bg-surface px-3 py-1.5 mb-1 text-xs text-muted gap-2">
+            <span class="truncate"><%= discount.name %></span>
+            <%= button_to order_order_discount_override_path(order, discount), method: :delete,
+                class: "shrink-0 text-accent hover:underline text-xs font-medium",
+                data: { turbo_stream: true } do %>
+              Restore
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
   <% if order.draft? %>
     <details class="mt-2">
       <summary class="cursor-pointer text-xs font-medium text-accent hover:underline">+ Add Discount</summary>
