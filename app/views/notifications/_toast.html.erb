@@ -1,0 +1,26 @@
+<%# Toast notification partial - rendered by Turbo Streams %>
+<%# Locals: notification (hash with title, body, url, persistent) %>
+
+<div class="notification-toast" 
+     data-controller="toast" 
+     data-toast-duration-value="5000"
+     <%= "data-toast-url-value=\"#{notification[:url]}\"".html_safe if notification[:url].present? %>>
+  <div class="flex items-start gap-2.5 rounded-lg border border-theme bg-surface px-3 py-2.5 shadow-lg" style="min-width: 280px; max-width: 360px;" data-action="click->toast#handleClick">
+    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+      </svg>
+    </div>
+    <div class="min-w-0 flex-1">
+      <p class="text-sm font-semibold text-body"><%= notification[:title] %></p>
+      <% if notification[:body].present? %>
+        <p class="mt-0.5 text-xs text-muted line-clamp-2"><%= notification[:body] %></p>
+      <% end %>
+    </div>
+    <button type="button" class="shrink-0 text-muted hover:text-body" data-action="click->toast#dismiss">
+      <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+</div>

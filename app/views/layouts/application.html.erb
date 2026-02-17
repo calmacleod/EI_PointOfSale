@@ -80,8 +80,10 @@
           <% end %>
         </main>
 
+        <%= turbo_stream_from current_user %>
+
         <%# Toast notification container %>
-        <div data-notifications-target="toastContainer"
+        <div id="toast_container" data-notifications-target="toastContainer"
              class="fixed top-12 right-3 z-[60] flex flex-col items-end gap-2 lg:top-3 lg:right-4">
         </div>
       </div>

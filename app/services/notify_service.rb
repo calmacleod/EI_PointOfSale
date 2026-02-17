@@ -16,6 +16,7 @@ class NotifyService
 
   def call
     notification = persist_notification if @persistent
+    broadcast_turbo_stream(notification)
     broadcast_action_cable(notification)
     send_web_push
   end
@@ -32,7 +33,21 @@ class NotifyService
       )
     end
 
+    def broadcast_turbo_stream(notification)
+      html = ApplicationController.render(
+        partial: "notifications/toast",
+        locals: { notification: notification_payload(notification) }
+      )
+
+      Turbo::StreamsChannel.broadcast_append_to(
+        @user,
+        target: "toast_container",
+        html: html
+      )
+    end
+
     def broadcast_action_cable(notification)
+      # Also broadcast JSON payload for backward compatibility (badge updates, etc.)
       payload = {
         id: notification&.id,
         title: @title,
@@ -44,6 +59,17 @@ class NotifyService
       }
 
       NotificationChannel.broadcast_to(@user, payload)
+    end
+
+    def notification_payload(notification)
+      {
+        id: notification&.id,
+        title: @title,
+        body: @body,
+        url: @url,
+        persistent: @persistent,
+        created_at: notification&.created_at || Time.current
+      }
     end
 
     def send_web_push

@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # Mount Action Cable server for WebSocket connections
+  mount ActionCable.server => "/cable"
+
   if Rails.env.development?
     mount MissionControl::Jobs::Engine, at: "/jobs"
     get "/dev", to: "dev_tools#show", as: :dev_tools
