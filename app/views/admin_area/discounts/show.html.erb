@@ -1,0 +1,140 @@
+<% content_for :title, @discount.name %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Discounts", admin_discounts_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted"><%= @discount.name %></li>
+<% end %>
+
+<div>
+  <%= render "shared/page_header", title: @discount.name, description: @discount.description.presence || "Store discount configuration." do %>
+    <div class="flex items-center gap-1.5">
+      <%= button_to toggle_active_admin_discount_path(@discount), method: :patch,
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30" do %>
+        <%= @discount.active? ? "Deactivate" : "Activate" %>
+      <% end %>
+      <%= link_to "Back to discounts", admin_discounts_path,
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30",
+          data: { turbo_prefetch: true } %>
+      <%= link_to "Edit", edit_admin_discount_path(@discount),
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
+          data: { turbo_prefetch: true } %>
+    </div>
+  <% end %>
+
+  <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <%# Details card %>
+    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="discount-details-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="discount-details-heading" class="text-sm font-semibold text-body">Details</h2>
+        <p class="text-xs text-muted">Discount configuration</p>
+      </div>
+      <dl class="divide-y divide-[var(--color-border)]">
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Name</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @discount.name %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Type</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @discount.discount_type.humanize %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Value</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @discount.display_value %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Active</dt>
+          <dd class="mt-0.5 sm:col-span-2 sm:mt-0">
+            <span class="<%= @discount.active? ? 'text-green-600' : 'text-muted' %> text-sm font-medium">
+              <%= @discount.active? ? "Yes" : "No" %>
+            </span>
+          </dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Applies to all</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @discount.applies_to_all? ? "Yes" : "No" %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Starts at</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+            <%= @discount.starts_at ? local_time(@discount.starts_at, format: :long) : "—" %>
+          </dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Ends at</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+            <%= @discount.ends_at ? local_time(@discount.ends_at, format: :long) : "—" %>
+          </dd>
+        </div>
+        <% if @discount.description.present? %>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Description</dt>
+            <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @discount.description %></dd>
+          </div>
+        <% end %>
+      </dl>
+    </section>
+
+    <%# Record info card %>
+    <section class="overflow-hidden rounded-lg border border-theme bg-surface self-start" aria-labelledby="discount-meta-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="discount-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
+        <p class="text-xs text-muted">Timestamps</p>
+      </div>
+      <dl class="divide-y divide-[var(--color-border)]">
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Created</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@discount.created_at, format: :long) %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Last updated</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@discount.updated_at, format: :long) %></dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+
+  <%# Linked items section (only relevant when not applies_to_all) %>
+  <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="discount-items-heading">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 id="discount-items-heading" class="text-sm font-semibold text-body">Linked products &amp; services</h2>
+      <p class="text-xs text-muted">
+        <% if @discount.applies_to_all? %>
+          This discount applies to all items automatically — no specific items needed.
+        <% else %>
+          This discount applies only to the items listed below.
+        <% end %>
+      </p>
+    </div>
+
+    <%= render "items", discount: @discount, discount_items: @discount_items %>
+
+    <% unless @discount.applies_to_all? %>
+      <div class="border-t border-theme px-3 py-2.5">
+        <p class="mb-2 text-xs font-semibold text-body">Add product or service</p>
+        <%= form_with url: search_items_admin_discount_path(@discount), method: :get,
+            data: { turbo_frame: "discount_item_search_results" },
+            class: "flex items-end gap-2" do |f| %>
+          <div class="flex-1">
+            <%= f.label :item_type, "Type", class: "text-xs font-medium text-body" %>
+            <%= f.select :item_type, [["Product", "Product"], ["Service", "Service"]],
+                {}, class: "input-field min-h-[30px] w-full text-xs" %>
+          </div>
+          <div class="flex-[3]">
+            <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
+            <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
+                class: "input-field min-h-[30px] w-full text-xs" %>
+          </div>
+          <%= f.submit "Search",
+              class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        <% end %>
+
+        <%= turbo_frame_tag "discount_item_search_results", class: "mt-2 block" do %>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+</div>

@@ -56,6 +56,21 @@
       </div>
     <% end %>
 
+    <%= link_to admin_discounts_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Discounts</h2>
+          <p class="mt-0.5 text-xs text-muted">Configure store-wide discounts that auto-apply at checkout.</p>
+          <p class="mt-1.5 text-xs font-medium text-accent">Manage discounts →</p>
+        </div>
+        <div class="rounded-md bg-[var(--color-border)]/30 p-1 group-hover:bg-[var(--color-accent)]/10">
+          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M17.707 9.293a1 1 0 010 1.414l-7 7a1 1 0 01-1.414 0l-7-7A.997.997 0 012 10V5a3 3 0 013-3h5c.256 0 .512.098.707.293l7 7zM5 6a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+    <% end %>
+
     <%= link_to admin_suppliers_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
       <div class="flex items-start justify-between gap-2">
         <div>

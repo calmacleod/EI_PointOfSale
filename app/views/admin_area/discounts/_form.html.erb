@@ -1,0 +1,73 @@
+<%= form_with model: discount, url: discount.persisted? ? admin_discount_path(discount) : admin_discounts_path, class: "divide-y divide-[var(--color-border)]" do |f| %>
+  <% if discount.errors.any? %>
+    <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
+      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
+        <% discount.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="px-3 py-2.5 space-y-3">
+    <div>
+      <%= f.label :name, class: "text-sm font-medium text-body" %>
+      <%= f.text_field :name, placeholder: "e.g. Staff 10% Off", class: "input-field min-h-[30px] w-full" %>
+    </div>
+
+    <div>
+      <%= f.label :description, class: "text-sm font-medium text-body" %>
+      <%= f.text_area :description, placeholder: "Optional description", rows: 2,
+          class: "input-field w-full resize-none" %>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <%= f.label :discount_type, "Type", class: "text-sm font-medium text-body" %>
+        <%= f.select :discount_type,
+            [["Percentage (%)", "percentage"], ["Fixed total ($)", "fixed_total"], ["Fixed per item", "fixed_per_item"]],
+            {}, class: "input-field min-h-[30px] w-full" %>
+      </div>
+      <div>
+        <%= f.label :value, "Value", class: "text-sm font-medium text-body" %>
+        <%= f.number_field :value, step: 0.01, min: 0, placeholder: "e.g. 10 or 5.00",
+            class: "input-field min-h-[30px] w-full" %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3">
+      <div>
+        <%= f.label :starts_at, "Starts at", class: "text-sm font-medium text-body" %>
+        <%= f.datetime_local_field :starts_at, class: "input-field min-h-[30px] w-full" %>
+      </div>
+      <div>
+        <%= f.label :ends_at, "Ends at", class: "text-sm font-medium text-body" %>
+        <%= f.datetime_local_field :ends_at, class: "input-field min-h-[30px] w-full" %>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <label class="flex items-center gap-2 cursor-pointer text-sm text-body">
+        <%= f.check_box :active, class: "h-4 w-4 rounded border-[var(--color-border)]" %>
+        Active
+      </label>
+      <label class="flex items-center gap-2 cursor-pointer text-sm text-body">
+        <%= f.check_box :applies_to_all, class: "h-4 w-4 rounded border-[var(--color-border)]" %>
+        Apply to all products &amp; services
+      </label>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between px-3 py-2">
+    <% if discount.persisted? %>
+      <%= button_to "Remove", admin_discount_path(discount), method: :delete,
+          data: { turbo_confirm: "Remove this discount? This cannot be undone." },
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+    <% else %>
+      <span></span>
+    <% end %>
+    <%= f.submit discount.persisted? ? "Save changes" : "Create discount",
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+  </div>
+<% end %>

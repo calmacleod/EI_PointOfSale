@@ -1,0 +1,9 @@
+shield_red_on_fixed_total:
+  discount: fixed_total_specific
+  discountable_type: "Product"
+  discountable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield_red) %>
+
+shield_red_on_per_item:
+  discount: fixed_per_item_specific
+  discountable_type: "Product"
+  discountable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield_red) %>

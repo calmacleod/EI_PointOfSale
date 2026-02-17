@@ -15,6 +15,8 @@ class Product < ApplicationRecord
   belongs_to :added_by, class_name: "User", optional: true
   belongs_to :product_group, optional: true
 
+  has_many :discount_items, as: :discountable, dependent: :destroy
+
   has_many_attached :images
 
   validates :name, presence: true

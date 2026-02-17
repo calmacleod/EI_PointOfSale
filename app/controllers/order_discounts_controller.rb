@@ -41,6 +41,14 @@ class OrderDiscountsController < ApplicationController
     authorize! :update, order
 
     name = @discount.name
+    source_discount_id = @discount.discount_id
+
+    # Track overridden store discounts so AutoApply won't re-apply them
+    if source_discount_id.present?
+      overridden = (order.metadata["overridden_discount_ids"] || []) | [ source_discount_id ]
+      order.update_column(:metadata, order.metadata.merge("overridden_discount_ids" => overridden))
+    end
+
     @discount.destroy!
 
     # Reset line discounts and recalculate

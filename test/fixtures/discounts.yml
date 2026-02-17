@@ -1,0 +1,43 @@
+percentage_all:
+  name: "10% Off Everything"
+  discount_type: 0
+  value: 10.00
+  active: true
+  applies_to_all: true
+
+fixed_total_specific:
+  name: "$5 Off Dragon Shields"
+  discount_type: 1
+  value: 5.00
+  active: true
+  applies_to_all: false
+
+fixed_per_item_specific:
+  name: "$1 Off Per Item"
+  discount_type: 2
+  value: 1.00
+  active: true
+  applies_to_all: false
+
+inactive_discount:
+  name: "Inactive Promo"
+  discount_type: 0
+  value: 20.00
+  active: false
+  applies_to_all: true
+
+future_discount:
+  name: "Future Sale"
+  discount_type: 0
+  value: 15.00
+  active: true
+  applies_to_all: true
+  starts_at: <%= 1.day.from_now %>
+
+expired_discount:
+  name: "Expired Promo"
+  discount_type: 0
+  value: 5.00
+  active: true
+  applies_to_all: true
+  ends_at: <%= 1.day.ago %>

@@ -24,6 +24,7 @@ class Ability
     if user.is_a?(Admin)
       can :manage, User
       can :manage, [ TaxCode, Supplier, Category, Product, ProductGroup, Service, Customer, Report, ReceiptTemplate, DataImport ]
+      can :manage, [ Discount, DiscountItem ]
       # Admins can also void orders, process refunds, and view the full event audit trail.
       can %i[void refund_form process_refund receipt], Order
       can :read, OrderEvent
@@ -36,6 +37,9 @@ class Ability
 
     # Common users can read products, services, and customers.
     can %i[read search], [ Product, Service, Customer ] if user.persisted?
+
+    # Common users can read discounts (for the register screen).
+    can :read, Discount if user.persisted?
 
     # Common users can view and export reports, but not create or delete them.
     can %i[read export_pdf export_excel], Report if user.persisted?

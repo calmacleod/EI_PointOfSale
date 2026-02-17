@@ -44,6 +44,13 @@ Rails.application.routes.draw do
         get :preview
       end
     end
+    resources :discounts do
+      member do
+        patch :toggle_active
+        get :search_items
+      end
+      resources :discount_items, only: %i[create destroy], shallow: true
+    end
   end
 
   resources :notifications, only: [ :index, :destroy ] do

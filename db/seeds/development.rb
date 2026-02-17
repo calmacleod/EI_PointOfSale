@@ -611,3 +611,51 @@ unless Order.exists?
 
   puts "  Created #{Order.count} orders total"
 end
+
+# ── Discounts ──────────────────────────────────────────────────────────
+puts "Seeding discounts..."
+
+unless Discount.exists?
+  # 1. Card Sleeve Deal — $1 off per pack on all Dragon Shield products
+  sleeve_deal = Discount.create!(
+    name: "Card Sleeve Deal",
+    description: "$1.00 off every pack of Dragon Shield card sleeves.",
+    discount_type: :fixed_per_item,
+    value: 1.00,
+    active: true,
+    applies_to_all: false
+  )
+  %w[DS-MAT-RED DS-MAT-BLU DS-MAT-GRN DS-MAT-BLK].each do |code|
+    product = Product.find_by(code: code)
+    sleeve_deal.discount_items.create!(discountable: product) if product
+  end
+  puts "  Created \"#{sleeve_deal.name}\" (fixed per item, #{sleeve_deal.discount_items.count} products)"
+
+  # 2. TCG Booster Promo — 5% off booster boxes and trainer boxes
+  booster_promo = Discount.create!(
+    name: "TCG Booster Promo",
+    description: "5% off all booster boxes and Elite Trainer Boxes.",
+    discount_type: :percentage,
+    value: 5.00,
+    active: true,
+    applies_to_all: false
+  )
+  %w[MTG-DOM-BOX PKM-SV-ETB].each do |code|
+    product = Product.find_by(code: code)
+    booster_promo.discount_items.create!(discountable: product) if product
+  end
+  puts "  Created \"#{booster_promo.name}\" (5%, #{booster_promo.discount_items.count} products)"
+
+  # 3. Staff Discount — 10% off everything, inactive by default (activate as needed)
+  Discount.create!(
+    name: "Staff Discount",
+    description: "10% off all products and services for staff purchases. Activate when processing a staff sale.",
+    discount_type: :percentage,
+    value: 10.00,
+    active: false,
+    applies_to_all: true
+  )
+  puts "  Created \"Staff Discount\" (10% all items, inactive)"
+
+  puts "  Created #{Discount.count} discounts total"
+end

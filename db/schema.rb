@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_16_200006) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_17_000004) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -159,6 +159,33 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_200006) do
     t.index ["imported_by_id"], name: "index_data_imports_on_imported_by_id"
   end
 
+  create_table "discount_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "discount_id", null: false
+    t.bigint "discountable_id", null: false
+    t.string "discountable_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discount_id", "discountable_type", "discountable_id"], name: "index_discount_items_uniqueness", unique: true
+    t.index ["discount_id"], name: "index_discount_items_on_discount_id"
+    t.index ["discountable_type", "discountable_id"], name: "index_discount_items_on_discountable"
+  end
+
+  create_table "discounts", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.boolean "applies_to_all", default: false, null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.datetime "discarded_at"
+    t.integer "discount_type", null: false
+    t.datetime "ends_at"
+    t.string "name", null: false
+    t.datetime "starts_at"
+    t.datetime "updated_at", null: false
+    t.decimal "value", precision: 10, scale: 2, null: false
+    t.index ["active"], name: "index_discounts_on_active"
+    t.index ["discarded_at"], name: "index_discounts_on_discarded_at"
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.text "body"
     t.string "category"
@@ -187,6 +214,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_200006) do
     t.bigint "applied_by_id"
     t.decimal "calculated_amount", precision: 10, scale: 2, default: "0.0"
     t.datetime "created_at", null: false
+    t.bigint "discount_id"
     t.integer "discount_type", null: false
     t.string "name", null: false
     t.bigint "order_id", null: false
@@ -194,6 +222,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_200006) do
     t.datetime "updated_at", null: false
     t.decimal "value", precision: 10, scale: 2, null: false
     t.index ["applied_by_id"], name: "index_order_discounts_on_applied_by_id"
+    t.index ["discount_id"], name: "index_order_discounts_on_discount_id"
     t.index ["order_id"], name: "index_order_discounts_on_order_id"
   end
 
@@ -253,6 +282,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_200006) do
     t.datetime "discarded_at"
     t.decimal "discount_total", precision: 10, scale: 2, default: "0.0"
     t.datetime "held_at"
+    t.jsonb "metadata", default: {}, null: false
     t.text "notes"
     t.string "number", null: false
     t.integer "status", default: 0, null: false
@@ -267,6 +297,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_200006) do
     t.index ["created_by_id"], name: "index_orders_on_created_by_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["discarded_at"], name: "index_orders_on_discarded_at"
+    t.index ["metadata"], name: "index_orders_on_metadata", using: :gin
     t.index ["number"], name: "index_orders_on_number", unique: true
     t.index ["status"], name: "index_orders_on_status"
   end
@@ -628,9 +659,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_16_200006) do
   add_foreign_key "customers", "tax_codes"
   add_foreign_key "customers", "users", column: "added_by_id"
   add_foreign_key "data_imports", "users", column: "imported_by_id"
+  add_foreign_key "discount_items", "discounts"
   add_foreign_key "notifications", "users"
   add_foreign_key "order_discount_items", "order_discounts"
   add_foreign_key "order_discount_items", "order_lines"
+  add_foreign_key "order_discounts", "discounts"
   add_foreign_key "order_discounts", "orders"
   add_foreign_key "order_discounts", "users", column: "applied_by_id"
   add_foreign_key "order_events", "orders"

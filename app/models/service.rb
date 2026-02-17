@@ -12,6 +12,8 @@ class Service < ApplicationRecord
   belongs_to :tax_code, optional: true
   belongs_to :added_by, class_name: "User", optional: true
 
+  has_many :discount_items, as: :discountable, dependent: :destroy
+
   validates :name, presence: true
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
 

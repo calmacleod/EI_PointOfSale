@@ -43,14 +43,12 @@ module Orders
 
       def apply_discounts
         @order.order_discounts.reload.each do |discount|
-          applicable_lines = if discount.applies_to_all_items?
-            @order.order_lines
-          else
-            discount.order_lines
-          end
+          applicable_lines = applicable_lines_for(discount)
 
           discount.calculated_amount = if discount.percentage?
             subtotal_of(applicable_lines) * (discount.value / 100.0)
+          elsif discount.fixed_per_item?
+            discount.value * applicable_lines.sum(&:quantity)
           else
             [ discount.value, subtotal_of(applicable_lines) ].min
           end.round(2)
@@ -65,26 +63,48 @@ module Orders
         lines.sum { |l| l.subtotal_before_discount }
       end
 
+      def applicable_lines_for(discount)
+        if discount.applies_to_all_items?
+          @order.order_lines
+        else
+          discount.order_lines
+        end
+      end
+
       def distribute_discounts_to_lines
-        total_discount = @order.order_discounts.sum(:calculated_amount)
         lines = @order.order_lines.reload
+        return if lines.empty?
 
-        return if lines.empty? || total_discount.zero?
+        line_discounts = lines.each_with_object({}) { |l, h| h[l.id] = 0.0 }
 
-        line_subtotals = lines.map(&:subtotal_before_discount)
-        grand_subtotal = line_subtotals.sum
+        @order.order_discounts.reload.each do |discount|
+          applicable_lines = applicable_lines_for(discount)
+          next if applicable_lines.empty?
 
-        return if grand_subtotal.zero?
-
-        distributed = 0
-        lines.each_with_index do |line, idx|
-          if idx == lines.size - 1
-            line.discount_amount = (total_discount - distributed).round(2)
+          if discount.fixed_per_item?
+            applicable_lines.each do |line|
+              line_discounts[line.id] += (discount.value * line.quantity).round(2)
+            end
           else
-            share = (line.subtotal_before_discount / grand_subtotal * total_discount).round(2)
-            line.discount_amount = share
-            distributed += share
+            subtotal = subtotal_of(applicable_lines)
+            next if subtotal.zero?
+
+            remaining = discount.calculated_amount
+            applicable_lines.each_with_index do |line, idx|
+              share = if idx == applicable_lines.size - 1
+                remaining
+              else
+                s = (line.subtotal_before_discount / subtotal * discount.calculated_amount).round(2)
+                remaining -= s
+                s
+              end
+              line_discounts[line.id] += share
+            end
           end
+        end
+
+        lines.each do |line|
+          line.discount_amount = line_discounts[line.id].round(2)
           line.save! if line.changed?
         end
       end

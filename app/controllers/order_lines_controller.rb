@@ -13,6 +13,7 @@ class OrderLinesController < ApplicationController
     line.position = (@order.order_lines.maximum(:position) || 0) + 1
     line.save!
 
+    Discounts::AutoApply.call(@order)
     Orders::CalculateTotals.call(@order)
     Orders::RecordEvent.call(
       order: @order, event_type: "line_added", actor: current_user,
@@ -36,6 +37,7 @@ class OrderLinesController < ApplicationController
 
     old_qty = @order_line.quantity
     @order_line.update!(quantity: params[:order_line][:quantity].to_i)
+    Discounts::AutoApply.call(@order_line.order)
     Orders::CalculateTotals.call(@order_line.order)
     Orders::RecordEvent.call(
       order: @order_line.order, event_type: "line_quantity_changed", actor: current_user,
@@ -61,6 +63,7 @@ class OrderLinesController < ApplicationController
 
     name = @order_line.name
     @order_line.destroy!
+    Discounts::AutoApply.call(order)
     Orders::CalculateTotals.call(order)
     Orders::RecordEvent.call(
       order: order, event_type: "line_removed", actor: current_user,

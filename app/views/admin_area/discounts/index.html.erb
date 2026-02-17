@@ -1,0 +1,31 @@
+<% content_for :title, "Discounts" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Discounts</li>
+<% end %>
+
+<div class="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+  <%= render "shared/page_header", title: "Discounts" do %>
+    <%= link_to "Add discount", new_admin_discount_path,
+        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
+        data: { turbo_prefetch: true } %>
+  <% end %>
+
+  <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
+    <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
+
+    <%= render "shared/data_table", config: @filter_config, records: @discounts, pagy: @pagy,
+               empty_message: "No discounts yet. Add one to get started." do |t| %>
+      <% t.cell(:name) { |d| link_to d.name, admin_discount_path(d), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <% t.cell(:discount_type) { |d| d.discount_type.humanize } %>
+      <% t.cell(:value) { |d| d.display_value } %>
+      <% t.cell(:active) { |d| content_tag(:span, d.active? ? "Yes" : "No", class: d.active? ? "text-green-600" : "text-muted") } %>
+      <% t.cell(:starts_at) { |d| d.starts_at ? local_time(d.starts_at, format: :short) : "—" } %>
+      <% t.cell(:ends_at)   { |d| d.ends_at   ? local_time(d.ends_at,   format: :short) : "—" } %>
+      <% t.cell(:actions) { |d| link_to("Edit", edit_admin_discount_path(d), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
+    <% end %>
+  </div>
+</div>

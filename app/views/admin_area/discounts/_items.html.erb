@@ -1,0 +1,32 @@
+<div id="discount_items">
+  <% if discount_items.any? %>
+    <ul class="divide-y divide-[var(--color-border)]">
+      <% discount_items.each do |item| %>
+        <li class="flex items-center justify-between px-3 py-2 text-sm">
+          <div>
+            <span class="font-medium text-body"><%= item.discountable.name %></span>
+            <span class="ml-1.5 text-xs text-muted">(<%= item.discountable_type %>)</span>
+            <% if item.discountable.respond_to?(:code) %>
+              <span class="ml-1.5 font-mono text-xs text-muted"><%= item.discountable.code %></span>
+            <% end %>
+          </div>
+          <%= button_to admin_discount_item_path(item), method: :delete,
+              data: { turbo_stream: true, turbo_confirm: "Remove this item from the discount?" },
+              class: "text-muted hover:text-red-500 transition" do %>
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="px-3 py-4 text-sm text-muted">
+      <% if discount.applies_to_all? %>
+        This discount applies to all products and services automatically.
+      <% else %>
+        No items linked yet. Use the search below to add products or services.
+      <% end %>
+    </p>
+  <% end %>
+</div>
