@@ -169,18 +169,31 @@ class OrdersController < ApplicationController
   end
 
   def held
-    scope = Order.held.includes(:customer, :created_by, order_lines: :sellable)
+    @filter_config = FilterConfig.new(:held_orders, held_orders_path,
+                                      sort_default: "held_at",
+                                      sort_default_direction: "desc",
+                                      search_placeholder: "Search orders...") do |f|
+      f.association :created_by_id, label: "Cashier",
+                    collection: -> { User.where(id: Order.held.select(:created_by_id).distinct).order(:name) }
+      f.association :customer_id, label: "Customer",
+                    collection: -> { Customer.where(id: Order.held.select(:customer_id).distinct).order(:name) }
+      f.date_range :held_at, label: "Held Date"
+      f.number_range :total, label: "Total Amount"
+      f.boolean :tax_exempt, label: "Tax Exempt"
 
-    if params[:search].present?
-      search_term = params[:search].strip.downcase
-      scope = scope.left_joins(:customer)
-        .where("LOWER(orders.number) LIKE :q OR LOWER(orders.notes) LIKE :q OR LOWER(customers.name) LIKE :q", q: "%#{search_term}%")
+      f.column :number,       label: "Order #",    default: true, sortable: true,  width: "9rem"
+      f.column :customer,     label: "Customer",   default: true,                 width: "12rem"
+      f.column :items_count,  label: "Items",      default: true,                 width: "4rem"
+      f.column :held_at,      label: "Held",       default: true, sortable: true,  width: "10rem"
+      f.column :created_by,   label: "Cashier",    default: true,                 width: "10rem"
+      f.column :total,        label: "Total",      default: true, sortable: true,  width: "7rem"
     end
+    @saved_queries = current_user&.saved_queries&.for_resource("held_orders")
 
-    scope = scope.where(created_by_id: params[:cashier_id]) if params[:cashier_id].present?
-
-    @held_orders = scope.order(held_at: :desc)
-    @cashiers = User.where(id: Order.held.select(:created_by_id).distinct).order(:name)
+    @pagy, @held_orders = filter_and_paginate(
+      Order.held.includes(:customer, :created_by, order_lines: :sellable),
+      config: @filter_config
+    )
   end
 
   def quick_lookup

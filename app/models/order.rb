@@ -8,6 +8,7 @@ class Order < ApplicationRecord
 
   multisearchable against: [ :number, :notes ], if: :kept?
   pg_search_scope :search, against: [ :number, :notes ],
+    associated_against: { customer: [ :name ] },
     using: { tsearch: { prefix: true }, trigram: {} }
 
   # ── Enums ───────────────────────────────────────────────────────────

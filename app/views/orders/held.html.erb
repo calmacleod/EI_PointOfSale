@@ -1,121 +1,29 @@
-<div class="mx-auto max-w-3xl p-4 lg:p-6 space-y-4">
+<% content_for :title, "Held Orders" %>
+
+<div data-controller="modal" class="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
   <%= render "shared/page_header", title: "Held Orders" do %>
-    <%= link_to register_path, class: "rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition" do %>
+    <%= link_to register_path, class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30" do %>
       Back to Register
     <% end %>
   <% end %>
 
-  <%# ── Filter bar ──────────────────────────────────────────────── %>
-  <div class="rounded-lg border border-theme bg-surface p-3">
-    <%= form_with url: held_orders_path, method: :get, class: "flex flex-wrap items-center gap-3", data: { turbo_frame: "_top" } do |f| %>
-      <div class="relative flex-1 min-w-[200px]">
-        <input type="text" name="search" value="<%= params[:search] %>" autocomplete="off"
-               class="input-field w-full text-xs"
-               style="padding-left: 2rem;"
-               placeholder="Search by order #, customer, or notes...">
-        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2">
-          <svg class="h-3.5 w-3.5 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-        </div>
-      </div>
-      <select name="cashier_id" class="input-field text-xs min-w-[140px]">
-        <option value="">All Cashiers</option>
-        <% @cashiers.each do |cashier| %>
-          <% if params[:cashier_id].to_s == cashier.id.to_s %>
-            <option value="<%= cashier.id %>" selected><%= cashier.name || cashier.email_address %></option>
-          <% else %>
-            <option value="<%= cashier.id %>"><%= cashier.name || cashier.email_address %></option>
-          <% end %>
-        <% end %>
-      </select>
-      <button type="submit" class="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
-        Filter
-      </button>
-      <% if params[:search].present? || params[:cashier_id].present? %>
-        <%= link_to "Clear", held_orders_path, class: "text-xs text-muted hover:text-body transition" %>
-      <% end %>
+  <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
+    <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
+
+    <%= render "shared/data_table", config: @filter_config, records: @held_orders, pagy: @pagy,
+               empty_message: "No held orders found." do |t| %>
+      <% t.cell(:number) { |order| modal_trigger(order) } %>
+      <% t.cell(:customer) { |order| customer_cell(order) } %>
+      <% t.cell(:items_count) { |order| order.order_lines.sum(:quantity) } %>
+      <% t.cell(:held_at) { |order| time_ago_in_words(order.held_at) + " ago" } %>
+      <% t.cell(:created_by) { |order| order.created_by&.name || order.created_by&.email_address } %>
+      <% t.cell(:total) { |order| number_to_currency(order.total) } %>
+      <% t.cell(:actions) { |order| action_buttons(order) } %>
     <% end %>
   </div>
 
-  <%# ── Results ──────────────────────────────────────────────────── %>
-  <% if @held_orders.empty? %>
-    <div class="rounded-lg border border-theme bg-surface p-8 text-center">
-      <svg class="mx-auto h-10 w-10 text-muted opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      <p class="mt-2 text-sm text-muted">No held orders found.</p>
-      <% if params[:search].present? || params[:cashier_id].present? %>
-        <p class="mt-1 text-xs text-muted">Try adjusting your filters.</p>
-      <% end %>
-    </div>
-  <% else %>
-    <p class="text-xs text-muted"><%= @held_orders.size %> held order<%= "s" if @held_orders.size != 1 %></p>
-    <div class="space-y-2">
-      <% @held_orders.each do |order| %>
-        <details class="group rounded-lg border border-yellow-200 bg-yellow-50 overflow-hidden">
-          <summary class="flex cursor-pointer items-center justify-between p-4 hover:bg-yellow-100 transition list-none">
-            <div class="flex items-center gap-4 min-w-0 flex-1">
-              <div class="min-w-0">
-                <span class="font-mono text-sm font-semibold text-yellow-900"><%= order.number %></span>
-                <span class="ml-2 text-xs text-yellow-700"><%= order.customer_name %></span>
-              </div>
-              <div class="flex items-center gap-3 text-xs text-yellow-700">
-                <span><%= order.order_lines.size %> item<%= "s" if order.order_lines.size != 1 %></span>
-                <span>Held <%= time_ago_in_words(order.held_at) %> ago</span>
-                <span>by <%= order.created_by.name || order.created_by.email_address %></span>
-              </div>
-            </div>
-            <div class="flex items-center gap-3 shrink-0">
-              <span class="text-sm font-medium text-yellow-900"><%= number_to_currency(order.total) %></span>
-              <svg class="h-4 w-4 text-yellow-600 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </div>
-          </summary>
-
-          <div class="border-t border-yellow-200 bg-white/60">
-            <%# Line items preview %>
-            <% if order.order_lines.any? %>
-              <table class="w-full text-xs">
-                <thead>
-                  <tr class="border-b border-yellow-200">
-                    <th class="px-4 py-1.5 text-left font-medium text-yellow-800">Item</th>
-                    <th class="px-4 py-1.5 text-left font-medium text-yellow-800">Code</th>
-                    <th class="px-4 py-1.5 text-center font-medium text-yellow-800">Qty</th>
-                    <th class="px-4 py-1.5 text-right font-medium text-yellow-800">Price</th>
-                    <th class="px-4 py-1.5 text-right font-medium text-yellow-800">Total</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-yellow-100">
-                  <% order.order_lines.each do |line| %>
-                    <tr>
-                      <td class="px-4 py-1.5 text-yellow-900"><%= line.name %></td>
-                      <td class="px-4 py-1.5 font-mono text-yellow-700"><%= line.code %></td>
-                      <td class="px-4 py-1.5 text-center text-yellow-900"><%= line.quantity %></td>
-                      <td class="px-4 py-1.5 text-right text-yellow-900"><%= number_to_currency(line.unit_price) %></td>
-                      <td class="px-4 py-1.5 text-right font-medium text-yellow-900"><%= number_to_currency(line.line_total) %></td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
-            <% end %>
-
-            <% if order.notes.present? %>
-              <div class="px-4 py-2 border-t border-yellow-200">
-                <span class="text-[10px] font-medium uppercase tracking-wider text-yellow-700">Notes:</span>
-                <p class="text-xs text-yellow-800 mt-0.5"><%= order.notes %></p>
-              </div>
-            <% end %>
-
-            <%# Action bar %>
-            <div class="flex items-center justify-end gap-2 border-t border-yellow-200 px-4 py-2">
-              <%= link_to register_path(order_id: order.id), class: "rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition" do %>
-                Resume Order
-              <% end %>
-              <%= button_to cancel_order_path(order), method: :delete,
-                  class: "rounded-md border border-red-200 px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 transition",
-                  data: { turbo_confirm: "Cancel order #{order.number}? This cannot be undone." } do %>
-                Cancel
-              <% end %>
-            </div>
-          </div>
-        </details>
-      <% end %>
-    </div>
+  <%# Order detail modals for each held order %>
+  <% @held_orders.each do |order| %>
+    <%= render "held_order_modal", order: order %>
   <% end %>
 </div>

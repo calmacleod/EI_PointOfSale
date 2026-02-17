@@ -79,15 +79,33 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   test "GET /orders/held shows held orders" do
     get held_orders_path
     assert_response :success
+    assert_select "table"
   end
 
   test "GET /orders/held filters by search" do
-    get held_orders_path(search: orders(:held_order).number)
+    get held_orders_path(q: orders(:held_order).number)
     assert_response :success
   end
 
   test "GET /orders/held filters by cashier" do
-    get held_orders_path(cashier_id: users(:admin).id)
+    get held_orders_path(created_by_id: users(:admin).id)
+    assert_response :success
+  end
+
+  test "GET /orders/held filters by customer" do
+    held_order = orders(:held_order)
+    held_order.update!(customer: customers(:acme_corp))
+    get held_orders_path(customer_id: customers(:acme_corp).id)
+    assert_response :success
+  end
+
+  test "GET /orders/held filters by date range" do
+    get held_orders_path(held_at_preset: "today")
+    assert_response :success
+  end
+
+  test "GET /orders/held filters by total amount range" do
+    get held_orders_path(total_min: 10, total_max: 100)
     assert_response :success
   end
 
