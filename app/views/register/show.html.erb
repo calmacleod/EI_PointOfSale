@@ -3,7 +3,8 @@
 <div class="flex flex-1 min-h-0 flex-col overflow-hidden" data-controller="order-form item-preview cancel-order" data-order-form-order-id-value="<%= @order.id %>">
   <%# ── Tab bar ─────────────────────────────────────────────────────── %>
   <div class="flex items-center gap-1 border-b border-theme bg-surface-alt px-3 py-1 overflow-x-auto select-none shrink-0"
-       data-controller="tab-reorder">
+       data-controller="tab-reorder"
+       data-tab-reorder-current-order-id-value="<%= @order.id %>">
     <% @active_orders.each do |o| %>
       <% is_current = o.id == @order.id %>
       <div class="group/tab inline-flex items-center gap-0.5 rounded-md text-xs font-medium transition cursor-grab active:cursor-grabbing
@@ -36,13 +37,14 @@
             <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
         <% elsif o.held? %>
-          <%= link_to register_path,
-              class: "inline-flex items-center justify-center h-5 w-5 rounded mr-0.5 transition shrink-0
-                     #{is_current ? 'hover:bg-white/20' : 'opacity-0 group-hover/tab:opacity-100 hover:bg-[var(--color-border)]'}",
-              title: "Close tab (order stays in Held)",
-              data: { turbo_frame: "_top" } do %>
+          <button type="button"
+                  class="inline-flex items-center justify-center h-5 w-5 rounded mr-0.5 transition shrink-0
+                         <%= is_current ? 'hover:bg-white/20' : 'opacity-0 group-hover/tab:opacity-100 hover:bg-[var(--color-border)]' %>"
+                  title="Close tab (order stays in Held)"
+                  data-action="click->tab-reorder#dismiss"
+                  data-navigate-path="<%= register_path %>">
             <svg class="h-3 w-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          <% end %>
+          </button>
         <% end %>
       </div>
     <% end %>

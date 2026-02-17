@@ -1,15 +1,20 @@
 import { Controller } from "@hotwired/stimulus"
 
 const STORAGE_KEY = "register_tab_order"
+const DISMISSED_KEY = "register_dismissed_tabs"
 
 /**
  * Enables drag-and-drop reordering of register order tabs.
  * Persists tab order in localStorage so it survives page navigations.
+ * Also handles dismissing held-order tabs from the tab bar.
  */
 export default class extends Controller {
   static targets = ["tab"]
+  static values = { currentOrderId: String }
 
   connect() {
+    this.undismissCurrent()
+    this.hideDismissedTabs()
     this.applyStoredOrder()
   }
 
@@ -48,6 +53,53 @@ export default class extends Controller {
     if (this.draggedTab) {
       this.draggedTab.classList.remove("opacity-50")
       this.draggedTab = null
+    }
+  }
+
+  // --- Dismiss held tabs ---
+
+  dismiss(event) {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const tab = event.currentTarget.closest("[data-tab-reorder-target='tab']")
+    const orderId = tab.dataset.orderId
+    const dismissed = this.getDismissedIds()
+    dismissed.add(orderId)
+    localStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissed]))
+
+    tab.remove()
+    this.saveOrder()
+
+    // Navigate to the default register page (will load latest draft)
+    window.Turbo.visit(event.currentTarget.dataset.navigatePath)
+  }
+
+  getDismissedIds() {
+    try {
+      const raw = localStorage.getItem(DISMISSED_KEY)
+      return raw ? new Set(JSON.parse(raw).map(String)) : new Set()
+    } catch (_e) {
+      return new Set()
+    }
+  }
+
+  undismissCurrent() {
+    if (!this.currentOrderIdValue) return
+    const dismissed = this.getDismissedIds()
+    if (dismissed.delete(this.currentOrderIdValue)) {
+      localStorage.setItem(DISMISSED_KEY, JSON.stringify([...dismissed]))
+    }
+  }
+
+  hideDismissedTabs() {
+    const dismissed = this.getDismissedIds()
+    if (dismissed.size === 0) return
+
+    for (const tab of this.tabTargets) {
+      if (dismissed.has(tab.dataset.orderId)) {
+        tab.remove()
+      }
     }
   }
 
