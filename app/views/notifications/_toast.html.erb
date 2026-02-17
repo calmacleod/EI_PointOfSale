@@ -1,10 +1,12 @@
 <%# Toast notification partial - rendered by Turbo Streams %>
 <%# Locals: notification (hash with title, body, url, persistent) %>
 
-<div class="notification-toast" 
-     data-controller="toast" 
-     data-toast-duration-value="5000"
-     <%= "data-toast-url-value=\"#{notification[:url]}\"".html_safe if notification[:url].present? %>>
+<%= tag.div(class: "notification-toast",
+            data: {
+              controller: "toast",
+              toast_duration_value: 5000,
+              toast_url_value: notification[:url]
+            }.compact) do %>
   <div class="flex items-start gap-2.5 rounded-lg border border-theme bg-surface px-3 py-2.5 shadow-lg" style="min-width: 280px; max-width: 360px;" data-action="click->toast#handleClick">
     <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-accent/10 text-accent">
       <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -23,4 +25,4 @@
       </svg>
     </button>
   </div>
-</div>
+<% end %>
