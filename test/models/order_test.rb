@@ -54,8 +54,16 @@ class OrderTest < ActiveSupport::TestCase
     assert order.partially_refunded?
   end
 
-  test "finalized? returns true for completed/voided/refunded" do
+  test "finalized? returns true for completed/voided/refunded/cancelled" do
     assert orders(:completed_order).finalized?
     assert_not orders(:draft_order).finalized?
+  end
+
+  test "prevents modification of cancelled orders" do
+    order = orders(:draft_order)
+    order.update_column(:status, Order.statuses[:cancelled])
+    assert_raises(ActiveRecord::ReadOnlyRecord) do
+      order.update!(notes: "trying to edit a cancelled order")
+    end
   end
 end

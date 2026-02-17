@@ -13,6 +13,7 @@
                      when "voided" then "bg-red-100 text-red-800"
                      when "refunded" then "bg-purple-100 text-purple-800"
                      when "partially_refunded" then "bg-orange-100 text-orange-800"
+                     when "cancelled" then "bg-slate-100 text-slate-600"
                      end
       tag.span o.display_status, class: "rounded-full px-2 py-0.5 text-xs font-medium #{status_class}"
     }

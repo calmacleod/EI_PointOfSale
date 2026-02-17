@@ -17,7 +17,8 @@ class Order < ApplicationRecord
     completed: 2,
     voided: 3,
     refunded: 4,
-    partially_refunded: 5
+    partially_refunded: 5,
+    cancelled: 6
   }
 
   # ── Associations ────────────────────────────────────────────────────
@@ -59,7 +60,7 @@ class Order < ApplicationRecord
   end
 
   def finalized?
-    completed? || voided? || refunded? || partially_refunded?
+    completed? || voided? || refunded? || partially_refunded? || cancelled?
   end
 
   # ── Display helpers ─────────────────────────────────────────────────
@@ -89,7 +90,7 @@ class Order < ApplicationRecord
 
     def prevent_completed_mutation
       return unless status_in_database.present?
-      return unless %w[completed voided refunded partially_refunded].include?(status_in_database)
+      return unless %w[completed voided refunded partially_refunded cancelled].include?(status_in_database)
 
       # Allow status changes for refund processing
       return if only_status_and_timestamps_changed?

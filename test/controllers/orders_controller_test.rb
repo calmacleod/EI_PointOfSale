@@ -64,15 +64,16 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     order = orders(:draft_order)
     delete cancel_order_path(order)
     assert_redirected_to register_path
-    assert order.reload.voided?
-    assert order.discarded?
+    assert order.reload.cancelled?
+    assert_not order.discarded?
   end
 
   test "DELETE /orders/:id/cancel cancels a held order" do
     order = orders(:held_order)
     delete cancel_order_path(order)
     assert_redirected_to register_path
-    assert order.reload.voided?
+    assert order.reload.cancelled?
+    assert_not order.discarded?
   end
 
   test "GET /orders/held shows held orders" do

@@ -80,15 +80,10 @@ class OrdersController < ApplicationController
   end
 
   def cancel
-    unless @order.draft? || @order.held?
-      redirect_to register_path, alert: "Only draft or held orders can be cancelled."
-      return
-    end
-
-    Orders::RecordEvent.call(order: @order, event_type: "cancelled", actor: current_user)
-    @order.update!(status: :voided)
-    @order.discard!
+    Orders::Cancel.call(order: @order, actor: current_user)
     redirect_to register_path, notice: "Order #{@order.number} cancelled."
+  rescue ArgumentError => e
+    redirect_to register_path, alert: e.message
   end
 
   def complete
