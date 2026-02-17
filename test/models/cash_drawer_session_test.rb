@@ -104,9 +104,38 @@ class CashDrawerSessionTest < ActiveSupport::TestCase
     assert_nil session.closing_total
   end
 
+  # ── Cash received & expected total ────────────────────────────────
+
+  test "cash_received_cents sums cash payments on session orders" do
+    session = cash_drawer_sessions(:closed_session)
+    # completed_order has a cash payment of $33.88
+    assert_equal 3388, session.cash_received_cents
+  end
+
+  test "cash_received_cents returns 0 when no orders" do
+    session = cash_drawer_sessions(:open_session)
+    assert_equal 0, session.cash_received_cents
+  end
+
+  test "expected_closing_total_cents equals opening plus cash received" do
+    session = cash_drawer_sessions(:closed_session)
+    assert_equal 14000 + 3388, session.expected_closing_total_cents
+  end
+
+  test "expected_closing_total returns dollars" do
+    session = cash_drawer_sessions(:closed_session)
+    assert_equal 173.88, session.expected_closing_total
+  end
+
+  test "discrepancy_cents uses expected closing total" do
+    session = cash_drawer_sessions(:closed_session)
+    # closing 14050 - expected 17388 = -3338
+    assert_equal(-3338, session.discrepancy_cents)
+  end
+
   test "discrepancy returns the difference in dollars" do
     session = cash_drawer_sessions(:closed_session)
-    assert_equal 0.50, session.discrepancy
+    assert_equal(-33.38, session.discrepancy)
   end
 
   test "discrepancy returns nil when not closed" do

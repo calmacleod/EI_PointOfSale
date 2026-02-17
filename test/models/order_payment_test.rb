@@ -32,6 +32,43 @@ class OrderPaymentTest < ActiveSupport::TestCase
     assert_nil payment.change_given
   end
 
+  test "rounds cash payment amount down to nearest 5 cents" do
+    payment = OrderPayment.new(
+      order: orders(:draft_order),
+      payment_method: :cash,
+      amount: 10.02,
+      amount_tendered: 20.00,
+      received_by: users(:admin)
+    )
+    payment.valid?
+    assert_equal 10.00, payment.amount
+    assert_equal 10.00, payment.change_given
+  end
+
+  test "rounds cash payment amount up to nearest 5 cents" do
+    payment = OrderPayment.new(
+      order: orders(:draft_order),
+      payment_method: :cash,
+      amount: 10.03,
+      amount_tendered: 20.00,
+      received_by: users(:admin)
+    )
+    payment.valid?
+    assert_equal 10.05, payment.amount
+    assert_equal 9.95, payment.change_given
+  end
+
+  test "does not round non-cash payment amount" do
+    payment = OrderPayment.new(
+      order: orders(:draft_order),
+      payment_method: :debit,
+      amount: 10.02,
+      received_by: users(:admin)
+    )
+    payment.valid?
+    assert_equal 10.02, payment.amount
+  end
+
   test "display_method returns humanized method name" do
     payment = order_payments(:completed_cash_payment)
     assert_equal "Cash", payment.display_method

@@ -28,3 +28,4 @@ module Sellable
     name
   end
 end
+

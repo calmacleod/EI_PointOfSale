@@ -16,6 +16,7 @@ class OrderPayment < ApplicationRecord
   validates :payment_method, presence: true
   validates :amount, presence: true, numericality: { greater_than: 0 }
 
+  before_validation :round_cash_amount, if: :cash?
   before_validation :calculate_change, if: :cash?
 
   def display_method
@@ -23,6 +24,10 @@ class OrderPayment < ApplicationRecord
   end
 
   private
+
+    def round_cash_amount
+      self.amount = (amount * 20).round / 20.0 if amount.present?
+    end
 
     def calculate_change
       return unless amount_tendered.present? && amount_tendered > 0

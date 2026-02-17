@@ -27,7 +27,7 @@
   </div>
 
   <%# ── Summary cards ── %>
-  <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3">
+  <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
     <div class="rounded-lg border border-theme bg-surface p-3">
       <p class="text-xs font-medium text-muted">Opening Total</p>
       <p class="mt-0.5 text-lg font-bold text-body tabular-nums"><%= number_to_currency(@session.opening_total) %></p>
@@ -38,6 +38,15 @@
     </div>
 
     <% if @session.closed? %>
+      <div class="rounded-lg border border-theme bg-surface p-3">
+        <p class="text-xs font-medium text-muted">Expected Total</p>
+        <p class="mt-0.5 text-lg font-bold text-body tabular-nums"><%= number_to_currency(@session.expected_closing_total) %></p>
+        <p class="mt-1 text-xs text-muted">
+          <%= number_to_currency(@session.opening_total) %> float
+          + <%= number_to_currency(@session.cash_received_cents / 100.0) %> cash sales
+        </p>
+      </div>
+
       <div class="rounded-lg border border-theme bg-surface p-3">
         <p class="text-xs font-medium text-muted">Closing Total</p>
         <p class="mt-0.5 text-lg font-bold text-body tabular-nums"><%= number_to_currency(@session.closing_total) %></p>

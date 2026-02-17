@@ -36,6 +36,7 @@ class CashDrawerSession < ApplicationRecord
   # ── Associations ───────────────────────────────────────────────────
   belongs_to :opened_by, class_name: "User"
   belongs_to :closed_by, class_name: "User", optional: true
+  has_many :orders
 
   # ── Validations ────────────────────────────────────────────────────
   validates :opened_at, presence: true
@@ -71,10 +72,24 @@ class CashDrawerSession < ApplicationRecord
     closing_total_cents / 100.0
   end
 
+  def cash_received_cents
+    orders.joins(:order_payments)
+          .where(order_payments: { payment_method: :cash })
+          .sum("order_payments.amount * 100").round
+  end
+
+  def expected_closing_total_cents
+    (opening_total_cents || 0) + cash_received_cents
+  end
+
+  def expected_closing_total
+    expected_closing_total_cents / 100.0
+  end
+
   def discrepancy_cents
     return nil unless closed?
 
-    (closing_total_cents || 0) - (opening_total_cents || 0)
+    (closing_total_cents || 0) - expected_closing_total_cents
   end
 
   def discrepancy

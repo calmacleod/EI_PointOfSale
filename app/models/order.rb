@@ -50,11 +50,12 @@ class Order < ApplicationRecord
   end
 
   def amount_remaining
-    [ total - amount_paid, 0 ].max
+    remaining = total - amount_paid
+    remaining < 0.03 ? 0 : remaining
   end
 
   def payment_complete?
-    amount_paid >= total
+    (total - amount_paid) < 0.03
   end
 
   def finalized?

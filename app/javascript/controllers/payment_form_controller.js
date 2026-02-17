@@ -19,6 +19,10 @@ export default class extends Controller {
         this.cashSectionTarget.classList.add("hidden")
       }
     }
+
+    if (isCash) {
+      this.#roundAmountForCash()
+    }
   }
 
   calculateChange() {
@@ -29,5 +33,14 @@ export default class extends Controller {
     const change = Math.max(tendered - amount, 0)
 
     this.changeDisplayTarget.textContent = `$${change.toFixed(2)}`
+  }
+
+  // Round amount to nearest 5 cents for cash payments (Canadian rounding)
+  #roundAmountForCash() {
+    if (!this.hasAmountInputTarget) return
+
+    const amount = parseFloat(this.amountInputTarget.value) || 0
+    const rounded = Math.round(amount * 20) / 20
+    this.amountInputTarget.value = rounded.toFixed(2)
   }
 }

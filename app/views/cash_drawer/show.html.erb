@@ -29,10 +29,18 @@
               Opened by <strong><%= @session.opened_by.name.presence || @session.opened_by.email_address %></strong>
               at <%= local_time(@session.opened_at, format: :short) %>
             </p>
-            <div class="mt-2 flex items-center gap-3">
+            <div class="mt-2 flex items-center gap-4">
               <div>
                 <p class="text-xs font-medium text-[var(--color-success-text)] opacity-70">Opening float</p>
                 <p class="text-lg font-bold text-[var(--color-success-text)]"><%= number_to_currency(@session.opening_total) %></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-[var(--color-success-text)] opacity-70">Cash sales</p>
+                <p class="text-lg font-bold text-[var(--color-success-text)]"><%= number_to_currency(@session.cash_received_cents / 100.0) %></p>
+              </div>
+              <div>
+                <p class="text-xs font-medium text-[var(--color-success-text)] opacity-70">Expected total</p>
+                <p class="text-lg font-bold text-[var(--color-success-text)]"><%= number_to_currency(@session.expected_closing_total) %></p>
               </div>
             </div>
           </div>
