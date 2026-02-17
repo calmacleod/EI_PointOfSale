@@ -2,12 +2,16 @@
 
 <div class="flex flex-1 min-h-0 flex-col overflow-hidden" data-controller="order-form item-preview cancel-order" data-order-form-order-id-value="<%= @order.id %>">
   <%# ── Tab bar ─────────────────────────────────────────────────────── %>
-  <div class="flex items-center gap-1 border-b border-theme bg-surface-alt px-3 py-1 overflow-x-auto select-none shrink-0">
+  <div class="flex items-center gap-1 border-b border-theme bg-surface-alt px-3 py-1 overflow-x-auto select-none shrink-0"
+       data-controller="tab-reorder">
     <% @active_orders.each do |o| %>
       <% is_current = o.id == @order.id %>
-      <div class="group/tab inline-flex items-center gap-0.5 rounded-md text-xs font-medium transition
+      <div class="group/tab inline-flex items-center gap-0.5 rounded-md text-xs font-medium transition cursor-grab active:cursor-grabbing
                   <%= is_current ? 'bg-accent text-white' : 'text-muted hover:bg-[var(--color-border)] hover:text-body' %>"
-           draggable="false">
+           draggable="true"
+           data-tab-reorder-target="tab"
+           data-order-id="<%= o.id %>"
+           data-action="dragstart->tab-reorder#dragstart dragover->tab-reorder#dragover drop->tab-reorder#drop dragend->tab-reorder#dragend">
         <%= link_to register_path(order_id: o.id),
             draggable: false,
             class: "inline-flex items-center gap-1.5 pl-3 pr-1 py-1" do %>
