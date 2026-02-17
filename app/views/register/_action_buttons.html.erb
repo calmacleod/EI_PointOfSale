@@ -1,0 +1,21 @@
+<div id="order_action_buttons" class="shrink-0 border-t border-theme p-4 space-y-2">
+  <% if order.draft? %>
+    <div class="flex gap-2">
+      <%= button_to "Hold", hold_order_path(order), method: :post,
+          class: "flex-1 rounded-lg border border-yellow-300 bg-yellow-50 px-4 py-2.5 text-xs font-semibold text-yellow-800 hover:bg-yellow-100 transition" %>
+      <%= button_to "Complete", complete_order_path(order), method: :post,
+          class: "flex-1 rounded-lg bg-green-600 px-4 py-2.5 text-xs font-semibold text-white hover:bg-green-700 transition disabled:opacity-50",
+          disabled: !order.payment_complete? || order.order_lines.empty? %>
+    </div>
+  <% elsif order.held? %>
+    <%= button_to "Resume Order", resume_order_path(order), method: :post,
+        class: "w-full rounded-lg bg-accent px-4 py-2.5 text-xs font-semibold text-white hover:bg-[var(--color-accent-hover)] transition" %>
+  <% end %>
+
+  <% if order.draft? || order.held? %>
+    <%= form_with model: order, class: "mt-2" do |f| %>
+      <%= f.text_area :notes, placeholder: "Order notes...", rows: 2,
+          class: "input-field w-full text-xs", data: { action: "blur->order-form#saveNotes" } %>
+    <% end %>
+  <% end %>
+</div>

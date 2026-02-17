@@ -20,7 +20,8 @@ class OrderPaymentsController < ApplicationController
       format.turbo_stream {
         render turbo_stream: [
           turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: @order.reload }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order })
+          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
+          turbo_stream.replace("order_action_buttons", partial: "register/action_buttons", locals: { order: @order })
         ]
       }
       format.html { redirect_to edit_order_path(@order) }
@@ -44,7 +45,8 @@ class OrderPaymentsController < ApplicationController
       format.turbo_stream {
         render turbo_stream: [
           turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order.reload }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order })
+          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
+          turbo_stream.replace("order_action_buttons", partial: "register/action_buttons", locals: { order: order })
         ]
       }
       format.html { redirect_to edit_order_path(order) }
