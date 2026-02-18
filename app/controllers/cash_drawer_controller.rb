@@ -6,6 +6,7 @@ class CashDrawerController < ApplicationController
   authorize_resource class: CashDrawerSession
 
   before_action :set_current_session, only: %i[show new_close create_close]
+  before_action :set_reconcile_session, only: %i[new_reconcile create_reconcile]
 
   # GET /cash_drawer
   def show
@@ -71,9 +72,47 @@ class CashDrawerController < ApplicationController
     )
 
     if @session.save
-      redirect_to session_detail_cash_drawer_path(@session), notice: "Register closed successfully."
+      redirect_to reconcile_cash_drawer_path, notice: "Cash drawer closed. Now reconcile the payment terminal."
     else
       render :new_close, status: :unprocessable_entity
+    end
+  end
+
+  # GET /cash_drawer/reconcile
+  def new_reconcile
+    unless @session
+      redirect_to cash_drawer_path, alert: "No session pending reconciliation."
+      return
+    end
+
+    @reconciliation = TerminalReconciliation.new(
+      cash_drawer_session: @session,
+      expected_debit_total: @session.electronic_payments_total(:debit),
+      expected_credit_total: @session.electronic_payments_total(:credit)
+    )
+  end
+
+  # POST /cash_drawer/reconcile
+  def create_reconcile
+    unless @session
+      redirect_to cash_drawer_path, alert: "No session pending reconciliation."
+      return
+    end
+
+    @reconciliation = TerminalReconciliation.new(
+      terminal_reconciliation_params.merge(
+        cash_drawer_session: @session,
+        expected_debit_total: @session.electronic_payments_total(:debit),
+        expected_credit_total: @session.electronic_payments_total(:credit),
+        reconciled_by: current_user,
+        reconciled_at: Time.current
+      )
+    )
+
+    if @reconciliation.save
+      redirect_to session_detail_cash_drawer_path(@session), notice: "Terminal reconciled successfully."
+    else
+      render :new_reconcile, status: :unprocessable_entity
     end
   end
 
@@ -108,6 +147,14 @@ class CashDrawerController < ApplicationController
 
     def set_current_session
       @session = CashDrawerSession.current
+    end
+
+    def set_reconcile_session
+      @session = CashDrawerSession.pending_reconciliation
+    end
+
+    def terminal_reconciliation_params
+      params.permit(:debit_total, :credit_total, :notes)
     end
 
     def parse_denomination_counts(raw_counts)

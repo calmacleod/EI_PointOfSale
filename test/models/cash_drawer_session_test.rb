@@ -143,6 +143,74 @@ class CashDrawerSessionTest < ActiveSupport::TestCase
     assert_nil session.discrepancy
   end
 
+  # ── Terminal reconciliation helpers ────────────────────────────────
+
+  test "day_complete? returns true when closed and reconciled" do
+    session = cash_drawer_sessions(:closed_session)
+    assert session.day_complete?
+  end
+
+  test "day_complete? returns false when closed but not reconciled" do
+    session = cash_drawer_sessions(:closed_session)
+    session.terminal_reconciliation.destroy
+    session.reload
+    assert_not session.day_complete?
+  end
+
+  test "day_complete? returns false when open" do
+    session = cash_drawer_sessions(:open_session)
+    assert_not session.day_complete?
+  end
+
+  test "electronic_payments_total sums debit payments" do
+    session = cash_drawer_sessions(:closed_session)
+    assert_in_delta 55.00, session.electronic_payments_total(:debit), 0.001
+  end
+
+  test "electronic_payments_total sums credit payments" do
+    session = cash_drawer_sessions(:closed_session)
+    assert_in_delta 28.50, session.electronic_payments_total(:credit), 0.001
+  end
+
+  test "electronic_payments_total returns 0 when no payments of that method" do
+    session = cash_drawer_sessions(:closed_session)
+    assert_equal 0, session.electronic_payments_total(:store_credit)
+  end
+
+  test "electronic_payments_total excludes payments from other sessions" do
+    other_session = CashDrawerSession.create!(
+      opened_by: @user, closed_by: @user,
+      opened_at: 3.hours.ago, closed_at: 2.hours.ago,
+      opening_counts: { "$20" => 1 }, opening_total_cents: 2000,
+      closing_counts: { "$20" => 1 }, closing_total_cents: 2000
+    )
+    assert_equal 0, other_session.electronic_payments_total(:debit)
+  end
+
+  test "pending_reconciliation returns the most recent closed unreconciled session" do
+    # closed_session has a reconciliation in fixtures; create a new closed session without one
+    unreconciled = CashDrawerSession.create!(
+      opened_by: @user, closed_by: @user,
+      opened_at: 3.hours.ago, closed_at: 1.hour.ago,
+      opening_counts: { "$20" => 1 }, opening_total_cents: 2000,
+      closing_counts: { "$20" => 1 }, closing_total_cents: 2000
+    )
+    assert_equal unreconciled, CashDrawerSession.pending_reconciliation
+  end
+
+  test "pending_reconciliation returns nil when all sessions are reconciled" do
+    # Ensure no unreconciled closed sessions exist
+    CashDrawerSession.closed.each do |s|
+      next if s.terminal_reconciliation
+      TerminalReconciliation.create!(
+        cash_drawer_session: s,
+        debit_total: 0, credit_total: 0,
+        expected_debit_total: 0, expected_credit_total: 0
+      )
+    end
+    assert_nil CashDrawerSession.pending_reconciliation
+  end
+
   # ── Class methods ──────────────────────────────────────────────────
 
   test "current returns the open session" do

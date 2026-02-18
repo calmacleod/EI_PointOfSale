@@ -1,0 +1,9 @@
+reconciled_session:
+  cash_drawer_session: closed_session
+  debit_total: 55.00
+  credit_total: 30.00
+  expected_debit_total: 55.00
+  expected_credit_total: 28.50
+  notes: "Terminal settled at end of day"
+  reconciled_by: admin
+  reconciled_at: <%= 11.hours.ago.iso8601 %>

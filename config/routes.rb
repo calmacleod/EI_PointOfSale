@@ -72,6 +72,8 @@ Rails.application.routes.draw do
     post :open, action: :create_open
     get :close, action: :new_close
     post :close, action: :create_close
+    get :reconcile, action: :new_reconcile
+    post :reconcile, action: :create_reconcile
     get :history
     get "history/:id", action: :session_detail, as: :session_detail
   end

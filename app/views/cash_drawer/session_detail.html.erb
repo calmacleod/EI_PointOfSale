@@ -116,4 +116,69 @@
       <p class="mt-1 whitespace-pre-wrap text-sm text-muted"><%= @session.notes %></p>
     </div>
   <% end %>
+
+  <%# ── Terminal Reconciliation ── %>
+  <% if @session.closed? %>
+    <div class="mt-3 rounded-lg border border-theme bg-surface p-3">
+      <div class="flex items-center justify-between">
+        <h3 class="text-sm font-semibold text-body">Terminal Reconciliation</h3>
+        <% unless @session.terminal_reconciliation %>
+          <%= link_to "Reconcile now", reconcile_cash_drawer_path,
+              class: "text-xs font-medium text-accent hover:opacity-80" %>
+        <% end %>
+      </div>
+
+      <% if (rec = @session.terminal_reconciliation) %>
+        <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <%# Debit %>
+          <div>
+            <p class="text-xs font-medium text-muted">Debit</p>
+            <p class="text-sm font-semibold text-body tabular-nums"><%= number_to_currency(rec.debit_total) %></p>
+            <p class="text-xs text-muted">expected <%= number_to_currency(rec.expected_debit_total) %></p>
+            <% disc = rec.debit_discrepancy %>
+            <p class="text-xs font-medium tabular-nums <%= disc == 0 ? 'text-muted' : (disc > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') %>">
+              <%= disc >= 0 ? "+" : "" %><%= number_to_currency(disc) %>
+            </p>
+          </div>
+
+          <%# Credit %>
+          <div>
+            <p class="text-xs font-medium text-muted">Credit</p>
+            <p class="text-sm font-semibold text-body tabular-nums"><%= number_to_currency(rec.credit_total) %></p>
+            <p class="text-xs text-muted">expected <%= number_to_currency(rec.expected_credit_total) %></p>
+            <% disc = rec.credit_discrepancy %>
+            <p class="text-xs font-medium tabular-nums <%= disc == 0 ? 'text-muted' : (disc > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') %>">
+              <%= disc >= 0 ? "+" : "" %><%= number_to_currency(disc) %>
+            </p>
+          </div>
+
+          <%# Total discrepancy %>
+          <% total_disc = rec.total_discrepancy %>
+          <div class="rounded-md border-2 p-2 <%= total_disc == 0 ? 'border-theme' : (total_disc > 0 ? 'border-green-300 dark:border-green-700' : 'border-red-300 dark:border-red-700') %>">
+            <p class="text-xs font-medium text-muted">Total discrepancy</p>
+            <p class="mt-0.5 text-base font-bold tabular-nums <%= total_disc == 0 ? 'text-body' : (total_disc > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400') %>">
+              <%= total_disc >= 0 ? "+" : "" %><%= number_to_currency(total_disc) %>
+            </p>
+            <p class="mt-0.5 text-xs text-muted">
+              <% if total_disc == 0 %>Exact match
+              <% elsif total_disc > 0 %>Over by <%= number_to_currency(total_disc) %>
+              <% else %>Short by <%= number_to_currency(total_disc.abs) %>
+              <% end %>
+            </p>
+          </div>
+        </div>
+
+        <% if rec.notes.present? %>
+          <p class="mt-2 whitespace-pre-wrap text-xs text-muted"><%= rec.notes %></p>
+        <% end %>
+
+        <p class="mt-2 text-xs text-muted">
+          Reconciled by <strong><%= rec.reconciled_by&.name.presence || rec.reconciled_by&.email_address %></strong>
+          at <%= local_time(rec.reconciled_at, format: :short) %>
+        </p>
+      <% else %>
+        <p class="mt-1 text-sm text-muted">Not yet reconciled.</p>
+      <% end %>
+    </div>
+  <% end %>
 </div>

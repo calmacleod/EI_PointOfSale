@@ -100,6 +100,30 @@
     <% end %>
   </div>
 
+  <%# End-of-day checklist (only shown when register is closed and a session needs reconciliation) %>
+  <% pending = @session.nil? && CashDrawerSession.pending_reconciliation %>
+  <% if pending %>
+    <div class="mt-3 rounded-lg border border-[var(--color-warning-border,theme(colors.amber.300))] bg-[var(--color-warning-bg,theme(colors.amber.50))] p-4 dark:border-amber-700 dark:bg-amber-950/30">
+      <h2 class="text-sm font-semibold text-body">End-of-Day Checklist</h2>
+      <div class="mt-2 space-y-1.5">
+        <div class="flex items-center gap-2">
+          <svg class="h-4 w-4 shrink-0 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span class="text-sm text-body">Cash drawer closed</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <svg class="h-4 w-4 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <span class="text-sm text-body">Terminal reconciliation — pending</span>
+          <%= link_to "Reconcile now →", reconcile_cash_drawer_path,
+              class: "text-xs font-medium text-accent hover:opacity-80" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
   <%# Recent sessions preview %>
   <% recent = CashDrawerSession.closed.order(closed_at: :desc).limit(5) %>
   <% if recent.any? %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_17_000004) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_17_231841) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -634,6 +634,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_000004) do
     t.index ["discarded_at"], name: "index_tax_codes_on_discarded_at"
   end
 
+  create_table "terminal_reconciliations", force: :cascade do |t|
+    t.bigint "cash_drawer_session_id", null: false
+    t.datetime "created_at", null: false
+    t.decimal "credit_total", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "debit_total", precision: 10, scale: 2, default: "0.0", null: false
+    t.decimal "expected_credit_total", precision: 10, scale: 2
+    t.decimal "expected_debit_total", precision: 10, scale: 2
+    t.text "notes"
+    t.datetime "reconciled_at"
+    t.bigint "reconciled_by_id"
+    t.datetime "updated_at", null: false
+    t.index ["cash_drawer_session_id"], name: "index_terminal_reconciliations_on_cash_drawer_session_id", unique: true
+    t.index ["reconciled_by_id"], name: "index_terminal_reconciliations_on_reconciled_by_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.boolean "active", default: true, null: false
     t.datetime "created_at", null: false
@@ -696,4 +711,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_000004) do
   add_foreign_key "solid_queue_recurring_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "solid_queue_scheduled_executions", "solid_queue_jobs", column: "job_id", on_delete: :cascade
   add_foreign_key "store_tasks", "users", column: "assigned_to_id"
+  add_foreign_key "terminal_reconciliations", "cash_drawer_sessions"
+  add_foreign_key "terminal_reconciliations", "users", column: "reconciled_by_id"
 end

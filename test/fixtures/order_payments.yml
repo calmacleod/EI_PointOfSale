@@ -5,3 +5,15 @@ completed_cash_payment:
   amount_tendered: 40.00
   change_given: 6.12
   received_by: admin
+
+completed_debit_payment:
+  order: completed_order
+  payment_method: 1
+  amount: 55.00
+  received_by: admin
+
+completed_credit_payment:
+  order: completed_order
+  payment_method: 2
+  amount: 28.50
+  received_by: admin

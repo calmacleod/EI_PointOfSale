@@ -37,6 +37,7 @@ class CashDrawerSession < ApplicationRecord
   belongs_to :opened_by, class_name: "User"
   belongs_to :closed_by, class_name: "User", optional: true
   has_many :orders
+  has_one :terminal_reconciliation
 
   # ── Validations ────────────────────────────────────────────────────
   validates :opened_at, presence: true
@@ -60,6 +61,10 @@ class CashDrawerSession < ApplicationRecord
     closed_at.present?
   end
 
+  def day_complete?
+    closed? && terminal_reconciliation.present?
+  end
+
   # ── Money helpers ──────────────────────────────────────────────────
 
   def opening_total
@@ -76,6 +81,12 @@ class CashDrawerSession < ApplicationRecord
     orders.joins(:order_payments)
           .where(order_payments: { payment_method: :cash })
           .sum("order_payments.amount * 100").round
+  end
+
+  def electronic_payments_total(method)
+    orders.joins(:order_payments)
+          .where(order_payments: { payment_method: method })
+          .sum("order_payments.amount")
   end
 
   def expected_closing_total_cents
@@ -106,6 +117,13 @@ class CashDrawerSession < ApplicationRecord
 
   def self.register_open?
     open.exists?
+  end
+
+  def self.pending_reconciliation
+    closed.left_joins(:terminal_reconciliation)
+          .where(terminal_reconciliations: { id: nil })
+          .order(closed_at: :desc)
+          .first
   end
 
   # Calculate total cents from a denomination counts hash.

@@ -76,7 +76,7 @@ class CashDrawerControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to cash_drawer_path
   end
 
-  test "create_close closes the register" do
+  test "create_close closes the register and redirects to reconcile" do
     open_register!
     session = CashDrawerSession.current
 
@@ -84,7 +84,7 @@ class CashDrawerControllerTest < ActionDispatch::IntegrationTest
       counts: { "$20" => "5", "$10" => "4" }
     }
 
-    assert_redirected_to session_detail_cash_drawer_path(session)
+    assert_redirected_to reconcile_cash_drawer_path
     session.reload
     assert session.closed?
     assert_equal users(:admin).id, session.closed_by_id
@@ -110,6 +110,51 @@ class CashDrawerControllerTest < ActionDispatch::IntegrationTest
     session = cash_drawer_sessions(:closed_session)
     get session_detail_cash_drawer_path(session)
     assert_response :success
+  end
+
+  # ── Reconcile ──────────────────────────────────────────────────────
+  # Note: setup closes all open sessions (including the open_session fixture),
+  # leaving it as the pending reconciliation session for these tests.
+
+  test "new_reconcile renders when a closed unreconciled session exists" do
+    # open_session fixture gets closed in setup → it becomes the pending session
+    get reconcile_cash_drawer_path
+    assert_response :success
+    assert_includes response.body, "Reconcile Terminal"
+  end
+
+  test "new_reconcile redirects when no session pending reconciliation" do
+    reconcile_all_pending_sessions!
+    get reconcile_cash_drawer_path
+    assert_redirected_to cash_drawer_path
+  end
+
+  test "create_reconcile saves and redirects to session detail" do
+    pending = CashDrawerSession.pending_reconciliation
+    assert_not_nil pending
+
+    assert_difference "TerminalReconciliation.count", 1 do
+      post reconcile_cash_drawer_path, params: {
+        debit_total: "50.00",
+        credit_total: "75.00",
+        notes: "Balanced"
+      }
+    end
+
+    assert_redirected_to session_detail_cash_drawer_path(pending)
+    rec = pending.reload.terminal_reconciliation
+    assert_in_delta 50.00, rec.debit_total, 0.001
+    assert_in_delta 75.00, rec.credit_total, 0.001
+    assert_equal "Balanced", rec.notes
+    assert_equal users(:admin).id, rec.reconciled_by_id
+  end
+
+  test "create_reconcile redirects when no session pending reconciliation" do
+    reconcile_all_pending_sessions!
+    assert_no_difference "TerminalReconciliation.count" do
+      post reconcile_cash_drawer_path, params: { debit_total: "0", credit_total: "0" }
+    end
+    assert_redirected_to cash_drawer_path
   end
 
   # ── Common user access ─────────────────────────────────────────────
@@ -145,5 +190,28 @@ class CashDrawerControllerTest < ActionDispatch::IntegrationTest
         opening_counts: { "$20" => 5 },
         opening_total_cents: 10_000
       )
+    end
+
+    def close_register!
+      CashDrawerSession.create!(
+        opened_by: users(:admin),
+        closed_by: users(:admin),
+        opened_at: 2.hours.ago,
+        closed_at: 1.hour.ago,
+        opening_counts: { "$20" => 5 },
+        opening_total_cents: 10_000,
+        closing_counts: { "$20" => 5 },
+        closing_total_cents: 10_000
+      )
+    end
+
+    def reconcile_all_pending_sessions!
+      while (pending = CashDrawerSession.pending_reconciliation)
+        TerminalReconciliation.create!(
+          cash_drawer_session: pending,
+          debit_total: 0, credit_total: 0,
+          expected_debit_total: 0, expected_credit_total: 0
+        )
+      end
     end
 end
