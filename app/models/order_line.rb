@@ -5,6 +5,7 @@ class OrderLine < ApplicationRecord
   belongs_to :sellable, polymorphic: true
   belongs_to :tax_code, optional: true
 
+  has_many :order_discount_items, dependent: :destroy
   has_many :refund_lines, dependent: :restrict_with_error
 
   validates :name, presence: true
@@ -13,6 +14,7 @@ class OrderLine < ApplicationRecord
   validates :line_total, presence: true
 
   before_validation :calculate_line_total
+  after_destroy :void_pending_gift_certificate
 
   # Snapshot product/service data at sale time.
   def snapshot_from_sellable!(sellable_record, customer_tax_code: nil)
@@ -21,7 +23,11 @@ class OrderLine < ApplicationRecord
     self.name = sellable_record.sellable_name
     self.unit_price = sellable_record.sellable_price
 
-    effective_tax_code = customer_tax_code || sellable_record.sellable_tax_code
+    effective_tax_code = if sellable_record.sellable_tax_exempt?
+      nil
+    else
+      customer_tax_code || sellable_record.sellable_tax_code
+    end
     if effective_tax_code
       self.tax_code = effective_tax_code
       self.tax_rate = effective_tax_code.rate || 0
@@ -39,6 +45,12 @@ class OrderLine < ApplicationRecord
   end
 
   private
+
+    def void_pending_gift_certificate
+      return unless sellable.is_a?(GiftCertificate) && sellable.pending?
+
+      sellable.update!(status: :voided, voided_at: Time.current)
+    end
 
     def calculate_line_total
       self.tax_amount = (taxable_amount * (tax_rate || 0)).round(2)

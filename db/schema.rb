@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_17_231841) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -186,6 +186,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_231841) do
     t.index ["discarded_at"], name: "index_discounts_on_discarded_at"
   end
 
+  create_table "gift_certificates", force: :cascade do |t|
+    t.datetime "activated_at"
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.bigint "customer_id"
+    t.decimal "initial_amount", precision: 10, scale: 2, null: false
+    t.bigint "issued_by_id"
+    t.decimal "remaining_balance", precision: 10, scale: 2, null: false
+    t.bigint "sold_on_order_id"
+    t.integer "status", default: 0, null: false
+    t.datetime "updated_at", null: false
+    t.datetime "voided_at"
+    t.index ["code"], name: "index_gift_certificates_on_code", unique: true
+    t.index ["customer_id"], name: "index_gift_certificates_on_customer_id"
+    t.index ["issued_by_id"], name: "index_gift_certificates_on_issued_by_id"
+    t.index ["sold_on_order_id"], name: "index_gift_certificates_on_sold_on_order_id"
+    t.index ["status"], name: "index_gift_certificates_on_status"
+  end
+
   create_table "notifications", force: :cascade do |t|
     t.text "body"
     t.string "category"
@@ -264,11 +283,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_231841) do
     t.decimal "amount_tendered", precision: 10, scale: 2
     t.decimal "change_given", precision: 10, scale: 2
     t.datetime "created_at", null: false
+    t.bigint "gift_certificate_id"
     t.bigint "order_id", null: false
     t.integer "payment_method", null: false
     t.bigint "received_by_id"
     t.string "reference"
     t.datetime "updated_at", null: false
+    t.index ["gift_certificate_id"], name: "index_order_payments_on_gift_certificate_id"
     t.index ["order_id"], name: "index_order_payments_on_order_id"
     t.index ["received_by_id"], name: "index_order_payments_on_received_by_id"
   end
@@ -675,6 +696,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_231841) do
   add_foreign_key "customers", "users", column: "added_by_id"
   add_foreign_key "data_imports", "users", column: "imported_by_id"
   add_foreign_key "discount_items", "discounts"
+  add_foreign_key "gift_certificates", "customers"
+  add_foreign_key "gift_certificates", "orders", column: "sold_on_order_id"
+  add_foreign_key "gift_certificates", "users", column: "issued_by_id"
   add_foreign_key "notifications", "users"
   add_foreign_key "order_discount_items", "order_discounts"
   add_foreign_key "order_discount_items", "order_lines"
@@ -685,6 +709,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_17_231841) do
   add_foreign_key "order_events", "users", column: "actor_id"
   add_foreign_key "order_lines", "orders"
   add_foreign_key "order_lines", "tax_codes"
+  add_foreign_key "order_payments", "gift_certificates"
   add_foreign_key "order_payments", "orders"
   add_foreign_key "order_payments", "users", column: "received_by_id"
   add_foreign_key "orders", "cash_drawer_sessions"

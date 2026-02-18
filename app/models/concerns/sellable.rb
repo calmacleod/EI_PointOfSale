@@ -27,4 +27,9 @@ module Sellable
   def sellable_name
     name
   end
+
+  # Whether this sellable is exempt from tax entirely (e.g. gift certificates).
+  def sellable_tax_exempt?
+    false
+  end
 end

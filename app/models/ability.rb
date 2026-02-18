@@ -20,11 +20,15 @@ class Ability
       # Orders are store-wide: any authenticated user can create, edit, hold, resume, and complete orders.
       can %i[read create update hold resume complete cancel quick_lookup assign_customer remove_customer held], Order
       can :manage, [ OrderLine, OrderPayment, OrderDiscount ]
+
+      # Gift certificates: all authenticated users can sell and look up GCs.
+      can %i[new create lookup], GiftCertificate
     end
 
     if user.is_a?(Admin)
       can :manage, User
       can :manage, [ TaxCode, Supplier, Category, Product, ProductGroup, Service, Customer, Report, ReceiptTemplate, DataImport ]
+      can :read, GiftCertificate
       can :manage, [ Discount, DiscountItem ]
       # Admins can also void orders, process refunds, and view the full event audit trail.
       can %i[void refund_form process_refund receipt], Order

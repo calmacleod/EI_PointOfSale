@@ -124,9 +124,19 @@
                     data-action="click->order-form#openSearch">
               Search
             </button>
+            <% if @order.draft? %>
+              <%= link_to new_order_gift_certificate_path(@order),
+                    class: "rounded-lg border border-theme px-3 py-2 text-xs font-medium text-purple-600 hover:bg-purple-50 transition",
+                    data: { turbo_frame: "gift_cert_modal" } do %>
+                Gift Cert
+              <% end %>
+            <% end %>
           </div>
         <% end %>
       </div>
+
+      <%# Gift certificate modal container (Turbo Frame, filled on demand) %>
+      <%= turbo_frame_tag "gift_cert_modal" %>
     </div>
 
     <%# Right column: customer, discounts, totals, payments, actions %>

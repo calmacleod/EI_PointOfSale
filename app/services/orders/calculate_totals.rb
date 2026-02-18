@@ -29,6 +29,8 @@ module Orders
         customer_tax_code = @order.customer&.tax_code
 
         @order.order_lines.reload.each do |line|
+          next if line.sellable_type == "GiftCertificate" # never tax GCs
+
           effective_tax_code = customer_tax_code || line.tax_code
           new_rate = effective_tax_code&.rate || 0
 

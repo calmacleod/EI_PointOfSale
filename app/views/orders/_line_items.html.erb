@@ -25,11 +25,16 @@
           <td class="px-4 py-2 text-xs font-mono text-muted"><%= line.code %></td>
           <td class="px-4 py-2 text-sm text-body">
             <%= line.name %>
-            <% if line.discount_amount > 0 %>
-              <span class="ml-1 text-xs text-green-600">(-<%= number_to_currency(line.discount_amount) %>)</span>
-            <% end %>
-            <% if line.tax_rate > 0 %>
-              <span class="ml-1 text-[10px] text-muted"><%= (line.tax_rate * 100).round(1) %>%</span>
+            <% if line.sellable_type == "GiftCertificate" %>
+              <span class="ml-1 inline-block rounded bg-purple-100 px-1.5 py-0.5 font-mono text-[10px] text-purple-700"><%= line.code %></span>
+              <span class="ml-1 text-[10px] text-muted italic">no tax</span>
+            <% else %>
+              <% if line.discount_amount > 0 %>
+                <span class="ml-1 text-xs text-green-600">(-<%= number_to_currency(line.discount_amount) %>)</span>
+              <% end %>
+              <% if line.tax_rate > 0 %>
+                <span class="ml-1 text-[10px] text-muted"><%= (line.tax_rate * 100).round(1) %>%</span>
+              <% end %>
             <% end %>
           </td>
           <td class="px-4 py-2 text-center">

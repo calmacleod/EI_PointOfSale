@@ -1,0 +1,33 @@
+active_gc:
+  code: GC-TESTACT1
+  status: 1  # active
+  initial_amount: 100.00
+  remaining_balance: 75.00
+  sold_on_order: completed_order
+  customer: acme_corp
+  issued_by: admin
+  activated_at: <%= 1.day.ago %>
+
+pending_gc:
+  code: GC-TESTPND1
+  status: 0  # pending
+  initial_amount: 50.00
+  remaining_balance: 50.00
+  issued_by: admin
+
+exhausted_gc:
+  code: GC-TESTEXH1
+  status: 3  # exhausted
+  initial_amount: 25.00
+  remaining_balance: 0.00
+  sold_on_order: completed_order
+  issued_by: admin
+  activated_at: <%= 2.days.ago %>
+
+voided_gc:
+  code: GC-TESTVOID
+  status: 2  # voided
+  initial_amount: 40.00
+  remaining_balance: 40.00
+  issued_by: admin
+  voided_at: <%= 1.hour.ago %>

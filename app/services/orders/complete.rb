@@ -21,6 +21,7 @@ module Orders
 
       @order.transaction do
         adjust_stock_levels
+        activate_gift_certificates
         finalize_order
         record_event
       end
@@ -48,6 +49,14 @@ module Orders
           next unless sellable.is_a?(Product)
 
           sellable.update_column(:stock_level, sellable.stock_level - line.quantity)
+        end
+      end
+
+      def activate_gift_certificates
+        @order.order_lines.includes(:sellable).each do |line|
+          next unless line.sellable.is_a?(GiftCertificate)
+
+          line.sellable.update!(status: :active, activated_at: Time.current, sold_on_order: @order)
         end
       end
 

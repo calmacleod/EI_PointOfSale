@@ -1,0 +1,38 @@
+<% content_for :title, "Gift Certificates" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted">Gift Certificates</li>
+<% end %>
+
+<div class="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+  <%= render "shared/page_header", title: "Gift Certificates",
+        description: "Track issued gift certificates and redemption history." %>
+
+  <div class="mt-2 flex flex-col gap-2 lg:min-h-0 lg:flex-1">
+    <%= render "shared/filter_bar", config: @filter_config, saved_queries: @saved_queries %>
+
+    <%= render "shared/data_table", config: @filter_config, records: @gift_certificates, pagy: @pagy,
+               empty_message: "No gift certificates found." do |t| %>
+      <% t.cell(:code) { |gc| link_to gc.code, admin_gift_certificate_path(gc), class: "font-mono font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <% t.cell(:status) { |gc|
+           klass = case gc.status
+                   when "pending"   then "bg-blue-100 text-blue-800"
+                   when "active"    then "bg-green-100 text-green-800"
+                   when "exhausted" then "bg-gray-100 text-gray-600"
+                   when "voided"    then "bg-red-100 text-red-700"
+                   end
+           content_tag(:span, gc.status.humanize,
+             class: "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold #{klass}")
+         } %>
+      <% t.cell(:initial_amount)    { |gc| number_to_currency(gc.initial_amount) } %>
+      <% t.cell(:remaining_balance) { |gc| number_to_currency(gc.remaining_balance) } %>
+      <% t.cell(:customer)          { |gc| gc.customer&.name || "—" } %>
+      <% t.cell(:sold_on_order)     { |gc| gc.sold_on_order ? link_to(gc.sold_on_order.number, order_path(gc.sold_on_order), class: "text-accent hover:underline", data: { turbo_frame: "_top" }) : "—" } %>
+      <% t.cell(:created_at)        { |gc| local_time(gc.created_at, format: :short) } %>
+      <% t.cell(:actions)           { |gc| link_to "View", admin_gift_certificate_path(gc), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+    <% end %>
+  </div>
+</div>

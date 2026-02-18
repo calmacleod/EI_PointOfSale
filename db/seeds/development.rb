@@ -659,3 +659,73 @@ unless Discount.exists?
 
   puts "  Created #{Discount.count} discounts total"
 end
+
+# ── Gift Certificates ─────────────────────────────────────────────
+puts "Seeding gift certificates..."
+
+unless GiftCertificate.exists?
+  admin = User.find_by!(email_address: "admin@example.com")
+  alice = User.find_by(email_address: "alice@example.com") || admin
+  acme  = Customer.find_by(member_number: "100001")
+  jane  = Customer.find_by(member_number: "100002")
+
+  # Active GC — was purchased by Acme Corp, has partial balance remaining.
+  # Use this code to test redemption in the POS: GC-DEMO0001
+  gc_active = GiftCertificate.create!(
+    code: "GC-DEMO0001",
+    status: :active,
+    initial_amount: 100.00,
+    remaining_balance: 65.00,
+    customer: acme,
+    issued_by: admin,
+    activated_at: 1.week.ago
+  )
+  puts "  Created active GC #{gc_active.code} ($65.00 remaining)"
+
+  # Active GC — assigned to Jane Doe, full balance. Use code: GC-DEMO0002
+  gc_full = GiftCertificate.create!(
+    code: "GC-DEMO0002",
+    status: :active,
+    initial_amount: 50.00,
+    remaining_balance: 50.00,
+    customer: jane,
+    issued_by: alice,
+    activated_at: 3.days.ago
+  )
+  puts "  Created active GC #{gc_full.code} ($50.00, full balance)"
+
+  # Exhausted GC — for testing rejection. Code: GC-DEMO0003
+  gc_exhausted = GiftCertificate.create!(
+    code: "GC-DEMO0003",
+    status: :exhausted,
+    initial_amount: 25.00,
+    remaining_balance: 0.00,
+    customer: acme,
+    issued_by: admin,
+    activated_at: 2.weeks.ago
+  )
+  puts "  Created exhausted GC #{gc_exhausted.code}"
+
+  # Voided GC — for testing invalid code rejection. Code: GC-DEMO0004
+  gc_voided = GiftCertificate.create!(
+    code: "GC-DEMO0004",
+    status: :voided,
+    initial_amount: 75.00,
+    remaining_balance: 75.00,
+    issued_by: admin,
+    voided_at: 5.days.ago
+  )
+  puts "  Created voided GC #{gc_voided.code}"
+
+  # Link gc_active to the historical order4 gift_certificate payment if it exists
+  completed_order_with_gc = Order.completed.joins(:order_payments)
+                                 .find_by(order_payments: { payment_method: OrderPayment.payment_methods[:gift_certificate] })
+  if completed_order_with_gc
+    gc_payment = completed_order_with_gc.order_payments.find_by(payment_method: :gift_certificate)
+    gc_payment&.update_columns(gift_certificate_id: gc_active.id, reference: gc_active.code)
+    gc_active.update_columns(sold_on_order_id: completed_order_with_gc.id)
+    puts "  Linked #{gc_active.code} to completed order #{completed_order_with_gc.number}"
+  end
+
+  puts "  Created #{GiftCertificate.count} gift certificates total"
+end

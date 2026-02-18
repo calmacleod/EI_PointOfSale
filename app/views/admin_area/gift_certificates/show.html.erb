@@ -1,0 +1,158 @@
+<% content_for :title, @gift_certificate.code %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li><%= link_to "Gift Certificates", admin_gift_certificates_path, class: "font-medium text-body hover:text-accent" %></li>
+  <li><span aria-hidden="true">›</span></li>
+  <li aria-current="page" class="text-muted"><%= @gift_certificate.code %></li>
+<% end %>
+
+<div>
+  <%= render "shared/page_header", title: @gift_certificate.code, description: "Gift certificate details and redemption history." do %>
+    <%= link_to "Back to gift certificates", admin_gift_certificates_path,
+          class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30",
+          data: { turbo_prefetch: true } %>
+  <% end %>
+
+  <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
+    <%# Left: GC details %>
+    <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="gc-details-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="gc-details-heading" class="text-sm font-semibold text-body">Details</h2>
+        <p class="text-xs text-muted">Certificate information and balance</p>
+      </div>
+      <dl class="divide-y divide-[var(--color-border)]">
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Code</dt>
+          <dd class="mt-0.5 font-mono text-sm text-body sm:col-span-2 sm:mt-0"><%= @gift_certificate.code %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Status</dt>
+          <dd class="mt-0.5 sm:col-span-2 sm:mt-0">
+            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold
+                <%= case @gift_certificate.status
+                    when 'pending'   then 'bg-blue-100 text-blue-800'
+                    when 'active'    then 'bg-green-100 text-green-800'
+                    when 'exhausted' then 'bg-gray-100 text-gray-600'
+                    when 'voided'    then 'bg-red-100 text-red-700'
+                    end %>">
+              <%= @gift_certificate.status.humanize %>
+            </span>
+          </dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Initial Amount</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@gift_certificate.initial_amount) %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Remaining Balance</dt>
+          <dd class="mt-0.5 text-sm sm:col-span-2 sm:mt-0 <%= @gift_certificate.remaining_balance.zero? ? 'text-muted' : 'font-medium text-green-600' %>">
+            <%= number_to_currency(@gift_certificate.remaining_balance) %>
+          </dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Customer</dt>
+          <dd class="mt-0.5 text-sm sm:col-span-2 sm:mt-0">
+            <% if @gift_certificate.customer %>
+              <%= link_to @gift_certificate.customer.name, customer_path(@gift_certificate.customer), class: "text-accent hover:underline" %>
+            <% else %>
+              <span class="text-muted">—</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Sold on Order</dt>
+          <dd class="mt-0.5 text-sm sm:col-span-2 sm:mt-0">
+            <% if @gift_certificate.sold_on_order %>
+              <%= link_to @gift_certificate.sold_on_order.number, order_path(@gift_certificate.sold_on_order), class: "text-accent hover:underline" %>
+            <% else %>
+              <span class="text-muted">—</span>
+            <% end %>
+          </dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Issued By</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+            <%= @gift_certificate.issued_by&.name.presence || @gift_certificate.issued_by&.email_address || "—" %>
+          </dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Activated At</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+            <%= @gift_certificate.activated_at ? local_time(@gift_certificate.activated_at, format: :long) : "—" %>
+          </dd>
+        </div>
+        <% if @gift_certificate.voided? %>
+          <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+            <dt class="text-xs font-medium text-muted">Voided At</dt>
+            <dd class="mt-0.5 text-sm text-red-600 sm:col-span-2 sm:mt-0">
+              <%= @gift_certificate.voided_at ? local_time(@gift_certificate.voided_at, format: :long) : "—" %>
+            </dd>
+          </div>
+        <% end %>
+      </dl>
+    </section>
+
+    <%# Right: Record info %>
+    <section class="overflow-hidden rounded-lg border border-theme bg-surface self-start" aria-labelledby="gc-meta-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="gc-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
+        <p class="text-xs text-muted">Timestamps</p>
+      </div>
+      <dl class="divide-y divide-[var(--color-border)]">
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Created</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@gift_certificate.created_at, format: :long) %></dd>
+        </div>
+        <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+          <dt class="text-xs font-medium text-muted">Last updated</dt>
+          <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@gift_certificate.updated_at, format: :long) %></dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+
+  <%# Redemption history %>
+  <div class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <h2 class="text-sm font-semibold text-body">Redemption History</h2>
+      <p class="text-xs text-muted"><%= pluralize(@redemptions.size, "redemption") %></p>
+    </div>
+    <% if @redemptions.any? %>
+      <table class="min-w-full divide-y divide-[var(--color-border)]">
+        <thead class="bg-surface-alt">
+          <tr>
+            <th class="px-3 py-1.5 text-left text-xs font-medium uppercase tracking-wider text-muted">Order</th>
+            <th class="px-3 py-1.5 text-right text-xs font-medium uppercase tracking-wider text-muted">Amount</th>
+            <th class="px-3 py-1.5 text-left text-xs font-medium uppercase tracking-wider text-muted">Received By</th>
+            <th class="px-3 py-1.5 text-left text-xs font-medium uppercase tracking-wider text-muted">Date</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+          <% @redemptions.each do |payment| %>
+            <tr>
+              <td class="whitespace-nowrap px-3 py-1.5 text-sm">
+                <%= link_to payment.order.number, order_path(payment.order), class: "font-medium text-accent hover:underline" %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-1.5 text-right text-sm text-body">
+                <%= number_to_currency(payment.amount) %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-1.5 text-sm text-body">
+                <%= payment.received_by&.name.presence || payment.received_by&.email_address || "—" %>
+              </td>
+              <td class="whitespace-nowrap px-3 py-1.5 text-sm text-muted">
+                <%= local_time(payment.created_at, format: :short) %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p class="px-3 py-4 text-sm text-muted">No redemptions yet.</p>
+    <% end %>
+  </div>
+
+  <%= render "shared/audit_trail", audits: @audits, audits_count: @gift_certificate.audits.count %>
+</div>

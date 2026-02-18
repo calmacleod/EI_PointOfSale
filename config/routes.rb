@@ -53,6 +53,7 @@ Rails.application.routes.draw do
       end
       resources :discount_items, only: %i[create destroy], shallow: true
     end
+    resources :gift_certificates, only: %i[index show]
   end
 
   resources :notifications, only: [ :index, :destroy ] do
@@ -86,7 +87,10 @@ Rails.application.routes.draw do
       get :export_excel
     end
   end
+  get "gift_certificates/lookup", to: "gift_certificates#lookup", as: :gift_certificate_lookup
+
   resources :orders do
+    resources :gift_certificates, only: %i[new create]
     resources :order_lines, only: %i[create update destroy], shallow: true
     resources :order_payments, only: %i[create destroy], shallow: true
     resources :order_discounts, only: %i[create destroy], shallow: true
