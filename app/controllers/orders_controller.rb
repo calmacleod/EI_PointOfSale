@@ -99,6 +99,7 @@ class OrdersController < ApplicationController
   def assign_customer
     customer = Customer.find(params[:customer_id])
     @order.update!(customer: customer)
+    Discounts::AutoApply.call(@order)
     Orders::CalculateTotals.call(@order)
     Orders::RecordEvent.call(
       order: @order, event_type: "customer_assigned", actor: current_user,
@@ -119,6 +120,7 @@ class OrdersController < ApplicationController
 
   def remove_customer
     @order.update!(customer: nil)
+    Discounts::AutoApply.call(@order)
     Orders::CalculateTotals.call(@order)
     Orders::RecordEvent.call(
       order: @order, event_type: "customer_removed", actor: current_user

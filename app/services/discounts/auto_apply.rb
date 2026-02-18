@@ -21,12 +21,14 @@ module Discounts
 
     def call
       return if @order.finalized?
-      return if Discount.currently_active.none?
 
       # Load current state in minimal queries
       current_lines = load_order_lines
       existing_order_discounts = load_existing_order_discounts
       existing_line_discounts = load_existing_line_discounts
+
+      # Sync customer automatic discount
+      sync_customer_discount(existing_order_discounts)
 
       # Sync order-level discounts (applies_to_all)
       sync_order_level_discounts(existing_order_discounts)
@@ -45,6 +47,46 @@ module Discounts
         @order.order_discounts.where.not(discount_id: nil).to_a
       end
 
+      def sync_customer_discount(existing_discounts)
+        customer = @order.customer
+        customer_discount_id = customer&.discount_id
+
+        # Find existing customer discount on the order
+        existing_customer_discount = existing_discounts.find do |od|
+          od.discount&.customers&.exists?(id: @order.customer_id)
+        end
+
+        if customer_discount_id
+          # Customer has a discount - ensure it's applied
+          if existing_discounts.none? { |od| od.discount_id == customer_discount_id }
+            create_customer_order_discount(customer.discount)
+          end
+        end
+
+        # Remove customer discount if:
+        # 1. No customer assigned, or
+        # 2. Customer doesn't have a discount, or
+        # 3. Customer has a different discount than what's applied
+        if existing_customer_discount
+          should_remove = customer.nil? ||
+                          customer_discount_id.nil? ||
+                          existing_customer_discount.discount_id != customer_discount_id
+
+          existing_customer_discount.destroy if should_remove
+        end
+      end
+
+      def create_customer_order_discount(discount)
+        @order.order_discounts.create!(
+          name: discount.name,
+          discount_type: ORDER_DISCOUNT_TYPE_MAP[discount.discount_type],
+          value: discount.value,
+          scope: :all_items,
+          discount_id: discount.id,
+          applied_by: nil
+        )
+      end
+
       def load_existing_line_discounts
         @order.order_line_discounts.where(auto_applied: true).to_a
       end
@@ -52,8 +94,14 @@ module Discounts
       def sync_order_level_discounts(existing_discounts)
         applicable = find_applicable_order_level_discounts
 
+        # Get customer discount ID if customer has one
+        customer_discount_id = @order.customer&.discount_id
+
         # Determine changes needed
-        to_remove = existing_discounts.reject { |od| applicable.key?(od.discount_id) }
+        # Don't remove customer discounts - they are handled separately
+        to_remove = existing_discounts.reject do |od|
+          applicable.key?(od.discount_id) || od.discount_id == customer_discount_id
+        end
         to_add = applicable.reject { |id, _| existing_discounts.any? { |od| od.discount_id == id } }
 
         # Remove outdated order discounts

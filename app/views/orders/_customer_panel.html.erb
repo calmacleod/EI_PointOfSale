@@ -20,6 +20,11 @@
           <% if order.customer.alert.present? %>
             <p class="mt-1 rounded bg-yellow-50 px-2 py-1 text-xs text-yellow-800"><%= order.customer.alert %></p>
           <% end %>
+          <% if order.customer.discount.present? %>
+            <p class="mt-1 rounded bg-green-50 px-2 py-1 text-xs text-green-800">
+              Auto discount: <%= order.customer.discount.name %> (<%= order.customer.discount.display_value %>)
+            </p>
+          <% end %>
         </div>
         <% if order.draft? %>
           <%= button_to remove_customer_order_path(order), method: :delete, class: "text-muted hover:text-red-500 transition", data: { turbo_stream: true } do %>

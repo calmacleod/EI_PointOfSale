@@ -47,6 +47,16 @@
             <dt class="text-xs font-medium text-muted">Status</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.active? ? "Active" : "Inactive" %></dd>
           </div>
+          <% if @customer.discount.present? %>
+            <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
+              <dt class="text-xs font-medium text-muted">Automatic discount</dt>
+              <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0">
+                <span class="inline-flex items-center gap-1 rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">
+                  <%= @customer.discount.name %> (<%= @customer.discount.display_value %>)
+                </span>
+              </dd>
+            </div>
+          <% end %>
           <% if @customer.address.present? %>
             <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
               <dt class="text-xs font-medium text-muted">Address</dt>

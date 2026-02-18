@@ -5,6 +5,7 @@ class Discount < ApplicationRecord
 
   has_many :discount_items, dependent: :destroy
   has_many :order_discounts, dependent: :nullify
+  has_many :customers, dependent: :nullify
 
   enum :discount_type, { percentage: 0, fixed_total: 1, fixed_per_item: 2 }
 

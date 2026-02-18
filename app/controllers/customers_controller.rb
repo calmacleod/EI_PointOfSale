@@ -127,7 +127,8 @@ class CustomersController < ApplicationController
         :joining_date,
         :active,
         :notes,
-        :alert
+        :alert,
+        :discount_id
       )
     end
 end

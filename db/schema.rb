@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_18_221018) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_230021) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -117,6 +117,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_221018) do
     t.datetime "created_at", null: false
     t.date "date_of_birth"
     t.datetime "discarded_at"
+    t.bigint "discount_id"
     t.string "email"
     t.datetime "joining_date"
     t.string "member_number"
@@ -130,6 +131,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_221018) do
     t.datetime "updated_at", null: false
     t.index ["added_by_id"], name: "index_customers_on_added_by_id"
     t.index ["discarded_at"], name: "index_customers_on_discarded_at"
+    t.index ["discount_id"], name: "index_customers_on_discount_id"
     t.index ["member_number"], name: "index_customers_on_member_number", unique: true
     t.index ["tax_code_id"], name: "index_customers_on_tax_code_id"
   end
@@ -702,6 +704,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_221018) do
   add_foreign_key "cash_drawer_sessions", "users", column: "closed_by_id"
   add_foreign_key "cash_drawer_sessions", "users", column: "opened_by_id"
   add_foreign_key "categorizations", "categories"
+  add_foreign_key "customers", "discounts"
   add_foreign_key "customers", "tax_codes"
   add_foreign_key "customers", "users", column: "added_by_id"
   add_foreign_key "data_imports", "users", column: "imported_by_id"

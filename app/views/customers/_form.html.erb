@@ -90,6 +90,20 @@
     </div>
 
     <div>
+      <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">Discounts</h3>
+      <div class="space-y-2">
+        <div>
+          <%= f.label :discount_id, "Automatic discount", class: "text-sm font-medium text-body" %>
+          <%= f.select :discount_id,
+              options_from_collection_for_select(Discount.currently_active, :id, :name, customer.discount_id),
+              { include_blank: "None" },
+              class: "input-field min-h-[30px] w-full" %>
+          <p class="text-xs text-muted mt-1">This discount will be automatically applied to all orders for this customer.</p>
+        </div>
+      </div>
+    </div>
+
+    <div>
       <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-1.5">Notes & alerts</h3>
       <div class="space-y-2">
         <div>

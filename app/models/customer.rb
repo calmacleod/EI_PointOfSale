@@ -12,6 +12,7 @@ class Customer < ApplicationRecord
 
   belongs_to :added_by, class_name: "User", optional: true
   belongs_to :tax_code, optional: true
+  belongs_to :discount, optional: true
 
   has_many :orders, dependent: :nullify
 

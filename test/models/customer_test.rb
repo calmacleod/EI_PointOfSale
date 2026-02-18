@@ -43,4 +43,13 @@ class CustomerTest < ActiveSupport::TestCase
     customer.discard
     assert customer.discarded?
   end
+
+  test "belongs to discount optionally" do
+    customer = customers(:acme_corp)
+    assert_nil customer.discount
+
+    customer.discount = discounts(:percentage_all)
+    assert customer.valid?
+    assert_equal discounts(:percentage_all), customer.discount
+  end
 end

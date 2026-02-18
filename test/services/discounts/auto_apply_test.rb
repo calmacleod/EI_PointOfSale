@@ -246,5 +246,154 @@ module Discounts
         AutoApply.call(@order)
       end
     end
+
+    test "applies customer discount when customer with discount is assigned" do
+      # Disable applies_to_all discount to isolate test
+      discounts(:percentage_all).update!(active: false)
+
+      # Create a unique customer discount (not applies_to_all so it doesn't auto-apply)
+      customer_discount = Discount.create!(
+        name: "Employee 15% Off",
+        discount_type: :percentage,
+        value: 15.00,
+        active: true,
+        applies_to_all: false
+      )
+
+      customer = customers(:acme_corp)
+      customer.update!(discount: customer_discount)
+      @order.update!(customer: customer)
+
+      @order.order_lines.create!(
+        sellable: @product,
+        name: @product.name,
+        code: @product.code,
+        quantity: 1,
+        unit_price: @product.selling_price,
+        line_total: @product.selling_price,
+        position: 1
+      )
+
+      assert_difference "OrderDiscount.count", 1 do
+        AutoApply.call(@order)
+      end
+
+      od = @order.order_discounts.find_by(discount_id: customer_discount.id)
+      assert_not_nil od
+      assert_equal customer_discount.name, od.name
+      assert_equal "percentage", od.discount_type
+    end
+
+    test "removes customer discount when customer is removed from order" do
+      discounts(:percentage_all).update!(active: false)
+
+      customer_discount = Discount.create!(
+        name: "Employee 15% Off",
+        discount_type: :percentage,
+        value: 15.00,
+        active: true,
+        applies_to_all: false
+      )
+
+      customer = customers(:acme_corp)
+      customer.update!(discount: customer_discount)
+      @order.update!(customer: customer)
+
+      @order.order_lines.create!(
+        sellable: @product,
+        name: @product.name,
+        code: @product.code,
+        quantity: 1,
+        unit_price: @product.selling_price,
+        line_total: @product.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+      assert @order.order_discounts.exists?(discount_id: customer_discount.id)
+
+      # Remove customer
+      @order.update!(customer: nil)
+
+      assert_difference "OrderDiscount.count", -1 do
+        AutoApply.call(@order)
+      end
+
+      assert_not @order.order_discounts.exists?(discount_id: customer_discount.id)
+    end
+
+    test "removes old customer discount when customer changes to different discount" do
+      discounts(:percentage_all).update!(active: false)
+
+      old_discount = Discount.create!(
+        name: "Employee 15% Off",
+        discount_type: :percentage,
+        value: 15.00,
+        active: true,
+        applies_to_all: false
+      )
+
+      new_discount = Discount.create!(
+        name: "Manager 20% Off",
+        discount_type: :percentage,
+        value: 20.00,
+        active: true,
+        applies_to_all: false
+      )
+
+      customer = customers(:acme_corp)
+      customer.update!(discount: old_discount)
+      @order.update!(customer: customer)
+
+      @order.order_lines.create!(
+        sellable: @product,
+        name: @product.name,
+        code: @product.code,
+        quantity: 1,
+        unit_price: @product.selling_price,
+        line_total: @product.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+      assert @order.order_discounts.exists?(discount_id: old_discount.id)
+
+      # Change customer's discount
+      customer.update!(discount: new_discount)
+
+      AutoApply.call(@order)
+
+      assert_not @order.order_discounts.exists?(discount_id: old_discount.id)
+      assert @order.order_discounts.exists?(discount_id: new_discount.id)
+    end
+
+    test "customer discount is applied alongside other order-level discounts" do
+      customer_discount = Discount.create!(
+        name: "Employee 15% Off",
+        discount_type: :percentage,
+        value: 15.00,
+        active: true,
+        applies_to_all: false
+      )
+
+      customer = customers(:acme_corp)
+      customer.update!(discount: customer_discount)
+      @order.update!(customer: customer)
+
+      @order.order_lines.create!(
+        sellable: @other_product,
+        name: @other_product.name,
+        code: @other_product.code,
+        quantity: 1,
+        unit_price: @other_product.selling_price,
+        line_total: @other_product.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+
+      # Should have the customer discount applied (plus percentage_all which applies to all)
+      assert @order.order_discounts.exists?(discount_id: customer_discount.id)
+    end
   end
 end
