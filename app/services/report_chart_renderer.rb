@@ -85,9 +85,16 @@ class ReportChartRenderer
         end
       end
 
+      def has_stacked_datasets?(chart_data)
+        return false unless chart_data[:datasets].is_a?(Array)
+
+        chart_data[:datasets].any? { |dataset| dataset[:stack].present? }
+      end
+
       def build_html(chart_data, chart_type)
         chart_json = chart_data.to_json
         js_source  = chart_js_source
+        stacked    = has_stacked_datasets?(chart_data.deep_symbolize_keys)
 
         <<~HTML
           <!DOCTYPE html>
@@ -110,6 +117,7 @@ class ReportChartRenderer
                 const ctx = document.getElementById("chart").getContext("2d");
                 const chartData = #{chart_json};
                 const chartType = #{chart_type.to_json};
+                const stacked = #{stacked.to_json};
 
                 const gridColor = "rgba(0, 0, 0, 0.1)";
                 const textColor = "rgba(0, 0, 0, 0.7)";
@@ -129,12 +137,14 @@ class ReportChartRenderer
                     scales: chartType === "pie" || chartType === "doughnut" ? {} : {
                       x: {
                         ticks: { color: textColor, font: { size: 11 }, maxRotation: 45 },
-                        grid: { color: gridColor }
+                        grid: { color: gridColor },
+                        stacked: stacked
                       },
                       y: {
                         beginAtZero: true,
                         ticks: { color: textColor, font: { size: 11 }, precision: 0 },
-                        grid: { color: gridColor }
+                        grid: { color: gridColor },
+                        stacked: stacked
                       }
                     }
                   },

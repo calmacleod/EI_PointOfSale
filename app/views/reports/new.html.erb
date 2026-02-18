@@ -39,6 +39,12 @@
                 id: "report_parameters_#{param[:key]}",
                 required: param[:required],
                 class: "input-field mt-0.5 w-full min-h-[30px]" %>
+          <% when :select %>
+            <%= select_tag "report[parameters][#{param[:key]}]",
+                options_for_select(param[:options]),
+                id: "report_parameters_#{param[:key]}",
+                required: param[:required],
+                class: "input-field mt-0.5 w-full min-h-[30px]" %>
           <% end %>
         </div>
       <% end %>

@@ -99,15 +99,31 @@
 
     <%# ── Chart ───────────────────────────────────────────────────── %>
     <% if result[:chart].present? %>
-      <div class="mt-2 rounded-lg border border-theme bg-surface p-2.5">
-        <h2 class="text-sm font-semibold text-body">Chart</h2>
-        <div class="mt-2" style="height: 320px;">
-          <canvas data-controller="report-chart"
-                  data-report-chart-data-value="<%= result[:chart].to_json %>"
-                  data-report-chart-type-value="<%= @template&.chart_type || 'bar' %>">
-          </canvas>
+      <%# Handle multiple charts (nested structure) %>
+      <% if result[:chart].values.first.is_a?(Hash) && result[:chart].values.first.key?(:datasets) %>
+        <% result[:chart].each do |chart_name, chart_data| %>
+          <div class="mt-2 rounded-lg border border-theme bg-surface p-2.5">
+            <h2 class="text-sm font-semibold text-body"><%= chart_name.to_s.titleize %></h2>
+            <div class="mt-2" style="height: 320px;">
+              <canvas data-controller="report-chart"
+                      data-report-chart-data-value="<%= chart_data.to_json %>"
+                      data-report-chart-type-value="<%= @template&.chart_type || 'bar' %>">
+              </canvas>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <%# Single chart (flat structure) %>
+        <div class="mt-2 rounded-lg border border-theme bg-surface p-2.5">
+          <h2 class="text-sm font-semibold text-body">Chart</h2>
+          <div class="mt-2" style="height: 320px;">
+            <canvas data-controller="report-chart"
+                    data-report-chart-data-value="<%= result[:chart].to_json %>"
+                    data-report-chart-type-value="<%= @template&.chart_type || 'bar' %>">
+            </canvas>
+          </div>
         </div>
-      </div>
+      <% end %>
     <% end %>
 
     <%# ── Data table ──────────────────────────────────────────────── %>
@@ -130,7 +146,51 @@
                 <% row = row.symbolize_keys %>
                 <tr>
                   <% @template.table_columns.each do |col| %>
-                    <td class="py-1.5 pr-3 text-xs text-body"><%= row[col[:key].to_sym] %></td>
+                    <td class="py-1.5 pr-3 text-xs text-body">
+                      <% if col[:key] == :order_number && row[:order_id].present? %>
+                        <%= link_to row[col[:key].to_sym], order_path(row[:order_id]), class: "text-accent hover:underline" %>
+                      <% else %>
+                        <%= row[col[:key].to_sym] %>
+                      <% end %>
+                    </td>
+                  <% end %>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
+
+    <%# ── Held orders table (if present) ──────────────────────────── %>
+    <% if result[:held_orders_table].present? && @template&.table_columns.present? %>
+      <div class="mt-2 rounded-lg border border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] p-2.5">
+        <h2 class="text-sm font-semibold text-[var(--color-warning-text)]">Held Orders</h2>
+        <p class="mt-0.5 text-xs text-[var(--color-warning-text)]">
+          <%= result[:held_orders_table].size %> held orders with discounts (excluded from summary totals)
+        </p>
+
+        <div class="mt-2 overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-[var(--color-warning-border)] text-xs text-[var(--color-warning-text)]">
+                <% @template.table_columns.each do |col| %>
+                  <th class="pb-1.5 pr-3 font-medium"><%= col[:label] %></th>
+                <% end %>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-[var(--color-warning-border)]">
+              <% result[:held_orders_table].each do |row| %>
+                <% row = row.symbolize_keys %>
+                <tr>
+                  <% @template.table_columns.each do |col| %>
+                    <td class="py-1.5 pr-3 text-xs text-[var(--color-warning-text)]">
+                      <% if col[:key] == :order_number && row[:order_id].present? %>
+                        <%= link_to row[col[:key].to_sym], order_path(row[:order_id]), class: "text-[var(--color-warning-text)] hover:underline" %>
+                      <% else %>
+                        <%= row[col[:key].to_sym] %>
+                      <% end %>
+                    </td>
                   <% end %>
                 </tr>
               <% end %>

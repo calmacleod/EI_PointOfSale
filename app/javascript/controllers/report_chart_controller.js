@@ -21,6 +21,11 @@ export default class extends Controller {
     }
   }
 
+  hasStackedDatasets() {
+    if (!this.dataValue.datasets) return false
+    return this.dataValue.datasets.some(dataset => dataset.stack !== undefined)
+  }
+
   renderChart() {
     const ctx = this.element.getContext("2d")
     const isDark = document.documentElement.dataset.theme === "dark" ||
@@ -53,12 +58,14 @@ export default class extends Controller {
         scales: {
           x: {
             ticks: { color: textColor, font: { size: 11 }, maxRotation: 45 },
-            grid: { color: gridColor }
+            grid: { color: gridColor },
+            stacked: this.hasStackedDatasets()
           },
           y: {
             beginAtZero: true,
             ticks: { color: textColor, font: { size: 11 }, precision: 0 },
-            grid: { color: gridColor }
+            grid: { color: gridColor },
+            stacked: this.hasStackedDatasets()
           }
         }
       }

@@ -104,4 +104,33 @@ class ReportChartRendererTest < ActiveSupport::TestCase
     assert png.present?
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
   end
+
+  def sample_stacked_line_chart_data
+    {
+      labels: %w[Jan 19 Jan 20 Jan 21 Jan 22 Jan 23],
+      datasets: [
+        {
+          label: "Order Total (Net)",
+          data: [ 500, 600, 450, 700, 550 ],
+          backgroundColor: "rgba(16, 185, 129, 0.3)",
+          borderColor: "rgba(16, 185, 129, 1)",
+          stack: "combined"
+        },
+        {
+          label: "Discount Amount",
+          data: [ 50, 75, 30, 90, 60 ],
+          backgroundColor: "rgba(239, 68, 68, 0.3)",
+          borderColor: "rgba(239, 68, 68, 1)",
+          stack: "combined"
+        }
+      ]
+    }
+  end
+
+  test "renders stacked line chart with stack property" do
+    png = ReportChartRenderer.render(sample_stacked_line_chart_data, chart_type: "line")
+
+    assert png.present?
+    assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
+  end
 end
