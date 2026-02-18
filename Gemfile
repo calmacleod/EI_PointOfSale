@@ -98,7 +98,7 @@ group :development do
   # Request profiling with timing, SQL, and flamegraph analysis
   gem "rack-mini-profiler"
 
-  gem 'stackprof'
+  gem "stackprof"
 
   # Clean, single-line request logging with timing info
   gem "lograge"
