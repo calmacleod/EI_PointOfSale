@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_18_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_151526) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -367,6 +367,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_000002) do
     t.datetime "updated_at", null: false
     t.index ["added_by_id"], name: "index_products_on_added_by_id"
     t.index ["code"], name: "index_products_on_code", unique: true
+    t.index ["discarded_at", "code"], name: "index_products_on_discarded_at_and_code"
+    t.index ["discarded_at", "name"], name: "index_products_on_discarded_at_and_name"
     t.index ["discarded_at"], name: "index_products_on_discarded_at"
     t.index ["product_group_id"], name: "index_products_on_product_group_id"
     t.index ["shopify_product_id"], name: "index_products_on_shopify_product_id"

@@ -182,22 +182,43 @@ class FilterConfig
   # --- JSON for Stimulus ---
 
   def filters_json
-    @filters.map { |f|
-      base = { key: f.key, type: f.type, label: f.label, paramKeys: f.js_param_keys }
-      case f.type
-      when :association, :multi_select
-        items = f.options[:collection].call
-        display = f.options[:display] || :name
-        base[:choices] = items.map { |item| { value: item.id.to_s, label: item.public_send(display) } }
-      when :select
-        base[:choices] = f.options[:choices].map { |label, value| { value: value.to_s, label: label } }
-      when :boolean
-        base[:choices] = [ { value: "true", label: "Yes" }, { value: "false", label: "No" } ]
-      when :date_range
-        base[:presets] = DATE_PRESET_LABELS.map { |label, value| { value: value, label: label } }
+    Rails.cache.fetch(filters_cache_key) do
+      @filters.map { |f|
+        base = { key: f.key, type: f.type, label: f.label, paramKeys: f.js_param_keys }
+        case f.type
+        when :association, :multi_select
+          base[:choices] = fetch_cached_choices(f)
+        when :select
+          base[:choices] = f.options[:choices].map { |label, value| { value: value.to_s, label: label } }
+        when :boolean
+          base[:choices] = [ { value: "true", label: "Yes" }, { value: "false", label: "No" } ]
+        when :date_range
+          base[:presets] = DATE_PRESET_LABELS.map { |label, value| { value: value, label: label } }
+        end
+        base
+      }.to_json
+    end
+  end
+
+  def clear_filters_cache!
+    Rails.cache.delete(filters_cache_key)
+  end
+
+  def filters_cache_key
+    collection_key = @filters.filter_map { |f|
+      next unless %i[association multi_select].include?(f.type)
+
+      cache_key = f.options[:cache_key]
+      if cache_key
+        "#{f.key}:#{cache_key.call}"
+      else
+        # Fallback to timestamp of most recently updated record
+        collection = f.options[:collection].call
+        "#{f.key}:#{collection.maximum(:updated_at)&.to_i || 'none'}"
       end
-      base
-    }.to_json
+    }.join("/")
+
+    "filter_config/#{@resource_name}/#{collection_key}"
   end
 
   def columns_json
@@ -209,6 +230,26 @@ class FilterConfig
   end
 
   private
+
+    def fetch_cached_choices(filter)
+      display = filter.options[:display] || :name
+
+      Rails.cache.fetch(choices_cache_key(filter)) do
+        items = filter.options[:collection].call
+        items.map { |item| { value: item.id.to_s, label: item.public_send(display) } }
+      end
+    end
+
+    def choices_cache_key(filter)
+      cache_key = filter.options[:cache_key]
+      if cache_key
+        "filter_choices/#{@resource_name}/#{filter.key}/#{cache_key.call}"
+      else
+        collection = filter.options[:collection].call
+        timestamp = collection.maximum(:updated_at)&.to_i || "none"
+        "filter_choices/#{@resource_name}/#{filter.key}/#{timestamp}"
+      end
+    end
 
     def filter_active?(filter, params)
       filter.param_keys.any? { |k|

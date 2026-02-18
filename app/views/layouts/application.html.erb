@@ -34,7 +34,7 @@
   <body class="bg-page text-body overflow-x-hidden" data-controller="pwa">
     <% if authenticated? %>
       <% sidebar_collapsed = Current.user&.sidebar_collapsed == true %>
-      <% unread_count = current_user.notifications.persistent.unread.count %>
+      <% unread_count = Current.notification_unread_count %>
       <div class="flex h-screen min-h-0 w-full flex-col overflow-hidden lg:flex-row <%= 'sidebar-collapsed' if sidebar_collapsed %>" data-controller="sidebar confirm-modal search-modal notifications" data-sidebar-collapsed-value="<%= sidebar_collapsed %>" data-sidebar-profile-path-value="<%= profile_display_preferences_path %>">
         <header class="fixed inset-x-0 top-0 z-50 flex h-9 items-center gap-2 border-b border-theme bg-surface px-2 lg:hidden">
           <button type="button"
