@@ -2,20 +2,55 @@ import { Controller } from "@hotwired/stimulus"
 
 // Opens a fullscreen overlay to view images at full size.
 // Supports prev/next navigation and keyboard shortcuts.
+// The lightbox overlay is a global singleton element rendered in the layout.
 //
 // Usage:
-//   <div data-controller="image-lightbox">
+//   <div data-controller="image-lightbox" data-image-lightbox-urls-value="[...]">
 //     <img data-action="click->image-lightbox#open"
 //          data-image-lightbox-index-param="0"
 //          data-image-lightbox-url-param="https://..." />
 //   </div>
 export default class extends Controller {
-  static targets = ["overlay", "image", "counter"]
   static values = { urls: Array }
 
   connect() {
     this.currentIndex = 0
     this.boundKeydown = this.handleKeydown.bind(this)
+
+    // Find the global lightbox overlay
+    this.overlay = document.querySelector('[data-lightbox-overlay]')
+    this.image = document.querySelector('[data-lightbox-image]')
+    this.counter = document.querySelector('[data-lightbox-counter]')
+    this.prevButton = document.querySelector('[data-lightbox-prev]')
+    this.nextButton = document.querySelector('[data-lightbox-next]')
+    this.closeButton = document.querySelector('[data-lightbox-close]')
+
+    // Bind button actions if found
+    if (this.closeButton) {
+      this.closeButton.onclick = (e) => {
+        e.stopPropagation()
+        this.close()
+      }
+    }
+    if (this.prevButton) {
+      this.prevButton.onclick = (e) => {
+        e.stopPropagation()
+        this.prev()
+      }
+    }
+    if (this.nextButton) {
+      this.nextButton.onclick = (e) => {
+        e.stopPropagation()
+        this.next()
+      }
+    }
+    if (this.overlay) {
+      this.overlay.onclick = (e) => {
+        if (e.target === this.overlay || e.target === this.image) {
+          this.close()
+        }
+      }
+    }
   }
 
   disconnect() {
@@ -25,16 +60,26 @@ export default class extends Controller {
   open({ params: { index, url } }) {
     this.currentIndex = index || 0
 
-    if (!this.hasOverlayTarget) {
-      this.buildOverlay()
+    if (!this.overlay || !this.image) {
+      console.error("Lightbox overlay not found")
+      return
+    }
+
+    // Show/hide navigation based on number of images
+    const hasMultipleImages = this.urlsValue.length > 1
+    if (this.prevButton) {
+      this.prevButton.classList.toggle("hidden", !hasMultipleImages)
+    }
+    if (this.nextButton) {
+      this.nextButton.classList.toggle("hidden", !hasMultipleImages)
     }
 
     this.show(url || this.urlsValue[this.currentIndex])
   }
 
   close() {
-    if (this.hasOverlayTarget) {
-      this.overlayTarget.classList.add("hidden")
+    if (this.overlay) {
+      this.overlay.classList.add("hidden")
     }
     document.body.classList.remove("overflow-hidden")
     document.removeEventListener("keydown", this.boundKeydown)
@@ -57,17 +102,23 @@ export default class extends Controller {
   // ── Private ──────────────────────────────────────────────────────
 
   show(url) {
-    this.imageTarget.src = url
-    this.overlayTarget.classList.remove("hidden")
+    if (this.image) {
+      this.image.src = url
+    }
+    if (this.overlay) {
+      this.overlay.classList.remove("hidden")
+    }
     document.body.classList.add("overflow-hidden")
     document.addEventListener("keydown", this.boundKeydown)
     this.updateCounter()
   }
 
   updateCounter() {
-    if (this.hasCounterTarget && this.urlsValue.length > 1) {
-      this.counterTarget.textContent = `${this.currentIndex + 1} / ${this.urlsValue.length}`
-      this.counterTarget.classList.remove("hidden")
+    if (this.counter && this.urlsValue.length > 1) {
+      this.counter.textContent = `${this.currentIndex + 1} / ${this.urlsValue.length}`
+      this.counter.classList.remove("hidden")
+    } else if (this.counter) {
+      this.counter.classList.add("hidden")
     }
   }
 
@@ -83,54 +134,5 @@ export default class extends Controller {
         this.prev()
         break
     }
-  }
-
-  buildOverlay() {
-    const overlay = document.createElement("div")
-    overlay.dataset.imageLightboxTarget = "overlay"
-    overlay.className = "fixed inset-0 z-[70] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm"
-    overlay.dataset.action = "click->image-lightbox#close"
-
-    overlay.innerHTML = `
-      <button data-action="click->image-lightbox#close"
-              class="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-              aria-label="Close">
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-
-      ${this.urlsValue.length > 1 ? `
-        <button data-action="click->image-lightbox#prev"
-                class="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-                aria-label="Previous image">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-          </svg>
-        </button>
-        <button data-action="click->image-lightbox#next"
-                class="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
-                aria-label="Next image">
-          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-          </svg>
-        </button>
-      ` : ""}
-
-      <img data-image-lightbox-target="image"
-           data-action="click->image-lightbox#stopPropagation"
-           class="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
-           alt="Enlarged image" />
-
-      <span data-image-lightbox-target="counter"
-            class="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white hidden">
-      </span>
-    `
-
-    this.element.appendChild(overlay)
-  }
-
-  stopPropagation(event) {
-    event.stopPropagation()
   }
 }

@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 const DEBOUNCE_MS = 150
 
 export default class extends Controller {
-  static targets = ["modal", "input", "results", "form"]
+  static targets = ["modal", "input", "results", "form", "placeholder"]
   static values = {
     minLength: { type: Number, default: 2 }
   }
@@ -31,23 +31,34 @@ export default class extends Controller {
   submitSearch() {
     const q = this.inputTarget?.value?.trim() ?? ""
     if (q.length < this.minLengthValue && this.hasFormTarget) {
-      this.renderPlaceholder()
+      this.showPlaceholder()
       return
     }
+    this.hidePlaceholder()
     if (this.hasFormTarget) {
       this.formTarget.requestSubmit()
+    }
+  }
+
+  showPlaceholder() {
+    if (this.hasPlaceholderTarget) {
+      this.placeholderTarget.classList.remove("hidden")
+    }
+    // Remove search results
+    const results = this.resultsTarget.querySelectorAll('.search-result-item')
+    results.forEach(r => r.remove())
+  }
+
+  hidePlaceholder() {
+    if (this.hasPlaceholderTarget) {
+      this.placeholderTarget.classList.add("hidden")
     }
   }
 
   onResultsLoaded() {
     this.selectedIndex = -1
     this.updateSelection()
-  }
-
-  renderPlaceholder() {
-    if (!this.hasResultsTarget) return
-    this.resultsTarget.innerHTML =
-      '<p class="px-4 py-8 text-center text-sm text-muted">Type to search products, services, users, and more…</p>'
+    this.hidePlaceholder()
   }
 
   handleKeydown(event) {
@@ -110,7 +121,7 @@ export default class extends Controller {
     document.body.classList.add("overflow-hidden")
     document.addEventListener("click", this.boundClickOutside)
     this.selectedIndex = -1
-    this.renderPlaceholder()
+    this.showPlaceholder()
     if (this.hasInputTarget) {
       this.inputTarget.value = ""
       this.inputTarget.focus()

@@ -1,0 +1,54 @@
+<div class="p-5 space-y-4">
+  <div>
+    <div class="flex items-start justify-between gap-2">
+      <h3 class="text-base font-semibold text-body"><%= product.name %></h3>
+      <span class="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium bg-blue-100 text-blue-800">Product</span>
+    </div>
+    <p class="mt-0.5 text-xs font-mono text-muted"><%= product.code %></p>
+  </div>
+
+  <div class="grid grid-cols-2 gap-3">
+    <div class="rounded-lg border border-theme bg-surface p-3">
+      <span class="text-xs font-medium uppercase tracking-wider text-muted">Price</span>
+      <p class="mt-1 text-lg font-bold text-body"><%= number_to_currency(product.selling_price) %></p>
+      <% if product.purchase_price.present? %>
+        <p class="text-[10px] text-muted">Cost: <%= number_to_currency(product.purchase_price) %></p>
+      <% end %>
+    </div>
+
+    <div class="rounded-lg border border-theme bg-surface p-3">
+      <span class="text-xs font-medium uppercase tracking-wider text-muted">Stock Level</span>
+      <p class="mt-1 text-lg font-bold <%= (product.stock_level || 0) <= 0 ? 'text-red-600' : (product.stock_level || 0) <= 5 ? 'text-yellow-600' : 'text-body' %>"><%= product.stock_level || 'N/A' %></p>
+    </div>
+  </div>
+
+  <div class="space-y-1.5">
+    <% if product.categories.first.present? %>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="text-muted">Category:</span>
+        <span class="rounded-full bg-gray-100 px-2 py-0.5 text-gray-700"><%= product.categories.first.name %></span>
+      </div>
+    <% end %>
+
+    <% if product.supplier.present? %>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="text-muted">Supplier:</span>
+        <span class="text-body"><%= product.supplier.name %></span>
+      </div>
+    <% end %>
+
+    <% if product.tax_code.present? %>
+      <div class="flex items-center gap-2 text-xs">
+        <span class="text-muted">Tax:</span>
+        <span class="text-body"><%= product.tax_code.name %> (<%= number_to_percentage(product.tax_code.rate * 100, precision: 1) %>)</span>
+      </div>
+    <% end %>
+  </div>
+
+  <% if product.notes.present? %>
+    <div class="border-t border-theme pt-3">
+      <span class="text-xs font-medium uppercase tracking-wider text-muted">Description</span>
+      <p class="mt-1 text-xs text-muted leading-relaxed"><%= product.notes %></p>
+    </div>
+  <% end %>
+</div>

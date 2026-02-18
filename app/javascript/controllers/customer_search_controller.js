@@ -2,8 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 
 // Modal-based customer search for assigning a customer to an order.
 // Search results are rendered server-side via Turbo Streams.
+// Placeholder is shown/hidden via Stimulus targets.
 export default class extends Controller {
-  static targets = ["input", "results", "filterBar", "form", "filterInput"]
+  static targets = ["input", "results", "filterBar", "form", "filterInput", "placeholder"]
   static values = { orderId: Number }
 
   connect() {
@@ -30,15 +31,32 @@ export default class extends Controller {
   submitSearch() {
     const query = this.inputTarget.value.trim()
     if (query.length < 1) {
-      this.resultsTarget.innerHTML = '<div class="p-6 text-center text-sm text-muted">Type to search for customers</div>'
+      this.showPlaceholder()
       return
     }
+    this.hidePlaceholder()
     this.formTarget.requestSubmit()
+  }
+
+  showPlaceholder() {
+    if (this.hasPlaceholderTarget) {
+      this.placeholderTarget.classList.remove("hidden")
+    }
+    // Clear any search results
+    const results = this.resultsTarget.querySelectorAll('.customer-search-result')
+    results.forEach(r => r.remove())
+  }
+
+  hidePlaceholder() {
+    if (this.hasPlaceholderTarget) {
+      this.placeholderTarget.classList.add("hidden")
+    }
   }
 
   onResultsLoaded() {
     this.selectedIndex = -1
     this.updateSelection()
+    this.hidePlaceholder()
   }
 
   setFilter(event) {
@@ -133,7 +151,7 @@ export default class extends Controller {
     this.filterInputTarget.value = "all"
     this.selectedIndex = -1
     this.updateFilterPills()
-    this.resultsTarget.innerHTML = '<div class="p-6 text-center text-sm text-muted">Type to search for customers</div>'
+    this.showPlaceholder()
 
     const codeInput = document.getElementById("code_lookup_input")
     if (codeInput) codeInput.focus()

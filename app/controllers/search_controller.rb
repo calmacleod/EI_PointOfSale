@@ -31,6 +31,47 @@ class SearchController < ApplicationController
     end
   end
 
+  def product_results
+    raw_query = params[:q].to_s.strip
+    limit = [ (params[:limit] || 20).to_i, 50 ].min
+    type_filter = params[:type].to_s.presence
+
+    @results = []
+    @selected_index = params[:selected].to_i
+
+    if raw_query.present?
+      # Fast path: exact code match
+      if type_filter.nil? || type_filter == "Product"
+        product = Product.kept.find_by(code: raw_query)
+        @results << { type: "Product", record: product } if product
+      end
+
+      if type_filter.nil? || type_filter == "Service"
+        service = Service.kept.find_by(code: raw_query)
+        @results << { type: "Service", record: service } if service
+      end
+
+      # Fill with fuzzy search if needed
+      if @results.empty? && raw_query.length >= 2
+        query = sanitize_search_query(raw_query)
+        docs = PgSearch.multisearch(query)
+        docs = docs.where(searchable_type: [ "Product", "Service" ])
+        docs = docs.where(searchable_type: type_filter) if type_filter.present?
+
+        docs.limit(limit).each do |doc|
+          record = doc.searchable
+          next unless record && record.respond_to?(:kept?)
+
+          @results << { type: doc.searchable_type, record: record }
+        end
+      end
+    end
+
+    respond_to do |format|
+      format.html { render partial: "search/product_search_results", locals: { results: @results, selected_index: @selected_index } }
+    end
+  end
+
   private
 
     # Exact code lookup against indexed code columns.

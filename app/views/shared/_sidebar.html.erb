@@ -211,6 +211,15 @@
           </div>
           <span class="sidebar-text min-w-0 truncate">Notifications</span>
         </button>
+
+        <%# Notifications popover - initially hidden, shown via Stimulus %>
+        <div data-notifications-target="popover"
+             class="fixed hidden z-[100] rounded-lg border border-theme bg-surface shadow-xl overflow-hidden"
+             style="max-height: 24rem; width: 20rem;">
+          <%= turbo_frame_tag "notifications_popover", src: notifications_path, loading: "lazy" do %>
+            <div class="p-4 text-center text-sm text-muted">Loading...</div>
+          <% end %>
+        </div>
       </div>
 
       <%= link_to edit_profile_path,

@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   end
 
   get "search", to: "search#index", as: :search
+  get "search/product_results", to: "search#product_results", as: :product_results_search
+  get "filters/chip", to: "filters#chip", as: :filter_chip
 
   resource :session
   resources :passwords, param: :token
@@ -109,9 +111,14 @@ Rails.application.routes.draw do
   resources :products do
     member do
       delete :purge_image
+      get :preview
     end
   end
-  resources :services
+  resources :services do
+    member do
+      get :preview
+    end
+  end
   resources :customers do
     collection do
       get :search

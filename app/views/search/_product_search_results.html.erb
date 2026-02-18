@@ -1,0 +1,11 @@
+<% if results.empty? %>
+  <div class="p-6 text-center text-sm text-muted">No products or services found</div>
+<% else %>
+  <% results.each_with_index do |result, idx| %>
+    <% if result[:type] == "Product" %>
+      <%= render "products/search_result_item", product: result[:record], selected: idx == selected_index, index: idx %>
+    <% else %>
+      <%= render "services/search_result_item", service: result[:record], selected: idx == selected_index, index: idx %>
+    <% end %>
+  <% end %>
+<% end %>

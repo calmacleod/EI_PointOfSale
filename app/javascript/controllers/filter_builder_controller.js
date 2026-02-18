@@ -7,6 +7,7 @@ const PATH_MAP_KEY = "table_filter_paths"
 /**
  * Manages the generic filter bar: search input, add/remove filter chips,
  * form submission via Turbo Frame, and localStorage persistence.
+ * Filter chips are fetched server-side and rendered dynamically.
  */
 export default class extends Controller {
   static targets = ["form", "searchInput", "clearButton", "chipsContainer",
@@ -58,7 +59,7 @@ export default class extends Controller {
     this.addFilterDropdownTarget.classList.add("hidden")
   }
 
-  addFilter(event) {
+  async addFilter(event) {
     const key = event.currentTarget.dataset.filterKey
     const filterDef = this.filtersValue.find(f => f.key === key)
     if (!filterDef) return
@@ -68,19 +69,29 @@ export default class extends Controller {
       this.addFilterDropdownTarget.classList.add("hidden")
     }
 
-    // Build and insert chip HTML
-    const chip = this.buildChipHTML(filterDef)
-    if (this.hasChipsContainerTarget) {
-      this.chipsContainerTarget.classList.remove("hidden")
-      this.chipsContainerTarget.insertAdjacentHTML("beforeend", chip)
+    // Fetch and insert chip HTML from server
+    try {
+      const formId = this.formId
+      const url = `/filters/chip?resource=${encodeURIComponent(this.resourceValue)}&key=${encodeURIComponent(key)}&form_id=${encodeURIComponent(formId)}`
+      const response = await fetch(url, { headers: { "Accept": "text/html" } })
+
+      if (response.ok) {
+        const html = await response.text()
+        if (this.hasChipsContainerTarget) {
+          this.chipsContainerTarget.classList.remove("hidden")
+          this.chipsContainerTarget.insertAdjacentHTML("beforeend", html)
+        }
+
+        // Disable the dropdown option
+        event.currentTarget.disabled = true
+
+        // Track active key
+        this.activeKeysValue = [...this.activeKeysValue, key]
+        this.updateClearVisibility()
+      }
+    } catch (e) {
+      console.error("Failed to fetch filter chip:", e)
     }
-
-    // Disable the dropdown option
-    event.currentTarget.disabled = true
-
-    // Track active key
-    this.activeKeysValue = [...this.activeKeysValue, key]
-    this.updateClearVisibility()
   }
 
   // --- Remove filter ---
@@ -229,54 +240,6 @@ export default class extends Controller {
 
   get formId() {
     return this.hasFormTarget ? this.formTarget.id : `${this.resourceValue}_filter_form`
-  }
-
-  buildChipHTML(filterDef) {
-    const key = filterDef.key
-    const label = filterDef.label
-    const fid = this.formId
-    const removeBtn = `<button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="${key}" class="ml-0.5 text-muted hover:text-body" title="Remove filter"><svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>`
-    const chipClass = "inline-flex items-center gap-1 rounded-full border border-theme bg-[var(--color-border)]/20 px-2 py-0.5"
-
-    let inner = ""
-    switch (filterDef.type) {
-    case "association":
-    case "select": {
-      const options = (filterDef.choices || []).map(c =>
-        `<option value="${c.value}">${this.escapeHTML(c.label)}</option>`
-      ).join("")
-      inner = `<select name="${key}" form="${fid}" class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange">${options}</select>`
-      break
-    }
-    case "boolean":
-      inner = `<select name="${key}" form="${fid}" class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange"><option value="true">Yes</option><option value="false">No</option></select>`
-      break
-    case "number_range":
-      inner = `<input type="number" name="${key}_min" form="${fid}" placeholder="min" step="any" class="w-16 border-0 bg-transparent px-1 py-0 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange"><span class="text-xs text-muted">–</span><input type="number" name="${key}_max" form="${fid}" placeholder="max" step="any" class="w-16 border-0 bg-transparent px-1 py-0 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange">`
-      break
-    case "date_range": {
-      const presets = (filterDef.presets || []).map(p =>
-        `<option value="${p.value}">${this.escapeHTML(p.label)}</option>`
-      ).join("")
-      inner = `<select name="${key}_preset" form="${fid}" class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0" data-controller="date-range-filter" data-date-range-filter-target="presetSelect" data-action="change->date-range-filter#presetChanged change->filter-builder#handleFilterChange">${presets}</select><div data-date-range-filter-target="customFields" class="hidden flex items-center gap-1"><input type="date" name="${key}_from" form="${fid}" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange"><span class="text-xs text-muted">–</span><input type="date" name="${key}_to" form="${fid}" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange"></div>`
-      break
-    }
-    case "multi_select": {
-      const checkboxes = (filterDef.choices || []).map(c =>
-        `<label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-[var(--color-border)]"><input type="checkbox" name="${key}[]" value="${c.value}" form="${fid}" class="rounded border-theme text-accent focus:ring-accent" data-action="change->multi-select-filter#changed change->filter-builder#handleFilterChange">${this.escapeHTML(c.label)}</label>`
-      ).join("")
-      inner = `<button type="button" data-action="click->multi-select-filter#toggle" class="inline-flex items-center gap-0.5 text-xs font-medium text-body"><span data-multi-select-filter-target="label">Select\u2026</span><svg class="h-3 w-3 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></button><div data-multi-select-filter-target="dropdown" class="absolute left-0 top-full z-20 mt-1 hidden max-h-60 min-w-[200px] overflow-y-auto rounded-lg border border-theme bg-surface py-1 shadow-lg">${checkboxes}</div>`
-      return `<div class="relative ${chipClass}" data-filter-key="${key}" data-controller="multi-select-filter"><span class="text-xs font-medium text-muted">${this.escapeHTML(label)}:</span>${inner}${removeBtn}</div>`
-    }
-    }
-
-    return `<div class="${chipClass}" data-filter-key="${key}"><span class="text-xs font-medium text-muted">${this.escapeHTML(label)}:</span>${inner}${removeBtn}</div>`
-  }
-
-  escapeHTML(str) {
-    const div = document.createElement("div")
-    div.textContent = str
-    return div.innerHTML
   }
 
   // --- Path registration for turbo:before-visit interception ---

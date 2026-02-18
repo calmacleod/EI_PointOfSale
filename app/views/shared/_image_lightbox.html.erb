@@ -1,0 +1,37 @@
+<%# Image lightbox overlay - global singleton used by image-lightbox controller %>
+<%# This is rendered once in the application layout and reused by all lightbox instances %>
+<div data-lightbox-overlay
+     class="fixed inset-0 z-[70] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm">
+
+  <button data-lightbox-close
+          class="absolute top-4 right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors"
+          aria-label="Close">
+    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+
+  <button data-lightbox-prev
+          class="absolute left-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors hidden"
+          aria-label="Previous image">
+    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+  </button>
+
+  <button data-lightbox-next
+          class="absolute right-4 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 text-white hover:bg-black/70 transition-colors hidden"
+          aria-label="Next image">
+    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+    </svg>
+  </button>
+
+  <img data-lightbox-image
+       class="max-h-[90vh] max-w-[90vw] rounded-lg object-contain shadow-2xl cursor-pointer"
+       alt="Enlarged image">
+
+  <span data-lightbox-counter
+        class="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-sm text-white hidden">
+  </span>
+</div>

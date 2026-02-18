@@ -78,6 +78,16 @@ class ServicesController < ApplicationController
     redirect_to services_path, notice: "Service removed."
   end
 
+  def preview
+    authorize! :read, @service
+
+    if stale?(@service, public: false)
+      respond_to do |format|
+        format.html { render partial: "services/search_preview", locals: { service: @service } }
+      end
+    end
+  end
+
   private
 
     def service_params

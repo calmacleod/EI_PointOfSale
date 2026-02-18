@@ -102,6 +102,17 @@ class ProductsController < ApplicationController
     redirect_to edit_product_path(@product), notice: "Image removed."
   end
 
+  def preview
+    authorize! :read, @product
+    @product = @product.includes(:categories, :supplier, :tax_code) if @product.respond_to?(:includes)
+
+    if stale?(@product, public: false)
+      respond_to do |format|
+        format.html { render partial: "products/search_preview", locals: { product: @product } }
+      end
+    end
+  end
+
   private
 
     def product_params

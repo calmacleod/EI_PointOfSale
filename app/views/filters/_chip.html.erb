@@ -1,0 +1,100 @@
+<%# Filter chip wrapper with inner content based on filter type %>
+<% chip_class = "inline-flex items-center gap-1 rounded-full border border-theme bg-[var(--color-border)]/20 px-2 py-0.5" %>
+<% remove_btn = <<~HTML
+  <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="#{filter.key}" class="ml-0.5 text-muted hover:text-body" title="Remove filter">
+    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+  </button>
+HTML
+%>
+
+<% case filter.type %>
+<% when :association, :select %>
+  <%# Association/Select filter chip %>
+  <% options = filter.options[:collection].call.map { |item|
+       display = filter.options[:display] || :name
+       [item.public_send(display), item.id]
+     } %>
+
+  <div class="<%= chip_class %>" data-filter-key="<%= filter.key %>">
+    <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
+    <select name="<%= filter.key %>" form="<%= form_id %>" class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange">
+      <% options.each do |label, value| %>
+        <option value="<%= value %>"><%= label %></option>
+      <% end %>
+    </select>
+    <%= remove_btn.html_safe %>
+  </div>
+
+<% when :boolean %>
+  <%# Boolean filter chip %>
+  <div class="<%= chip_class %>" data-filter-key="<%= filter.key %>">
+    <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
+    <select name="<%= filter.key %>" form="<%= form_id %>" class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange">
+      <option value="true">Yes</option>
+      <option value="false">No</option>
+    </select>
+    <%= remove_btn.html_safe %>
+  </div>
+
+<% when :number_range %>
+  <%# Number range filter chip %>
+  <div class="<%= chip_class %>" data-filter-key="<%= filter.key %>">
+    <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
+    <input type="number" name="<%= filter.key %>_min" form="<%= form_id %>" placeholder="min" step="any" autocomplete="off" class="w-16 border-0 bg-transparent px-1 py-0 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange">
+    <span class="text-xs text-muted">–</span>
+    <input type="number" name="<%= filter.key %>_max" form="<%= form_id %>" placeholder="max" step="any" autocomplete="off" class="w-16 border-0 bg-transparent px-1 py-0 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange">
+    <%= remove_btn.html_safe %>
+  </div>
+
+<% when :date_range %>
+  <%# Date range filter chip %>
+  <% presets = [
+       ["Today", "today"],
+       ["Yesterday", "yesterday"],
+       ["Last 7 days", "last_7_days"],
+       ["Last 30 days", "last_30_days"],
+       ["This month", "this_month"],
+       ["Last month", "last_month"],
+       ["This year", "this_year"],
+       ["Custom", "custom"]
+     ] %>
+
+  <div class="<%= chip_class %>" data-filter-key="<%= filter.key %>">
+    <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
+    <select name="<%= filter.key %>_preset" form="<%= form_id %>" class="appearance-none border-0 bg-transparent py-0 pl-0 pr-4 text-xs font-medium text-body focus:ring-0" data-controller="date-range-filter" data-date-range-filter-target="presetSelect" data-action="change->date-range-filter#presetChanged change->filter-builder#handleFilterChange">
+      <% presets.each do |label, value| %>
+        <option value="<%= value %>"><%= label %></option>
+      <% end %>
+    </select>
+    <div data-date-range-filter-target="customFields" class="hidden flex items-center gap-1">
+      <input type="date" name="<%= filter.key %>_from" form="<%= form_id %>" autocomplete="off" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange">
+      <span class="text-xs text-muted">–</span>
+      <input type="date" name="<%= filter.key %>_to" form="<%= form_id %>" autocomplete="off" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange">
+    </div>
+    <%= remove_btn.html_safe %>
+  </div>
+
+<% when :multi_select %>
+  <%# Multi-select filter chip %>
+  <% choices = filter.options[:collection].call.map { |item|
+       display = filter.options[:display] || :name
+       { label: item.public_send(display), value: item.id.to_s }
+     } %>
+
+  <div class="relative <%= chip_class %>" data-filter-key="<%= filter.key %>" data-controller="multi-select-filter">
+    <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
+    <button type="button" data-action="click->multi-select-filter#toggle" class="inline-flex items-center gap-0.5 text-xs font-medium text-body">
+      <span data-multi-select-filter-target="label">Select…</span>
+      <svg class="h-3 w-3 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+    </button>
+    <div data-multi-select-filter-target="dropdown" class="absolute left-0 top-full z-20 mt-1 hidden max-h-60 min-w-[200px] overflow-y-auto rounded-lg border border-theme bg-surface py-1 shadow-lg">
+      <% choices.each do |choice| %>
+        <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-[var(--color-border)]">
+          <input type="checkbox" name="<%= filter.key %>[]" value="<%= choice[:value] %>" form="<%= form_id %>" class="rounded border-theme text-accent focus:ring-accent" data-action="change->multi-select-filter#changed change->filter-builder#handleFilterChange">
+          <%= choice[:label] %>
+        </label>
+      <% end %>
+    </div>
+    <%= remove_btn.html_safe %>
+  </div>
+<% end %>

@@ -1,0 +1,17 @@
+<button type="button"
+        class="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-[var(--color-border)] transition <%= selected ? 'bg-accent/10 border-l-2 border-l-accent' : 'border-l-2 border-l-transparent' %>"
+        data-action="click->product-search#selectItem dblclick->product-search#addItem"
+        data-index="<%= index %>"
+        data-type="Service"
+        data-id="<%= service.id %>">
+  <div class="min-w-0 flex-1">
+    <div class="flex items-center gap-2">
+      <span class="text-sm font-medium text-body truncate"><%= service.name %></span>
+      <span class="shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-medium bg-purple-100 text-purple-800">Service</span>
+    </div>
+    <% if service.code.present? %>
+      <span class="text-xs text-muted"><%= service.code %></span>
+    <% end %>
+  </div>
+  <svg class="h-4 w-4 shrink-0 text-muted opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+</button>
