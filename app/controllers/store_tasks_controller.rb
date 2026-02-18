@@ -25,7 +25,7 @@ class StoreTasksController < ApplicationController
     @saved_queries = current_user.saved_queries.for_resource("store_tasks")
 
     @pagy, @store_tasks = filter_and_paginate(
-      StoreTask.all,
+      StoreTask.includes(:assigned_to),
       config: @filter_config
     )
   end

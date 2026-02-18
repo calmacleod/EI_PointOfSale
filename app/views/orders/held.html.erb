@@ -14,7 +14,7 @@
                empty_message: "No held orders found." do |t| %>
       <% t.cell(:number) { |order| modal_trigger(order) } %>
       <% t.cell(:customer) { |order| customer_cell(order) } %>
-      <% t.cell(:items_count) { |order| order.order_lines.sum(:quantity) } %>
+      <% t.cell(:items_count) { |order| order.order_lines.loaded? ? order.order_lines.to_a.sum(&:quantity) : order.order_lines.sum(:quantity) } %>
       <% t.cell(:held_at) { |order| time_ago_in_words(order.held_at) + " ago" } %>
       <% t.cell(:created_by) { |order| order.created_by&.name || order.created_by&.email_address } %>
       <% t.cell(:total) { |order| number_to_currency(order.total) } %>

@@ -38,7 +38,7 @@ module AdminArea
       @saved_queries = current_user.saved_queries.for_resource("audits")
 
       @pagy, @audits = filter_and_paginate(
-        Audited::Audit.all,
+        Audited::Audit.includes(:user),
         config: @filter_config,
         items: 25
       )
