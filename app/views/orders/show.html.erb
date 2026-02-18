@@ -26,7 +26,14 @@
           <%= @order.display_status %>
         </span>
       </div>
-      <div><span class="text-muted">Customer:</span> <span class="text-body"><%= @order.customer_name %></span></div>
+      <div>
+        <span class="text-muted">Customer:</span>
+        <% if @order.customer.present? %>
+          <%= link_to @order.customer_name, customer_path(@order.customer), class: "text-body hover:text-accent underline" %>
+        <% else %>
+          <span class="text-body"><%= @order.customer_name %></span>
+        <% end %>
+      </div>
       <div><span class="text-muted">Cashier:</span> <span class="text-body"><%= @order.created_by.name || @order.created_by.email_address %></span></div>
       <div><span class="text-muted">Date:</span> <span class="text-body"><%= @order.created_at.strftime("%b %d, %Y at %H:%M") %></span></div>
       <% if @order.completed_at %>
@@ -58,7 +65,26 @@
         <% @order.order_lines.each do |line| %>
           <tr>
             <td class="px-4 py-2 text-xs font-mono text-muted"><%= line.code %></td>
-            <td class="px-4 py-2 text-sm text-body"><%= line.name %></td>
+            <td class="px-4 py-2 text-sm text-body">
+              <% if line.sellable.present? %>
+                <% case line.sellable_type %>
+                <% when "Product" %>
+                  <%= link_to line.name, product_path(line.sellable), class: "hover:text-accent underline" %>
+                <% when "Service" %>
+                  <%= link_to line.name, service_path(line.sellable), class: "hover:text-accent underline" %>
+                <% when "GiftCertificate" %>
+                  <% if can?(:read, GiftCertificate) %>
+                    <%= link_to line.name, admin_gift_certificate_path(line.sellable), class: "hover:text-accent underline" %>
+                  <% else %>
+                    <%= line.name %>
+                  <% end %>
+                <% else %>
+                  <%= line.name %>
+                <% end %>
+              <% else %>
+                <%= line.name %>
+              <% end %>
+            </td>
             <td class="px-4 py-2 text-center text-sm text-body"><%= line.quantity %></td>
             <td class="px-4 py-2 text-right text-sm text-body"><%= number_to_currency(line.unit_price) %></td>
             <td class="px-4 py-2 text-right text-sm text-muted"><%= number_to_currency(line.tax_amount) %></td>
@@ -99,7 +125,11 @@
         <% @order.order_discounts.each do |discount| %>
           <div class="flex items-center justify-between px-4 py-2.5 text-sm">
             <div>
-              <span class="font-medium text-green-900"><%= discount.name %></span>
+              <% if discount.discount.present? && can?(:read, Discount) %>
+                <%= link_to discount.name, admin_discount_path(discount.discount), class: "font-medium text-green-900 hover:underline" %>
+              <% else %>
+                <span class="font-medium text-green-900"><%= discount.name %></span>
+              <% end %>
               <span class="text-green-700 text-xs ml-1">
                 (<%= discount.display_value %><%= " on #{discount.scope.humanize.downcase}" unless discount.applies_to_all_items? %>)
               </span>
