@@ -35,7 +35,7 @@
     <% if authenticated? %>
       <% sidebar_collapsed = Current.user&.sidebar_collapsed == true %>
       <% unread_count = Current.notification_unread_count %>
-      <div class="flex h-screen min-h-0 w-full flex-col overflow-hidden lg:flex-row <%= 'sidebar-collapsed' if sidebar_collapsed %>" data-controller="sidebar confirm-modal search-modal notifications" data-sidebar-collapsed-value="<%= sidebar_collapsed %>" data-sidebar-profile-path-value="<%= profile_display_preferences_path %>">
+      <div class="flex h-screen min-h-0 w-full flex-col overflow-hidden lg:flex-row <%= 'sidebar-collapsed' if sidebar_collapsed %>" data-controller="sidebar confirm-modal search-modal notifications" data-sidebar-profile-path-value="<%= profile_display_preferences_path %>">
         <header class="fixed inset-x-0 top-0 z-50 flex h-9 items-center gap-2 border-b border-theme bg-surface px-2 lg:hidden">
           <button type="button"
                   data-action="click->sidebar#toggle"
@@ -80,7 +80,9 @@
           <% end %>
         </main>
 
-        <%= turbo_stream_from current_user %>
+        <%# Turbo Stream subscription with data-turbo-permanent to persist across page navigations %>
+        <%# This prevents constant subscribe/unsubscribe cycles as user navigates the app %>
+        <%= turbo_stream_from current_user, id: "persistent_turbo_stream", data: { turbo_permanent: true } %>
 
         <%# Toast notification container %>
         <div id="toast_container" data-notifications-target="toastContainer"

@@ -1,21 +1,51 @@
 import { Controller } from "@hotwired/stimulus"
 import { createConsumer } from "@rails/actioncable"
 
+// Singleton subscription manager to persist across page navigations
+// This prevents constant subscribe/unsubscribe cycles as user navigates the app
+class NotificationSubscriptionManager {
+  static instance = null
+  static subscribers = new Set()
+
+  static getInstance() {
+    if (!this.instance) {
+      this.instance = new NotificationSubscriptionManager()
+    }
+    return this.instance
+  }
+
+  constructor() {
+    this.consumer = createConsumer()
+    this.channel = this.consumer.subscriptions.create(
+      { channel: "NotificationChannel" },
+      { received: (data) => this.broadcast(data) }
+    )
+  }
+
+  subscribe(callback) {
+    this.subscribers.add(callback)
+    return () => this.subscribers.delete(callback)
+  }
+
+  broadcast(data) {
+    this.subscribers.forEach(callback => callback(data))
+  }
+}
+
 export default class extends Controller {
   static targets = ["badge", "toastContainer", "popover"]
 
   connect() {
-    this.consumer = createConsumer()
-    this.channel = this.consumer.subscriptions.create(
-      { channel: "NotificationChannel" },
-      { received: (data) => this.handleNotification(data) }
+    // Subscribe to the singleton manager instead of creating a new subscription
+    this.unsubscribe = NotificationSubscriptionManager.getInstance().subscribe(
+      (data) => this.handleNotification(data)
     )
     this.dropdownOpen = false
   }
 
   disconnect() {
-    this.channel?.unsubscribe()
-    this.consumer?.disconnect()
+    // Unsubscribe from the manager but keep the underlying subscription alive
+    this.unsubscribe?.()
     this.closePopover()
   }
 
