@@ -35,6 +35,8 @@ export default class extends Controller {
 
     if (isCash) {
       this.#roundAmountForCash()
+    } else {
+      this.#unroundAmountForNonCash()
     }
   }
 
@@ -99,6 +101,20 @@ export default class extends Controller {
 
     const amount = parseFloat(this.amountInputTarget.value) || 0
     const rounded = Math.round(amount * 20) / 20
+
+    // Store the unrounded amount before rounding
+    this.amountInputTarget.dataset.unroundedValue = amount.toFixed(2)
     this.amountInputTarget.value = rounded.toFixed(2)
+  }
+
+  // Restore the unrounded amount when switching to non-cash payment
+  #unroundAmountForNonCash() {
+    if (!this.hasAmountInputTarget) return
+
+    const unrounded = this.amountInputTarget.dataset.unroundedValue
+    if (unrounded) {
+      this.amountInputTarget.value = unrounded
+      delete this.amountInputTarget.dataset.unroundedValue
+    }
   }
 }

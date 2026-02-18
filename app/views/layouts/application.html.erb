@@ -89,6 +89,15 @@
              class="fixed top-12 right-3 z-[60] flex flex-col items-end gap-2 lg:top-3 lg:right-4">
         </div>
 
+        <%# Notifications popover - positioned via Stimulus, outside sidebar to avoid z-index issues %>
+        <div data-notifications-target="popover"
+             class="fixed hidden z-[100] rounded-lg border border-theme bg-surface shadow-xl overflow-hidden"
+             style="max-height: 24rem; width: 20rem;">
+          <%= turbo_frame_tag "notifications_popover", src: notifications_path, loading: "lazy" do %>
+            <div class="p-4 text-center text-sm text-muted">Loading...</div>
+          <% end %>
+        </div>
+
         <%# Image lightbox overlay (used by image-lightbox controller) %>
         <%= render "shared/image_lightbox" %>
       </div>

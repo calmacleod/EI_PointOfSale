@@ -12,13 +12,22 @@ class NotificationsController < ApplicationController
     notification = current_user.notifications.find(params[:id])
     notification.mark_as_read!
 
-    head :ok
+    # Get updated count for cache invalidation
+    unread_count = current_user.notifications.persistent.unread.count
+
+    respond_to do |format|
+      format.json { render json: { unread_count: unread_count } }
+      format.html { redirect_back_or_to root_path }
+    end
   end
 
   def mark_all_read
     current_user.notifications.persistent.unread.update_all(read_at: Time.current)
 
-    head :ok
+    respond_to do |format|
+      format.json { render json: { unread_count: 0 } }
+      format.html { redirect_back_or_to root_path }
+    end
   end
 
   def destroy

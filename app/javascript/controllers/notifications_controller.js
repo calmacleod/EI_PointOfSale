@@ -75,6 +75,18 @@ export default class extends Controller {
     })
   }
 
+  updateBadgeCount(count) {
+    if (!this.hasBadgeTarget) return
+    this.badgeTargets.forEach((badge) => {
+      badge.textContent = String(count)
+      if (count === 0) {
+        badge.classList.add("hidden")
+      } else {
+        badge.classList.remove("hidden")
+      }
+    })
+  }
+
   toggleDropdown(event) {
     event.stopPropagation()
     const button = event.currentTarget
@@ -171,7 +183,10 @@ export default class extends Controller {
       method: "PATCH",
       headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
       credentials: "same-origin"
-    }).catch(() => {})
+    }).then(response => response.json())
+      .then(data => {
+        this.updateBadgeCount(data.unread_count)
+      }).catch(() => {})
   }
 
   markAllReadAndRefresh() {
@@ -180,14 +195,11 @@ export default class extends Controller {
       method: "PATCH",
       headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
       credentials: "same-origin"
-    }).then(() => {
-      this.badgeTargets.forEach((badge) => {
-        badge.textContent = "0"
-        badge.classList.add("hidden")
-      })
-
-      this.refreshPopover()
-    }).catch(() => {})
+    }).then(response => response.json())
+      .then(data => {
+        this.updateBadgeCount(data.unread_count)
+        this.refreshPopover()
+      }).catch(() => {})
   }
 
   dismissNotification(event) {
@@ -213,10 +225,7 @@ export default class extends Controller {
       headers: { "X-CSRF-Token": csrfToken, "Accept": "application/json" },
       credentials: "same-origin"
     }).then(() => {
-      this.badgeTargets.forEach((badge) => {
-        badge.textContent = "0"
-        badge.classList.add("hidden")
-      })
+      this.updateBadgeCount(0)
       this.refreshPopover()
     }).catch(() => {})
   }

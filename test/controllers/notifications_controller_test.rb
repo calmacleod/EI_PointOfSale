@@ -21,19 +21,21 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
     notification = Notification.create!(user: @user, title: "Unread")
     assert_nil notification.read_at
 
-    patch mark_read_notification_path(notification)
+    patch mark_read_notification_path(notification), as: :json
     assert_response :success
     assert_not_nil notification.reload.read_at
+    assert_equal 0, response.parsed_body["unread_count"]
   end
 
   test "mark_all_read marks all unread notifications" do
     n1 = Notification.create!(user: @user, title: "A", persistent: true)
     n2 = Notification.create!(user: @user, title: "B", persistent: true)
 
-    patch mark_all_read_notifications_path
+    patch mark_all_read_notifications_path, as: :json
     assert_response :success
     assert_not_nil n1.reload.read_at
     assert_not_nil n2.reload.read_at
+    assert_equal 0, response.parsed_body["unread_count"]
   end
 
   test "requires authentication" do
