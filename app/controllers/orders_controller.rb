@@ -198,30 +198,34 @@ class OrdersController < ApplicationController
 
   def quick_lookup
     code = params[:code].to_s.strip
-    @order = Order.find(params[:order_id])
+    order_id = params[:order_id]
+    order = Order.find(order_id)
 
     sellable = Product.find_by_exact_code(code) || Service.kept.find_by(code: code)
 
     if sellable
       OrderLines::Add.call(
-        order: @order,
+        order: order,
         sellable: sellable,
         actor: current_user,
         quantity: 1,
         increment_if_exists: true
       )
 
+      # Re-load with eager loading to avoid N+1 queries in views
+      order = reload_order_with_associations(order_id)
+
       respond_to do |format|
         format.turbo_stream {
           render turbo_stream: [
-            turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order.reload }),
-            turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order }),
-            turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-            turbo_stream.replace("code_lookup_input_wrapper", partial: "orders/code_lookup_input", locals: { order: @order }),
+            turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
+            turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
+            turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
+            turbo_stream.replace("code_lookup_input_wrapper", partial: "orders/code_lookup_input", locals: { order: order }),
             turbo_stream.replace("lookup_flash", partial: "orders/lookup_flash", locals: { message: "Added #{sellable.sellable_name}", type: :success })
           ]
         }
-        format.html { redirect_to register_path(order_id: @order.id) }
+        format.html { redirect_to register_path(order_id: order.id) }
       end
     else
       respond_to do |format|
@@ -230,7 +234,7 @@ class OrdersController < ApplicationController
             turbo_stream.update("lookup_flash", partial: "orders/lookup_flash", locals: { message: "No match for \"#{code}\" — use search", type: :warning })
           ]
         }
-        format.html { redirect_to register_path(order_id: @order.id), alert: "No product or service found with code: #{code}" }
+        format.html { redirect_to register_path(order_id: order_id), alert: "No product or service found with code: #{code}" }
       end
     end
   end
@@ -243,5 +247,16 @@ class OrdersController < ApplicationController
 
     def order_params
       params.require(:order).permit(:notes, :tax_exempt, :tax_exempt_number)
+    end
+
+    # Reload order with all associations eagerly loaded to prevent N+1 queries
+    # when rendering the turbo stream response.
+    def reload_order_with_associations(order_id)
+      Order.includes(
+        :customer,
+        { order_lines: :sellable },
+        { order_discounts: [ :order_discount_items, :order_lines ] },
+        :order_payments
+      ).find(order_id)
     end
 end

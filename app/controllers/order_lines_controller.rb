@@ -16,16 +16,19 @@ class OrderLinesController < ApplicationController
       quantity: params[:quantity] || 1
     )
 
+    # Re-load with eager loading to avoid N+1 queries in views
+    order = reload_order_with_associations(@order.id)
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: [
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order.reload }),
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: @order })
+          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
+          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
+          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
+          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order })
         ]
       }
-      format.html { redirect_to edit_order_path(@order) }
+      format.html { redirect_to edit_order_path(order) }
     end
   end
 
@@ -41,11 +44,13 @@ class OrderLinesController < ApplicationController
       data: { name: @order_line.name, old_quantity: old_qty, new_quantity: @order_line.quantity }
     )
 
-    order = @order_line.order
+    # Re-load with eager loading to avoid N+1 queries in views
+    order = reload_order_with_associations(@order_line.order_id)
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: [
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order.reload }),
+          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
           turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
           turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order })
@@ -57,6 +62,7 @@ class OrderLinesController < ApplicationController
 
   def destroy
     order = @order_line.order
+    order_id = order.id
     authorize! :update, order
 
     name = @order_line.name
@@ -68,10 +74,13 @@ class OrderLinesController < ApplicationController
       data: { name: name }
     )
 
+    # Re-load with eager loading to avoid N+1 queries in views
+    order = reload_order_with_associations(order_id)
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: [
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order.reload }),
+          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
           turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
           turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order })
@@ -97,5 +106,16 @@ class OrderLinesController < ApplicationController
       when "Service" then Service.kept.find(id)
       else raise ArgumentError, "Unknown sellable type: #{type}"
       end
+    end
+
+    # Reload order with all associations eagerly loaded to prevent N+1 queries
+    # when rendering the turbo stream response.
+    def reload_order_with_associations(order_id)
+      Order.includes(
+        :customer,
+        { order_lines: :sellable },
+        { order_discounts: [ :order_discount_items, :order_lines ] },
+        :order_payments
+      ).find(order_id)
     end
 end

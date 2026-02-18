@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Discounts
+  # Optimized auto-apply that minimizes database queries and only applies
+  # discounts when necessary (not on every line item operation).
   class AutoApply
     ORDER_DISCOUNT_TYPE_MAP = {
       "percentage"    => "percentage",
@@ -21,21 +23,59 @@ module Discounts
 
       overridden_ids = @order.metadata["overridden_discount_ids"] || []
 
-      # Remove existing auto-applied discounts so they can be re-evaluated
-      @order.order_discounts
-            .where.not(discount_id: nil)
-            .where.not(discount_id: overridden_ids)
-            .each(&:destroy)
+      # Load current state in minimal queries
+      current_lines = @order.order_lines.to_a
+      existing_discounts = @order.order_discounts.where.not(discount_id: nil).to_a
 
-      # Reload to get current state of lines (important when called after a destroy)
-      @current_lines = @order.order_lines.reload.to_a
+      # Find which discounts should be applied based on current lines
+      applicable_discounts = find_applicable_discounts(current_lines, overridden_ids)
 
-      active_discounts = Discount.currently_active.where.not(id: overridden_ids)
+      # Determine what needs to change
+      discounts_to_remove = existing_discounts.reject { |od| applicable_discounts.key?(od.discount_id) }
+      discounts_to_add = applicable_discounts.reject { |id, _| existing_discounts.any? { |od| od.discount_id == id } }
 
-      active_discounts.each do |discount|
-        matching_lines = find_matching_lines(discount)
-        next if matching_lines.empty?
+      # Only modify if necessary
+      return if discounts_to_remove.empty? && discounts_to_add.empty?
 
+      # Remove outdated discounts
+      discounts_to_remove.each(&:destroy)
+
+      # Add new discounts
+      discounts_to_add.each do |discount_id, (discount, matching_lines)|
+        create_order_discount(discount, matching_lines)
+      end
+    end
+
+    private
+
+      def find_applicable_discounts(lines, overridden_ids)
+        return {} if lines.empty?
+
+        applicable = {}
+
+        # Only query active discounts if we have lines
+        Discount.currently_active.where.not(id: overridden_ids).find_each do |discount|
+          matching_lines = find_matching_lines(discount, lines)
+          next if matching_lines.empty?
+
+          applicable[discount.id] = [ discount, matching_lines ]
+        end
+
+        applicable
+      end
+
+      def find_matching_lines(discount, lines)
+        return lines if discount.applies_to_all?
+
+        # Build lookup map for O(1) matching
+        discount_items = discount.discount_items.to_a
+
+        lines.select do |line|
+          discount_items.any? { |di| di.discountable_type == line.sellable_type && di.discountable_id == line.sellable_id }
+        end
+      end
+
+      def create_order_discount(discount, matching_lines)
         od_scope = discount.applies_to_all? ? :all_items : :specific_items
 
         od = @order.order_discounts.create!(
@@ -47,21 +87,19 @@ module Discounts
           applied_by: nil
         )
 
-        next if discount.applies_to_all?
+        # Only create items for specific discounts
+        # Filter out destroyed lines (they may have been passed as stale objects)
+        unless discount.applies_to_all?
+          # Reload to get fresh IDs from database (in case lines were destroyed)
+          existing_line_ids = @order.order_lines.reload.pluck(:id)
+          valid_lines = matching_lines.select { |l| existing_line_ids.include?(l.id) }
 
-        matching_lines.each { |line| od.order_discount_items.create!(order_line: line) }
-      end
-    end
-
-    private
-
-      def find_matching_lines(discount)
-        return @current_lines if discount.applies_to_all?
-
-        sellable_map = discount.discount_items.group_by(&:discountable_type)
-        @current_lines.select do |line|
-          sellable_map[line.sellable_type]&.any? { |di| di.discountable_id == line.sellable_id }
+          valid_lines.each do |line|
+            od.order_discount_items.create!(order_line: line)
+          end
         end
+
+        od
       end
   end
 end
