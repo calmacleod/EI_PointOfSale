@@ -1,5 +1,5 @@
 class Store < ApplicationRecord
-  audited
+  audited async: true
 
   # ── Accent colour palette ──────────────────────────────────────────
   # Each entry maps a human-friendly name to the CSS custom-property

@@ -1,8 +1,9 @@
 class Supplier < ApplicationRecord
-  audited
+  audited async: true
 
   include Discard::Model
   include PgSearch::Model
+  include AsyncPgSearch
 
   multisearchable against: [ :name, :phone ], if: :kept?
   pg_search_scope :search, against: [ :name, :phone ], using: { tsearch: { prefix: true }, trigram: {} }

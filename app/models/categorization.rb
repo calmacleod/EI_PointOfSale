@@ -1,5 +1,5 @@
 class Categorization < ApplicationRecord
-  audited
+  audited async: true
 
   include Discard::Model
 

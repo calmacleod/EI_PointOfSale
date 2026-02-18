@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class Customer < ApplicationRecord
-  audited
+  audited async: true
 
   include Discard::Model
   include PgSearch::Model
+  include AsyncPgSearch
 
   multisearchable against: [ :name, :member_number, :email ], if: :kept?
   pg_search_scope :search, against: [ :name, :member_number, :email, :phone ], using: { tsearch: { prefix: true }, trigram: {} }

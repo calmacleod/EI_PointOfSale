@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
-  audited
+  audited async: true
 
   include Discard::Model
   include PgSearch::Model
+  include AsyncPgSearch
 
   multisearchable against: [ :number, :notes ], if: :kept?
   pg_search_scope :search, against: [ :number, :notes ],

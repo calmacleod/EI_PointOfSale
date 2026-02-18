@@ -20,6 +20,7 @@ module Discounts
 
     def call
       return if @order.finalized?
+      return if Discount.currently_active.none?
 
       overridden_ids = @order.metadata["overridden_discount_ids"] || []
 
@@ -53,9 +54,11 @@ module Discounts
 
         applicable = {}
 
-        # Only query active discounts if we have lines
-        Discount.currently_active.where.not(id: overridden_ids).find_each do |discount|
-          matching_lines = find_matching_lines(discount, lines)
+        # Bulk load discount items for all discounts in a single query
+        discount_data = load_discounts_with_items(overridden_ids)
+
+        discount_data.each do |discount, items|
+          matching_lines = find_matching_lines(discount, items, lines)
           next if matching_lines.empty?
 
           applicable[discount.id] = [ discount, matching_lines ]
@@ -64,15 +67,28 @@ module Discounts
         applicable
       end
 
-      def find_matching_lines(discount, lines)
+      def load_discounts_with_items(overridden_ids)
+        # Eager load discount items for all active discounts in one query
+        discounts = Discount.currently_active
+                            .where.not(id: overridden_ids)
+                            .includes(:discount_items)
+                            .to_a
+
+        # Build [discount, items] pairs
+        discounts.map { |d| [ d, d.discount_items.to_a ] }
+      end
+
+      def find_matching_lines(discount, discount_items, lines)
         return lines if discount.applies_to_all?
+        return [] if discount_items.empty?
 
-        # Build lookup map for O(1) matching
-        discount_items = discount.discount_items.to_a
-
-        lines.select do |line|
-          discount_items.any? { |di| di.discountable_type == line.sellable_type && di.discountable_id == line.sellable_id }
+        # Build O(1) lookup set from discount items
+        applicable_set = discount_items.each_with_object(Set.new) do |item, set|
+          set.add([ item.discountable_type, item.discountable_id ])
         end
+
+        # O(n) matching instead of O(n*m)
+        lines.select { |line| applicable_set.include?([ line.sellable_type, line.sellable_id ]) }
       end
 
       def create_order_discount(discount, matching_lines)
@@ -88,18 +104,39 @@ module Discounts
         )
 
         # Only create items for specific discounts
-        # Filter out destroyed lines (they may have been passed as stale objects)
         unless discount.applies_to_all?
-          # Reload to get fresh IDs from database (in case lines were destroyed)
-          existing_line_ids = @order.order_lines.reload.pluck(:id)
-          valid_lines = matching_lines.select { |l| existing_line_ids.include?(l.id) }
+          # Verify lines still exist before creating discount items
+          # (lines may have been destroyed between matching and this call)
+          valid_line_ids = verify_line_ids_exist(matching_lines.map(&:id))
+          valid_lines = matching_lines.select { |l| valid_line_ids.include?(l.id) }
 
-          valid_lines.each do |line|
-            od.order_discount_items.create!(order_line: line)
-          end
+          create_discount_items_bulk(od, valid_lines)
         end
 
         od
+      end
+
+      def verify_line_ids_exist(line_ids)
+        return [] if line_ids.empty?
+
+        # Efficiently check which IDs still exist in the database
+        OrderLine.where(id: line_ids).pluck(:id).to_set
+      end
+
+      def create_discount_items_bulk(order_discount, matching_lines)
+        return if matching_lines.empty?
+
+        # Build records for bulk insert
+        records = matching_lines.map do |line|
+          {
+            order_discount_id: order_discount.id,
+            order_line_id: line.id,
+            created_at: Time.current,
+            updated_at: Time.current
+          }
+        end
+
+        OrderDiscountItem.insert_all!(records) if records.any?
       end
   end
 end

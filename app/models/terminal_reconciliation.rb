@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class TerminalReconciliation < ApplicationRecord
-  audited
+  audited async: true
 
   belongs_to :cash_drawer_session
   belongs_to :reconciled_by, class_name: "User", optional: true

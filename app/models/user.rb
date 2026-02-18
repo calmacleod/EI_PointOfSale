@@ -1,7 +1,8 @@
 class User < ApplicationRecord
-  audited except: [ :password_digest, :theme, :font_size, :sidebar_collapsed, :dashboard_metric_keys ]
+  audited async: true, except: [ :password_digest, :theme, :font_size, :sidebar_collapsed, :dashboard_metric_keys ]
 
   include PgSearch::Model
+  include AsyncPgSearch
 
   multisearchable against: [ :name, :email_address, :notes ]
   pg_search_scope :search, against: [ :name, :email_address, :notes ], using: { tsearch: { prefix: true }, trigram: {} }
