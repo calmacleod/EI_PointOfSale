@@ -417,3 +417,11 @@ tbody tr:hover {
   background-position: right 0.5rem center;
   padding-right: 1.75rem;
 }
+
+/* ── PWA Standalone Mode ─────────────────────────────────────────────── */
+/* When running as an installed PWA, add visual separation at the top
+   of the main content area to account for the system status bar.
+   The sidebar has its own styling and doesn't need this border. */
+main.pwa-standalone {
+  border-top: 1px solid var(--color-border);
+}

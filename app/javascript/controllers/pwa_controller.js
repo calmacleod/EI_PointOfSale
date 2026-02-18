@@ -8,6 +8,10 @@ export default class extends Controller {
     if (this.standalone) {
       this.boundClickHandler = this.interceptExternalLinks.bind(this)
       this.element.addEventListener("click", this.boundClickHandler, true)
+
+      // Add class to main content for PWA-specific styling (sidebar doesn't need it)
+      const mainContent = document.querySelector("main")
+      if (mainContent) mainContent.classList.add("pwa-standalone")
     }
   }
 
