@@ -1,11 +1,5 @@
 <%# Filter chip wrapper with inner content based on filter type %>
 <% chip_class = "inline-flex items-center gap-1 rounded-full border border-theme bg-[var(--color-border)]/20 px-2 py-0.5" %>
-<% remove_btn = <<~HTML
-  <button type="button" data-action="click->filter-builder#removeFilter" data-filter-key="#{filter.key}" class="ml-0.5 text-muted hover:text-body" title="Remove filter">
-    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-  </button>
-HTML
-%>
 
 <% case filter.type %>
 <% when :association, :select %>
@@ -22,7 +16,9 @@ HTML
         <option value="<%= value %>"><%= label %></option>
       <% end %>
     </select>
-    <%= remove_btn.html_safe %>
+    <%= button_tag type: :button, data: { action: "click->filter-builder#removeFilter", filter_key: filter.key }, class: "ml-0.5 text-muted hover:text-body", title: "Remove filter" do %>
+      <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    <% end %>
   </div>
 
 <% when :boolean %>
@@ -33,7 +29,9 @@ HTML
       <option value="true">Yes</option>
       <option value="false">No</option>
     </select>
-    <%= remove_btn.html_safe %>
+    <%= button_tag type: :button, data: { action: "click->filter-builder#removeFilter", filter_key: filter.key }, class: "ml-0.5 text-muted hover:text-body", title: "Remove filter" do %>
+      <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    <% end %>
   </div>
 
 <% when :number_range %>
@@ -43,7 +41,9 @@ HTML
     <input type="number" name="<%= filter.key %>_min" form="<%= form_id %>" placeholder="min" step="any" autocomplete="off" class="w-16 border-0 bg-transparent px-1 py-0 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange">
     <span class="text-xs text-muted">–</span>
     <input type="number" name="<%= filter.key %>_max" form="<%= form_id %>" placeholder="max" step="any" autocomplete="off" class="w-16 border-0 bg-transparent px-1 py-0 text-xs font-medium text-body focus:ring-0" data-action="change->filter-builder#handleFilterChange">
-    <%= remove_btn.html_safe %>
+    <%= button_tag type: :button, data: { action: "click->filter-builder#removeFilter", filter_key: filter.key }, class: "ml-0.5 text-muted hover:text-body", title: "Remove filter" do %>
+      <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    <% end %>
   </div>
 
 <% when :date_range %>
@@ -71,7 +71,9 @@ HTML
       <span class="text-xs text-muted">–</span>
       <input type="date" name="<%= filter.key %>_to" form="<%= form_id %>" autocomplete="off" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange">
     </div>
-    <%= remove_btn.html_safe %>
+    <%= button_tag type: :button, data: { action: "click->filter-builder#removeFilter", filter_key: filter.key }, class: "ml-0.5 text-muted hover:text-body", title: "Remove filter" do %>
+      <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    <% end %>
   </div>
 
 <% when :multi_select %>
@@ -95,6 +97,8 @@ HTML
         </label>
       <% end %>
     </div>
-    <%= remove_btn.html_safe %>
+    <%= button_tag type: :button, data: { action: "click->filter-builder#removeFilter", filter_key: filter.key }, class: "ml-0.5 text-muted hover:text-body", title: "Remove filter" do %>
+      <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+    <% end %>
   </div>
 <% end %>
