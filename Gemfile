@@ -94,6 +94,14 @@ group :development do
 
   # Dashboard to operate and troubleshoot Solid Queue background jobs
   gem "mission_control-jobs"
+
+  # Request profiling with timing, SQL, and flamegraph analysis
+  gem "rack-mini-profiler"
+
+  gem 'stackprof'
+
+  # Clean, single-line request logging with timing info
+  gem "lograge"
 end
 
 group :test do
