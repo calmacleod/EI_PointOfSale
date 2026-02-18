@@ -46,95 +46,66 @@
     </div>
   <% end %>
 
+  <% if @metrics_last_updated %>
+    <p class="mt-2 text-xs text-muted">
+      Dashboard metrics updated <%= time_ago_in_words(@metrics_last_updated) %> ago
+    </p>
+  <% end %>
+
   <%# === Top metric cards === %>
   <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-    <div class="rounded-lg border border-theme bg-surface p-2.5">
-      <div class="flex items-start justify-between gap-2">
-        <div>
-          <p class="text-xs font-medium text-muted">Today's sales</p>
-          <p class="mt-0.5 text-lg font-semibold text-body"><%= number_to_currency(@todays_sales) %></p>
-          <p class="mt-0.5 text-xs text-muted">vs. yesterday:
-            <span class="font-medium text-body"><%= number_to_currency(@yesterdays_sales) %></span>
-          </p>
-        </div>
-        <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
-          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v1H8a1 1 0 000 2h1v1H8a1 1 0 000 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V9h1a1 1 0 100-2h-1V6z" />
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <div class="rounded-lg border border-theme bg-surface p-2.5">
-      <div class="flex items-start justify-between gap-2">
-        <div>
-          <p class="text-xs font-medium text-muted">Transactions</p>
-          <p class="mt-0.5 text-lg font-semibold text-body"><%= @todays_transactions %></p>
-          <p class="mt-0.5 text-xs text-muted">Completed today</p>
-        </div>
-        <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
-          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 3a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z" />
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <div class="rounded-lg border border-theme bg-surface p-2.5">
-      <div class="flex items-start justify-between gap-2">
-        <div>
-          <p class="text-xs font-medium text-muted">Average ticket</p>
-          <p class="mt-0.5 text-lg font-semibold text-body"><%= number_to_currency(@average_ticket) %></p>
-          <p class="mt-0.5 text-xs text-muted">Per transaction</p>
-        </div>
-        <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
-          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M10 2a1 1 0 011 1v1.07A7 7 0 0117 11a7 7 0 11-7-6.93V3a1 1 0 011-1zm0 5a5 5 0 100 10 5 5 0 000-10z" />
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <div class="rounded-lg border border-theme bg-surface p-2.5">
-      <div class="flex items-start justify-between gap-2">
-        <div>
-          <p class="text-xs font-medium text-muted">Low stock</p>
-          <p class="mt-0.5 text-lg font-semibold text-body"><%= @low_stock_count %></p>
-          <p class="mt-0.5 text-xs text-muted">Items need attention</p>
-        </div>
-        <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
-          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path d="M8.257 3.099c.765-1.36 2.721-1.36 3.486 0l6.516 11.59c.75 1.334-.214 2.99-1.743 2.99H3.484c-1.53 0-2.493-1.656-1.743-2.99l6.516-11.59zM11 14a1 1 0 10-2 0 1 1 0 002 0zm-1-8a1 1 0 00-1 1v4a1 1 0 102 0V7a1 1 0 00-1-1z" />
-          </svg>
-        </div>
-      </div>
-    </div>
-
     <% @visible_metrics.each do |metric| %>
-    <div class="rounded-lg border border-theme bg-surface p-2.5">
-      <div class="flex items-start justify-between gap-2">
-        <div>
-          <p class="text-xs font-medium text-muted"><%= metric[:label] %></p>
-          <p class="mt-0.5 text-lg font-semibold text-body">
-            <% if metric[:key].end_with?("revenue") || metric[:key].include?("revenue") %>
-              <%= number_to_currency(metric[:value] || 0) %>
-            <% else %>
-              <%= metric[:value] || "—" %>
+      <% if metric[:link_path].present? %>
+        <%= link_to public_send(metric[:link_path]), class: "group rounded-lg border border-theme bg-surface p-2.5 hover:bg-[var(--color-border)]/30" do %>
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-xs font-medium text-muted group-hover:text-body"><%= metric[:label] %></p>
+              <p class="mt-0.5 text-lg font-semibold text-body">
+                <% if metric[:format] == :currency %>
+                  <%= number_to_currency(metric[:value] || 0) %>
+                <% else %>
+                  <%= number_with_delimiter((metric[:value] || 0).to_i) %>
+                <% end %>
+              </p>
+              <% if metric[:description].present? %>
+                <p class="mt-0.5 text-xs text-muted"><%= metric[:description] %></p>
+              <% end %>
+            </div>
+            <% if metric[:icon].present? %>
+              <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
+                <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="<%= metric[:icon] %>" />
+                </svg>
+              </div>
             <% end %>
-          </p>
-          <% if metric[:description].present? %>
-            <p class="mt-0.5 text-xs text-muted"><%= metric[:description] %></p>
-          <% end %>
-        </div>
-        <% if metric[:icon].present? %>
-          <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
-            <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-              <path d="<%= metric[:icon] %>" />
-            </svg>
           </div>
         <% end %>
-      </div>
-    </div>
+      <% else %>
+        <div class="rounded-lg border border-theme bg-surface p-2.5">
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <p class="text-xs font-medium text-muted"><%= metric[:label] %></p>
+              <p class="mt-0.5 text-lg font-semibold text-body">
+                <% if metric[:format] == :currency %>
+                  <%= number_to_currency(metric[:value] || 0) %>
+                <% else %>
+                  <%= number_with_delimiter((metric[:value] || 0).to_i) %>
+                <% end %>
+              </p>
+              <% if metric[:description].present? %>
+                <p class="mt-0.5 text-xs text-muted"><%= metric[:description] %></p>
+              <% end %>
+            </div>
+            <% if metric[:icon].present? %>
+              <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
+                <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="<%= metric[:icon] %>" />
+                </svg>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     <% end %>
   </div>
 
@@ -142,54 +113,53 @@
     <%# === Left column: Recent orders + Store tasks === %>
     <div class="lg:col-span-8 flex flex-col gap-2">
       <%# --- Recent orders table --- %>
-      <div class="rounded-lg border border-theme bg-surface p-2.5">
-        <div class="flex items-center justify-between">
+      <div class="rounded-lg border border-theme bg-surface overflow-hidden">
+        <div class="flex items-center justify-between border-b border-theme bg-surface-alt px-3 py-2">
           <h2 class="text-sm font-semibold text-body">Recent orders</h2>
           <%= link_to "View all", orders_path, class: "text-xs font-medium text-accent hover:opacity-80" %>
         </div>
 
-        <div class="mt-2 overflow-hidden rounded-lg ring-1 ring-inset border-theme">
-          <table class="min-w-full divide-y divide-[var(--color-border)]">
-            <thead class="bg-surface-alt">
-              <tr>
-                <th scope="col" class="px-3 py-1 text-left text-xs font-semibold text-body">Order</th>
-                <th scope="col" class="px-3 py-1 text-left text-xs font-semibold text-body">Customer</th>
-                <th scope="col" class="px-3 py-1 text-left text-xs font-semibold text-body">Status</th>
-                <th scope="col" class="px-3 py-1 text-right text-xs font-semibold text-body">Total</th>
-                <th scope="col" class="px-3 py-1 text-right text-xs font-semibold text-body">When</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-[var(--color-border)] bg-surface">
-              <% if @recent_orders.any? %>
-                <% @recent_orders.each do |order| %>
-                  <tr>
-                    <td class="px-3 py-1.5 text-sm font-medium text-body">
-                      <%= link_to order.number, order_path(order), class: "text-accent hover:opacity-80" %>
-                    </td>
-                    <td class="px-3 py-1.5 text-sm text-muted"><%= order.customer_name %></td>
-                    <td class="px-3 py-1.5 text-sm">
-                      <% variant = case order.status
-                                   when "draft" then :neutral
-                                   when "held" then :warning
-                                   when "completed" then :success
-                                   when "voided" then :error
-                                   when "refunded", "partially_refunded" then :info
-                                   when "cancelled" then :neutral
-                                   end %>
-                      <%= status_chip(order.display_status, variant) %>
-                    </td>
-                    <td class="px-3 py-1.5 text-right text-sm font-medium text-body"><%= number_to_currency(order.total) %></td>
-                    <td class="px-3 py-1.5 text-right text-sm text-muted"><%= time_ago_in_words(order.created_at) %> ago</td>
-                  </tr>
-                <% end %>
-              <% else %>
+        <table class="min-w-full divide-y divide-[var(--color-border)]">
+          <thead class="bg-surface-alt">
+            <tr>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Order</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Customer</th>
+              <th scope="col" class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Status</th>
+              <th scope="col" class="px-3 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">Total</th>
+              <th scope="col" class="px-3 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">When</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-[var(--color-border)]">
+            <% if @recent_orders.any? %>
+              <% @recent_orders.each do |order| %>
                 <tr>
-                  <td colspan="5" class="px-3 py-4 text-center text-sm text-muted">No orders yet. Open the register to start selling.</td>
+                  <td class="px-3 py-2 text-sm font-medium text-body">
+                    <%= link_to order.number, order_path(order), class: "text-accent hover:opacity-80" %>
+                  </td>
+                  <td class="px-3 py-2 text-sm text-muted"><%= order.customer_name %></td>
+                  <td class="px-3 py-2 text-sm">
+                    <% status_class = case order.status
+                                     when "draft" then "bg-blue-100 text-blue-800"
+                                     when "held" then "bg-yellow-100 text-yellow-800"
+                                     when "completed" then "bg-green-100 text-green-800"
+                                     when "voided" then "bg-red-100 text-red-800"
+                                     when "refunded" then "bg-purple-100 text-purple-800"
+                                     when "partially_refunded" then "bg-orange-100 text-orange-800"
+                                     when "cancelled" then "bg-slate-100 text-slate-600"
+                                     end %>
+                    <span class="rounded-full px-2 py-0.5 text-xs font-medium <%= status_class %>"><%= order.display_status %></span>
+                  </td>
+                  <td class="px-3 py-2 text-right text-sm font-medium text-body"><%= number_to_currency(order.total) %></td>
+                  <td class="px-3 py-2 text-right text-sm text-muted"><%= time_ago_in_words(order.created_at) %> ago</td>
                 </tr>
               <% end %>
-            </tbody>
-          </table>
-        </div>
+            <% else %>
+              <tr>
+                <td colspan="5" class="px-3 py-4 text-center text-sm text-muted">No orders yet. Open the register to start selling.</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
       </div>
 
       <%# --- Store tasks (current user) --- %>
@@ -202,7 +172,7 @@
 
           <div class="mt-2 flex flex-col gap-1.5">
             <% @my_tasks.each do |task| %>
-              <div class="flex items-start gap-2 rounded-lg px-2 py-1.5 ring-1 ring-inset border-theme <%= task.overdue? ? 'bg-[var(--color-error-bg)]' : '' %>">
+              <div class="flex items-start gap-2 rounded-lg border border-theme px-2 py-1.5 <%= task.overdue? ? 'bg-[var(--color-error-bg)]' : 'bg-surface' %>">
                 <div class="mt-0.5 flex-shrink-0">
                   <%
                     task_dot_colors = {
@@ -245,7 +215,7 @@
         <div class="mt-2 grid grid-cols-1 gap-1.5">
           <%= link_to register_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
               <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -263,7 +233,7 @@
 
           <%= link_to orders_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
               <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -280,7 +250,7 @@
 
           <%= link_to held_orders_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
               <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -297,7 +267,7 @@
 
           <%= link_to products_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
               <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -315,7 +285,7 @@
           <% if Current.user.is_a?(Admin) %>
             <%= link_to admin_users_path,
                 data: { turbo_prefetch: true },
-                class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+                class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
               <div class="flex items-center gap-2">
                 <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
                   <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -333,7 +303,7 @@
 
           <%= link_to rails_health_check_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg ring-1 ring-inset border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
               <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
