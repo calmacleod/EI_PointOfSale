@@ -1,0 +1,12 @@
+<div id="code_lookup_input_wrapper" class="relative flex-1">
+  <input type="text" name="code" id="code_lookup_input" autocomplete="off"
+         class="input-field w-full text-sm"
+         style="padding-left: 2.25rem;"
+         placeholder="Scan barcode or type product code..."
+         data-order-form-target="codeInput"
+         data-action="keydown->order-form#handleCodeKeydown"
+         autofocus>
+  <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2.5">
+    <svg class="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7V4h3M4 17v3h3M20 7V4h-3M20 17v3h-3M7 10v4M12 8v8M17 10v4"/></svg>
+  </div>
+</div>

@@ -8,16 +8,12 @@ class OrderLinesController < ApplicationController
     authorize! :update, @order
 
     sellable = find_sellable(params[:sellable_type], params[:sellable_id])
-    line = @order.order_lines.build(quantity: params[:quantity] || 1)
-    line.snapshot_from_sellable!(sellable, customer_tax_code: @order.customer&.tax_code)
-    line.position = (@order.order_lines.maximum(:position) || 0) + 1
-    line.save!
 
-    Discounts::AutoApply.call(@order)
-    Orders::CalculateTotals.call(@order)
-    Orders::RecordEvent.call(
-      order: @order, event_type: "line_added", actor: current_user,
-      data: { name: line.name, code: line.code, quantity: line.quantity, unit_price: line.unit_price.to_s }
+    OrderLines::Add.call(
+      order: @order,
+      sellable: sellable,
+      actor: current_user,
+      quantity: params[:quantity] || 1
     )
 
     respond_to do |format|

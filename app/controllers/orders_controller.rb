@@ -203,34 +203,22 @@ class OrdersController < ApplicationController
     sellable = Product.find_by_exact_code(code) || Service.kept.find_by(code: code)
 
     if sellable
-      existing_line = @order.order_lines.find_by(sellable: sellable)
-
-      if existing_line
-        existing_line.update!(quantity: existing_line.quantity + 1)
-        Orders::RecordEvent.call(
-          order: @order, event_type: "line_quantity_changed", actor: current_user,
-          data: { name: existing_line.name, new_quantity: existing_line.quantity }
-        )
-      else
-        line = @order.order_lines.build(quantity: 1)
-        line.snapshot_from_sellable!(sellable, customer_tax_code: @order.customer&.tax_code)
-        line.position = (@order.order_lines.maximum(:position) || 0) + 1
-        line.save!
-        Orders::RecordEvent.call(
-          order: @order, event_type: "line_added", actor: current_user,
-          data: { name: line.name, code: line.code, quantity: 1, unit_price: line.unit_price.to_s }
-        )
-      end
-
-      Orders::CalculateTotals.call(@order)
+      OrderLines::Add.call(
+        order: @order,
+        sellable: sellable,
+        actor: current_user,
+        quantity: 1,
+        increment_if_exists: true
+      )
 
       respond_to do |format|
         format.turbo_stream {
           render turbo_stream: [
             turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order.reload }),
+            turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order }),
             turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-            turbo_stream.update("code_lookup_input", ""),
-            turbo_stream.update("lookup_flash", partial: "orders/lookup_flash", locals: { message: "Added #{sellable.sellable_name}", type: :success })
+            turbo_stream.replace("code_lookup_input_wrapper", partial: "orders/code_lookup_input", locals: { order: @order }),
+            turbo_stream.replace("lookup_flash", partial: "orders/lookup_flash", locals: { message: "Added #{sellable.sellable_name}", type: :success })
           ]
         }
         format.html { redirect_to register_path(order_id: @order.id) }

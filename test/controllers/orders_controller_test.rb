@@ -117,6 +117,25 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     assert order.order_lines.reload.any?
   end
 
+  test "POST /orders/quick_lookup applies discounts to the order" do
+    order = orders(:draft_order)
+    # dragon_shield_red is in discount_items fixtures, so discounts should apply
+    post quick_lookup_orders_path, params: { order_id: order.id, code: "DS-MAT-RED" },
+         headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    assert_response :success
+    assert order.order_discounts.reload.any?, "Expected discounts to be applied via quick_lookup"
+    assert_includes order.order_discounts.pluck(:discount_id), discounts(:percentage_all).id
+  end
+
+  test "POST /orders/quick_lookup renders discounts panel" do
+    order = orders(:draft_order)
+    post quick_lookup_orders_path, params: { order_id: order.id, code: "DS-MAT-RED" },
+         headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    assert_response :success
+    # Verify the turbo stream includes the discounts panel
+    assert_select "turbo-stream[action=\"replace\"][target=\"order_discounts_panel\"]"
+  end
+
   test "GET /orders/:id/receipt shows receipt for completed order" do
     get receipt_order_path(orders(:completed_order))
     assert_response :success
