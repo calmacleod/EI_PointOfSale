@@ -52,6 +52,7 @@
       <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       New
     <% end %>
+    <%# Show total held count from database for the badge, but we only display current held order in tabs %>
     <% held_count = Order.held.count %>
     <% if held_count > 0 %>
       <%= link_to held_orders_path, class: "ml-auto inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body" do %>
