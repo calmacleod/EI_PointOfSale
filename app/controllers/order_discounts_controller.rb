@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# Controller for managing order-level discounts.
+# Note: Line-level discounts are managed via OrderLineDiscountsController.
 class OrderDiscountsController < ApplicationController
   before_action :set_order, only: :create
   before_action :set_discount, only: :destroy
@@ -7,16 +9,10 @@ class OrderDiscountsController < ApplicationController
   def create
     authorize! :update, @order
 
-    discount = @order.order_discounts.build(discount_params)
+    # Only allow order-level discounts through this controller
+    discount = @order.order_discounts.build(discount_params.merge(scope: :all_items))
     discount.applied_by = current_user
     discount.save!
-
-    # Link specific items if scope is specific_items
-    if discount.applies_to_specific_items? && params[:order_line_ids].present?
-      params[:order_line_ids].each do |line_id|
-        discount.order_discount_items.create!(order_line_id: line_id)
-      end
-    end
 
     Orders::CalculateTotals.call(@order)
     Orders::RecordEvent.call(
@@ -41,18 +37,9 @@ class OrderDiscountsController < ApplicationController
     authorize! :update, order
 
     name = @discount.name
-    source_discount_id = @discount.discount_id
-
-    # Track overridden store discounts so AutoApply won't re-apply them
-    if source_discount_id.present?
-      overridden = (order.metadata["overridden_discount_ids"] || []) | [ source_discount_id ]
-      order.update_column(:metadata, order.metadata.merge("overridden_discount_ids" => overridden))
-    end
 
     @discount.destroy!
 
-    # Reset line discounts and recalculate
-    order.order_lines.update_all(discount_amount: 0)
     Orders::CalculateTotals.call(order)
     Orders::RecordEvent.call(
       order: order, event_type: "discount_removed", actor: current_user,
@@ -82,6 +69,6 @@ class OrderDiscountsController < ApplicationController
     end
 
     def discount_params
-      params.require(:order_discount).permit(:name, :discount_type, :value, :scope)
+      params.require(:order_discount).permit(:name, :discount_type, :value)
     end
 end

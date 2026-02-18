@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 module Discounts
-  # Optimized auto-apply that minimizes database queries and only applies
-  # discounts when necessary (not on every line item operation).
+  # Optimized auto-apply that minimizes database queries and handles both
+  # order-level and line-level discounts. Line-level discounts can be
+  # excluded on a per-line basis using OrderLineDiscount.excluded_at.
   class AutoApply
     ORDER_DISCOUNT_TYPE_MAP = {
       "percentage"    => "percentage",
@@ -22,64 +23,112 @@ module Discounts
       return if @order.finalized?
       return if Discount.currently_active.none?
 
-      overridden_ids = @order.metadata["overridden_discount_ids"] || []
-
       # Load current state in minimal queries
-      current_lines = @order.order_lines.to_a
-      existing_discounts = @order.order_discounts.where.not(discount_id: nil).to_a
+      current_lines = load_order_lines
+      existing_order_discounts = load_existing_order_discounts
+      existing_line_discounts = load_existing_line_discounts
 
-      # Find which discounts should be applied based on current lines
-      applicable_discounts = find_applicable_discounts(current_lines, overridden_ids)
+      # Sync order-level discounts (applies_to_all)
+      sync_order_level_discounts(existing_order_discounts)
 
-      # Determine what needs to change
-      discounts_to_remove = existing_discounts.reject { |od| applicable_discounts.key?(od.discount_id) }
-      discounts_to_add = applicable_discounts.reject { |id, _| existing_discounts.any? { |od| od.discount_id == id } }
-
-      # Only modify if necessary
-      return if discounts_to_remove.empty? && discounts_to_add.empty?
-
-      # Remove outdated discounts
-      discounts_to_remove.each(&:destroy)
-
-      # Add new discounts
-      discounts_to_add.each do |discount_id, (discount, matching_lines)|
-        create_order_discount(discount, matching_lines)
-      end
+      # Sync line-level discounts (specific items)
+      sync_line_level_discounts(current_lines, existing_line_discounts)
     end
 
     private
 
-      def find_applicable_discounts(lines, overridden_ids)
-        return {} if lines.empty?
-
-        applicable = {}
-
-        # Bulk load discount items for all discounts in a single query
-        discount_data = load_discounts_with_items(overridden_ids)
-
-        discount_data.each do |discount, items|
-          matching_lines = find_matching_lines(discount, items, lines)
-          next if matching_lines.empty?
-
-          applicable[discount.id] = [ discount, matching_lines ]
-        end
-
-        applicable
+      def load_order_lines
+        @order.order_lines.to_a
       end
 
-      def load_discounts_with_items(overridden_ids)
-        # Eager load discount items for all active discounts in one query
-        discounts = Discount.currently_active
-                            .where.not(id: overridden_ids)
-                            .includes(:discount_items)
-                            .to_a
+      def load_existing_order_discounts
+        @order.order_discounts.where.not(discount_id: nil).to_a
+      end
 
-        # Build [discount, items] pairs
-        discounts.map { |d| [ d, d.discount_items.to_a ] }
+      def load_existing_line_discounts
+        @order.order_line_discounts.where(auto_applied: true).to_a
+      end
+
+      def sync_order_level_discounts(existing_discounts)
+        applicable = find_applicable_order_level_discounts
+
+        # Determine changes needed
+        to_remove = existing_discounts.reject { |od| applicable.key?(od.discount_id) }
+        to_add = applicable.reject { |id, _| existing_discounts.any? { |od| od.discount_id == id } }
+
+        # Remove outdated order discounts
+        to_remove.each(&:destroy)
+
+        # Add new order discounts
+        to_add.each do |discount_id, discount|
+          create_order_level_discount(discount)
+        end
+      end
+
+      def sync_line_level_discounts(lines, existing_line_discounts)
+        return if lines.empty?
+
+        # Group existing line discounts by source_discount_id for quick lookup
+        existing_by_discount = existing_line_discounts.group_by(&:source_discount_id)
+
+        # Get applicable discounts for lines
+        applicable_discounts = find_applicable_line_level_discounts(lines)
+
+        applicable_discounts.each do |discount, matching_lines|
+          existing_for_discount = existing_by_discount[discount.id] || []
+
+          matching_lines.each do |line|
+            # Skip lines that have been destroyed since loading
+            next unless line.persisted?
+
+            existing = existing_for_discount.find { |ld| ld.order_line_id == line.id }
+
+            if existing
+              # Restore if it was excluded (user changed their mind)
+              restore_if_excluded(existing)
+            else
+              # Create new line discount
+              create_line_level_discount(discount, line)
+            end
+          end
+
+          # Mark line discounts as removed if the line no longer qualifies
+          # (e.g., line deleted or discount rules changed)
+          line_ids = matching_lines.map(&:id)
+          existing_for_discount.each do |existing|
+            unless line_ids.include?(existing.order_line_id) || existing.excluded?
+              existing.destroy!
+            end
+          end
+        end
+
+        # Clean up line discounts for discounts that no longer apply to any lines
+        applicable_discount_ids = applicable_discounts.keys.map(&:id)
+        existing_line_discounts.each do |line_discount|
+          next if applicable_discount_ids.include?(line_discount.source_discount_id)
+
+          line_discount.destroy!
+        end
+      end
+
+      def find_applicable_order_level_discounts
+        {}.tap do |applicable|
+          Discount.currently_active.where(applies_to_all: true).find_each do |discount|
+            applicable[discount.id] = discount
+          end
+        end
+      end
+
+      def find_applicable_line_level_discounts(lines)
+        {}.tap do |applicable|
+          Discount.currently_active.where(applies_to_all: false).includes(:discount_items).find_each do |discount|
+            matching_lines = find_matching_lines(discount, discount.discount_items.to_a, lines)
+            applicable[discount] = matching_lines unless matching_lines.empty?
+          end
+        end
       end
 
       def find_matching_lines(discount, discount_items, lines)
-        return lines if discount.applies_to_all?
         return [] if discount_items.empty?
 
         # Build O(1) lookup set from discount items
@@ -91,52 +140,34 @@ module Discounts
         lines.select { |line| applicable_set.include?([ line.sellable_type, line.sellable_id ]) }
       end
 
-      def create_order_discount(discount, matching_lines)
-        od_scope = discount.applies_to_all? ? :all_items : :specific_items
-
-        od = @order.order_discounts.create!(
+      def create_order_level_discount(discount)
+        @order.order_discounts.create!(
           name: discount.name,
           discount_type: ORDER_DISCOUNT_TYPE_MAP[discount.discount_type],
           value: discount.value,
-          scope: od_scope,
+          scope: :all_items,
           discount_id: discount.id,
           applied_by: nil
         )
-
-        # Only create items for specific discounts
-        unless discount.applies_to_all?
-          # Verify lines still exist before creating discount items
-          # (lines may have been destroyed between matching and this call)
-          valid_line_ids = verify_line_ids_exist(matching_lines.map(&:id))
-          valid_lines = matching_lines.select { |l| valid_line_ids.include?(l.id) }
-
-          create_discount_items_bulk(od, valid_lines)
-        end
-
-        od
       end
 
-      def verify_line_ids_exist(line_ids)
-        return [] if line_ids.empty?
-
-        # Efficiently check which IDs still exist in the database
-        OrderLine.where(id: line_ids).pluck(:id).to_set
+      def create_line_level_discount(discount, line)
+        line.order_line_discounts.create!(
+          source_discount: discount,
+          name: discount.name,
+          discount_type: ORDER_DISCOUNT_TYPE_MAP[discount.discount_type],
+          value: discount.value,
+          calculated_amount: 0, # Will be calculated by CalculateTotals
+          auto_applied: true
+        )
       end
 
-      def create_discount_items_bulk(order_discount, matching_lines)
-        return if matching_lines.empty?
+      def restore_if_excluded(line_discount)
+        nil unless line_discount.fully_excluded?
 
-        # Build records for bulk insert
-        records = matching_lines.map do |line|
-          {
-            order_discount_id: order_discount.id,
-            order_line_id: line.id,
-            created_at: Time.current,
-            updated_at: Time.current
-          }
-        end
-
-        OrderDiscountItem.insert_all!(records) if records.any?
+        # Don't auto-restore discounts that were excluded (user explicitly removed them)
+        # This method is intentionally empty - excluded discounts stay excluded
+        # They can only be restored via OrderLineDiscountsController#restore
       end
   end
 end

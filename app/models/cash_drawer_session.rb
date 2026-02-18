@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CashDrawerSession < ApplicationRecord
-  audited async: true
+  audited
 
   # ── Canadian denominations ─────────────────────────────────────────
   # Each key is the denomination label; the value is its dollar amount.

@@ -1,5 +1,5 @@
 class Service < ApplicationRecord
-  audited async: true
+  audited
 
   include Discard::Model
   include Categorizable

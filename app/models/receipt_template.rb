@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ReceiptTemplate < ApplicationRecord
-  audited async: true
+  audited
 
   # Standard thermal printer paper widths and their approximate character counts
   PAPER_WIDTHS = {

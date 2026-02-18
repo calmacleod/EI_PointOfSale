@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Customer < ApplicationRecord
-  audited async: true
+  audited
 
   include Discard::Model
   include PgSearch::Model

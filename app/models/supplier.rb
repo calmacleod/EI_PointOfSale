@@ -1,5 +1,5 @@
 class Supplier < ApplicationRecord
-  audited async: true
+  audited
 
   include Discard::Model
   include PgSearch::Model

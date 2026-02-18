@@ -1,6 +1,7 @@
 <div id="order_discounts_panel" class="border-b border-theme p-4">
   <h3 class="text-xs font-semibold uppercase tracking-wider text-muted mb-2">Discounts</h3>
 
+  <%# Order-level discounts %>
   <% order.order_discounts.each do |discount| %>
     <div class="flex items-start justify-between rounded-md border border-theme bg-surface px-3 py-1.5 mb-1.5 text-xs gap-2">
       <div class="flex flex-col min-w-0">
@@ -10,7 +11,7 @@
             <span class="shrink-0 rounded bg-blue-100 px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700">Auto</span>
           <% end %>
         </div>
-        <span class="text-muted">(<%= discount.display_value %><%= " on #{discount.scope.humanize.downcase}" unless discount.applies_to_all_items? %>)</span>
+        <span class="text-muted">(<%= discount.display_value %> on all items)</span>
       </div>
       <div class="flex items-center gap-2 shrink-0">
         <span class="font-medium text-green-600">-<%= number_to_currency(discount.calculated_amount) %></span>
@@ -23,29 +24,34 @@
     </div>
   <% end %>
 
-  <% overridden_ids = order.metadata["overridden_discount_ids"].presence %>
-  <% if overridden_ids && order.draft? %>
-    <% overridden_discounts = Discount.where(id: overridden_ids) %>
-    <% if overridden_discounts.any? %>
-      <div class="mt-2 border-t border-theme pt-2">
-        <p class="text-[10px] font-semibold uppercase tracking-wider text-muted mb-1.5">Removed auto-discounts</p>
-        <% overridden_discounts.each do |discount| %>
-          <div class="flex items-center justify-between rounded-md border border-dashed border-theme bg-surface px-3 py-1.5 mb-1 text-xs text-muted gap-2">
-            <span class="truncate"><%= discount.name %></span>
-            <%= button_to order_order_discount_override_path(order, discount), method: :delete,
-                class: "shrink-0 text-accent hover:underline text-xs font-medium",
-                data: { turbo_stream: true } do %>
-              Restore
-            <% end %>
+  <%# Line-level discounts summary %>
+  <% line_discounts = order.order_line_discounts.select(&:active?) %>
+  <% if line_discounts.any? %>
+    <% line_discounts.group_by(&:name).each do |name, discounts| %>
+      <% total_units = discounts.sum(&:applied_quantity) %>
+      <% total_excluded = discounts.sum(&:excluded_quantity) %>
+      <% total_quantity = discounts.sum { |d| d.order_line.quantity } %>
+      
+      <div class="flex items-start justify-between rounded-md border border-theme bg-surface px-3 py-1.5 mb-1.5 text-xs gap-2">
+        <div class="flex flex-col min-w-0">
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="font-medium text-body truncate"><%= name %></span>
+            <span class="shrink-0 rounded bg-blue-100 px-1 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-700">Auto</span>
           </div>
-        <% end %>
+          <span class="text-muted">
+            (<%= discounts.first.display_value %> on <%= total_units %> of <%= total_quantity %> units)
+          </span>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="font-medium text-green-600">-<%= number_to_currency(discounts.sum(&:calculated_amount)) %></span>
+        </div>
       </div>
     <% end %>
   <% end %>
 
   <% if order.draft? %>
     <details class="mt-2">
-      <summary class="cursor-pointer text-xs font-medium text-accent hover:underline">+ Add Discount</summary>
+      <summary class="cursor-pointer text-xs font-medium text-accent hover:underline">+ Add Order Discount</summary>
       <div class="mt-2">
         <%= form_with url: order_order_discounts_path(order), class: "space-y-2", data: { turbo_stream: true } do |f| %>
           <input type="text" name="order_discount[name]" autocomplete="off" placeholder="Discount name" class="input-field w-full text-xs" required>
@@ -56,10 +62,6 @@
             </select>
             <input type="number" name="order_discount[value]" step="0.01" min="0" autocomplete="off" placeholder="Value" class="input-field w-20 text-xs" required>
           </div>
-          <select name="order_discount[scope]" class="input-field w-full text-xs">
-            <option value="all_items">All items</option>
-            <option value="specific_items">Specific items</option>
-          </select>
           <button type="submit" class="w-full rounded-md bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
             Apply Discount
           </button>

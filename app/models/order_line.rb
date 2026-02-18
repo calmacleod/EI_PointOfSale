@@ -5,7 +5,8 @@ class OrderLine < ApplicationRecord
   belongs_to :sellable, polymorphic: true
   belongs_to :tax_code, optional: true
 
-  has_many :order_discount_items, dependent: :destroy
+  has_many :order_line_discounts, dependent: :destroy
+  has_many :active_discounts, -> { active }, class_name: "OrderLineDiscount"
   has_many :refund_lines, dependent: :restrict_with_error
 
   validates :name, presence: true
@@ -41,7 +42,11 @@ class OrderLine < ApplicationRecord
   end
 
   def taxable_amount
-    subtotal_before_discount - (discount_amount || 0)
+    subtotal_before_discount - total_discount_amount
+  end
+
+  def total_discount_amount
+    active_discounts.sum(:calculated_amount)
   end
 
   private

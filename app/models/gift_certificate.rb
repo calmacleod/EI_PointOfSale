@@ -4,7 +4,7 @@ class GiftCertificate < ApplicationRecord
   include Sellable
   include PgSearch::Model
   include AsyncPgSearch
-  audited async: true
+  audited
 
   multisearchable against: [ :code ], if: :active?
   pg_search_scope :search, against: [ :code ],

@@ -113,8 +113,8 @@ class OrderLinesController < ApplicationController
     def reload_order_with_associations(order_id)
       Order.includes(
         :customer,
-        { order_lines: :sellable },
-        { order_discounts: [ :order_discount_items, :order_lines ] },
+        { order_lines: [ :sellable, :order_line_discounts ] },
+        :order_discounts,
         :order_payments
       ).find(order_id)
     end

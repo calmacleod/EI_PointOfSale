@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
-  audited async: true
+  audited
 
   include Discard::Model
   include PgSearch::Model
@@ -29,6 +29,7 @@ class Order < ApplicationRecord
   belongs_to :cash_drawer_session, optional: true
 
   has_many :order_lines, -> { order(:position) }, dependent: :destroy, inverse_of: :order
+  has_many :order_line_discounts, through: :order_lines
   has_many :order_payments, dependent: :destroy
   has_many :order_discounts, dependent: :destroy
   has_many :order_events, dependent: :destroy

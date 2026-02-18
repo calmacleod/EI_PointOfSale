@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  audited async: true, except: [ :password_digest, :theme, :font_size, :sidebar_collapsed, :dashboard_metric_keys ]
+  audited except: [ :password_digest, :theme, :font_size, :sidebar_collapsed, :dashboard_metric_keys ]
 
   include PgSearch::Model
   include AsyncPgSearch

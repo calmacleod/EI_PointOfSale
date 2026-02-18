@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_18_151526) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_221018) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -219,16 +219,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_151526) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
-  create_table "order_discount_items", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "order_discount_id", null: false
-    t.bigint "order_line_id", null: false
-    t.datetime "updated_at", null: false
-    t.index ["order_discount_id", "order_line_id"], name: "idx_discount_items_uniqueness", unique: true
-    t.index ["order_discount_id"], name: "index_order_discount_items_on_order_discount_id"
-    t.index ["order_line_id"], name: "index_order_discount_items_on_order_line_id"
-  end
-
   create_table "order_discounts", force: :cascade do |t|
     t.bigint "applied_by_id"
     t.decimal "calculated_amount", precision: 10, scale: 2, default: "0.0"
@@ -254,6 +244,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_151526) do
     t.index ["actor_id"], name: "index_order_events_on_actor_id"
     t.index ["order_id", "created_at"], name: "index_order_events_on_order_id_and_created_at"
     t.index ["order_id"], name: "index_order_events_on_order_id"
+  end
+
+  create_table "order_line_discounts", force: :cascade do |t|
+    t.boolean "auto_applied", default: false, null: false
+    t.decimal "calculated_amount", precision: 10, scale: 2, default: "0.0"
+    t.datetime "created_at", null: false
+    t.integer "discount_type", null: false
+    t.datetime "excluded_at"
+    t.integer "excluded_quantity", default: 0, null: false
+    t.string "name", null: false
+    t.bigint "order_line_id", null: false
+    t.bigint "source_discount_id"
+    t.datetime "updated_at", null: false
+    t.decimal "value", precision: 10, scale: 2, null: false
+    t.index ["excluded_quantity"], name: "index_order_line_discounts_on_excluded_quantity"
+    t.index ["order_line_id", "source_discount_id"], name: "idx_line_discounts_uniq_auto", unique: true, where: "(source_discount_id IS NOT NULL)"
+    t.index ["order_line_id"], name: "index_order_line_discounts_on_order_line_id"
+    t.index ["source_discount_id"], name: "index_order_line_discounts_on_source_discount_id"
   end
 
   create_table "order_lines", force: :cascade do |t|
@@ -702,13 +710,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_151526) do
   add_foreign_key "gift_certificates", "orders", column: "sold_on_order_id"
   add_foreign_key "gift_certificates", "users", column: "issued_by_id"
   add_foreign_key "notifications", "users"
-  add_foreign_key "order_discount_items", "order_discounts"
-  add_foreign_key "order_discount_items", "order_lines"
   add_foreign_key "order_discounts", "discounts"
   add_foreign_key "order_discounts", "orders"
   add_foreign_key "order_discounts", "users", column: "applied_by_id"
   add_foreign_key "order_events", "orders"
   add_foreign_key "order_events", "users", column: "actor_id"
+  add_foreign_key "order_line_discounts", "discounts", column: "source_discount_id"
+  add_foreign_key "order_line_discounts", "order_lines"
   add_foreign_key "order_lines", "orders"
   add_foreign_key "order_lines", "tax_codes"
   add_foreign_key "order_payments", "gift_certificates"

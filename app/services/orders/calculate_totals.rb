@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 module Orders
-  # Optimized version of CalculateTotals that minimizes database queries
-  # and performs bulk updates where possible.
+  # Optimized version of CalculateTotals that handles both order-level and
+  # line-level discounts. Line-level discounts are stored per-line with
+  # granular exclusion capability.
   class CalculateTotals
     def self.call(order)
       new(order).call
@@ -13,13 +14,15 @@ module Orders
     end
 
     def call
-      # Load all data in a single query to avoid N+1
+      # Load all data in minimal queries
       lines = load_order_lines
-      discounts = load_order_discounts
+      order_discounts = load_order_discounts
+      line_discounts = load_line_discounts(lines)
 
       recalculate_line_taxes(lines)
-      apply_discounts(lines, discounts)
-      update_order_totals(lines, discounts)
+      apply_order_discounts(lines, order_discounts)
+      apply_line_discounts(lines, line_discounts)
+      update_order_totals(lines, order_discounts, line_discounts)
 
       @order.save!
       @order
@@ -32,7 +35,12 @@ module Orders
       end
 
       def load_order_discounts
-        @order.order_discounts.includes(:order_discount_items, :order_lines).to_a
+        @order.order_discounts.to_a
+      end
+
+      def load_line_discounts(lines)
+        line_ids = lines.map(&:id)
+        OrderLineDiscount.where(order_line_id: line_ids).to_a.group_by(&:order_line_id)
       end
 
       def recalculate_line_taxes(lines)
@@ -58,102 +66,91 @@ module Orders
         lines_to_update.each(&:save!) if lines_to_update.any?
       end
 
-      def apply_discounts(lines, discounts)
-        return if discounts.empty?
+      def apply_order_discounts(lines, order_discounts)
+        return if lines.empty?
 
-        discounts.each do |discount|
-          applicable_lines = applicable_lines_for(discount, lines)
-          next if applicable_lines.empty?
-
-          new_amount = calculate_discount_amount(discount, applicable_lines)
+        order_discounts.each do |discount|
+          new_amount = calculate_order_discount_amount(discount, lines)
 
           if discount.calculated_amount != new_amount
             discount.calculated_amount = new_amount
             discount.save!
           end
         end
-
-        distribute_discounts_to_lines(lines, discounts)
       end
 
-      def calculate_discount_amount(discount, lines)
+      def calculate_order_discount_amount(discount, lines)
+        subtotal = lines.sum(&:subtotal_before_discount)
+
         amount = if discount.percentage?
-          subtotal_of(lines) * (discount.value / 100.0)
+          subtotal * (discount.value / 100.0)
         elsif discount.fixed_per_item?
           discount.value * lines.sum(&:quantity)
         else
-          [ discount.value, subtotal_of(lines) ].min
+          [ discount.value, subtotal ].min
         end
 
         amount.round(2)
       end
 
-      def subtotal_of(lines)
-        lines.sum { |l| l.subtotal_before_discount }
-      end
-
-      def applicable_lines_for(discount, all_lines)
-        if discount.applies_to_all_items?
-          all_lines
-        else
-          # Get line IDs from discount items
-          applicable_line_ids = discount.order_discount_items.map(&:order_line_id)
-          all_lines.select { |l| applicable_line_ids.include?(l.id) }
-        end
-      end
-
-      def distribute_discounts_to_lines(lines, discounts)
+      def apply_line_discounts(lines, line_discounts_by_line)
         return if lines.empty?
 
-        line_discounts = Hash.new(0.0)
+        line_discounts_to_update = []
 
-        discounts.each do |discount|
-          applicable_lines = applicable_lines_for(discount, lines)
-          next if applicable_lines.empty?
-
-          if discount.fixed_per_item?
-            applicable_lines.each do |line|
-              line_discounts[line.id] += (discount.value * line.quantity).round(2)
-            end
-          else
-            distribute_proportional_discount(discount, applicable_lines, line_discounts)
-          end
-        end
-
-        # Bulk update lines to reduce SQL queries
-        lines_to_update = []
         lines.each do |line|
-          new_discount = line_discounts[line.id].round(2)
-          if line.discount_amount != new_discount
-            line.discount_amount = new_discount
-            lines_to_update << line
+          active_discounts = (line_discounts_by_line[line.id] || []).select(&:active?)
+          next if active_discounts.empty?
+
+          active_discounts.each do |line_discount|
+            new_amount = calculate_line_discount_amount(line_discount, line)
+
+            if line_discount.calculated_amount != new_amount
+              line_discount.calculated_amount = new_amount
+              line_discounts_to_update << line_discount
+            end
           end
+
+          # Update the line's total discount amount
+          line.discount_amount = active_discounts.sum(&:calculated_amount)
         end
 
+        # Bulk update line discounts
+        line_discounts_to_update.each(&:save!) if line_discounts_to_update.any?
+
+        # Bulk update order lines
+        lines_to_update = lines.select { |l| l.changed? }
         lines_to_update.each(&:save!) if lines_to_update.any?
       end
 
-      def distribute_proportional_discount(discount, lines, line_discounts)
-        subtotal = subtotal_of(lines)
-        return if subtotal.zero?
+      def calculate_line_discount_amount(line_discount, line)
+        applied_qty = line_discount.applied_quantity
+        total_qty = line.quantity
 
-        remaining = discount.calculated_amount
+        return 0 if applied_qty <= 0 || total_qty <= 0
 
-        lines.each_with_index do |line, idx|
-          share = if idx == lines.size - 1
-            remaining
-          else
-            s = (line.subtotal_before_discount / subtotal * discount.calculated_amount).round(2)
-            remaining -= s
-            s
-          end
-          line_discounts[line.id] += share
+        amount = if line_discount.percentage?
+          # Percentage applies to the discounted units' share of subtotal
+          unit_subtotal = line.subtotal_before_discount / total_qty
+          (unit_subtotal * applied_qty) * (line_discount.value / 100.0)
+        elsif line_discount.fixed_per_item?
+          line_discount.value * applied_qty
+        else
+          # Fixed amount - prorate based on discounted units
+          full_amount = [ line_discount.value, line.subtotal_before_discount ].min
+          (full_amount * applied_qty / total_qty).round(2)
         end
+
+        amount.round(2)
       end
 
-      def update_order_totals(lines, discounts)
+      def update_order_totals(lines, order_discounts, line_discounts_by_line)
         @order.subtotal = lines.sum(&:subtotal_before_discount).round(2)
-        @order.discount_total = discounts.sum(&:calculated_amount).round(2)
+
+        order_discount_total = order_discounts.sum(&:calculated_amount)
+        line_discount_total = line_discounts_by_line.values.flatten.select(&:active?).sum(&:calculated_amount)
+
+        @order.discount_total = (order_discount_total + line_discount_total).round(2)
         @order.tax_total = lines.sum(&:tax_amount).round(2)
         @order.total = (@order.subtotal - @order.discount_total + @order.tax_total).round(2)
       end

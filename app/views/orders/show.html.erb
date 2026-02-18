@@ -115,11 +115,11 @@
     </table>
   </div>
 
-  <%# Discounts %>
+  <%# Discounts - Order Level %>
   <% if @order.order_discounts.any? %>
     <div class="rounded-lg border border-green-200 bg-green-50 overflow-hidden">
       <div class="border-b border-green-200 px-4 py-2">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-green-800">Discounts Applied</h2>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-green-800">Order Discounts</h2>
       </div>
       <div class="divide-y divide-green-200">
         <% @order.order_discounts.each do |discount| %>
@@ -130,11 +130,37 @@
               <% else %>
                 <span class="font-medium text-green-900"><%= discount.name %></span>
               <% end %>
-              <span class="text-green-700 text-xs ml-1">
-                (<%= discount.display_value %><%= " on #{discount.scope.humanize.downcase}" unless discount.applies_to_all_items? %>)
-              </span>
+              <span class="text-green-700 text-xs ml-1">(<%= discount.display_value %>)</span>
             </div>
             <span class="font-medium text-green-700">-<%= number_to_currency(discount.calculated_amount) %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%# Discounts - Line Level %>
+  <% line_discounts = @order.order_line_discounts.select { |d| d.applied_quantity > 0 } %>
+  <% if line_discounts.any? %>
+    <div class="rounded-lg border border-blue-200 bg-blue-50 overflow-hidden">
+      <div class="border-b border-blue-200 px-4 py-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-blue-800">Item Discounts</h2>
+      </div>
+      <div class="divide-y divide-blue-200">
+        <% line_discounts.group_by(&:name).each do |name, discounts| %>
+          <div class="flex items-center justify-between px-4 py-2.5 text-sm">
+            <div>
+              <% first_discount = discounts.first %>
+              <% if first_discount.source_discount.present? && can?(:read, Discount) %>
+                <%= link_to name, admin_discount_path(first_discount.source_discount), class: "font-medium text-blue-900 hover:underline" %>
+              <% else %>
+                <span class="font-medium text-blue-900"><%= name %></span>
+              <% end %>
+              <span class="text-blue-700 text-xs ml-1">
+                (<%= first_discount.display_value %> on <%= discounts.sum(&:applied_quantity) %> items)
+              </span>
+            </div>
+            <span class="font-medium text-blue-700">-<%= number_to_currency(discounts.sum(&:calculated_amount)) %></span>
           </div>
         <% end %>
       </div>

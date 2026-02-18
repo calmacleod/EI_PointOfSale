@@ -20,24 +20,68 @@
       </tr>
     </thead>
     <tbody class="divide-y divide-[var(--color-border)] bg-surface">
-      <% order.order_lines.includes(:sellable).order(:position).each do |line| %>
+      <% order.order_lines.includes(:sellable, :order_line_discounts).order(:position).each do |line| %>
         <tr id="<%= dom_id(line) %>" class="group">
-          <td class="px-4 py-2 text-xs font-mono text-muted"><%= line.code %></td>
-          <td class="px-4 py-2 text-sm text-body">
-            <%= line.name %>
-            <% if line.sellable_type == "GiftCertificate" %>
-              <span class="ml-1 inline-block rounded bg-purple-100 px-1.5 py-0.5 font-mono text-[10px] text-purple-700"><%= line.code %></span>
-              <span class="ml-1 text-[10px] text-muted italic">no tax</span>
-            <% else %>
-              <% if line.discount_amount > 0 %>
-                <span class="ml-1 text-xs text-green-600">(-<%= number_to_currency(line.discount_amount) %>)</span>
+          <td class="px-4 py-2 text-xs font-mono text-muted align-top"><%= line.code %></td>
+          <td class="px-4 py-2 text-sm text-body align-top">
+            <div class="flex flex-col gap-1">
+              <span><%= line.name %></span>
+              
+              <%# Per-line discounts with unit breakdown %>
+              <% line.order_line_discounts.each do |line_discount| %>
+                <% next if line_discount.auto_applied? && !order.draft? && line_discount.fully_excluded? %>
+                
+                <div class="flex flex-col gap-1 mt-1 p-1.5 rounded bg-surface-alt border border-theme">
+                  <div class="flex items-center justify-between text-xs">
+                    <span class="font-medium text-body"><%= line_discount.name %></span>
+                    <span class="text-green-600">-<%= number_to_currency(line_discount.calculated_amount) %></span>
+                  </div>
+                  
+                  <% if line_discount.auto_applied? && order.draft? %>
+                    <div class="flex flex-wrap gap-1 mt-1">
+                      <% line.quantity.times do |i| %>
+                        <% unit_has_discount = i >= line_discount.excluded_quantity %>
+                        <%= button_to unit_has_discount ? exclude_order_line_discount_path(line_discount) : restore_order_line_discount_path(line_discount),
+                            method: :patch,
+                            class: "w-6 h-6 rounded text-[10px] font-medium transition #{unit_has_discount ? 'bg-green-100 text-green-700 hover:bg-red-100 hover:text-red-700' : 'bg-gray-100 text-gray-400 hover:bg-green-100 hover:text-green-700'}",
+                            data: { turbo_stream: true },
+                            title: unit_has_discount ? "Remove discount from this unit" : "Apply discount to this unit" do %>
+                          <%= i + 1 %>
+                        <% end %>
+                      <% end %>
+                    </div>
+                    <div class="flex items-center justify-between text-[10px] text-muted mt-1">
+                      <span><%= line_discount.applied_quantity %> of <%= line.quantity %> discounted</span>
+                      <% if line_discount.fully_excluded? %>
+                        <span class="text-red-600">Fully excluded</span>
+                      <% elsif line_discount.excluded_quantity > 0 %>
+                        <span class="text-yellow-600">Partially excluded</span>
+                      <% end %>
+                    </div>
+                  <% elsif line_discount.excluded_quantity > 0 %>
+                    <div class="text-[10px] text-muted">
+                      <%= line_discount.applied_quantity %> of <%= line.quantity %> discounted
+                      <% if line_discount.fully_excluded? %>
+                        <span class="text-red-600 ml-1">(Fully excluded)</span>
+                      <% else %>
+                        <span class="text-yellow-600 ml-1">(Partially excluded)</span>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
               <% end %>
-              <% if line.tax_rate > 0 %>
-                <span class="ml-1 text-[10px] text-muted"><%= (line.tax_rate * 100).round(1) %>%</span>
+              
+              <% if line.sellable_type == "GiftCertificate" %>
+                <span class="inline-block rounded bg-purple-100 px-1.5 py-0.5 font-mono text-[10px] text-purple-700 w-fit mt-1"><%= line.code %></span>
+                <span class="text-[10px] text-muted italic">no tax</span>
+              <% else %>
+                <% if line.tax_rate > 0 %>
+                  <span class="text-[10px] text-muted mt-1"><%= (line.tax_rate * 100).round(1) %>% tax</span>
+                <% end %>
               <% end %>
-            <% end %>
+            </div>
           </td>
-          <td class="px-4 py-2 text-center">
+          <td class="px-4 py-2 text-center align-top">
             <% if order.draft? %>
               <div data-controller="inline-quantity" data-inline-quantity-url-value="<%= order_line_path(line) %>">
                 <button type="button" class="inline-flex items-center justify-center rounded-md border border-theme bg-surface-alt px-2.5 py-0.5 text-sm font-medium text-body hover:bg-[var(--color-border)] transition"
@@ -54,9 +98,15 @@
               <span class="text-sm text-body"><%= line.quantity %></span>
             <% end %>
           </td>
-          <td class="px-4 py-2 text-right text-sm text-body"><%= number_to_currency(line.unit_price) %></td>
-          <td class="px-4 py-2 text-right text-sm font-medium text-body"><%= number_to_currency(line.subtotal_before_discount) %></td>
-          <td class="px-4 py-2 text-center">
+          <td class="px-4 py-2 text-right text-sm text-body align-top"><%= number_to_currency(line.unit_price) %></td>
+          <td class="px-4 py-2 text-right text-sm font-medium text-body align-top">
+            <%= number_to_currency(line.subtotal_before_discount) %>
+            <% if line.discount_amount > 0 %>
+              <div class="text-xs text-green-600">-<%= number_to_currency(line.discount_amount) %></div>
+              <div class="text-xs font-medium"><%= number_to_currency(line.line_total - line.tax_amount) %></div>
+            <% end %>
+          </td>
+          <td class="px-4 py-2 text-center align-top">
             <div class="flex items-center justify-center gap-1">
               <% if line.sellable.present? %>
                 <button type="button"

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class StoreTask < ApplicationRecord
-  audited async: true
+  audited
 
   # === Associations ===
   belongs_to :assigned_to, class_name: "User", optional: true

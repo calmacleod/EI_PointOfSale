@@ -94,8 +94,11 @@ module OrderLines
 
     test "applies auto-applied discounts after adding line" do
       # dragon_shield_red is in discount_items fixtures
-      assert_difference "OrderDiscount.count", 3 do # percentage_all + 2 specific
-        Add.call(order: @order, sellable: @product, actor: @admin)
+      # 1 order-level discount (percentage_all) + 2 line-level discounts
+      assert_difference "OrderDiscount.count", 1 do
+        assert_difference "OrderLineDiscount.count", 2 do
+          Add.call(order: @order, sellable: @product, actor: @admin)
+        end
       end
 
       assert @order.order_discounts.exists?(discount_id: discounts(:percentage_all).id)

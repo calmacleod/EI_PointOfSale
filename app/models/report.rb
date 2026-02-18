@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Report < ApplicationRecord
-  audited async: true, except: [ :result_data ]
+  audited except: [ :result_data ]
 
   include PgSearch::Model
 
