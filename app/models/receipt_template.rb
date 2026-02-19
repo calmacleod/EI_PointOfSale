@@ -11,11 +11,27 @@ class ReceiptTemplate < ApplicationRecord
 
   PAPER_WIDTH_OPTIONS = PAPER_WIDTHS.keys.freeze
 
+  # Ordered list of all draggable receipt sections.
+  # Footer text is excluded — it always renders after the totals/payments block.
+  SECTIONS = %w[logo store_name store_address store_phone store_email header_text date_time cashier_name].freeze
+
+  SECTION_LABELS = {
+    "logo"          => "Logo",
+    "store_name"    => "Store Name",
+    "store_address" => "Store Address",
+    "store_phone"   => "Store Phone",
+    "store_email"   => "Store Email",
+    "header_text"   => "Header Text",
+    "date_time"     => "Date & Time",
+    "cashier_name"  => "Cashier Name"
+  }.freeze
+
   # ── Validations ────────────────────────────────────────────────────
   validates :name, presence: true
   validates :paper_width_mm, presence: true, inclusion: { in: PAPER_WIDTH_OPTIONS }
   validates :chars_per_line, presence: true, numericality: { greater_than: 0 }
   validate :only_one_active_template
+  validate :valid_section_order
 
   # ── Callbacks ──────────────────────────────────────────────────────
   before_validation :set_chars_per_line, if: :paper_width_mm_changed?
@@ -31,6 +47,14 @@ class ReceiptTemplate < ApplicationRecord
 
   # ── Instance methods ───────────────────────────────────────────────
 
+  # Returns the sections in their configured order, falling back to the default.
+  def ordered_sections
+    (section_order.presence || SECTIONS).then do |order|
+      # Ensure any sections not yet in the stored order are appended at the end
+      order | SECTIONS
+    end
+  end
+
   # Returns an array of strings representing each line of the receipt.
   # Pass a Store instance to populate store info.
   # Whether the logo should be displayed in the receipt preview.
@@ -41,42 +65,15 @@ class ReceiptTemplate < ApplicationRecord
     lines = []
     width = chars_per_line || 48
 
-    if show_store_name && store.name.present?
-      lines.concat(center_wrap(store.name.upcase, width))
+    header_section_lines = []
+
+    ordered_sections.each do |section|
+      section_lines = render_preview_section(section, store, width)
+      header_section_lines.concat(section_lines) if section_lines.any?
     end
 
-    if show_store_address
-      store.receipt_address_lines.each do |addr_line|
-        lines.concat(center_wrap(addr_line, width))
-      end
-    end
-
-    if show_store_phone && store.phone.present?
-      lines << center_text("Tel: #{store.phone}", width)
-    end
-
-    if show_store_email && store.email.present?
-      lines << center_text(store.email, width)
-    end
-
+    lines.concat(header_section_lines)
     lines << separator(width) if lines.any?
-
-    if header_text.present?
-      header_text.each_line do |line|
-        lines.concat(center_wrap(line.chomp, width))
-      end
-      lines << separator(width)
-    end
-
-    if show_date_time
-      lines << left_right("Date: #{Time.current.strftime('%Y-%m-%d')}", Time.current.strftime("%H:%M"), width)
-    end
-
-    if show_cashier_name
-      lines << left_right("Cashier:", "Staff Name", width)
-    end
-
-    lines << separator(width) if show_date_time || show_cashier_name
 
     # Placeholder for future order line items
     lines << ""
@@ -107,7 +104,49 @@ class ReceiptTemplate < ApplicationRecord
     end
   end
 
+  # Accept a JSON string from form hidden fields in addition to arrays.
+  def section_order=(value)
+    super(value.is_a?(String) ? (JSON.parse(value) rescue []) : value)
+  end
+
   private
+
+    # Renders a single named section for the text preview.
+    # Returns an array of lines (may be empty if the section is toggled off or has no content).
+    def render_preview_section(section, store, width)
+      case section
+      when "logo"
+        [] # Handled as <img> in HTML preview; no text representation
+      when "store_name"
+        return [] unless show_store_name && store.name.present?
+        center_wrap(store.name.upcase, width)
+      when "store_address"
+        return [] unless show_store_address
+        lines = []
+        store.receipt_address_lines.each { |l| lines.concat(center_wrap(l, width)) }
+        lines
+      when "store_phone"
+        return [] unless show_store_phone && store.phone.present?
+        [ center_text("Tel: #{store.phone}", width) ]
+      when "store_email"
+        return [] unless show_store_email && store.email.present?
+        [ center_text(store.email, width) ]
+      when "header_text"
+        return [] unless header_text.present?
+        lines = []
+        header_text.each_line { |l| lines.concat(center_wrap(l.chomp, width)) }
+        lines << separator(width)
+        lines
+      when "date_time"
+        return [] unless show_date_time
+        [ left_right("Date: #{Time.current.strftime('%Y-%m-%d')}", Time.current.strftime("%H:%M"), width) ]
+      when "cashier_name"
+        return [] unless show_cashier_name
+        [ left_right("Cashier:", "Staff Name", width) ]
+      else
+        []
+      end
+    end
 
     def set_chars_per_line
       info = PAPER_WIDTHS[paper_width_mm]
@@ -119,6 +158,15 @@ class ReceiptTemplate < ApplicationRecord
       return unless self.class.active.where.not(id: id).exists?
 
       errors.add(:active, "only one template can be active at a time")
+    end
+
+    def valid_section_order
+      return if section_order.blank?
+
+      invalid = section_order - SECTIONS
+      return if invalid.empty?
+
+      errors.add(:section_order, "contains unknown sections: #{invalid.join(', ')}")
     end
 
     # ── Formatting helpers ─────────────────────────────────────────────

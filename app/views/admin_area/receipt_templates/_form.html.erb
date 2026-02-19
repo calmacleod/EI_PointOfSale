@@ -108,13 +108,44 @@
         </div>
       </div>
 
+      <%# Section Order — draggable list to reposition receipt header sections %>
+      <div class="rounded-lg border border-theme bg-surface p-3"
+           data-controller="receipt-section-order">
+        <h3 class="text-sm font-semibold text-body">Section Order</h3>
+        <p class="mt-0.5 text-xs text-muted">Drag to change the order sections appear on the receipt.</p>
+
+        <%# Hidden input — updated by the drag controller; read by the preview controller %>
+        <%= f.hidden_field :section_order,
+            value: receipt_template.ordered_sections.to_json,
+            data: {
+              receipt_section_order_target: "input",
+              receipt_preview_target: "sectionOrder",
+              action: "change->receipt-preview#update"
+            } %>
+
+        <ul class="mt-2 space-y-1" data-receipt-section-order-target="list">
+          <% receipt_template.ordered_sections.each do |section| %>
+            <li class="flex cursor-grab select-none items-center gap-2 rounded-md border border-theme bg-canvas px-2 py-1.5"
+                draggable="true"
+                data-section-key="<%= section %>"
+                data-receipt-section-order-target="item"
+                data-action="dragstart->receipt-section-order#dragstart dragover->receipt-section-order#dragover drop->receipt-section-order#drop dragend->receipt-section-order#dragend">
+              <svg class="h-4 w-4 shrink-0 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/>
+              </svg>
+              <span class="flex-1 text-sm text-body"><%= ReceiptTemplate::SECTION_LABELS[section] %></span>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+
       <div class="rounded-lg border border-theme bg-surface p-3">
         <h3 class="text-sm font-semibold text-body">Custom Text</h3>
 
         <div class="mt-2 space-y-2">
           <div>
             <%= f.label :header_text, "Header text", class: "text-sm font-medium text-body" %>
-            <p class="text-xs text-muted">Appears below the store info, above items.</p>
+            <p class="text-xs text-muted">Appears in the receipt header in its configured position.</p>
             <%= f.text_area :header_text, rows: 2,
                 placeholder: "e.g. Welcome to our store!",
                 class: "input-field mt-0.5 w-full",
@@ -123,7 +154,7 @@
 
           <div>
             <%= f.label :footer_text, "Footer text", class: "text-sm font-medium text-body" %>
-            <p class="text-xs text-muted">Appears at the bottom of the receipt.</p>
+            <p class="text-xs text-muted">Always appears at the bottom of the receipt.</p>
             <%= f.text_area :footer_text, rows: 2,
                 placeholder: "e.g. Thank you for your purchase!\nReturns accepted within 30 days.",
                 class: "input-field mt-0.5 w-full",
@@ -151,6 +182,9 @@
         <div data-receipt-preview-target="paper"
              class="receipt-paper shrink-0 rounded-t-sm bg-white shadow-lg">
           <div class="px-2 py-4">
+            <pre data-receipt-preview-target="outputBefore"
+                 class="whitespace-pre font-mono text-black leading-snug"
+                 style="font-size: 11px; width: <%= receipt_template.chars_per_line %>ch;"></pre>
             <% if receipt_template.show_logo? && store.logo.attached? %>
               <div data-receipt-preview-target="logoContainer" class="mb-2 flex justify-center">
                 <%= image_tag store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm, trim: receipt_template.trim_logo?),

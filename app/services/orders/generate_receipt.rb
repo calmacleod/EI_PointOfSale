@@ -35,41 +35,79 @@ module Orders
     private
 
       def header_lines
+        return [] unless @template
+
         lines = []
-        if @template&.show_store_name && @store.name.present?
-          lines << center(@store.name.upcase)
+        @template.ordered_sections.each do |section|
+          lines.concat(render_header_section(section))
         end
-
-        if @template&.show_store_address
-          @store.receipt_address_lines.each { |l| lines << center(l) }
-        end
-
-        lines << center("Tel: #{@store.phone}") if @template&.show_store_phone && @store.phone.present?
-        lines << center(@store.email) if @template&.show_store_email && @store.email.present?
-
-        if @template&.header_text.present?
-          lines << ""
-          @template.header_text.each_line { |l| lines << center(l.chomp) }
-        end
-
         lines
+      end
+
+      # Renders a single named section for the actual receipt.
+      # Sections that belong to order_info_lines are skipped here.
+      def render_header_section(section)
+        case section
+        when "logo"
+          [] # Logo is not represented in text output
+        when "store_name"
+          return [] unless @template.show_store_name && @store.name.present?
+          [ center(@store.name.upcase) ]
+        when "store_address"
+          return [] unless @template.show_store_address
+          @store.receipt_address_lines.map { |l| center(l) }
+        when "store_phone"
+          return [] unless @template.show_store_phone && @store.phone.present?
+          [ center("Tel: #{@store.phone}") ]
+        when "store_email"
+          return [] unless @template.show_store_email && @store.email.present?
+          [ center(@store.email) ]
+        when "header_text"
+          return [] unless @template.header_text.present?
+          lines = [ "" ]
+          @template.header_text.each_line { |l| lines << center(l.chomp) }
+          lines
+        when "date_time", "cashier_name"
+          [] # Rendered in order_info_lines to keep them grouped with order number
+        else
+          []
+        end
       end
 
       def order_info_lines
         lines = []
-        if @template&.show_date_time
-          dt = @order.completed_at || @order.created_at
-          lines << left_right("Date: #{dt.strftime('%Y-%m-%d')}", dt.strftime("%H:%M"))
-        end
 
-        lines << left_right("Order:", @order.number)
-        lines << left_right("Cashier:", @order.created_by.name || "Staff") if @template&.show_cashier_name
+        sections = @template&.ordered_sections || ReceiptTemplate::SECTIONS
+        date_time_first = sections.index("date_time").to_i < sections.index("cashier_name").to_i
+
+        if date_time_first
+          lines.concat(date_time_line)
+          lines << left_right("Order:", @order.number)
+          lines.concat(cashier_line)
+        else
+          lines.concat(cashier_line)
+          lines << left_right("Order:", @order.number)
+          lines.concat(date_time_line)
+        end
 
         if @order.customer.present?
           lines << left_right("Customer:", @order.customer.name)
         end
 
         lines
+      end
+
+      def date_time_line
+        return [] unless @template&.show_date_time
+
+        dt = @order.completed_at || @order.created_at
+        [ left_right("Date: #{dt.strftime('%Y-%m-%d')}", dt.strftime("%H:%M")) ]
+      end
+
+      def cashier_line
+        return [] unless @template&.show_cashier_name
+
+        [ left_right("Cashier:", @order.created_by.name || "Staff") ]
       end
 
       def line_item_lines

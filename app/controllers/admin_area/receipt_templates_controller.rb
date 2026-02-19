@@ -87,7 +87,8 @@ module AdminArea
         params.require(:receipt_template).permit(
           :name, :paper_width_mm, :show_store_name, :show_store_address,
           :show_store_phone, :show_store_email, :show_logo, :trim_logo,
-          :header_text, :footer_text, :show_date_time, :show_cashier_name
+          :header_text, :footer_text, :show_date_time, :show_cashier_name,
+          :section_order
         )
       end
   end

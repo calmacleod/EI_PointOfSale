@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_18_231234) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_19_011630) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -409,6 +409,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_231234) do
     t.text "header_text"
     t.string "name", null: false
     t.integer "paper_width_mm", default: 80, null: false
+    t.jsonb "section_order", default: [], null: false
     t.boolean "show_cashier_name", default: true, null: false
     t.boolean "show_date_time", default: true, null: false
     t.boolean "show_logo", default: true, null: false
