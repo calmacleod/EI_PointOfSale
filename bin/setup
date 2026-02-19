@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 require "fileutils"
+require "yaml"
 
 APP_ROOT = File.expand_path("..", __dir__)
 
@@ -10,26 +11,170 @@ end
 FileUtils.chdir APP_ROOT do
   # This script is a way to set up or update your development environment automatically.
   # This script is idempotent, so that you can run it at any time and get an expectable outcome.
-  # Add necessary setup steps to this file.
 
-  puts "== Installing dependencies =="
+  # == Step 1: Environment file ==
+  puts "== Checking environment file =="
+  unless File.exist?(".env")
+    puts "  No .env found — copying from env.template..."
+    FileUtils.cp "env.template", ".env"
+    puts "  ✓ .env created. Review it and update any values as needed."
+  else
+    puts "  ✓ .env already exists."
+  end
+
+  # == Step 2: Docker Compose ==
+  puts "\n== Checking Docker Compose =="
+  unless system("docker compose version > /dev/null 2>&1")
+    abort <<~MSG
+      ✗ 'docker compose' is not available.
+
+      Please install Docker Desktop and ensure 'docker compose' is in your PATH:
+        https://docs.docker.com/get-docker/
+
+      Then re-run: bin/setup
+    MSG
+  end
+  puts "  ✓ Docker Compose is available."
+
+  # == Step 3: Pull latest images ==
+  puts "\n== Pulling Docker images =="
+  system! "docker compose pull"
+
+  # == Step 4: Start containers in background ==
+  puts "\n== Starting Docker containers =="
+  system! "docker compose up -d"
+  puts "  ✓ Containers started."
+
+  # == Step 5: Install Ruby dependencies ==
+  puts "\n== Installing dependencies =="
   system("bundle check") || system!("bundle install")
 
-  # puts "\n== Copying sample files =="
-  # unless File.exist?("config/database.yml")
-  #   FileUtils.cp "config/database.yml.sample", "config/database.yml"
-  # end
+  # == Step 6: Garage storage cluster setup ==
+  puts "\n== Setting up Garage storage cluster =="
 
-  puts "\n== Preparing database =="
-  system! "bin/rails db:prepare"
-  system! "bin/rails db:reset" if ARGV.include?("--reset")
+  container = "ei_pointofsale_garage"
+  garage_bin = "/garage"
+  dev_bucket = "ei-pointofsale-development"
+  dev_key_name = "ei-pointofsale-development-key"
 
+  # Wait for Garage to become responsive
+  print "  Waiting for Garage to be ready"
+  $stdout.flush
+  ready = false
+  25.times do
+    container_running = !`docker ps -q -f name=#{container}`.strip.empty?
+    if container_running && system("docker exec #{container} #{garage_bin} status > /dev/null 2>&1")
+      ready = true
+      break
+    end
+    print "."
+    $stdout.flush
+    sleep 3
+  end
+  puts ""
+
+  unless ready
+    abort "  ✗ Garage did not become ready in time.\n  Check logs with: docker compose logs garage"
+  end
+  puts "  ✓ Garage is ready."
+
+  # Create cluster layout only if not already configured
+  layout_output = `docker exec #{container} #{garage_bin} layout show 2>/dev/null`
+  if layout_output.include?("dc1")
+    puts "  ✓ Cluster layout already configured — skipping."
+  else
+    puts "  Configuring cluster layout..."
+    node_id = `docker exec #{container} #{garage_bin} status 2>/dev/null | grep -E '^[a-f0-9]{16}' | head -1 | awk '{print $1}'`.strip
+
+    if node_id.empty?
+      abort "  ✗ Could not read node ID from garage status. Is Garage fully started?"
+    end
+
+    puts "  Found node: #{node_id[0..7]}..."
+    system!("docker exec #{container} #{garage_bin} layout assign -z dc1 -c 10G #{node_id[0..7]}")
+    system!("docker exec #{container} #{garage_bin} layout apply --version 1")
+    puts "  ✓ Cluster layout configured."
+  end
+
+  # Create development bucket (idempotent)
+  puts "  Creating bucket '#{dev_bucket}'..."
+  bucket_created = system("docker exec #{container} #{garage_bin} bucket create #{dev_bucket} 2>/dev/null")
+  puts bucket_created ? "  ✓ Bucket '#{dev_bucket}' created." : "  ✓ Bucket '#{dev_bucket}' already exists."
+
+  # Create development API key
+  puts "  Creating API key '#{dev_key_name}'..."
+  key_output = `docker exec #{container} #{garage_bin} key create #{dev_key_name} 2>&1`
+  key_id = key_output.match(/Key ID:\s*(\S+)/)&.[](1)
+  secret_key = key_output.match(/Secret key:\s*(\S+)/)&.[](1)
+
+  if key_id && secret_key
+    puts "  ✓ API key created."
+  else
+    # Key already exists — secret is only shown at creation time
+    puts "  API key already exists."
+    key_info = `docker exec #{container} #{garage_bin} key info #{dev_key_name} 2>/dev/null`
+    key_id = key_info.match(/Key ID:\s*(\S+)/)&.[](1)
+  end
+
+  # Grant bucket access to key
+  system("docker exec #{container} #{garage_bin} bucket allow --read --write --owner #{dev_bucket} --key #{dev_key_name} 2>/dev/null")
+  puts "  ✓ Key '#{dev_key_name}' has access to '#{dev_bucket}'."
+
+  # Write credentials to .env
+  if key_id && secret_key
+    env_contents = File.read(".env")
+
+    if env_contents.match?(/^GARAGE_ACCESS_KEY=/)
+      env_contents = env_contents.gsub(/^GARAGE_ACCESS_KEY=.*$/, "GARAGE_ACCESS_KEY=#{key_id}")
+    else
+      env_contents += "\n# Garage (S3-compatible object storage)\nGARAGE_ACCESS_KEY=#{key_id}\n"
+    end
+
+    if env_contents.match?(/^GARAGE_SECRET_KEY=/)
+      env_contents = env_contents.gsub(/^GARAGE_SECRET_KEY=.*$/, "GARAGE_SECRET_KEY=#{secret_key}")
+    else
+      env_contents += "GARAGE_SECRET_KEY=#{secret_key}\n"
+    end
+
+    File.write(".env", env_contents)
+    puts "  ✓ Garage credentials written to .env."
+  elsif key_id
+    existing_env = File.read(".env")
+    if existing_env.match?(/^GARAGE_ACCESS_KEY=\S/) && existing_env.match?(/^GARAGE_SECRET_KEY=\S/)
+      puts "  ✓ Garage credentials already present in .env."
+    else
+      puts ""
+      puts "  ⚠  The API key '#{dev_key_name}' already exists but the secret"
+      puts "     is only shown once at creation time and cannot be retrieved."
+      puts ""
+      puts "     To reset: docker exec #{container} #{garage_bin} key delete #{dev_key_name}"
+      puts "     Then re-run: bin/setup"
+      puts ""
+    end
+  end
+
+  # == Step 7: Clean up old logs and temp files ==
   puts "\n== Removing old logs and tempfiles =="
   system! "bin/rails log:clear tmp:clear"
 
+  # == Step 8: Prepare and seed database ==
+  puts "\n== Preparing database =="
+  system! "bin/rails db:prepare"
+  system! "bin/rails db:seed"
+
+  # == Done ==
+  puts ""
+  puts "=" * 60
+  puts "  Setup complete! Your development environment is ready."
+  puts ""
+  puts "  Application:  http://localhost:3000"
+  puts "  Garage admin: http://localhost:3902"
+  puts "=" * 60
+  puts ""
+
   unless ARGV.include?("--skip-server")
-    puts "\n== Starting development server =="
-    STDOUT.flush # flush the output before exec(2) so that it displays
+    puts "== Starting development server =="
+    $stdout.flush # flush before exec(2) so the message displays
     exec "bin/dev"
   end
 end
