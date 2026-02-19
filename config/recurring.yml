@@ -40,7 +40,7 @@ production:
     schedule: at 2am every day
     queue: low
 
-  nightly_minio_backup:
-    class: MinioBackupJob
+  nightly_garage_backup:
+    class: GarageBackupJob
     schedule: at 3am every day
     queue: low

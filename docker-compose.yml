@@ -17,26 +17,27 @@ services:
       timeout: 3s
       retries: 10
 
-  minio:
-    image: minio/minio
-    container_name: ei_pointofsale_minio
+  garage:
+    image: dxflrs/garage:v2.2.0
+    container_name: ei_pointofsale_garage
     restart: unless-stopped
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "3900:3900"   # S3 API
+      - "3901:3901"   # RPC
+      - "3902:3902"   # Web UI
+      - "3903:3903"   # Admin API
     volumes:
-      - minio_data:/data
+      - garage_data:/var/lib/garage/data
+      - garage_meta:/var/lib/garage/meta
+      - ./config/garage.toml:/etc/garage.toml:ro
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ["CMD-SHELL", "garage status || exit 1"]
       interval: 5s
       timeout: 3s
       retries: 10
 
 volumes:
   postgres_data:
-  minio_data:
+  garage_data:
+  garage_meta:
 

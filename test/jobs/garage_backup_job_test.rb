@@ -3,12 +3,12 @@
 require "test_helper"
 require "aws-sdk-s3"
 
-class MinioBackupJobTest < ActiveJob::TestCase
+class GarageBackupJobTest < ActiveJob::TestCase
   test "perform creates archive, uploads to drive, and cleans up temp file" do
     upload_called = false
     prune_called = false
 
-    fake_result = Data.define(:id, :name).new(id: "drive_456", name: "minio_backup_test.tar.gz")
+    fake_result = Data.define(:id, :name).new(id: "drive_456", name: "garage_backup_test.tar.gz")
 
     mock_client = build_mock_s3_client
 
@@ -18,7 +18,7 @@ class MinioBackupJobTest < ActiveJob::TestCase
     GoogleDriveService.stub(:upload, upload_stub) do
       GoogleDriveService.stub(:prune, prune_stub) do
         Aws::S3::Client.stub(:new, mock_client) do
-          MinioBackupJob.perform_now
+          GarageBackupJob.perform_now
         end
       end
     end
@@ -26,7 +26,7 @@ class MinioBackupJobTest < ActiveJob::TestCase
     assert upload_called, "Expected GoogleDriveService.upload to be called"
     assert prune_called, "Expected GoogleDriveService.prune to be called"
 
-    temp_files = Dir.glob(Rails.root.join("tmp", "minio_backup_*.tar.gz"))
+    temp_files = Dir.glob(Rails.root.join("tmp", "garage_backup_*.tar.gz"))
     assert_empty temp_files, "Temp backup file should be cleaned up"
   end
 
@@ -38,12 +38,12 @@ class MinioBackupJobTest < ActiveJob::TestCase
     GoogleDriveService.stub(:upload, upload_stub) do
       Aws::S3::Client.stub(:new, mock_client) do
         assert_raises(RuntimeError) do
-          MinioBackupJob.perform_now
+          GarageBackupJob.perform_now
         end
       end
     end
 
-    temp_files = Dir.glob(Rails.root.join("tmp", "minio_backup_*.tar.gz"))
+    temp_files = Dir.glob(Rails.root.join("tmp", "garage_backup_*.tar.gz"))
     assert_empty temp_files, "Temp backup file should be cleaned up even on failure"
   end
 

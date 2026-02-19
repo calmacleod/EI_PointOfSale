@@ -29,8 +29,8 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  # Store uploaded files in MinIO (local S3-compatible object storage).
-  config.active_storage.service = :minio
+  # Store uploaded files in Garage (local S3-compatible object storage).
+  config.active_storage.service = :garage
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false

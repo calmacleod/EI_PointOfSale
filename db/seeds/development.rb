@@ -502,12 +502,13 @@ unless Order.exists?
   gift_amount = 50.00
   remaining = order4.total - gift_amount
 
-  order4.order_payments.create!(
+  gc_payment = order4.order_payments.new(
     payment_method: :gift_certificate,
     amount: gift_amount,
     received_by: admin,
     reference: "GC-2026-0042"
   )
+  gc_payment.save(validate: false)
   order4.order_payments.create!(
     payment_method: :debit,
     amount: remaining,

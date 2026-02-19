@@ -5,13 +5,13 @@ module AdminArea
     def show
       @credentials = GoogleDriveService.check_credentials
       @db_backups = fetch_backups("db_backup_")
-      @minio_backups = fetch_backups("minio_backup_")
+      @garage_backups = fetch_backups("garage_backup_")
       @last_db_backup = @db_backups.first
-      @last_minio_backup = @minio_backups.first
+      @last_garage_backup = @garage_backups.first
     rescue GoogleDriveService::Error => e
       @credentials_error = e.message
       @db_backups = []
-      @minio_backups = []
+      @garage_backups = []
     end
 
     def download

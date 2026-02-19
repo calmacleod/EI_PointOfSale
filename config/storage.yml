@@ -6,12 +6,12 @@ local:
   service: Disk
   root: <%= Rails.root.join("storage") %>
 
-# Local S3-compatible storage via MinIO
-minio:
+# Local S3-compatible storage via Garage (https://garagehq.deuxfleurs.fr/)
+garage:
   service: S3
-  access_key_id: <%= ENV.fetch("MINIO_ACCESS_KEY", "minioadmin") %>
-  secret_access_key: <%= ENV.fetch("MINIO_SECRET_KEY", "minioadmin") %>
-  region: us-east-1
+  access_key_id: <%= ENV.fetch("GARAGE_ACCESS_KEY", "garageadmin") %>
+  secret_access_key: <%= ENV.fetch("GARAGE_SECRET_KEY", "garageadmin") %>
+  region: garage
   bucket: ei-pointofsale-<%= Rails.env %>
-  endpoint: <%= ENV.fetch("MINIO_ENDPOINT", "http://localhost:9000") %>
+  endpoint: <%= ENV.fetch("GARAGE_ENDPOINT", "http://localhost:3900") %>
   force_path_style: true

@@ -3,14 +3,14 @@
 require "aws-sdk-s3"
 require "rubygems/package"
 
-# Nightly job that archives all objects in the MinIO bucket into a compressed
+# Nightly job that archives all objects in the Garage bucket into a compressed
 # tarball and uploads it to Google Drive. Old backups are pruned to keep the last 7.
 #
 # Scheduled via config/recurring.yml.
-class MinioBackupJob < ApplicationJob
+class GarageBackupJob < ApplicationJob
   queue_as :low
 
-  BACKUP_PREFIX = "minio_backup_"
+  BACKUP_PREFIX = "garage_backup_"
   RETENTION_COUNT = 7
 
   def perform
@@ -22,8 +22,8 @@ class MinioBackupJob < ApplicationJob
       create_archive(archive_path)
       upload_to_drive(archive_path)
       prune_old_backups
-      Rails.logger.info { "[MinioBackupJob] Backup completed: #{filename}" }
-      notify_admins("Storage backup complete", "Nightly MinIO backup uploaded to Google Drive.")
+      Rails.logger.info { "[GarageBackupJob] Backup completed: #{filename}" }
+      notify_admins("Storage backup complete", "Nightly Garage backup uploaded to Google Drive.")
     ensure
       FileUtils.rm_f(archive_path)
     end
@@ -32,7 +32,7 @@ class MinioBackupJob < ApplicationJob
   private
 
     def create_archive(archive_path)
-      config = minio_config
+      config = storage_config
       client = build_s3_client(config)
       bucket = config["bucket"]
 
@@ -58,14 +58,14 @@ class MinioBackupJob < ApplicationJob
       end
 
       Rails.logger.info do
-        "[MinioBackupJob] Archive created: #{archive_path} " \
+        "[GarageBackupJob] Archive created: #{archive_path} " \
           "(#{object_count} objects, #{File.size(archive_path)} bytes)"
       end
     end
 
     def upload_to_drive(archive_path)
       result = GoogleDriveService.upload(archive_path, content_type: "application/gzip")
-      Rails.logger.info { "[MinioBackupJob] Uploaded to Drive: #{result.name} (id: #{result.id})" }
+      Rails.logger.info { "[GarageBackupJob] Uploaded to Drive: #{result.name} (id: #{result.id})" }
     end
 
     def notify_admins(title, body)
@@ -76,15 +76,15 @@ class MinioBackupJob < ApplicationJob
 
     def prune_old_backups
       deleted = GoogleDriveService.prune(prefix: BACKUP_PREFIX, keep: RETENTION_COUNT)
-      Rails.logger.info { "[MinioBackupJob] Pruned #{deleted} old backup(s)" } if deleted > 0
+      Rails.logger.info { "[GarageBackupJob] Pruned #{deleted} old backup(s)" } if deleted > 0
     end
 
-    def minio_config
+    def storage_config
       storage_config = Rails.root.join("config/storage.yml")
       configs = ActiveSupport::ConfigurationFile.parse(storage_config)
-      config = configs["minio"]
+      config = configs["garage"]
 
-      raise "No 'minio' service defined in config/storage.yml" unless config
+      raise "No 'garage' service defined in config/storage.yml" unless config
 
       config
     end

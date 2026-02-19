@@ -116,17 +116,17 @@
         <svg class="h-4 w-4 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/>
         </svg>
-        <h3 class="text-sm font-semibold text-body">MinIO bucket backup</h3>
+        <h3 class="text-sm font-semibold text-body">Garage bucket backup</h3>
       </div>
-      <% if @last_minio_backup %>
+      <% if @last_garage_backup %>
         <p class="mt-1.5 text-xs text-muted">Last backup</p>
-        <p class="text-sm font-medium text-body"><%= @last_minio_backup.name %></p>
+        <p class="text-sm font-medium text-body"><%= @last_garage_backup.name %></p>
         <p class="mt-0.5 text-xs text-muted">
-          <%= time_ago_in_words(@last_minio_backup.created_time) %> ago
-          (<%= @last_minio_backup.created_time.strftime("%b %d, %Y at %l:%M %p") %>)
+          <%= time_ago_in_words(@last_garage_backup.created_time) %> ago
+          (<%= @last_garage_backup.created_time.strftime("%b %d, %Y at %l:%M %p") %>)
         </p>
-        <% if @last_minio_backup.size %>
-          <p class="mt-0.5 text-xs text-muted">Size: <%= number_to_human_size(@last_minio_backup.size.to_i) %></p>
+        <% if @last_garage_backup.size %>
+          <p class="mt-0.5 text-xs text-muted">Size: <%= number_to_human_size(@last_garage_backup.size.to_i) %></p>
         <% end %>
       <% else %>
         <p class="mt-1.5 text-sm text-muted">No backups found</p>
@@ -181,14 +181,14 @@
     <% end %>
   </div>
 
-  <%# ── MinIO Backups Table ── %>
+  <%# ── Garage Backups Table ── %>
   <div class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
     <div class="border-b border-theme px-2.5 py-2">
-      <h2 class="text-sm font-semibold text-body">MinIO bucket backups</h2>
+      <h2 class="text-sm font-semibold text-body">Garage bucket backups</h2>
       <p class="mt-0.5 text-xs text-muted">Nightly archives of all uploaded files.</p>
     </div>
 
-    <% if @minio_backups.any? %>
+    <% if @garage_backups.any? %>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-[var(--color-border)]">
           <thead class="bg-surface-alt">
@@ -200,7 +200,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-[var(--color-border)]">
-            <% @minio_backups.each do |file| %>
+            <% @garage_backups.each do |file| %>
               <tr>
                 <td class="px-3 py-1.5 text-sm text-body"><%= file.name %></td>
                 <td class="px-3 py-1.5 text-sm text-muted">
@@ -224,7 +224,7 @@
         </table>
       </div>
     <% else %>
-      <p class="px-2.5 py-3 text-sm text-muted">No MinIO backups found.</p>
+      <p class="px-2.5 py-3 text-sm text-muted">No Garage backups found.</p>
     <% end %>
   </div>
 </div>
