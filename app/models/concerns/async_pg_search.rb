@@ -24,6 +24,7 @@ module AsyncPgSearch
 
     def enqueue_pg_search_update
       return unless pg_search_multisearchable_enabled?
+      return unless searchable_columns_changed?
 
       PgSearchUpdateJob.perform_later(self.class.name, id)
     end
@@ -40,5 +41,25 @@ module AsyncPgSearch
       return true if condition.nil?
 
       instance_eval(&condition)
+    end
+
+    def searchable_columns_changed?
+      # Always index on create
+      return true if transaction_include_any_action?([ :create ])
+
+      options = self.class.pg_search_multisearchable_options
+      against = Array(options[:against])
+
+      # Check if any direct columns changed
+      return true if (changed & against.map(&:to_s)).any?
+
+      # Check associated columns (e.g., customer.name)
+      associated = options[:associated_against] || {}
+      associated.each do |association, columns|
+        association_id = "#{association}_id"
+        return true if changed.include?(association_id)
+      end
+
+      false
     end
 end

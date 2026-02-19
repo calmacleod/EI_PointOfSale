@@ -65,6 +65,17 @@ export default class extends Controller {
     if (form) form.requestSubmit()
   }
 
+  removeLine(event) {
+    // Remove the row immediately for perceived responsiveness
+    // Use setTimeout to allow the form submission to proceed
+    setTimeout(() => {
+      const row = event.target.closest("tr")
+      if (row) {
+        row.remove()
+      }
+    }, 0)
+  }
+
   isModalOpen() {
     const modals = ["product_search_modal", "customer_search_modal", "item_preview_modal"]
     return modals.some(id => {

@@ -80,7 +80,9 @@ module Orders
       end
 
       def calculate_order_discount_amount(discount, lines)
-        subtotal = lines.sum(&:subtotal_before_discount)
+        # Gift certificates are never eligible for discounts
+        eligible_lines = lines.reject { |line| line.sellable_type == "GiftCertificate" }
+        subtotal = eligible_lines.sum(&:subtotal_before_discount)
 
         amount = if discount.percentage?
           subtotal * (discount.value / 100.0)

@@ -92,7 +92,10 @@ module Discounts
 
       def sync_customer_per_item_discount(discount, lines, existing_line_discounts)
         # Check deny-list for each line and create discounts for allowed lines
-        allowed_lines = lines.reject { |line| discount.denies?(line.sellable) }
+        # Gift certificates are never eligible for discounts
+        allowed_lines = lines.reject do |line|
+          line.sellable_type == "GiftCertificate" || discount.denies?(line.sellable)
+        end
 
         allowed_lines.each do |line|
           next unless line.persisted?
@@ -242,6 +245,9 @@ module Discounts
           sellable = line.sellable
           sellable_type = line.sellable_type
           sellable_id = sellable.id
+
+          # Gift certificates are never eligible for discounts
+          next false if sellable_type == "GiftCertificate"
 
           # Check deny-list first (takes precedence)
           next false if denied_set.include?([ sellable_type, sellable_id ])
