@@ -231,6 +231,7 @@ class OrdersController < ApplicationController
             turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
             turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
             turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
+            turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order }),
             turbo_stream.replace("code_lookup_input_wrapper", partial: "orders/code_lookup_input", locals: { order: order }),
             turbo_stream.replace("lookup_flash", partial: "orders/lookup_flash", locals: { message: "Added #{sellable.sellable_name}", type: :success })
           ]
