@@ -93,6 +93,8 @@ export default class extends Controller {
       type: checkbox.dataset.type
     }))
 
+    if (selectedItems.length === 0) return
+
     // Add hidden inputs for each selected item
     selectedItems.forEach(item => {
       const idInput = document.createElement('input')
@@ -107,6 +109,18 @@ export default class extends Controller {
       typeInput.value = item.type
       event.target.appendChild(typeInput)
     })
+
+    // Close the modal after submission by finding and clicking the close button
+    const modal = this.element.closest('[data-modal-target="modal"]')
+    if (modal) {
+      const closeButton = modal.querySelector('[data-action="click->modal#close"]')
+      if (closeButton) {
+        // Add a small delay to let the form submission start, then close
+        setTimeout(() => {
+          closeButton.click()
+        }, 100)
+      }
+    }
 
     event.target.submit()
   }

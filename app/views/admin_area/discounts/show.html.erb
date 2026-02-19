@@ -9,7 +9,7 @@
   <li aria-current="page" class="text-muted"><%= @discount.name %></li>
 <% end %>
 
-<div>
+<div data-controller="modal">
   <%= render "shared/page_header", title: @discount.name, description: @discount.description.presence || "Store discount configuration." do %>
     <div class="flex items-center gap-1.5">
       <%= button_to toggle_active_admin_discount_path(@discount), method: :patch,
@@ -99,125 +99,209 @@
 
   <%# Allow List Section %>
   <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="discount-allow-list-heading">
-    <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-      <h2 id="discount-allow-list-heading" class="text-sm font-semibold text-body">Allow List</h2>
-      <p class="text-xs text-muted">
-        <% if @discount.applies_to_all? %>
-          Discount applies to all items by default. Items here explicitly qualify for the discount.
-        <% else %>
-          Only items in this list will receive the discount.
-        <% end %>
-      </p>
-    </div>
-
-    <%# Search and Add - moved to top for better scalability %>
-    <div class="border-b border-theme px-3 py-2.5"
-         data-controller="discount-items"
-         data-discount-items-selection-type-value="allowed">
-      <p class="mb-2 text-xs font-semibold text-body">Add items to allow list</p>
-
-      <%= form_with url: search_items_admin_discount_path(@discount), method: :get,
-          data: { turbo_frame: "discount_item_search_results_allowed" },
-          class: "flex items-end gap-2" do |f| %>
-        <%= f.hidden_field :exclusion_type, value: "allowed" %>
-        <div class="flex-1">
-          <%= f.label :item_type, "Type", class: "text-xs font-medium text-body" %>
-          <%= f.select :item_type,
-              [["All", "all"], ["Products", "Product"], ["Services", "Service"], ["Product Groups", "ProductGroup"]],
-              {}, class: "input-field min-h-[30px] w-full text-xs",
-              data: { discount_items_target: "typeFilter", action: "change->discount-items#filterByType" } %>
-        </div>
-        <div class="flex-[2]">
-          <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
-          <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
-              class: "input-field min-h-[30px] w-full text-xs",
-              data: { discount_items_target: "searchInput", action: "input->discount-items#search" } %>
-        </div>
-        <%= f.submit "Search",
-            class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
-      <% end %>
-
-      <%= form_with url: bulk_add_items_admin_discount_path(@discount), method: :post,
-          data: { discount_items_target: "bulkForm", action: "submit->discount-items#submitBulkAdd" },
-          class: "mt-2" do |f| %>
-        <%= f.hidden_field :exclusion_type, value: "allowed" %>
-        <%= turbo_frame_tag "discount_item_search_results_allowed",
-            src: search_items_admin_discount_path(@discount, item_type: "all", exclusion_type: "allowed"),
-            class: "block border border-theme rounded-md overflow-hidden min-h-[60px]" %>
-        <div class="mt-2 flex justify-end">
-          <%= f.button type: "submit", disabled: true,
-              class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-green-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition" do %>
-            <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Add Selected to Allow List
+    <div class="border-b border-theme bg-surface-alt px-3 py-1.5 flex items-center justify-between">
+      <div>
+        <h2 id="discount-allow-list-heading" class="text-sm font-semibold text-body">Allow List</h2>
+        <p class="text-xs text-muted">
+          <% if @discount.applies_to_all? %>
+            Discount applies to all items by default. Items here explicitly qualify for the discount.
+          <% else %>
+            Only items in this list will receive the discount.
           <% end %>
-        </div>
-      <% end %>
+        </p>
+      </div>
+      <button type="button"
+              data-action="click->modal#open"
+              data-modal-id="allow-list-modal"
+              class="inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]">
+        <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Add Items
+      </button>
     </div>
 
-    <%# Applied Items List - paginated below search %>
+    <%# Applied Items List %>
     <%= render "items", discount: @discount, discount_items: @allowed_items, pagy: @pagy_allowed, exclusion_type: "allowed" %>
   </section>
+
+  <%# Allow List Modal %>
+  <div id="allow-list-modal"
+       data-modal-target="modal"
+       class="modal-overlay fixed inset-0 z-[60] hidden"
+       role="dialog"
+       aria-modal="true"
+       aria-labelledby="allow-list-modal-title">
+    <div data-action="click->modal#close"
+         class="fixed inset-0 bg-black/50"></div>
+    <div class="fixed inset-0 flex items-start justify-center p-4 pt-[10vh] pointer-events-none">
+      <div class="w-full max-w-2xl rounded-lg border border-theme bg-surface overflow-hidden pointer-events-auto shadow-xl"
+           role="document">
+        <div class="flex items-center justify-between border-b border-theme bg-surface-alt px-4 py-3">
+          <div>
+            <h2 id="allow-list-modal-title" class="text-base font-semibold text-body">Add Items to Allow List</h2>
+            <p class="text-xs text-muted mt-0.5">Search and select items to add</p>
+          </div>
+          <button type="button"
+                  data-action="click->modal#close"
+                  class="rounded-md p-1 text-muted hover:bg-[var(--color-border)] hover:text-body">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="p-4"
+             data-controller="discount-items"
+             data-discount-items-selection-type-value="allowed">
+          <%= form_with url: search_items_admin_discount_path(@discount), method: :get,
+              data: { turbo_frame: "discount_item_search_results_allowed" },
+              class: "flex items-end gap-2" do |f| %>
+            <%= f.hidden_field :exclusion_type, value: "allowed" %>
+            <div class="flex-1">
+              <%= f.label :item_type, "Type", class: "text-xs font-medium text-body" %>
+              <%= f.select :item_type,
+                  [["All", "all"], ["Products", "Product"], ["Services", "Service"], ["Product Groups", "ProductGroup"]],
+                  {}, class: "input-field min-h-[30px] w-full text-xs",
+                  data: { discount_items_target: "typeFilter", action: "change->discount-items#filterByType" } %>
+            </div>
+            <div class="flex-[2]">
+              <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
+              <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
+                  class: "input-field min-h-[30px] w-full text-xs",
+                  data: { discount_items_target: "searchInput", action: "input->discount-items#search" } %>
+            </div>
+            <%= f.submit "Search",
+                class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+          <% end %>
+
+          <%= form_with url: bulk_add_items_admin_discount_path(@discount), method: :post,
+              data: { discount_items_target: "bulkForm", action: "submit->discount-items#submitBulkAdd" },
+              class: "mt-4" do |f| %>
+            <%= f.hidden_field :exclusion_type, value: "allowed" %>
+            <%= turbo_frame_tag "discount_item_search_results_allowed",
+                src: search_items_admin_discount_path(@discount, item_type: "all", exclusion_type: "allowed"),
+                class: "block border border-theme rounded-md overflow-hidden min-h-[60px] max-h-[50vh] overflow-y-auto" %>
+            <div class="mt-4 flex justify-end gap-2">
+              <button type="button"
+                      data-action="click->modal#close"
+                      class="inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-xs font-semibold text-body hover:bg-[var(--color-border)]/30">
+                Cancel
+              </button>
+              <%= f.button type: "submit", disabled: true,
+                  class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-green-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition" do %>
+                <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                </svg>
+                Add Selected
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <%# Deny List Section - only for per-item discounts %>
   <% if @discount.per_item_discount? %>
     <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="discount-deny-list-heading">
-      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-        <h2 id="discount-deny-list-heading" class="text-sm font-semibold text-body">Deny List</h2>
-        <p class="text-xs text-muted">
-          Items here are explicitly blocked from receiving this discount. Takes precedence over Allow List.
-        </p>
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5 flex items-center justify-between">
+        <div>
+          <h2 id="discount-deny-list-heading" class="text-sm font-semibold text-body">Deny List</h2>
+          <p class="text-xs text-muted">
+            Items here are explicitly blocked from receiving this discount. Takes precedence over Allow List.
+          </p>
+        </div>
+        <button type="button"
+                data-action="click->modal#open"
+                data-modal-id="deny-list-modal"
+                class="inline-flex min-h-[30px] items-center justify-center rounded-md bg-red-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-red-700">
+          <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+          </svg>
+          Add Items
+        </button>
       </div>
 
-      <%# Search and Add - moved to top %>
-      <div class="border-b border-theme px-3 py-2.5"
-           data-controller="discount-items"
-           data-discount-items-selection-type-value="denied">
-        <p class="mb-2 text-xs font-semibold text-body">Add items to deny list</p>
-
-        <%= form_with url: search_items_admin_discount_path(@discount), method: :get,
-            data: { turbo_frame: "discount_item_search_results_denied" },
-            class: "flex items-end gap-2" do |f| %>
-          <%= f.hidden_field :exclusion_type, value: "denied" %>
-          <div class="flex-1">
-            <%= f.label :item_type, "Type", class: "text-xs font-medium text-body" %>
-            <%= f.select :item_type,
-                [["All", "all"], ["Products", "Product"], ["Services", "Service"], ["Product Groups", "ProductGroup"]],
-                {}, class: "input-field min-h-[30px] w-full text-xs",
-                data: { discount_items_target: "typeFilter", action: "change->discount-items#filterByType" } %>
-          </div>
-          <div class="flex-[2]">
-            <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
-            <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
-                class: "input-field min-h-[30px] w-full text-xs",
-                data: { discount_items_target: "searchInput", action: "input->discount-items#search" } %>
-          </div>
-          <%= f.submit "Search",
-              class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
-        <% end %>
-
-        <%= form_with url: bulk_add_items_admin_discount_path(@discount), method: :post,
-            data: { discount_items_target: "bulkForm", action: "submit->discount-items#submitBulkAdd" },
-            class: "mt-2" do |f| %>
-          <%= f.hidden_field :exclusion_type, value: "denied" %>
-          <%= turbo_frame_tag "discount_item_search_results_denied",
-              src: search_items_admin_discount_path(@discount, item_type: "all", exclusion_type: "denied"),
-              class: "block border border-theme rounded-md overflow-hidden min-h-[60px]" %>
-          <div class="mt-2 flex justify-end">
-            <%= f.button type: "submit", disabled: true,
-                class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-red-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition" do %>
-              <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-              </svg>
-              Add Selected to Deny List
-            <% end %>
-          </div>
-        <% end %>
-      </div>
-
-      <%# Applied Items List - paginated below search %>
+      <%# Applied Items List %>
       <%= render "items", discount: @discount, discount_items: @denied_items, pagy: @pagy_denied, exclusion_type: "denied" %>
     </section>
+
+    <%# Deny List Modal %>
+    <div id="deny-list-modal"
+         data-modal-target="modal"
+         class="modal-overlay fixed inset-0 z-[60] hidden"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="deny-list-modal-title">
+      <div data-action="click->modal#close"
+           class="fixed inset-0 bg-black/50"></div>
+      <div class="fixed inset-0 flex items-start justify-center p-4 pt-[10vh] pointer-events-none">
+        <div class="w-full max-w-2xl rounded-lg border border-theme bg-surface overflow-hidden pointer-events-auto shadow-xl"
+             role="document">
+          <div class="flex items-center justify-between border-b border-theme bg-surface-alt px-4 py-3">
+            <div>
+              <h2 id="deny-list-modal-title" class="text-base font-semibold text-body">Add Items to Deny List</h2>
+              <p class="text-xs text-muted mt-0.5">Search and select items to block</p>
+            </div>
+            <button type="button"
+                    data-action="click->modal#close"
+                    class="rounded-md p-1 text-muted hover:bg-[var(--color-border)] hover:text-body">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="p-4"
+               data-controller="discount-items"
+               data-discount-items-selection-type-value="denied">
+            <%= form_with url: search_items_admin_discount_path(@discount), method: :get,
+                data: { turbo_frame: "discount_item_search_results_denied" },
+                class: "flex items-end gap-2" do |f| %>
+              <%= f.hidden_field :exclusion_type, value: "denied" %>
+              <div class="flex-1">
+                <%= f.label :item_type, "Type", class: "text-xs font-medium text-body" %>
+                <%= f.select :item_type,
+                    [["All", "all"], ["Products", "Product"], ["Services", "Service"], ["Product Groups", "ProductGroup"]],
+                    {}, class: "input-field min-h-[30px] w-full text-xs",
+                    data: { discount_items_target: "typeFilter", action: "change->discount-items#filterByType" } %>
+              </div>
+              <div class="flex-[2]">
+                <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
+                <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
+                    class: "input-field min-h-[30px] w-full text-xs",
+                    data: { discount_items_target: "searchInput", action: "input->discount-items#search" } %>
+              </div>
+              <%= f.submit "Search",
+                  class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+            <% end %>
+
+            <%= form_with url: bulk_add_items_admin_discount_path(@discount), method: :post,
+                data: { discount_items_target: "bulkForm", action: "submit->discount-items#submitBulkAdd" },
+                class: "mt-4" do |f| %>
+              <%= f.hidden_field :exclusion_type, value: "denied" %>
+              <%= turbo_frame_tag "discount_item_search_results_denied",
+                  src: search_items_admin_discount_path(@discount, item_type: "all", exclusion_type: "denied"),
+                  class: "block border border-theme rounded-md overflow-hidden min-h-[60px] max-h-[50vh] overflow-y-auto" %>
+              <div class="mt-4 flex justify-end gap-2">
+                <button type="button"
+                        data-action="click->modal#close"
+                        class="inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-xs font-semibold text-body hover:bg-[var(--color-border)]/30">
+                  Cancel
+                </button>
+                <%= f.button type: "submit", disabled: true,
+                    class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-red-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition" do %>
+                  <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+                  </svg>
+                  Add Selected
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
   <% end %>
 </div>
