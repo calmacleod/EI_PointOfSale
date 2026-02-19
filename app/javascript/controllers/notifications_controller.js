@@ -5,7 +5,6 @@ import { createConsumer } from "@rails/actioncable"
 // This prevents constant subscribe/unsubscribe cycles as user navigates the app
 class NotificationSubscriptionManager {
   static instance = null
-  static subscribers = new Set()
 
   static getInstance() {
     if (!this.instance) {
@@ -15,6 +14,7 @@ class NotificationSubscriptionManager {
   }
 
   constructor() {
+    this.subscribers = new Set()
     this.consumer = createConsumer()
     this.channel = this.consumer.subscriptions.create(
       { channel: "NotificationChannel" },
