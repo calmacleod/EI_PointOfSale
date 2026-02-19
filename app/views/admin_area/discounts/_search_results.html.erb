@@ -17,14 +17,24 @@
       <% items.each do |item| %>
         <% already_added = discount_item_ids&.include?(item.id) %>
         <li class="flex items-center gap-3 px-3 py-2 text-sm hover:bg-surface-alt/30">
-          <input type="checkbox"
-                 data-discount-items-target="checkbox"
-                 data-action="change->discount-items#toggleSelection"
-                 data-id="<%= item.id %>"
-                 data-type="<%= item.class.name %>"
-                 value="<%= item.id %>"
-                 <%= "disabled" if already_added %>
-                 class="rounded border-theme text-accent focus:ring-accent <%= 'opacity-50' if already_added %>">
+          <% if already_added %>
+            <input type="checkbox"
+                   data-discount-items-target="checkbox"
+                   data-action="change->discount-items#toggleSelection"
+                   data-id="<%= item.id %>"
+                   data-type="<%= item.class.name %>"
+                   value="<%= item.id %>"
+                   disabled
+                   class="rounded border-theme text-accent focus:ring-accent opacity-50">
+          <% else %>
+            <input type="checkbox"
+                   data-discount-items-target="checkbox"
+                   data-action="change->discount-items#toggleSelection"
+                   data-id="<%= item.id %>"
+                   data-type="<%= item.class.name %>"
+                   value="<%= item.id %>"
+                   class="rounded border-theme text-accent focus:ring-accent">
+          <% end %>
           <div class="flex-1 <%= 'opacity-50' if already_added %>">
             <span class="font-medium text-body"><%= item.name %></span>
             <% if item.respond_to?(:code) %>
