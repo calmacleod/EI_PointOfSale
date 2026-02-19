@@ -4,19 +4,43 @@ import { Controller } from "@hotwired/stimulus"
 // and looks up gift certificate balances.
 export default class extends Controller {
   static targets = [
-    "methodSelect", "amountInput", "cashSection", "tenderedInput", "changeDisplay",
-    "gcBalanceDisplay", "gcBalanceAmount", "gcNotFound", "referenceInput"
+    "methodInput", "methodButton", "amountInput", "cashSection", "tenderedInput", "changeDisplay",
+    "gcBalanceDisplay", "gcBalanceAmount", "gcNotFound", "referenceInput",
+    "adjustModal", "adjustModalMessage"
   ]
   static values = { remaining: Number, gcLookupUrl: String }
 
+  // Store pending submit event for modal confirmation
+  #pendingSubmitEvent = null
+
   connect() {
-    this.methodChanged()
+    this.#updateMethodUI(this.methodInputTarget.value, { applyRounding: true })
   }
 
-  methodChanged() {
-    const method = this.methodSelectTarget.value
+  selectMethod(event) {
+    const method = event.currentTarget.dataset.method
+    const previousMethod = this.methodInputTarget.value
+    this.methodInputTarget.value = method
+    this.#updateMethodUI(method, { previousMethod: previousMethod })
+  }
+
+  #updateMethodUI(method, options = {}) {
     const isCash = method === "cash"
     const isGc   = method === "gift_certificate"
+    const wasCash = options.previousMethod === "cash"
+
+    // Update button styles
+    if (this.hasMethodButtonTarget) {
+      this.methodButtonTargets.forEach(btn => {
+        const isActive = btn.dataset.method === method
+        btn.classList.toggle("bg-accent", isActive)
+        btn.classList.toggle("text-white", isActive)
+        btn.classList.toggle("border-accent", isActive)
+        btn.classList.toggle("bg-surface", !isActive)
+        btn.classList.toggle("text-muted", !isActive)
+        btn.classList.toggle("border-theme", !isActive)
+      })
+    }
 
     if (this.hasCashSectionTarget) {
       this.cashSectionTarget.classList.toggle("hidden", !isCash)
@@ -33,15 +57,25 @@ export default class extends Controller {
       }
     }
 
-    if (isCash) {
+    // Only apply rounding when actually switching to/from cash, not on every update
+    // On initial connect, apply rounding if cash is selected
+    if (options.applyRounding && isCash) {
       this.#roundAmountForCash()
-    } else {
-      this.#unroundAmountForNonCash()
+    } else if (options.previousMethod) {
+      // Switching payment methods
+      if (!wasCash && isCash) {
+        // Switching TO cash - apply rounding
+        this.#roundAmountForCash()
+      } else if (wasCash && !isCash) {
+        // Switching FROM cash - restore unrounded amount
+        this.#unroundAmountForNonCash()
+      }
+      // If switching between two non-cash methods, don't touch the amount
     }
   }
 
   onReferenceInput() {
-    if (this.methodSelectTarget.value !== "gift_certificate") return
+    if (this.methodInputTarget.value !== "gift_certificate") return
 
     const code = this.referenceInputTarget.value.trim().toUpperCase()
     if (code.length >= 3) {
@@ -59,6 +93,63 @@ export default class extends Controller {
     const change = Math.max(tendered - amount, 0)
 
     this.changeDisplayTarget.textContent = `$${change.toFixed(2)}`
+  }
+
+  validateBeforeSubmit(event) {
+    // Only check for cash payments
+    if (this.methodInputTarget.value !== "cash") return
+
+    // Only check if cash section is visible and tendered input has a value
+    if (!this.hasTenderedInputTarget) return
+
+    const amount = parseFloat(this.amountInputTarget.value) || 0
+    const tendered = parseFloat(this.tenderedInputTarget.value) || 0
+
+    // If tendered is less than amount, show modal to ask user if they want to lower the payment
+    if (tendered > 0 && tendered < amount) {
+      event.preventDefault()
+      this.#pendingSubmitEvent = event
+
+      // Update modal message
+      if (this.hasAdjustModalMessageTarget) {
+        this.adjustModalMessageTarget.textContent =
+          `Amount tendered ($${tendered.toFixed(2)}) is less than the payment amount ($${amount.toFixed(2)}). ` +
+          `Do you want to lower the payment to $${tendered.toFixed(2)}?`
+      }
+
+      // Show the modal
+      if (this.hasAdjustModalTarget) {
+        this.adjustModalTarget.classList.remove("hidden")
+      }
+    }
+  }
+
+  closeAdjustModal() {
+    if (this.hasAdjustModalTarget) {
+      this.adjustModalTarget.classList.add("hidden")
+    }
+    this.#pendingSubmitEvent = null
+  }
+
+  confirmAdjustAmount() {
+    if (!this.#pendingSubmitEvent) return
+
+    const tendered = parseFloat(this.tenderedInputTarget.value) || 0
+
+    // Lower the payment amount to match what was tendered
+    this.amountInputTarget.value = tendered.toFixed(2)
+
+    // Recalculate change (should be 0 now)
+    this.calculateChange()
+
+    // Hide modal
+    if (this.hasAdjustModalTarget) {
+      this.adjustModalTarget.classList.add("hidden")
+    }
+
+    // Submit the form
+    this.#pendingSubmitEvent.target.requestSubmit()
+    this.#pendingSubmitEvent = null
   }
 
   // Private

@@ -177,7 +177,11 @@
         <% @order.order_payments.each do |payment| %>
           <div class="flex items-center justify-between px-4 py-2.5 text-sm">
             <div>
-              <span class="font-medium text-body"><%= payment.display_method %></span>
+              <% if payment.gift_certificate? && payment.gift_certificate.present? && can?(:read, GiftCertificate) %>
+                <%= link_to payment.display_method, admin_gift_certificate_path(payment.gift_certificate), class: "font-medium text-body hover:text-accent underline" %>
+              <% else %>
+                <span class="font-medium text-body"><%= payment.display_method %></span>
+              <% end %>
               <% if payment.reference.present? %>
                 <span class="text-muted">(ref: <%= payment.reference %>)</span>
               <% end %>

@@ -19,6 +19,7 @@ class OrderPayment < ApplicationRecord
   validates :gift_certificate, presence: true, if: :gift_certificate?
   validate  :gift_certificate_is_redeemable,         if: :gift_certificate?
   validate  :gift_certificate_has_sufficient_balance, if: :gift_certificate?
+  validate  :cash_tendered_sufficient, if: :cash?
 
   before_validation :round_cash_amount, if: :cash?
   before_validation :calculate_change, if: :cash?
@@ -62,5 +63,13 @@ class OrderPayment < ApplicationRecord
       return unless amount_tendered.present? && amount_tendered > 0
 
       self.change_given = [ amount_tendered - amount, 0 ].max
+    end
+
+    def cash_tendered_sufficient
+      return unless amount.present? && amount_tendered.present?
+
+      if amount_tendered < amount
+        errors.add(:amount_tendered, "must be at least the payment amount ($#{amount})")
+      end
     end
 end
