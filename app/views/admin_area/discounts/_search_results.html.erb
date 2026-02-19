@@ -1,30 +1,43 @@
-<% if results.any? %>
-  <ul class="divide-y divide-[var(--color-border)]">
-    <% results.each do |item| %>
-      <% already_added = discount_item_ids.include?(item.id) %>
-      <li class="flex items-center justify-between px-3 py-2 text-sm">
-        <div>
-          <span class="font-medium text-body"><%= item.name %></span>
-          <% if item.respond_to?(:code) %>
-            <span class="ml-1.5 font-mono text-xs text-muted"><%= item.code %></span>
-          <% end %>
-        </div>
-        <% if already_added %>
-          <span class="text-xs text-muted italic">Added</span>
-        <% else %>
-          <%= button_to admin_discount_discount_items_path(discount),
-              params: { discountable_type: item_type, discountable_id: item.id },
-              data: { turbo_stream: true },
-              class: "inline-flex items-center gap-1 rounded-md bg-accent px-2 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" do %>
-            <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-            </svg>
-            Add
-          <% end %>
-        <% end %>
+<% if results&.any? %>
+  <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+    <label class="flex items-center gap-2 text-xs font-medium text-body cursor-pointer">
+      <input type="checkbox"
+             data-action="change->discount-items#toggleSelectAll"
+             data-discount-items-target="selectAll"
+             class="rounded border-theme text-accent focus:ring-accent">
+      <span>Select all</span>
+      <span class="text-muted">(<span data-discount-items-target="count">0</span> selected)</span>
+    </label>
+  </div>
+  <ul class="divide-y divide-[var(--color-border)] max-h-60 overflow-y-auto">
+    <% results.group_by { |r| r.class.name }.each do |type, items| %>
+      <li class="bg-surface-alt/50 px-3 py-1 text-xs font-semibold text-muted uppercase tracking-wider">
+        <%= type.pluralize %>
       </li>
+      <% items.each do |item| %>
+        <% already_added = discount_item_ids&.include?(item.id) %>
+        <li class="flex items-center gap-3 px-3 py-2 text-sm hover:bg-surface-alt/30">
+          <input type="checkbox"
+                 data-discount-items-target="checkbox"
+                 data-action="change->discount-items#toggleSelection"
+                 data-id="<%= item.id %>"
+                 data-type="<%= item.class.name %>"
+                 value="<%= item.id %>"
+                 <%= "disabled" if already_added %>
+                 class="rounded border-theme text-accent focus:ring-accent <%= 'opacity-50' if already_added %>">
+          <div class="flex-1 <%= 'opacity-50' if already_added %>">
+            <span class="font-medium text-body"><%= item.name %></span>
+            <% if item.respond_to?(:code) %>
+              <span class="ml-1.5 font-mono text-xs text-muted"><%= item.code %></span>
+            <% end %>
+            <% if already_added %>
+              <span class="ml-2 text-xs text-green-600 font-medium">Added</span>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
     <% end %>
   </ul>
-<% elsif defined?(results) %>
-  <p class="px-3 py-3 text-sm text-muted">No results found.</p>
+<% else %>
+  <p class="px-3 py-3 text-sm text-muted">No items found. Try adjusting your search or add new items.</p>
 <% end %>

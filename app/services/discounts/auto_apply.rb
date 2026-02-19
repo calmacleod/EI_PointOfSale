@@ -27,13 +27,13 @@ module Discounts
       existing_order_discounts = load_existing_order_discounts
       existing_line_discounts = load_existing_line_discounts
 
-      # Sync customer automatic discount
-      sync_customer_discount(existing_order_discounts)
+      # Sync customer automatic discount (handles both order-level and per-item)
+      sync_customer_discount(current_lines, existing_order_discounts, existing_line_discounts)
 
-      # Sync order-level discounts (applies_to_all)
+      # Sync order-level discounts (applies_to_all, excluding customer discounts already handled)
       sync_order_level_discounts(existing_order_discounts)
 
-      # Sync line-level discounts (specific items)
+      # Sync line-level discounts (specific items, including fixed_total with specific items)
       sync_line_level_discounts(current_lines, existing_line_discounts)
     end
 
@@ -47,32 +47,78 @@ module Discounts
         @order.order_discounts.where.not(discount_id: nil).to_a
       end
 
-      def sync_customer_discount(existing_discounts)
+      def sync_customer_discount(lines, existing_order_discounts, existing_line_discounts)
         customer = @order.customer
         customer_discount_id = customer&.discount_id
+        customer_discount = customer&.discount
 
-        # Find existing customer discount on the order
-        existing_customer_discount = existing_discounts.find do |od|
-          od.discount&.customers&.exists?(id: @order.customer_id)
+        # Find ALL existing customer discounts on the order (discounts associated with any customer)
+        # Use customers.any? to find any discount that belongs to a customer
+        existing_customer_order_discounts = existing_order_discounts.select do |od|
+          od.discount&.customers&.any?
         end
 
-        if customer_discount_id
-          # Customer has a discount - ensure it's applied
-          if existing_discounts.none? { |od| od.discount_id == customer_discount_id }
-            create_customer_order_discount(customer.discount)
+        existing_customer_line_discounts = existing_line_discounts.select do |ld|
+          ld.source_discount&.customers&.any?
+        end
+
+        if customer_discount_id && customer_discount
+          # Check if it's a per-item discount (needs deny-list check)
+          if customer_discount.per_item_discount?
+            # For per-item discounts, apply as line-level discounts with deny-list check
+            sync_customer_per_item_discount(customer_discount, lines, existing_customer_line_discounts)
+            # Remove any existing order-level customer discounts (shouldn't exist but clean up)
+            existing_customer_order_discounts.each(&:destroy)
+          else
+            # For fixed_total discounts, apply as order-level discount
+            # First remove any existing customer discounts that aren't the current one
+            existing_customer_order_discounts.each do |od|
+              od.destroy unless od.discount_id == customer_discount_id
+            end
+
+            # Create new order-level discount if not already present
+            if existing_order_discounts.none? { |od| od.discount_id == customer_discount_id }
+              create_customer_order_discount(customer_discount)
+            end
+            # Clean up any existing line-level discounts for customer discounts
+            existing_customer_line_discounts.each(&:destroy)
+          end
+        else
+          # No customer or no customer discount - remove ALL customer discounts
+          existing_customer_order_discounts.each(&:destroy)
+          existing_customer_line_discounts.each(&:destroy)
+        end
+      end
+
+      def sync_customer_per_item_discount(discount, lines, existing_line_discounts)
+        # Check deny-list for each line and create discounts for allowed lines
+        allowed_lines = lines.reject { |line| discount.denies?(line.sellable) }
+
+        allowed_lines.each do |line|
+          next unless line.persisted?
+
+          existing = existing_line_discounts.find { |ld| ld.order_line_id == line.id }
+
+          if existing
+            restore_if_excluded(existing)
+          else
+            line.order_line_discounts.create!(
+              source_discount: discount,
+              name: discount.name,
+              discount_type: ORDER_DISCOUNT_TYPE_MAP[discount.discount_type],
+              value: discount.value,
+              calculated_amount: 0,
+              auto_applied: true
+            )
           end
         end
 
-        # Remove customer discount if:
-        # 1. No customer assigned, or
-        # 2. Customer doesn't have a discount, or
-        # 3. Customer has a different discount than what's applied
-        if existing_customer_discount
-          should_remove = customer.nil? ||
-                          customer_discount_id.nil? ||
-                          existing_customer_discount.discount_id != customer_discount_id
-
-          existing_customer_discount.destroy if should_remove
+        # Remove discounts for lines that are now denied
+        line_ids = allowed_lines.map(&:id)
+        existing_line_discounts.each do |existing|
+          unless line_ids.include?(existing.order_line_id) || existing.excluded?
+            existing.destroy!
+          end
         end
       end
 
@@ -119,7 +165,7 @@ module Discounts
         # Group existing line discounts by source_discount_id for quick lookup
         existing_by_discount = existing_line_discounts.group_by(&:source_discount_id)
 
-        # Get applicable discounts for lines
+        # Get applicable discounts for lines (applies_to_all: false only)
         applicable_discounts = find_applicable_line_level_discounts(lines)
 
         applicable_discounts.each do |discount, matching_lines|
@@ -151,9 +197,12 @@ module Discounts
         end
 
         # Clean up line discounts for discounts that no longer apply to any lines
+        # BUT exclude discounts associated with customers (handled separately by sync_customer_discount)
         applicable_discount_ids = applicable_discounts.keys.map(&:id)
         existing_line_discounts.each do |line_discount|
           next if applicable_discount_ids.include?(line_discount.source_discount_id)
+          # Skip customer discounts - they are managed by sync_customer_discount
+          next if line_discount.source_discount&.customers&.any?
 
           line_discount.destroy!
         end
@@ -161,31 +210,63 @@ module Discounts
 
       def find_applicable_order_level_discounts
         {}.tap do |applicable|
-          Discount.currently_active.where(applies_to_all: true).find_each do |discount|
-            applicable[discount.id] = discount
-          end
+          # Get all order-level discounts (applies_to_all: true)
+          # BUT exclude ALL discounts that have customers (handled separately by sync_customer_discount)
+          Discount.currently_active
+            .where(applies_to_all: true)
+            .where.not(id: Discount.joins(:customers).select(:id))
+            .find_each do |discount|
+              applicable[discount.id] = discount
+            end
         end
       end
 
       def find_applicable_line_level_discounts(lines)
         {}.tap do |applicable|
-          Discount.currently_active.where(applies_to_all: false).includes(:discount_items).find_each do |discount|
-            matching_lines = find_matching_lines(discount, discount.discount_items.to_a, lines)
-            applicable[discount] = matching_lines unless matching_lines.empty?
-          end
+          # All discounts with specific allow lists (applies_to_all: false)
+          Discount.currently_active
+            .where(applies_to_all: false)
+            .includes(discount_items: :discountable)
+            .find_each do |discount|
+              matching_lines = find_matching_lines(discount, lines)
+              applicable[discount] = matching_lines unless matching_lines.empty?
+            end
         end
       end
 
-      def find_matching_lines(discount, discount_items, lines)
-        return [] if discount_items.empty?
+      def find_matching_lines(discount, lines)
+        allowed_set = build_discountable_set(discount.allowed_items)
+        denied_set = build_discountable_set(discount.denied_items)
 
-        # Build O(1) lookup set from discount items
-        applicable_set = discount_items.each_with_object(Set.new) do |item, set|
+        lines.select do |line|
+          sellable = line.sellable
+          sellable_type = line.sellable_type
+          sellable_id = sellable.id
+
+          # Check deny-list first (takes precedence)
+          next false if denied_set.include?([ sellable_type, sellable_id ])
+
+          # Check ProductGroup deny-list for Products
+          if sellable.respond_to?(:product_group) && sellable.product_group.present?
+            next false if denied_set.include?([ "ProductGroup", sellable.product_group_id ])
+          end
+
+          # Check allow-list directly
+          next true if allowed_set.include?([ sellable_type, sellable_id ])
+
+          # Check ProductGroup allow-list for Products
+          if sellable.respond_to?(:product_group) && sellable.product_group.present?
+            next true if allowed_set.include?([ "ProductGroup", sellable.product_group_id ])
+          end
+
+          false
+        end
+      end
+
+      def build_discountable_set(discount_items)
+        discount_items.each_with_object(Set.new) do |item, set|
           set.add([ item.discountable_type, item.discountable_id ])
         end
-
-        # O(n) matching instead of O(n*m)
-        lines.select { |line| applicable_set.include?([ line.sellable_type, line.sellable_id ]) }
       end
 
       def create_order_level_discount(discount)

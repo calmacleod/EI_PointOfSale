@@ -2,8 +2,31 @@ shield_red_on_fixed_total:
   discount: fixed_total_specific
   discountable_type: "Product"
   discountable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield_red) %>
+  exclusion_type: 0
 
 shield_red_on_per_item:
   discount: fixed_per_item_specific
   discountable_type: "Product"
   discountable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield_red) %>
+  exclusion_type: 0
+
+# Denied items for testing deny-list
+shield_blue_denied:
+  discount: fixed_per_item_specific
+  discountable_type: "Product"
+  discountable_id: <%= ActiveRecord::FixtureSet.identify(:dragon_shield_blue) %>
+  exclusion_type: 1
+
+# ProductGroup on allow list
+gaming_supplies_allowed:
+  discount: percentage_all
+  discountable_type: "ProductGroup"
+  discountable_id: <%= ActiveRecord::FixtureSet.identify(:gaming_supplies) %>
+  exclusion_type: 0
+
+# ProductGroup on deny list
+trading_cards_denied:
+  discount: percentage_all
+  discountable_type: "ProductGroup"
+  discountable_id: <%= ActiveRecord::FixtureSet.identify(:trading_cards) %>
+  exclusion_type: 1

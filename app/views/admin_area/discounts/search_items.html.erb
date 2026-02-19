@@ -1,0 +1,8 @@
+<%= turbo_frame_tag "discount_item_search_results_#{@exclusion_type}" do %>
+  <%= render "search_results",
+        discount: @discount,
+        results: @results,
+        item_type: @item_type,
+        discount_item_ids: @discount_item_ids,
+        exclusion_type: @exclusion_type %>
+<% end %>

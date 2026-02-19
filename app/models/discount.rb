@@ -4,6 +4,8 @@ class Discount < ApplicationRecord
   include Discard::Model
 
   has_many :discount_items, dependent: :destroy
+  has_many :allowed_items, -> { allowed }, class_name: "DiscountItem"
+  has_many :denied_items, -> { denied }, class_name: "DiscountItem"
   has_many :order_discounts, dependent: :nullify
   has_many :customers, dependent: :nullify
 
@@ -32,4 +34,55 @@ class Discount < ApplicationRecord
   def display_type
     discount_type.humanize.downcase
   end
+
+  def denies?(sellable)
+    return false unless per_item_discount?
+
+    sellable_type = sellable.class.name
+    sellable_id = sellable.id
+
+    denied_set = build_denied_set
+    return true if denied_set.include?([ sellable_type, sellable_id ])
+
+    if sellable.respond_to?(:product_group) && sellable.product_group.present?
+      return true if denied_set.include?([ "ProductGroup", sellable.product_group_id ])
+    end
+
+    false
+  end
+
+  def allows?(sellable)
+    return false if denies?(sellable)
+    return true if applies_to_all?
+
+    sellable_type = sellable.class.name
+    sellable_id = sellable.id
+
+    allowed_set = build_allowed_set
+    return true if allowed_set.include?([ sellable_type, sellable_id ])
+
+    if sellable.respond_to?(:product_group) && sellable.product_group.present?
+      return true if allowed_set.include?([ "ProductGroup", sellable.product_group_id ])
+    end
+
+    false
+  end
+
+  def per_item_discount?
+    fixed_per_item? || percentage?
+  end
+
+  private
+
+    def build_denied_set
+      @denied_set ||= denied_items.map do |item|
+        [ item.discountable_type, item.discountable_id ]
+      end.to_set
+    end
+
+    def build_allowed_set
+      @allowed_set ||= allowed_items.map do |item|
+        [ item.discountable_type, item.discountable_id ]
+      end.to_set
+    end
 end

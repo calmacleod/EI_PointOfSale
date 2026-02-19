@@ -100,7 +100,12 @@ module Orders
 
         lines.each do |line|
           active_discounts = (line_discounts_by_line[line.id] || []).select(&:active?)
-          next if active_discounts.empty?
+
+          if active_discounts.empty?
+            # Reset discount_amount to 0 when no active discounts
+            line.discount_amount = 0 if line.discount_amount != 0
+            next
+          end
 
           active_discounts.each do |line_discount|
             new_amount = calculate_line_discount_amount(line_discount, line)

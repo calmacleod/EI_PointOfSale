@@ -50,6 +50,7 @@ Rails.application.routes.draw do
       member do
         patch :toggle_active
         get :search_items
+        post :bulk_add_items
       end
       resources :discount_items, only: %i[create destroy], shallow: true
     end

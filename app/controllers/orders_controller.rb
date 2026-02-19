@@ -106,12 +106,16 @@ class OrdersController < ApplicationController
       data: { customer_name: customer.name, customer_id: customer.id }
     )
 
+    # Reload order with associations to ensure fresh data for views
+    @order = reload_order_with_associations(@order.id)
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: [
           turbo_stream.replace("order_customer_panel", partial: "orders/customer_panel", locals: { order: @order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order })
+          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order }),
+          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order }),
+          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order })
         ]
       }
       format.html { redirect_to register_path(order_id: @order.id) }
@@ -126,12 +130,16 @@ class OrdersController < ApplicationController
       order: @order, event_type: "customer_removed", actor: current_user
     )
 
+    # Reload order with associations to ensure fresh data for views
+    @order = reload_order_with_associations(@order.id)
+
     respond_to do |format|
       format.turbo_stream {
         render turbo_stream: [
           turbo_stream.replace("order_customer_panel", partial: "orders/customer_panel", locals: { order: @order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order })
+          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order }),
+          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order }),
+          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order })
         ]
       }
       format.html { redirect_to register_path(order_id: @order.id) }

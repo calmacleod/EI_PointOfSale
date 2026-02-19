@@ -264,24 +264,26 @@ module Discounts
       customer.update!(discount: customer_discount)
       @order.update!(customer: customer)
 
-      @order.order_lines.create!(
-        sellable: @product,
-        name: @product.name,
-        code: @product.code,
+      # Use @other_product (nhl_puck) which is not in any discount_items fixture
+      line = @order.order_lines.create!(
+        sellable: @other_product,
+        name: @other_product.name,
+        code: @other_product.code,
         quantity: 1,
-        unit_price: @product.selling_price,
-        line_total: @product.selling_price,
+        unit_price: @other_product.selling_price,
+        line_total: @other_product.selling_price,
         position: 1
       )
 
-      assert_difference "OrderDiscount.count", 1 do
+      # Per-item customer discounts create OrderLineDiscount, not OrderDiscount
+      assert_difference "OrderLineDiscount.count", 1 do
         AutoApply.call(@order)
       end
 
-      od = @order.order_discounts.find_by(discount_id: customer_discount.id)
-      assert_not_nil od
-      assert_equal customer_discount.name, od.name
-      assert_equal "percentage", od.discount_type
+      line_discount = line.order_line_discounts.find_by(source_discount: customer_discount)
+      assert_not_nil line_discount
+      assert_equal customer_discount.name, line_discount.name
+      assert_equal "percentage", line_discount.discount_type
     end
 
     test "removes customer discount when customer is removed from order" do
@@ -299,7 +301,7 @@ module Discounts
       customer.update!(discount: customer_discount)
       @order.update!(customer: customer)
 
-      @order.order_lines.create!(
+      line = @order.order_lines.create!(
         sellable: @product,
         name: @product.name,
         code: @product.code,
@@ -310,16 +312,16 @@ module Discounts
       )
 
       AutoApply.call(@order)
-      assert @order.order_discounts.exists?(discount_id: customer_discount.id)
+      assert line.order_line_discounts.exists?(source_discount: customer_discount)
 
       # Remove customer
       @order.update!(customer: nil)
 
-      assert_difference "OrderDiscount.count", -1 do
+      assert_difference "OrderLineDiscount.count", -1 do
         AutoApply.call(@order)
       end
 
-      assert_not @order.order_discounts.exists?(discount_id: customer_discount.id)
+      assert_not line.order_line_discounts.exists?(source_discount: customer_discount)
     end
 
     test "removes old customer discount when customer changes to different discount" do
@@ -345,7 +347,7 @@ module Discounts
       customer.update!(discount: old_discount)
       @order.update!(customer: customer)
 
-      @order.order_lines.create!(
+      line = @order.order_lines.create!(
         sellable: @product,
         name: @product.name,
         code: @product.code,
@@ -356,15 +358,15 @@ module Discounts
       )
 
       AutoApply.call(@order)
-      assert @order.order_discounts.exists?(discount_id: old_discount.id)
+      assert line.order_line_discounts.exists?(source_discount: old_discount)
 
       # Change customer's discount
       customer.update!(discount: new_discount)
 
       AutoApply.call(@order)
 
-      assert_not @order.order_discounts.exists?(discount_id: old_discount.id)
-      assert @order.order_discounts.exists?(discount_id: new_discount.id)
+      assert_not line.order_line_discounts.exists?(source_discount: old_discount)
+      assert line.order_line_discounts.exists?(source_discount: new_discount)
     end
 
     test "customer discount is applied alongside other order-level discounts" do
@@ -380,7 +382,7 @@ module Discounts
       customer.update!(discount: customer_discount)
       @order.update!(customer: customer)
 
-      @order.order_lines.create!(
+      line = @order.order_lines.create!(
         sellable: @other_product,
         name: @other_product.name,
         code: @other_product.code,
@@ -392,8 +394,392 @@ module Discounts
 
       AutoApply.call(@order)
 
-      # Should have the customer discount applied (plus percentage_all which applies to all)
+      # Should have the customer discount applied as line-level (plus percentage_all as order-level)
+      assert line.order_line_discounts.exists?(source_discount: customer_discount)
+      assert @order.order_discounts.exists?(discount_id: discounts(:percentage_all).id)
+    end
+
+    test "does not apply per-item discount to denied items even when applies_to_all" do
+      # percentage_all is a per-item (percentage) discount with applies_to_all: true
+      discount = discounts(:percentage_all)
+      denied_product = products(:dragon_shield_blue)
+      # dragon_shield_blue is in the deny list for fixed_per_item_specific but not percentage_all
+      # Let's add it to percentage_all's deny list
+      discount.discount_items.create!(
+        discountable: denied_product,
+        exclusion_type: :denied
+      )
+
+      line = @order.order_lines.create!(
+        sellable: denied_product,
+        name: denied_product.name,
+        code: denied_product.code,
+        quantity: 1,
+        unit_price: denied_product.selling_price,
+        line_total: denied_product.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+
+      # The line should NOT have the percentage_all discount applied
+      line_discount = line.order_line_discounts.find_by(source_discount: discount)
+      assert_nil line_discount
+    end
+
+    test "denies discount when product is in deny list" do
+      discount = discounts(:fixed_per_item_specific)
+      denied_product = products(:dragon_shield_blue)
+
+      line = @order.order_lines.create!(
+        sellable: denied_product,
+        name: denied_product.name,
+        code: denied_product.code,
+        quantity: 1,
+        unit_price: denied_product.selling_price,
+        line_total: denied_product.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+
+      # Should not have the fixed_per_item_specific discount
+      line_discount = line.order_line_discounts.find_by(source_discount: discount)
+      assert_nil line_discount
+    end
+
+    test "applies discount when product is in allow list and not in deny list" do
+      discount = discounts(:fixed_per_item_specific)
+      allowed_product = products(:dragon_shield_red)
+
+      line = @order.order_lines.create!(
+        sellable: allowed_product,
+        name: allowed_product.name,
+        code: allowed_product.code,
+        quantity: 1,
+        unit_price: allowed_product.selling_price,
+        line_total: allowed_product.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+
+      # Should have the fixed_per_item_specific discount
+      line_discount = line.order_line_discounts.find_by(source_discount: discount)
+      assert_not_nil line_discount
+      assert line_discount.active?
+    end
+
+    test "denies discount when product group is in deny list" do
+      # Use a fresh discount to avoid fixture conflicts
+      discount = Discount.create!(
+        name: "Test Group Deny",
+        discount_type: :percentage,
+        value: 10.00,
+        active: true,
+        applies_to_all: true
+      )
+
+      # Add a product to a group
+      product_in_denied_group = products(:dragon_shield_red)
+      trading_cards_group = product_groups(:trading_cards)
+      product_in_denied_group.update!(product_group: trading_cards_group)
+
+      # Create deny list entry for the trading_cards group
+      discount.discount_items.create!(
+        discountable: trading_cards_group,
+        exclusion_type: :denied
+      )
+
+      line = @order.order_lines.create!(
+        sellable: product_in_denied_group,
+        name: product_in_denied_group.name,
+        code: product_in_denied_group.code,
+        quantity: 1,
+        unit_price: product_in_denied_group.selling_price,
+        line_total: product_in_denied_group.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+
+      # Should NOT have the discount because product is in denied group
+      line_discount = line.order_line_discounts.find_by(source_discount: discount)
+      assert_nil line_discount
+    end
+
+    test "applies discount via product group allow list" do
+      discount = Discount.create!(
+        name: "Group Discount",
+        discount_type: :percentage,
+        value: 10.00,
+        active: true,
+        applies_to_all: false
+      )
+
+      # Add gaming_supplies group to allow list
+      discount.discount_items.create!(
+        discountable: product_groups(:gaming_supplies),
+        exclusion_type: :allowed
+      )
+
+      # Add a product to the gaming_supplies group
+      product_in_group = products(:dragon_shield_red)
+      product_in_group.update!(product_group: product_groups(:gaming_supplies))
+
+      line = @order.order_lines.create!(
+        sellable: product_in_group,
+        name: product_in_group.name,
+        code: product_in_group.code,
+        quantity: 1,
+        unit_price: product_in_group.selling_price,
+        line_total: product_in_group.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+
+      # Should have the discount because product is in allowed group
+      line_discount = line.order_line_discounts.find_by(source_discount: discount)
+      assert_not_nil line_discount
+      assert line_discount.active?
+    end
+
+    test "deny list takes precedence over product group allow list" do
+      discount = Discount.create!(
+        name: "Group Discount",
+        discount_type: :percentage,
+        value: 10.00,
+        active: true,
+        applies_to_all: false
+      )
+
+      # Add gaming_supplies group to allow list
+      discount.discount_items.create!(
+        discountable: product_groups(:gaming_supplies),
+        exclusion_type: :allowed
+      )
+
+      # Add a specific product to deny list (even though it's in the allowed group)
+      product = products(:dragon_shield_red)
+      product.update!(product_group: product_groups(:gaming_supplies))
+      discount.discount_items.create!(
+        discountable: product,
+        exclusion_type: :denied
+      )
+
+      line = @order.order_lines.create!(
+        sellable: product,
+        name: product.name,
+        code: product.code,
+        quantity: 1,
+        unit_price: product.selling_price,
+        line_total: product.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+
+      # Should NOT have the discount because product is explicitly denied
+      line_discount = line.order_line_discounts.find_by(source_discount: discount)
+      assert_nil line_discount
+    end
+
+    test "does not duplicate customer discount when applies_to_all is true and per_item type" do
+      # This is the bug scenario: a customer discount with applies_to_all: true and percentage type
+      # should only apply as line-level, NOT as both order-level AND line-level
+      discounts(:percentage_all).update!(active: false)
+
+      customer_discount = Discount.create!(
+        name: "Employee 10% Off Everything",
+        discount_type: :percentage,
+        value: 10.00,
+        active: true,
+        applies_to_all: true  # This is the key - applies to all items
+      )
+
+      customer = customers(:acme_corp)
+      customer.update!(discount: customer_discount)
+      @order.update!(customer: customer)
+
+      line = @order.order_lines.create!(
+        sellable: @product,
+        name: @product.name,
+        code: @product.code,
+        quantity: 1,
+        unit_price: @product.selling_price,
+        line_total: @product.selling_price,
+        position: 1
+      )
+
+      AutoApply.call(@order)
+
+      # Should have exactly ONE line-level discount for the customer discount
+      line_discounts = line.order_line_discounts.where(source_discount: customer_discount)
+      assert_equal 1, line_discounts.count, "Customer discount should only appear once as line-level"
+
+      # Should NOT have an order-level discount for the customer discount
+      order_discount = @order.order_discounts.find_by(discount_id: customer_discount.id)
+      assert_nil order_discount, "Customer discount should not appear as order-level when handled separately"
+    end
+
+    test "respects deny-list for customer per-item discount with applies_to_all" do
+      discounts(:percentage_all).update!(active: false)
+
+      customer_discount = Discount.create!(
+        name: "Employee 10% Off",
+        discount_type: :percentage,
+        value: 10.00,
+        active: true,
+        applies_to_all: true
+      )
+
+      # Add a deny-list item for the customer discount
+      denied_product = products(:dragon_shield_blue)
+      customer_discount.discount_items.create!(
+        discountable: denied_product,
+        exclusion_type: :denied
+      )
+
+      customer = customers(:acme_corp)
+      customer.update!(discount: customer_discount)
+      @order.update!(customer: customer)
+
+      # Add a denied product
+      denied_line = @order.order_lines.create!(
+        sellable: denied_product,
+        name: denied_product.name,
+        code: denied_product.code,
+        quantity: 1,
+        unit_price: denied_product.selling_price,
+        line_total: denied_product.selling_price,
+        position: 1
+      )
+
+      # Add an allowed product
+      allowed_product = products(:nhl_puck)
+      allowed_line = @order.order_lines.create!(
+        sellable: allowed_product,
+        name: allowed_product.name,
+        code: allowed_product.code,
+        quantity: 1,
+        unit_price: allowed_product.selling_price,
+        line_total: allowed_product.selling_price,
+        position: 2
+      )
+
+      AutoApply.call(@order)
+
+      # Denied line should NOT have the discount
+      assert_nil denied_line.order_line_discounts.find_by(source_discount: customer_discount)
+
+      # Allowed line should have the discount
+      assert_not_nil allowed_line.order_line_discounts.find_by(source_discount: customer_discount)
+    end
+
+    test "removes all customer discounts when customer is removed from order" do
+      discounts(:percentage_all).update!(active: false)
+      # Also disable fixture discounts that might interfere
+      discounts(:fixed_total_specific).update!(active: false)
+      discounts(:fixed_per_item_specific).update!(active: false)
+
+      customer_discount = Discount.create!(
+        name: "Employee 10% Off",
+        discount_type: :percentage,
+        value: 10.00,
+        active: true,
+        applies_to_all: true
+      )
+
+      customer = customers(:acme_corp)
+      customer.update!(discount: customer_discount)
+      @order.update!(customer: customer)
+
+      # Add multiple lines using products not in fixture discounts
+      line1 = @order.order_lines.create!(
+        sellable: @other_product,  # nhl_puck - not in fixture discounts
+        name: @other_product.name,
+        code: @other_product.code,
+        quantity: 1,
+        unit_price: @other_product.selling_price,
+        line_total: @other_product.selling_price,
+        position: 1
+      )
+
+      another_product = products(:dragon_shield_blue)
+      line2 = @order.order_lines.create!(
+        sellable: another_product,
+        name: another_product.name,
+        code: another_product.code,
+        quantity: 1,
+        unit_price: another_product.selling_price,
+        line_total: another_product.selling_price,
+        position: 2
+      )
+
+      # Apply discount initially
+      AutoApply.call(@order)
+
+      # Verify customer discount was applied to each line (1 per line)
+      assert_equal 1, line1.order_line_discounts.where(source_discount: customer_discount).count
+      assert_equal 1, line2.order_line_discounts.where(source_discount: customer_discount).count
+      assert_equal 2, @order.order_line_discounts.where(source_discount: customer_discount).count
+
+      # Remove customer from order
+      @order.update!(customer: nil)
+
+      # Re-apply - should remove all customer discounts
+      AutoApply.call(@order)
+
+      # Verify ALL customer discounts were removed from all lines
+      assert_equal 0, line1.order_line_discounts.where(source_discount: customer_discount).count
+      assert_equal 0, line2.order_line_discounts.where(source_discount: customer_discount).count
+      assert_equal 0, @order.order_line_discounts.where(source_discount: customer_discount).count
+      assert_nil @order.order_discounts.find_by(discount_id: customer_discount.id)
+    end
+
+    test "removes fixed_total customer discount when customer is removed" do
+      discounts(:percentage_all).update!(active: false)
+
+      # Create a fixed_total customer discount
+      customer_discount = Discount.create!(
+        name: "Employee $5 Off",
+        discount_type: :fixed_total,
+        value: 5.00,
+        active: true,
+        applies_to_all: false
+      )
+
+      customer = customers(:acme_corp)
+      customer.update!(discount: customer_discount)
+      @order.update!(customer: customer)
+
+      line = @order.order_lines.create!(
+        sellable: @product,
+        name: @product.name,
+        code: @product.code,
+        quantity: 1,
+        unit_price: @product.selling_price,
+        line_total: @product.selling_price,
+        position: 1
+      )
+
+      # Apply discount initially
+      AutoApply.call(@order)
+
+      # Verify order-level discount was created
       assert @order.order_discounts.exists?(discount_id: customer_discount.id)
+
+      # Remove customer
+      @order.update!(customer: nil)
+
+      # Re-apply - should remove the order-level discount
+      assert_difference "OrderDiscount.count", -1 do
+        AutoApply.call(@order)
+      end
+
+      # Verify discount was removed
+      assert_nil @order.order_discounts.find_by(discount_id: customer_discount.id)
     end
   end
 end

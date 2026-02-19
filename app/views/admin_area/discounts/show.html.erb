@@ -97,44 +97,127 @@
     </section>
   </div>
 
-  <%# Linked items section (only relevant when not applies_to_all) %>
-  <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="discount-items-heading">
+  <%# Allow List Section %>
+  <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="discount-allow-list-heading">
     <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
-      <h2 id="discount-items-heading" class="text-sm font-semibold text-body">Linked products &amp; services</h2>
+      <h2 id="discount-allow-list-heading" class="text-sm font-semibold text-body">Allow List</h2>
       <p class="text-xs text-muted">
         <% if @discount.applies_to_all? %>
-          This discount applies to all items automatically — no specific items needed.
+          Discount applies to all items by default. Items here explicitly qualify for the discount.
         <% else %>
-          This discount applies only to the items listed below.
+          Only items in this list will receive the discount.
         <% end %>
       </p>
     </div>
 
-    <%= render "items", discount: @discount, discount_items: @discount_items %>
+    <%# Search and Add - moved to top for better scalability %>
+    <div class="border-b border-theme px-3 py-2.5"
+         data-controller="discount-items"
+         data-discount-items-selection-type-value="allowed">
+      <p class="mb-2 text-xs font-semibold text-body">Add items to allow list</p>
 
-    <% unless @discount.applies_to_all? %>
-      <div class="border-t border-theme px-3 py-2.5">
-        <p class="mb-2 text-xs font-semibold text-body">Add product or service</p>
+      <%= form_with url: search_items_admin_discount_path(@discount), method: :get,
+          data: { turbo_frame: "discount_item_search_results_allowed" },
+          class: "flex items-end gap-2" do |f| %>
+        <%= f.hidden_field :exclusion_type, value: "allowed" %>
+        <div class="flex-1">
+          <%= f.label :item_type, "Type", class: "text-xs font-medium text-body" %>
+          <%= f.select :item_type,
+              [["All", "all"], ["Products", "Product"], ["Services", "Service"], ["Product Groups", "ProductGroup"]],
+              {}, class: "input-field min-h-[30px] w-full text-xs",
+              data: { discount_items_target: "typeFilter", action: "change->discount-items#filterByType" } %>
+        </div>
+        <div class="flex-[2]">
+          <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
+          <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
+              class: "input-field min-h-[30px] w-full text-xs",
+              data: { discount_items_target: "searchInput", action: "input->discount-items#search" } %>
+        </div>
+        <%= f.submit "Search",
+            class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+      <% end %>
+
+      <%= form_with url: bulk_add_items_admin_discount_path(@discount), method: :post,
+          data: { discount_items_target: "bulkForm", action: "submit->discount-items#submitBulkAdd" },
+          class: "mt-2" do |f| %>
+        <%= f.hidden_field :exclusion_type, value: "allowed" %>
+        <%= turbo_frame_tag "discount_item_search_results_allowed",
+            src: search_items_admin_discount_path(@discount, item_type: "all", exclusion_type: "allowed"),
+            class: "block border border-theme rounded-md overflow-hidden min-h-[60px]" %>
+        <div class="mt-2 flex justify-end">
+          <%= f.button type: "submit", disabled: true,
+              class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-green-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition" do %>
+            <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Add Selected to Allow List
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <%# Applied Items List - paginated below search %>
+    <%= render "items", discount: @discount, discount_items: @allowed_items, pagy: @pagy_allowed, exclusion_type: "allowed" %>
+  </section>
+
+  <%# Deny List Section - only for per-item discounts %>
+  <% if @discount.per_item_discount? %>
+    <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="discount-deny-list-heading">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 id="discount-deny-list-heading" class="text-sm font-semibold text-body">Deny List</h2>
+        <p class="text-xs text-muted">
+          Items here are explicitly blocked from receiving this discount. Takes precedence over Allow List.
+        </p>
+      </div>
+
+      <%# Search and Add - moved to top %>
+      <div class="border-b border-theme px-3 py-2.5"
+           data-controller="discount-items"
+           data-discount-items-selection-type-value="denied">
+        <p class="mb-2 text-xs font-semibold text-body">Add items to deny list</p>
+
         <%= form_with url: search_items_admin_discount_path(@discount), method: :get,
-            data: { turbo_frame: "discount_item_search_results" },
+            data: { turbo_frame: "discount_item_search_results_denied" },
             class: "flex items-end gap-2" do |f| %>
+          <%= f.hidden_field :exclusion_type, value: "denied" %>
           <div class="flex-1">
             <%= f.label :item_type, "Type", class: "text-xs font-medium text-body" %>
-            <%= f.select :item_type, [["Product", "Product"], ["Service", "Service"]],
-                {}, class: "input-field min-h-[30px] w-full text-xs" %>
+            <%= f.select :item_type,
+                [["All", "all"], ["Products", "Product"], ["Services", "Service"], ["Product Groups", "ProductGroup"]],
+                {}, class: "input-field min-h-[30px] w-full text-xs",
+                data: { discount_items_target: "typeFilter", action: "change->discount-items#filterByType" } %>
           </div>
-          <div class="flex-[3]">
+          <div class="flex-[2]">
             <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
             <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
-                class: "input-field min-h-[30px] w-full text-xs" %>
+                class: "input-field min-h-[30px] w-full text-xs",
+                data: { discount_items_target: "searchInput", action: "input->discount-items#search" } %>
           </div>
           <%= f.submit "Search",
               class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
         <% end %>
 
-        <%= turbo_frame_tag "discount_item_search_results", class: "mt-2 block" do %>
+        <%= form_with url: bulk_add_items_admin_discount_path(@discount), method: :post,
+            data: { discount_items_target: "bulkForm", action: "submit->discount-items#submitBulkAdd" },
+            class: "mt-2" do |f| %>
+          <%= f.hidden_field :exclusion_type, value: "denied" %>
+          <%= turbo_frame_tag "discount_item_search_results_denied",
+              src: search_items_admin_discount_path(@discount, item_type: "all", exclusion_type: "denied"),
+              class: "block border border-theme rounded-md overflow-hidden min-h-[60px]" %>
+          <div class="mt-2 flex justify-end">
+            <%= f.button type: "submit", disabled: true,
+                class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-red-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition" do %>
+              <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+              </svg>
+              Add Selected to Deny List
+            <% end %>
+          </div>
         <% end %>
       </div>
-    <% end %>
-  </section>
+
+      <%# Applied Items List - paginated below search %>
+      <%= render "items", discount: @discount, discount_items: @denied_items, pagy: @pagy_denied, exclusion_type: "denied" %>
+    </section>
+  <% end %>
 </div>

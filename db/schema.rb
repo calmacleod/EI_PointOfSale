@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_18_230021) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_18_231234) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -166,10 +166,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_18_230021) do
     t.bigint "discount_id", null: false
     t.bigint "discountable_id", null: false
     t.string "discountable_type", null: false
+    t.integer "exclusion_type", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["discount_id", "discountable_type", "discountable_id"], name: "index_discount_items_uniqueness", unique: true
+    t.index ["discount_id", "exclusion_type"], name: "index_discount_items_on_discount_and_exclusion"
     t.index ["discount_id"], name: "index_discount_items_on_discount_id"
     t.index ["discountable_type", "discountable_id"], name: "index_discount_items_on_discountable"
+    t.index ["exclusion_type"], name: "index_discount_items_on_exclusion_type"
   end
 
   create_table "discounts", force: :cascade do |t|

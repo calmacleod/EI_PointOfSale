@@ -1,4 +1,4 @@
-<div id="discount_items">
+<div id="discount_items_<%= exclusion_type %>">
   <% if discount_items.any? %>
     <ul class="divide-y divide-[var(--color-border)]">
       <% discount_items.each do |item| %>
@@ -8,6 +8,9 @@
             <span class="ml-1.5 text-xs text-muted">(<%= item.discountable_type %>)</span>
             <% if item.discountable.respond_to?(:code) %>
               <span class="ml-1.5 font-mono text-xs text-muted"><%= item.discountable.code %></span>
+            <% end %>
+            <% if item.discountable_type == "ProductGroup" %>
+              <span class="ml-1.5 text-xs text-blue-500">Group</span>
             <% end %>
           </div>
           <%= button_to admin_discount_item_path(item), method: :delete,
@@ -20,12 +23,19 @@
         </li>
       <% end %>
     </ul>
+
+    <%# Pagination controls %>
+    <% if defined?(pagy) && pagy.pages > 1 %>
+      <div class="border-t border-theme px-3 py-2 bg-surface-alt">
+        <%== pagy_nav(pagy) %>
+      </div>
+    <% end %>
   <% else %>
     <p class="px-3 py-4 text-sm text-muted">
-      <% if discount.applies_to_all? %>
+      <% if exclusion_type == "allowed" && discount.applies_to_all? %>
         This discount applies to all products and services automatically.
       <% else %>
-        No items linked yet. Use the search below to add products or services.
+        No items in this list. Use the search above to add items.
       <% end %>
     </p>
   <% end %>
