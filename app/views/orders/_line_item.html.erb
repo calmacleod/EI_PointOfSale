@@ -12,7 +12,18 @@
         <div class="flex flex-col gap-1 mt-1 p-1.5 rounded bg-surface-alt border border-theme">
           <div class="flex items-center justify-between text-xs">
             <span class="font-medium text-body"><%= line_discount.name %></span>
-            <span class="text-green-600">-<%= number_to_currency(line_discount.calculated_amount) %></span>
+            <div class="flex items-center gap-1">
+              <span class="text-green-600">-<%= number_to_currency(line_discount.calculated_amount) %></span>
+              <% unless line_discount.auto_applied? %>
+                <% if line.order.draft? %>
+                  <%= button_to order_line_discount_path(line_discount), method: :delete,
+                        class: "text-muted hover:text-red-500 transition",
+                        data: { turbo_stream: true } do %>
+                    <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
           </div>
           
           <% if line_discount.auto_applied? && line.order.draft? %>

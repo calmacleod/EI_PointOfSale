@@ -3,8 +3,12 @@
 # Controller for managing order-level discounts.
 # Note: Line-level discounts are managed via OrderLineDiscountsController.
 class OrderDiscountsController < ApplicationController
-  before_action :set_order, only: :create
+  before_action :set_order, only: %i[new create]
   before_action :set_discount, only: :destroy
+
+  def new
+    authorize! :update, @order
+  end
 
   def create
     authorize! :update, @order

@@ -56,7 +56,8 @@ class OrderPayment < ApplicationRecord
     end
 
     def round_cash_amount
-      self.amount = (amount * 20).round / 20.0 if amount.present?
+      self.amount          = (amount * 20).round / 20.0          if amount.present?
+      self.amount_tendered = (amount_tendered * 20).round / 20.0 if amount_tendered.present?
     end
 
     def calculate_change

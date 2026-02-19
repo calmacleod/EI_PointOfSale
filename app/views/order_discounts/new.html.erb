@@ -1,0 +1,133 @@
+<%= turbo_frame_tag "discount_modal" do %>
+  <div class="fixed inset-0 z-[70]" role="dialog" aria-modal="true">
+    <div class="fixed inset-0 bg-black/50" data-action="click->discount-modal#close"></div>
+    <div class="fixed inset-0 flex items-start justify-center pt-[10vh] p-4" style="pointer-events: none;">
+      <div class="w-full max-w-md rounded-xl bg-surface shadow-2xl overflow-hidden" style="pointer-events: auto;">
+
+        <%# Header %>
+        <div class="flex items-center justify-between border-b border-theme px-5 py-4">
+          <h3 class="text-sm font-semibold text-body">Add Discount</h3>
+          <button type="button" class="text-muted hover:text-body transition" data-action="click->discount-modal#close">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <%# Mode tabs %>
+        <div class="flex border-b border-theme">
+          <button type="button"
+                  class="flex-1 py-2.5 text-xs font-medium border-b-2 border-accent text-accent transition"
+                  data-discount-modal-target="modeTab"
+                  data-mode="order"
+                  data-action="click->discount-modal#setMode">
+            Whole Order
+          </button>
+          <button type="button"
+                  class="flex-1 py-2.5 text-xs font-medium border-b-2 border-transparent text-muted hover:text-body transition"
+                  data-discount-modal-target="modeTab"
+                  data-mode="lines"
+                  data-action="click->discount-modal#setMode">
+            Specific Items
+          </button>
+        </div>
+
+        <%# Order-level discount form %>
+        <div data-discount-modal-target="orderPanel">
+          <%= form_with url: order_order_discounts_path(@order),
+                        class: "p-5 space-y-4",
+                        data: { turbo_stream: true } do |f| %>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1">Discount name</label>
+              <input type="text" name="order_discount[name]" autocomplete="off" required
+                     placeholder="e.g. Staff discount"
+                     class="input-field w-full text-sm">
+            </div>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="block text-xs font-medium text-muted mb-1">Type</label>
+                <select name="order_discount[discount_type]" class="input-field w-full text-sm">
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="fixed_amount">Fixed Total ($)</option>
+                  <option value="fixed_per_item">Fixed Per Item ($)</option>
+                </select>
+              </div>
+              <div class="w-24">
+                <label class="block text-xs font-medium text-muted mb-1">Value</label>
+                <input type="number" name="order_discount[value]" step="0.01" min="0.01" required
+                       autocomplete="off" class="input-field w-full text-sm">
+              </div>
+            </div>
+            <button type="submit"
+                    class="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-accent-hover)] transition">
+              Apply Discount
+            </button>
+          <% end %>
+        </div>
+
+        <%# Line-level discount form %>
+        <div class="hidden" data-discount-modal-target="linesPanel">
+          <% discountable_lines = @order.order_lines.includes(:sellable).order(:position).reject { |l| l.sellable_type == "GiftCertificate" } %>
+          <%= form_with url: order_order_line_discounts_path(@order),
+                        class: "p-5 space-y-4",
+                        data: { turbo_stream: true, action: "submit->discount-modal#buildLineInputs" } do |f| %>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-1">Discount name</label>
+              <input type="text" name="order_line_discount[name]" autocomplete="off" required
+                     placeholder="e.g. Member discount"
+                     class="input-field w-full text-sm">
+            </div>
+            <div class="flex gap-3">
+              <div class="flex-1">
+                <label class="block text-xs font-medium text-muted mb-1">Type</label>
+                <select name="order_line_discount[discount_type]" class="input-field w-full text-sm">
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="fixed_amount">Fixed Total ($)</option>
+                  <option value="fixed_per_item">Fixed Per Item ($)</option>
+                </select>
+              </div>
+              <div class="w-24">
+                <label class="block text-xs font-medium text-muted mb-1">Value</label>
+                <input type="number" name="order_line_discount[value]" step="0.01" min="0.01" required
+                       autocomplete="off" class="input-field w-full text-sm">
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-muted mb-2">Apply to</label>
+              <% if discountable_lines.any? %>
+                <div class="space-y-2 max-h-52 overflow-y-auto rounded-lg border border-theme p-2">
+                  <% discountable_lines.each do |line| %>
+                    <div class="rounded p-1.5 bg-surface-alt">
+                      <div class="flex items-baseline justify-between mb-1.5">
+                        <span class="text-xs font-medium text-body truncate mr-2"><%= line.name %></span>
+                        <span class="text-[10px] text-muted shrink-0"><%= number_to_currency(line.unit_price) %> each</span>
+                      </div>
+                      <div class="flex flex-wrap gap-1">
+                        <% line.quantity.times do |i| %>
+                          <button type="button"
+                                  class="w-6 h-6 rounded text-[10px] font-medium transition bg-gray-100 text-gray-400 hover:bg-green-100 hover:text-green-700"
+                                  data-action="click->discount-modal#toggleUnit"
+                                  data-discount-modal-target="unitBtn"
+                                  data-line-id="<%= line.id %>"
+                                  data-active="false"
+                                  title="Unit <%= i + 1 %> — click to apply to discount">
+                            <%= i + 1 %>
+                          </button>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                <p class="text-xs text-muted italic">No discountable items in this order.</p>
+              <% end %>
+            </div>
+            <button type="submit"
+                    class="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-accent-hover)] transition">
+              Apply to Selected Items
+            </button>
+          <% end %>
+        </div>
+
+      </div>
+    </div>
+  </div>
+<% end %>

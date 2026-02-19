@@ -94,9 +94,9 @@ Rails.application.routes.draw do
     resources :gift_certificates, only: %i[new create]
     resources :order_lines, only: %i[create update destroy], shallow: true
     resources :order_payments, only: %i[create destroy], shallow: true
-    resources :order_discounts, only: %i[create destroy], shallow: true
+    resources :order_discounts, only: %i[new create destroy], shallow: true
     resources :order_discount_overrides, only: %i[destroy]
-    resources :order_line_discounts, only: [], shallow: true do
+    resources :order_line_discounts, only: %i[create destroy], shallow: true do
       member do
         patch :exclude
         patch :restore

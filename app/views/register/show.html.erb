@@ -250,6 +250,11 @@
     </div>
   </div>
 
+  <%# ── Discount modal (lazy-loaded via Turbo Frame) ──────────────── %>
+  <%= turbo_frame_tag "discount_modal",
+        data: { controller: "discount-modal",
+                action: "turbo:submit-end->discount-modal#submitEnd" } %>
+
   <%# ── Product search modal (split-pane: results left, preview right) %>
   <div id="product_search_modal" class="fixed inset-0 z-50 hidden" role="dialog"
        data-controller="product-search"
