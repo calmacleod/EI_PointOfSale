@@ -3,6 +3,8 @@
 require "test_helper"
 
 class GoogleDriveServiceTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   setup do
     @original_client_id = ENV["GOOGLE_CLIENT_ID"]
     @original_client_secret = ENV["GOOGLE_CLIENT_SECRET"]
@@ -188,6 +190,64 @@ class GoogleDriveServiceTest < ActiveSupport::TestCase
     end
   end
 
+  # ── exchange_code / trigger_backup_if_stale! ──
+
+  test "exchange_code enqueues DatabaseBackupJob when no backups exist on Drive" do
+    configure_oauth!
+
+    assert_enqueued_with(job: DatabaseBackupJob) do
+      stub_exchange_code(backup_files: []) do
+        GoogleDriveService.exchange_code(code: "auth_code", redirect_uri: "https://example.com/callback")
+      end
+    end
+  end
+
+  test "exchange_code enqueues DatabaseBackupJob when most recent backup is stale" do
+    configure_oauth!
+
+    stale_file = Google::Apis::DriveV3::File.new(
+      id: "f1",
+      name: "db_backup_old.dump.gz",
+      created_time: 30.hours.ago
+    )
+
+    assert_enqueued_with(job: DatabaseBackupJob) do
+      stub_exchange_code(backup_files: [ stale_file ]) do
+        GoogleDriveService.exchange_code(code: "auth_code", redirect_uri: "https://example.com/callback")
+      end
+    end
+  end
+
+  test "exchange_code does not enqueue DatabaseBackupJob when a recent backup exists" do
+    configure_oauth!
+
+    fresh_file = Google::Apis::DriveV3::File.new(
+      id: "f1",
+      name: "db_backup_recent.dump.gz",
+      created_time: 3.hours.ago
+    )
+
+    assert_no_enqueued_jobs(only: DatabaseBackupJob) do
+      stub_exchange_code(backup_files: [ fresh_file ]) do
+        GoogleDriveService.exchange_code(code: "auth_code", redirect_uri: "https://example.com/callback")
+      end
+    end
+  end
+
+  test "exchange_code still returns true when backup staleness check fails" do
+    configure_oauth!
+
+    fake_client = build_fake_oauth_client
+    GoogleDriveService.stub(:build_oauth_client, fake_client) do
+      GoogleDriveService.stub(:store_token, nil) do
+        GoogleDriveService.stub(:list_files, ->(*) { raise "Drive error" }) do
+          result = GoogleDriveService.exchange_code(code: "auth_code", redirect_uri: "https://example.com/callback")
+          assert result
+        end
+      end
+    end
+  end
+
   # ── disconnect! ──
 
   test "disconnect! removes the token file" do
@@ -214,6 +274,29 @@ class GoogleDriveServiceTest < ActiveSupport::TestCase
       fake = Object.new
       fake.define_singleton_method(:authorization=) { |_| }
       fake
+    end
+
+    def build_fake_oauth_client
+      fake = Object.new
+      fake.define_singleton_method(:code=) { |_| }
+      fake.define_singleton_method(:fetch_access_token!) { }
+      fake.define_singleton_method(:refresh_token) { "fake_refresh_token" }
+      fake
+    end
+
+    # Stubs exchange_code dependencies: OAuth client, token storage, and Drive file listing.
+    def stub_exchange_code(backup_files:, &block)
+      fake_client = build_fake_oauth_client
+      file_list = Google::Apis::DriveV3::FileList.new(files: backup_files)
+
+      fake_drive = build_fake_drive_service
+      fake_drive.define_singleton_method(:list_files) { |**_| file_list }
+
+      GoogleDriveService.stub(:build_oauth_client, fake_client) do
+        GoogleDriveService.stub(:store_token, nil) do
+          stub_drive_service(fake_drive, &block)
+        end
+      end
     end
 
     # Stubs the private drive_service and token_stored? so we bypass real auth.

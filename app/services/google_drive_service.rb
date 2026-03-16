@@ -136,12 +136,15 @@ class GoogleDriveService
     end
 
     # Exchanges an authorization code for tokens and stores the refresh token.
+    # After connecting, immediately triggers a database backup if none exists or
+    # the most recent one is older than BACKUP_STALENESS_THRESHOLD.
     def exchange_code(code:, redirect_uri:)
       client = build_oauth_client(redirect_uri)
       client.code = code
       client.fetch_access_token!
 
       store_token(client)
+      trigger_backup_if_stale!
       true
     end
 
@@ -222,6 +225,23 @@ class GoogleDriveService
 
       def reset!
         @drive_service = nil
+      end
+
+      # Enqueues DatabaseBackupJob unless a recent backup already exists on Drive.
+      BACKUP_STALENESS_THRESHOLD = 25.hours
+
+      def trigger_backup_if_stale!
+        files = list_files(prefix: DatabaseBackupJob::BACKUP_PREFIX)
+        most_recent = files.first
+
+        stale = most_recent.nil? || most_recent.created_time < BACKUP_STALENESS_THRESHOLD.ago
+
+        if stale
+          Rails.logger.info { "[GoogleDriveService] No recent backup found after OAuth connect — enqueuing DatabaseBackupJob" }
+          DatabaseBackupJob.perform_later
+        end
+      rescue StandardError => e
+        Rails.logger.warn { "[GoogleDriveService] Could not check backup staleness: #{e.message}" }
       end
   end
 end
