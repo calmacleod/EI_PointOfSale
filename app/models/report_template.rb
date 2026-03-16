@@ -38,7 +38,7 @@ class ReportTemplate
     end
 
     def find(key)
-      load_templates! if registry.empty?
+      load_templates! unless @templates_loaded
       registry[key.to_s]
     end
 
