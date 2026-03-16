@@ -6,11 +6,6 @@ require "aws-sdk-s3"
 class GarageBackupJobTest < ActiveJob::TestCase
   setup do
     FileUtils.mkdir_p(Rails.root.join("tmp"))
-    Dir.glob(Rails.root.join("tmp", "garage_backup_*")).each { |f| FileUtils.rm_f(f) }
-  end
-
-  teardown do
-    Dir.glob(Rails.root.join("tmp", "garage_backup_*")).each { |f| FileUtils.rm_f(f) }
   end
 
   test "perform creates archive, uploads to drive, and cleans up temp file" do
@@ -24,10 +19,12 @@ class GarageBackupJobTest < ActiveJob::TestCase
     upload_stub = ->(_path, **_opts) { upload_called = true; fake_result }
     prune_stub = ->(**_opts) { prune_called = true; 0 }
 
-    GoogleDriveService.stub(:upload, upload_stub) do
-      GoogleDriveService.stub(:prune, prune_stub) do
-        Aws::S3::Client.stub(:new, mock_client) do
-          GarageBackupJob.perform_now
+    travel_to Time.zone.parse("2026-01-01 03:00:00") do
+      GoogleDriveService.stub(:upload, upload_stub) do
+        GoogleDriveService.stub(:prune, prune_stub) do
+          Aws::S3::Client.stub(:new, mock_client) do
+            GarageBackupJob.perform_now
+          end
         end
       end
     end
@@ -35,8 +32,8 @@ class GarageBackupJobTest < ActiveJob::TestCase
     assert upload_called, "Expected GoogleDriveService.upload to be called"
     assert prune_called, "Expected GoogleDriveService.prune to be called"
 
-    temp_files = Dir.glob(Rails.root.join("tmp", "garage_backup_*.tar.gz"))
-    assert_empty temp_files, "Temp backup file should be cleaned up"
+    expected_file = Rails.root.join("tmp", "garage_backup_20260101_030000.tar.gz").to_s
+    refute File.exist?(expected_file), "Temp backup file should be cleaned up"
   end
 
   test "cleans up temp file even when upload fails" do
@@ -44,16 +41,18 @@ class GarageBackupJobTest < ActiveJob::TestCase
 
     upload_stub = ->(_path, **_opts) { raise "Upload failed" }
 
-    GoogleDriveService.stub(:upload, upload_stub) do
-      Aws::S3::Client.stub(:new, mock_client) do
-        assert_raises(RuntimeError) do
-          GarageBackupJob.perform_now
+    travel_to Time.zone.parse("2026-01-01 04:00:00") do
+      GoogleDriveService.stub(:upload, upload_stub) do
+        Aws::S3::Client.stub(:new, mock_client) do
+          assert_raises(RuntimeError) do
+            GarageBackupJob.perform_now
+          end
         end
       end
     end
 
-    temp_files = Dir.glob(Rails.root.join("tmp", "garage_backup_*.tar.gz"))
-    assert_empty temp_files, "Temp backup file should be cleaned up even on failure"
+    expected_file = Rails.root.join("tmp", "garage_backup_20260101_040000.tar.gz").to_s
+    refute File.exist?(expected_file), "Temp backup file should be cleaned up even on failure"
   end
 
   private

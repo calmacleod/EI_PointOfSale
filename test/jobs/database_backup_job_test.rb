@@ -5,11 +5,6 @@ require "test_helper"
 class DatabaseBackupJobTest < ActiveJob::TestCase
   setup do
     FileUtils.mkdir_p(Rails.root.join("tmp"))
-    Dir.glob(Rails.root.join("tmp", "db_backup_*")).each { |f| FileUtils.rm_f(f) }
-  end
-
-  teardown do
-    Dir.glob(Rails.root.join("tmp", "db_backup_*")).each { |f| FileUtils.rm_f(f) }
   end
 
   test "perform creates dump, uploads to drive, and cleans up temp files" do
@@ -45,10 +40,8 @@ class DatabaseBackupJobTest < ActiveJob::TestCase
     assert upload_called, "Expected GoogleDriveService.upload to be called"
     assert prune_called, "Expected GoogleDriveService.prune to be called"
 
-    temp_dump_files = Dir.glob(Rails.root.join("tmp", "db_backup_*.dump"))
-    temp_gz_files = Dir.glob(Rails.root.join("tmp", "db_backup_*.dump.gz"))
-    assert_empty temp_dump_files, "Temp raw dump should be cleaned up"
-    assert_empty temp_gz_files, "Temp compressed dump should be cleaned up"
+    refute File.exist?(Rails.root.join("tmp", "db_backup_20250101_020000.dump").to_s), "Temp raw dump should be cleaned up"
+    refute File.exist?(Rails.root.join("tmp", "db_backup_20250101_020000.dump.gz").to_s), "Temp compressed dump should be cleaned up"
   end
 
   test "cleans up temp files even when upload fails" do
@@ -73,10 +66,8 @@ class DatabaseBackupJobTest < ActiveJob::TestCase
       end
     end
 
-    temp_dump_files = Dir.glob(Rails.root.join("tmp", "db_backup_*.dump"))
-    temp_gz_files = Dir.glob(Rails.root.join("tmp", "db_backup_*.dump.gz"))
-    assert_empty temp_dump_files, "Temp raw dump should be cleaned up even on failure"
-    assert_empty temp_gz_files, "Temp compressed dump should be cleaned up even on failure"
+    refute File.exist?(Rails.root.join("tmp", "db_backup_20250101_030000.dump").to_s), "Temp raw dump should be cleaned up even on failure"
+    refute File.exist?(Rails.root.join("tmp", "db_backup_20250101_030000.dump.gz").to_s), "Temp compressed dump should be cleaned up even on failure"
   end
 
   test "raises when pg_dump fails" do
