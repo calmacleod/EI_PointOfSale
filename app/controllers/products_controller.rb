@@ -37,7 +37,12 @@ class ProductsController < ApplicationController
     @saved_queries = current_user.saved_queries.for_resource("products")
 
     @pagy, @products = filter_and_paginate(
-      @products.kept.includes(:tax_code, :supplier, :product_group),
+      @products.kept
+               .select(:id, :code, :name, :selling_price, :purchase_price,
+                       :stock_level, :reorder_level, :sync_to_shopify,
+                       :supplier_id, :tax_code_id, :product_group_id,
+                       :discarded_at, :created_at, :updated_at)
+               .includes(:tax_code, :supplier, :product_group),
       config: @filter_config
     )
   end

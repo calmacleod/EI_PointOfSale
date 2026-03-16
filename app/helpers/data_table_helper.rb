@@ -19,6 +19,12 @@ module DataTableHelper
       @cell_renderers[key.to_sym] = block
     end
 
+    # Returns the renderer proc for a key, or nil. Use to precompute renderers
+    # before iterating rows so the hash is only looked up once per column.
+    def renderer_for(key)
+      @cell_renderers[key.to_sym]
+    end
+
     def render_cell(key, record)
       renderer = @cell_renderers[key.to_sym]
       return "" unless renderer

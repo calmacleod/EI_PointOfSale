@@ -148,7 +148,7 @@ class FilterConfig
   # --- Query methods ---
 
   def sortable_columns
-    @columns.select(&:sortable).map { |c| c.key.to_s }
+    @sortable_columns ||= @columns.select(&:sortable).map { |c| c.key.to_s }
   end
 
   def default_columns
@@ -227,7 +227,7 @@ class FilterConfig
   end
 
   def columns_json
-    @columns.map { |c|
+    @columns_json ||= @columns.map { |c|
       hash = { key: c.key, label: c.label, default: c.default, sortable: c.sortable }
       hash[:width] = c.width if c.width
       hash
