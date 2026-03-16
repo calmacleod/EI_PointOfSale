@@ -65,55 +65,6 @@ gem "web-push"
 
 gem "dotenv", groups: [ :development, :test ]
 
-group :development, :test do
-  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
-
-  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
-  gem "bundler-audit", require: false
-
-  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
-  gem "brakeman", require: false
-
-  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
-
-  # HTML-aware ERB linting and tooling [https://github.com/marcoroth/herb]
-  gem "herb"
-end
-
-group :development do
-  # Use console on exceptions pages [https://github.com/rails/web-console]
-  gem "web-console"
-
-  # Hot reloading for Hotwire [https://github.com/hotwired/spark]
-  gem "hotwire-spark"
-
-  # Better seeding behavior with environment-specific seed files and fixtures
-  gem "sprig", "~> 0.3.1"
-
-  # Dashboard to operate and troubleshoot Solid Queue background jobs
-  gem "mission_control-jobs"
-
-  # Request profiling with timing, SQL, and flamegraph analysis
-  gem "rack-mini-profiler"
-
-  gem "stackprof"
-
-  # Clean, single-line request logging with timing info
-  gem "lograge"
-end
-
-group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
-  gem "minitest", ">= 6"
-  gem "minitest-mock"
-  # JUnit XML report for CI Insights [https://github.com/minitest-reporters/minitest-reporters]
-  gem "minitest-reporters"
-end
-
 gem "tailwindcss-rails", "~> 4.4"
 
 # Authorization
@@ -135,3 +86,39 @@ gem "audited"
 gem "local_time"
 
 gem "shopify_api", "~> 16.1"
+
+group :development, :test do
+  # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
+  gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+
+  # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
+  gem "bundler-audit", require: false
+
+  # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
+  gem "brakeman", require: false
+
+  # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
+  gem "rubocop-rails-omakase", require: false
+
+  # HTML-aware ERB linting and tooling [https://github.com/marcoroth/herb]
+  gem "herb"
+end
+
+group :development do
+  gem "web-console"          # Use console on exceptions pages [https://github.com/rails/web-console]
+  gem "hotwire-spark"        # Hot reloading for Hotwire [https://github.com/hotwired/spark]
+  gem "sprig", "~> 0.3.1"    # Better seeding behavior with environment-specific seed files and fixtures
+  gem "mission_control-jobs" # Dashboard to operate and troubleshoot Solid Queue background jobs
+  gem "rack-mini-profiler"   # Request profiling with timing, SQL, and flamegraph analysis
+  gem "stackprof"            # Sampling call-stack profiler for Ruby (used with rack-mini-profiler)
+  gem "lograge"              # Clean, single-line request logging with timing info
+end
+
+group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+  gem "minitest", ">= 6"
+  gem "minitest-mock"
+  gem "minitest-reporters"
+  gem "test-prof"
+end
