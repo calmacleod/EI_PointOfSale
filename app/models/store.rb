@@ -124,7 +124,9 @@ class Store < ApplicationRecord
       # Skip the dimension check if the file isn't available for analysis.
       begin
         logo.blob.analyze unless logo.blob.analyzed?
-      rescue ActiveStorage::FileNotFoundError
+      rescue ActiveStorage::FileNotFoundError,
+             Aws::S3::Errors::ServiceError,
+             Aws::Waiters::Errors::UnexpectedError
         return
       end
 

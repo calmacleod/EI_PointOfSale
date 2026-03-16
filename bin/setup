@@ -101,24 +101,37 @@ FileUtils.chdir APP_ROOT do
   bucket_created = system("docker exec #{container} #{garage_bin} bucket create #{dev_bucket} 2>/dev/null")
   puts bucket_created ? "  ✓ Bucket '#{dev_bucket}' created." : "  ✓ Bucket '#{dev_bucket}' already exists."
 
-  # Create development API key
-  puts "  Creating API key '#{dev_key_name}'..."
-  key_output = `docker exec #{container} #{garage_bin} key create #{dev_key_name} 2>&1`
-  key_id = key_output.match(/Key ID:\s*(\S+)/)&.[](1)
-  secret_key = key_output.match(/Secret key:\s*(\S+)/)&.[](1)
+  # Create development API key (or reuse the one already in .env)
+  existing_env = File.exist?(".env") ? File.read(".env") : ""
+  existing_key_id = existing_env.match(/^GARAGE_ACCESS_KEY=(\S+)/)&.[](1)
 
-  if key_id && secret_key
-    puts "  ✓ API key created."
-  else
-    # Key already exists — secret is only shown at creation time
-    puts "  API key already exists."
-    key_info = `docker exec #{container} #{garage_bin} key info #{dev_key_name} 2>/dev/null`
-    key_id = key_info.match(/Key ID:\s*(\S+)/)&.[](1)
+  key_id = nil
+  secret_key = nil
+
+  if existing_key_id && existing_key_id != "your-access-key-id"
+    # Verify the key still exists in Garage
+    key_check = `docker exec #{container} #{garage_bin} key info #{existing_key_id} 2>&1`
+    if key_check.include?("Key ID:")
+      key_id = existing_key_id
+      puts "  ✓ Reusing existing API key #{key_id[0..9]}... from .env."
+    else
+      puts "  Key in .env no longer exists in Garage — creating a new one."
+    end
   end
 
-  # Grant bucket access to key
-  system("docker exec #{container} #{garage_bin} bucket allow --read --write --owner #{dev_bucket} --key #{dev_key_name} 2>/dev/null")
-  puts "  ✓ Key '#{dev_key_name}' has access to '#{dev_bucket}'."
+  unless key_id
+    puts "  Creating API key '#{dev_key_name}'..."
+    key_output = `docker exec #{container} #{garage_bin} key create #{dev_key_name} 2>&1`
+    key_id = key_output.match(/Key ID:\s*(\S+)/)&.[](1)
+    secret_key = key_output.match(/Secret key:\s*(\S+)/)&.[](1)
+    puts "  ✓ API key created." if key_id
+  end
+
+  # Grant bucket access to the specific key ID to avoid ambiguous-name errors
+  if key_id
+    system("docker exec #{container} #{garage_bin} bucket allow --read --write --owner #{dev_bucket} --key #{key_id} 2>/dev/null")
+    puts "  ✓ Key #{key_id[0..9]}... has access to '#{dev_bucket}'."
+  end
 
   # Write credentials to .env
   if key_id && secret_key
@@ -139,15 +152,14 @@ FileUtils.chdir APP_ROOT do
     File.write(".env", env_contents)
     puts "  ✓ Garage credentials written to .env."
   elsif key_id
-    existing_env = File.read(".env")
     if existing_env.match?(/^GARAGE_ACCESS_KEY=\S/) && existing_env.match?(/^GARAGE_SECRET_KEY=\S/)
       puts "  ✓ Garage credentials already present in .env."
     else
       puts ""
-      puts "  ⚠  The API key '#{dev_key_name}' already exists but the secret"
-      puts "     is only shown once at creation time and cannot be retrieved."
+      puts "  ⚠  API key #{key_id} exists but the secret was not captured."
+      puts "     The secret is only shown once at creation time."
       puts ""
-      puts "     To reset: docker exec #{container} #{garage_bin} key delete #{dev_key_name}"
+      puts "     To reset: docker exec #{container} #{garage_bin} key delete #{key_id}"
       puts "     Then re-run: bin/setup"
       puts ""
     end
