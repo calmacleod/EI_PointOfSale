@@ -162,7 +162,7 @@ module AdminArea
     private
 
       def build_fake_drive_file(id:, name:, size: nil)
-        Google::Apis::DriveV3::File.new(
+        ::Google::Apis::DriveV3::File.new(
           id: id,
           name: name,
           size: size,
