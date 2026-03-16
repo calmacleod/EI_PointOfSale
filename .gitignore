@@ -37,7 +37,7 @@
 /config/credentials/google_oauth_token.json
 /config/credentials/google_service_account.json
 
-For testing Database Data
+# For testing Database Data
 *.mdb
 /app/assets/builds/*
 !/app/assets/builds/.keep
@@ -49,3 +49,6 @@ For testing Database Data
 !/tmp/herb/
 !/tmp/herb/.keep
 /tmp/herb/*.log
+
+# Other
+.DS_Store
