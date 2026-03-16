@@ -1,6 +1,6 @@
 <%# Generic filter bar. Requires filter_config (FilterConfig) and saved_queries (ActiveRecord::Relation) as locals. %>
 <% config = local_assigns.fetch(:config) { local_assigns[:filter_config] } %>
-<% saved_queries = local_assigns[:saved_queries] || [] %>
+<% saved_queries = Array(local_assigns[:saved_queries]) %>
 <% turbo_frame = config.resource_name + "_table" %>
 <% active_filter_keys = config.active_filters(params).map { |f| f.key.to_s } %>
 <% form_id = "#{config.resource_name}_filter_form" %>

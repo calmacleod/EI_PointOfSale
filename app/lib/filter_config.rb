@@ -182,12 +182,12 @@ class FilterConfig
   # --- JSON for Stimulus ---
 
   def filters_json
-    Rails.cache.fetch(filters_cache_key) do
+    Rails.cache.fetch(filters_json_cache_key, expires_in: 5.minutes) do
       @filters.map { |f|
         base = { key: f.key, type: f.type, label: f.label, paramKeys: f.js_param_keys }
         case f.type
         when :association, :multi_select
-          base[:choices] = fetch_cached_choices(f)
+          base[:choices] = fetch_choices(f)
         when :select
           base[:choices] = f.options[:choices].map { |label, value| { value: value.to_s, label: label } }
         when :boolean
@@ -201,7 +201,12 @@ class FilterConfig
   end
 
   def clear_filters_cache!
+    Rails.cache.delete(filters_json_cache_key)
     Rails.cache.delete(filters_cache_key)
+  end
+
+  def filters_json_cache_key
+    "filter_config/#{@resource_name}/v1"
   end
 
   def filters_cache_key
@@ -230,6 +235,12 @@ class FilterConfig
   end
 
   private
+
+    def fetch_choices(filter)
+      display = filter.options[:display] || :name
+      items = filter.options[:collection].call
+      items.map { |item| { value: item.id.to_s, label: item.public_send(display) } }
+    end
 
     def fetch_cached_choices(filter)
       display = filter.options[:display] || :name

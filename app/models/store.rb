@@ -107,7 +107,7 @@ class Store < ApplicationRecord
 
   class << self
     def current
-      first || create!(name: "Store")
+      Current.store ||= first || create!(name: "Store")
     end
   end
 
