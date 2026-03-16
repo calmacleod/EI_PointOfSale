@@ -1,8 +1,6 @@
 require "test_helper"
 
 class SearchTest < ActiveSupport::TestCase
-  parallelize(workers: 1)
-
   test "Product.search finds products by name" do
     product = Product.create!(code: "SRCH-WIDG-001", name: "Unique Searchable Widget")
     assert_includes Product.search("Widget"), product
