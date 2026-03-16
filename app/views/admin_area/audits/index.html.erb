@@ -19,10 +19,10 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @audits, pagy: @pagy,
                empty_message: "No audit events yet." do |t| %>
-      <% t.cell(:created_at) { |audit| content_tag(:span, local_time(audit.created_at, format: :short), class: "text-muted") } %>
-      <% t.cell(:action) { |audit| content_tag(:span, audit.action.capitalize, class: "font-medium capitalize") } %>
-      <% t.cell(:auditable_type) { |audit| audit.auditable_type } %>
-      <% t.cell(:record) { |audit|
+      <%= t.cell(:created_at) { |audit| content_tag(:span, local_time(audit.created_at, format: :short), class: "text-muted") } %>
+      <%= t.cell(:action) { |audit| content_tag(:span, audit.action.capitalize, class: "font-medium capitalize") } %>
+      <%= t.cell(:auditable_type) { |audit| audit.auditable_type } %>
+      <%= t.cell(:record) { |audit|
            path = audit_auditable_path(audit)
            if path
              link_to audit_auditable_label(audit), path, class: "text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true }
@@ -30,14 +30,14 @@
              audit_auditable_label(audit)
            end
          } %>
-      <% t.cell(:user) { |audit|
+      <%= t.cell(:user) { |audit|
            if audit.user.present?
              audit.user.respond_to?(:email_address) ? audit.user.email_address : audit.user.to_s
            else
              "—"
            end
          } %>
-      <% t.cell(:details) { |audit|
+      <%= t.cell(:details) { |audit|
            link_to admin_audit_path(audit), class: "inline-flex items-center justify-center text-accent hover:opacity-70", aria: { label: "View changes" }, data: { turbo_frame: "_top", turbo_prefetch: true } do
              tag.svg(class: "h-4 w-4", fill: "none", stroke: "currentColor", viewBox: "0 0 24 24", aria: { hidden: true }) do
                safe_join([

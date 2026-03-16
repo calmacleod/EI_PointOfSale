@@ -31,18 +31,19 @@
           &mdash; <%= number_to_currency(drawer_session.opening_total) %> float,
           opened <%= time_ago_in_words(drawer_session.opened_at) %> ago
         </span>
-        <span class="ml-auto">
-          <%= link_to "Close", close_cash_drawer_path,
-              class: "text-xs font-medium text-accent hover:opacity-80" %>
-        </span>
       <% else %>
         <span class="flex h-2 w-2 rounded-full bg-amber-500"></span>
         <span class="text-xs font-medium text-body">Register closed</span>
-        <span class="ml-auto">
+      <% end %>
+      <span class="ml-auto">
+        <% if drawer_session %>
+          <%= link_to "Close", close_cash_drawer_path,
+              class: "text-xs font-medium text-accent hover:opacity-80" %>
+        <% else %>
           <%= link_to "Open Register", open_cash_drawer_path,
               class: "text-xs font-medium text-accent hover:opacity-80" %>
-        </span>
-      <% end %>
+        <% end %>
+      </span>
     </div>
   <% end %>
 

@@ -18,7 +18,7 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @store_tasks, pagy: @pagy,
                empty_message: "No tasks yet. Create one to get started." do |t| %>
-      <% t.cell(:title) { |task|
+      <%= t.cell(:title) { |task|
            capture do
              concat(link_to(task.title, store_task_path(task), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true }))
              if task.overdue?
@@ -27,7 +27,7 @@
              end
            end
          } %>
-      <% t.cell(:status) { |task|
+      <%= t.cell(:status) { |task|
            variant = case task.status
                      when "not_started" then :neutral
                      when "in_progress" then :info
@@ -36,10 +36,10 @@
                      end
            status_chip(task.status_label, variant)
          } %>
-      <% t.cell(:assigned_to_id) { |task| task.assigned_to&.name || "—" } %>
-      <% t.cell(:due_date) { |task| task.due_date ? l(task.due_date, format: :short) : "—" } %>
-      <% t.cell(:created_at) { |task| local_time(task.created_at, format: :short) } %>
-      <% t.cell(:actions) { |task|
+      <%= t.cell(:assigned_to_id) { |task| task.assigned_to&.name || "—" } %>
+      <%= t.cell(:due_date) { |task| task.due_date ? l(task.due_date, format: :short) : "—" } %>
+      <%= t.cell(:created_at) { |task| local_time(task.created_at, format: :short) } %>
+      <%= t.cell(:actions) { |task|
            link_to("Edit", edit_store_task_path(task), class: "text-xs font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true })
          } %>
     <% end %>

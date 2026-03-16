@@ -20,12 +20,12 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @receipt_templates, pagy: @pagy,
                empty_message: "No receipt templates yet. Add one to get started." do |t| %>
-      <% t.cell(:name) { |template| link_to template.name, admin_receipt_template_path(template), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
-      <% t.cell(:paper_width_mm) { |template| ReceiptTemplate::PAPER_WIDTHS.dig(template.paper_width_mm, :label) || "#{template.paper_width_mm} mm" } %>
-      <% t.cell(:chars_per_line) { |template| template.chars_per_line } %>
-      <% t.cell(:active) { |template| template.active? ? status_chip("Active", :success) : status_chip("Inactive", :neutral) } %>
-      <% t.cell(:created_at) { |template| local_time(template.created_at, format: :short) } %>
-      <% t.cell(:actions) { |template|
+      <%= t.cell(:name) { |template| link_to template.name, admin_receipt_template_path(template), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <%= t.cell(:paper_width_mm) { |template| ReceiptTemplate::PAPER_WIDTHS.dig(template.paper_width_mm, :label) || "#{template.paper_width_mm} mm" } %>
+      <%= t.cell(:chars_per_line) { |template| template.chars_per_line } %>
+      <%= t.cell(:active) { |template| template.active? ? status_chip("Active", :success) : status_chip("Inactive", :neutral) } %>
+      <%= t.cell(:created_at) { |template| local_time(template.created_at, format: :short) } %>
+      <%= t.cell(:actions) { |template|
            capture do
              concat(button_to("Activate", activate_admin_receipt_template_path(template), method: :patch, class: "text-xs font-medium text-green-600 dark:text-green-400 hover:opacity-80")) unless template.active?
              concat(" ")

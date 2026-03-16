@@ -6,9 +6,9 @@
         t.cell(:name) { |p| link_to p.name, product_path(p), ... }
       end
 %>
-<% config = local_assigns[:config] || @filter_config %>
+<% config = local_assigns[:config] %>
 <% records = local_assigns[:records] %>
-<% pagy_obj = local_assigns[:pagy] || @pagy %>
+<% pagy_obj = local_assigns[:pagy] %>
 <% empty_message = local_assigns[:empty_message] || "No records found." %>
 <% turbo_frame = config.resource_name + "_table" %>
 
@@ -101,5 +101,5 @@
     <p class="mt-2 text-sm text-muted"><%= empty_message %></p>
   <% end %>
 
-  <%= render "shared/pagy_nav" %>
+  <%= render "shared/pagy_nav", pagy: pagy_obj %>
 <% end %>

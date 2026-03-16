@@ -19,14 +19,14 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @tax_codes, pagy: @pagy,
                empty_message: "No tax codes yet. Add one to get started." do |t| %>
-      <% t.cell(:code) { |tc| link_to tc.code, admin_tax_code_path(tc), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
-      <% t.cell(:name) { |tc| tc.name } %>
-      <% t.cell(:rate) { |tc| number_to_percentage(tc.rate * 100, precision: 2) } %>
-      <% t.cell(:exemption_type) { |tc| tc.exemption_type.presence || "—" } %>
-      <% t.cell(:province_code) { |tc| tc.province_code.presence || "—" } %>
-      <% t.cell(:created_at) { |tc| local_time(tc.created_at, format: :short) } %>
-      <% t.cell(:updated_at) { |tc| local_time(tc.updated_at, format: :short) } %>
-      <% t.cell(:actions) { |tc| link_to("Edit", edit_admin_tax_code_path(tc), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
+      <%= t.cell(:code) { |tc| link_to tc.code, admin_tax_code_path(tc), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <%= t.cell(:name) { |tc| tc.name } %>
+      <%= t.cell(:rate) { |tc| number_to_percentage(tc.rate * 100, precision: 2) } %>
+      <%= t.cell(:exemption_type) { |tc| tc.exemption_type.presence || "—" } %>
+      <%= t.cell(:province_code) { |tc| tc.province_code.presence || "—" } %>
+      <%= t.cell(:created_at) { |tc| local_time(tc.created_at, format: :short) } %>
+      <%= t.cell(:updated_at) { |tc| local_time(tc.updated_at, format: :short) } %>
+      <%= t.cell(:actions) { |tc| link_to("Edit", edit_admin_tax_code_path(tc), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>
 </div>

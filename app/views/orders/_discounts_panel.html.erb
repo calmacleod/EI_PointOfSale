@@ -31,7 +31,7 @@
       <% total_units = discounts.sum(&:applied_quantity) %>
       <% total_excluded = discounts.sum(&:excluded_quantity) %>
       <% total_quantity = discounts.sum { |d| d.order_line.quantity } %>
-      
+
       <div class="flex items-start justify-between rounded-md border border-theme bg-surface px-3 py-1.5 mb-1.5 text-xs gap-2">
         <div class="flex flex-col min-w-0">
           <div class="flex items-center gap-1.5 min-w-0">

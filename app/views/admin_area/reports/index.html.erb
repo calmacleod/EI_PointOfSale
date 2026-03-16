@@ -37,12 +37,12 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @reports, pagy: @pagy,
                empty_message: "No reports match your filters. Generate one from the templates above." do |t| %>
-      <% t.cell(:title) { |report| link_to report.title.truncate(50), admin_report_path(report), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
-      <% t.cell(:report_type) { |report| report.template&.title || report.report_type.titleize } %>
-      <% t.cell(:status) { |report| render_report_status_badge(report) } %>
-      <% t.cell(:generated_by) { |report| report.generated_by.name || report.generated_by.email_address } %>
-      <% t.cell(:created_at) { |report| time_tag report.created_at, report.created_at.strftime("%b %d, %Y %l:%M %p") } %>
-      <% t.cell(:actions) { |report| link_to("View", admin_report_path(report), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
+      <%= t.cell(:title) { |report| link_to report.title.truncate(50), admin_report_path(report), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <%= t.cell(:report_type) { |report| report.template&.title || report.report_type.titleize } %>
+      <%= t.cell(:status) { |report| render_report_status_badge(report) } %>
+      <%= t.cell(:generated_by) { |report| report.generated_by.name || report.generated_by.email_address } %>
+      <%= t.cell(:created_at) { |report| time_tag report.created_at, report.created_at.strftime("%b %d, %Y %l:%M %p") } %>
+      <%= t.cell(:actions) { |report| link_to("View", admin_report_path(report), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>
 </div>

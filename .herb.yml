@@ -35,7 +35,9 @@ linter:
   # exclude:
   #   - 'app/views/admin/**/*'
 
-  # rules:
+  rules:
+    erb-no-duplicate-branch-elements:
+      enabled: false
   #   erb-no-extra-newline:
   #     enabled: false
   #

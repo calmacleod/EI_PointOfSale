@@ -20,13 +20,13 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @sessions, pagy: @pagy,
                empty_message: "No cash drawer sessions yet." do |t| %>
-      <% t.cell(:opened_at) { |sess| local_time(sess.opened_at, format: :short) } %>
-      <% t.cell(:opened_by) { |sess| content_tag(:span, sess.opened_by.name.presence || sess.opened_by.email_address, class: "text-muted") } %>
-      <% t.cell(:closed_at) { |sess| sess.closed? ? local_time(sess.closed_at, format: :short) : status_chip("Open", :success) } %>
-      <% t.cell(:closed_by) { |sess| sess.closed_by ? content_tag(:span, sess.closed_by.name.presence || sess.closed_by.email_address, class: "text-muted") : "—" } %>
-      <% t.cell(:opening_total_cents) { |sess| content_tag(:span, number_to_currency(sess.opening_total), class: "tabular-nums") } %>
-      <% t.cell(:closing_total_cents) { |sess| content_tag(:span, sess.closed? ? number_to_currency(sess.closing_total) : "—", class: "tabular-nums") } %>
-      <% t.cell(:diff) { |sess|
+      <%= t.cell(:opened_at) { |sess| local_time(sess.opened_at, format: :short) } %>
+      <%= t.cell(:opened_by) { |sess| content_tag(:span, sess.opened_by.name.presence || sess.opened_by.email_address, class: "text-muted") } %>
+      <%= t.cell(:closed_at) { |sess| sess.closed? ? local_time(sess.closed_at, format: :short) : status_chip("Open", :success) } %>
+      <%= t.cell(:closed_by) { |sess| sess.closed_by ? content_tag(:span, sess.closed_by.name.presence || sess.closed_by.email_address, class: "text-muted") : "—" } %>
+      <%= t.cell(:opening_total_cents) { |sess| content_tag(:span, number_to_currency(sess.opening_total), class: "tabular-nums") } %>
+      <%= t.cell(:closing_total_cents) { |sess| content_tag(:span, sess.closed? ? number_to_currency(sess.closing_total) : "—", class: "tabular-nums") } %>
+      <%= t.cell(:diff) { |sess|
            if sess.closed?
              color = sess.discrepancy_cents == 0 ? "text-body" : (sess.discrepancy_cents > 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400")
              content_tag(:span, number_to_currency(sess.discrepancy), class: "font-medium tabular-nums #{color}")
@@ -34,7 +34,7 @@
              "—"
            end
          } %>
-      <% t.cell(:actions) { |sess| link_to("View", session_detail_cash_drawer_path(sess), class: "text-xs font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
+      <%= t.cell(:actions) { |sess| link_to("View", session_detail_cash_drawer_path(sess), class: "text-xs font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>
 </div>

@@ -19,16 +19,16 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @customers, pagy: @pagy,
                empty_message: "No customers yet. Add one to get started." do |t| %>
-      <% t.cell(:name) { |customer| can?(:read, customer) ? link_to(customer.name, customer_path(customer), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true }) : customer.name } %>
-      <% t.cell(:member_number) { |customer| customer.member_number.presence || "—" } %>
-      <% t.cell(:phone) { |customer| customer.phone.presence || "—" } %>
-      <% t.cell(:email) { |customer| customer.email.presence || "—" } %>
-      <% t.cell(:city) { |customer| customer.city.presence || "—" } %>
-      <% t.cell(:province) { |customer| customer.province.presence || "—" } %>
-      <% t.cell(:active) { |customer| customer.active? ? "Active" : "Inactive" } %>
-      <% t.cell(:created_at) { |customer| local_time(customer.created_at, format: :short) } %>
-      <% t.cell(:updated_at) { |customer| local_time(customer.updated_at, format: :short) } %>
-      <% t.cell(:actions) { |customer| can?(:update, customer) ? link_to("Edit", edit_customer_path(customer), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) : nil } %>
+      <%= t.cell(:name) { |customer| can?(:read, customer) ? link_to(customer.name, customer_path(customer), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true }) : customer.name } %>
+      <%= t.cell(:member_number) { |customer| customer.member_number.presence || "—" } %>
+      <%= t.cell(:phone) { |customer| customer.phone.presence || "—" } %>
+      <%= t.cell(:email) { |customer| customer.email.presence || "—" } %>
+      <%= t.cell(:city) { |customer| customer.city.presence || "—" } %>
+      <%= t.cell(:province) { |customer| customer.province.presence || "—" } %>
+      <%= t.cell(:active) { |customer| customer.active? ? "Active" : "Inactive" } %>
+      <%= t.cell(:created_at) { |customer| local_time(customer.created_at, format: :short) } %>
+      <%= t.cell(:updated_at) { |customer| local_time(customer.updated_at, format: :short) } %>
+      <%= t.cell(:actions) { |customer| can?(:update, customer) ? link_to("Edit", edit_customer_path(customer), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) : nil } %>
     <% end %>
   </div>
 </div>

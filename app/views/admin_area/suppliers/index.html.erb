@@ -19,11 +19,11 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @suppliers, pagy: @pagy,
                empty_message: "No suppliers yet. Add one to get started." do |t| %>
-      <% t.cell(:name) { |supplier| link_to supplier.name, admin_supplier_path(supplier), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
-      <% t.cell(:phone) { |supplier| supplier.phone.presence || "—" } %>
-      <% t.cell(:created_at) { |supplier| local_time(supplier.created_at, format: :short) } %>
-      <% t.cell(:updated_at) { |supplier| local_time(supplier.updated_at, format: :short) } %>
-      <% t.cell(:actions) { |supplier| link_to("Edit", edit_admin_supplier_path(supplier), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
+      <%= t.cell(:name) { |supplier| link_to supplier.name, admin_supplier_path(supplier), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <%= t.cell(:phone) { |supplier| supplier.phone.presence || "—" } %>
+      <%= t.cell(:created_at) { |supplier| local_time(supplier.created_at, format: :short) } %>
+      <%= t.cell(:updated_at) { |supplier| local_time(supplier.updated_at, format: :short) } %>
+      <%= t.cell(:actions) { |supplier| link_to("Edit", edit_admin_supplier_path(supplier), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>
 </div>

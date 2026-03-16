@@ -26,11 +26,11 @@
           <td class="px-4 py-2 text-sm text-body align-top">
             <div class="flex flex-col gap-1">
               <span><%= line.name %></span>
-              
+
               <%# Per-line discounts with unit breakdown %>
               <% line.order_line_discounts.each do |line_discount| %>
                 <% next if line_discount.auto_applied? && !order.draft? && line_discount.fully_excluded? %>
-                
+
                 <div class="flex flex-col gap-1 mt-1 p-1.5 rounded bg-surface-alt border border-theme">
                   <div class="flex items-center justify-between text-xs">
                     <span class="font-medium text-body"><%= line_discount.name %></span>
@@ -47,7 +47,7 @@
                       <% end %>
                     </div>
                   </div>
-                  
+
                   <% if line_discount.auto_applied? && order.draft? %>
                     <div class="flex flex-wrap gap-1 mt-1">
                       <% line.quantity.times do |i| %>
@@ -81,7 +81,7 @@
                   <% end %>
                 </div>
               <% end %>
-              
+
               <% if line.sellable_type == "GiftCertificate" %>
                 <span class="inline-block rounded bg-purple-100 px-1.5 py-0.5 font-mono text-[10px] text-purple-700 w-fit mt-1"><%= line.code %></span>
                 <span class="text-[10px] text-muted italic">no tax</span>

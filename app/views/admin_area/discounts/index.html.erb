@@ -19,13 +19,13 @@
 
     <%= render "shared/data_table", config: @filter_config, records: @discounts, pagy: @pagy,
                empty_message: "No discounts yet. Add one to get started." do |t| %>
-      <% t.cell(:name) { |d| link_to d.name, admin_discount_path(d), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
-      <% t.cell(:discount_type) { |d| d.discount_type.humanize } %>
-      <% t.cell(:value) { |d| d.display_value } %>
-      <% t.cell(:active) { |d| content_tag(:span, d.active? ? "Yes" : "No", class: d.active? ? "text-green-600" : "text-muted") } %>
-      <% t.cell(:starts_at) { |d| d.starts_at ? local_time(d.starts_at, format: :short) : "—" } %>
-      <% t.cell(:ends_at)   { |d| d.ends_at   ? local_time(d.ends_at,   format: :short) : "—" } %>
-      <% t.cell(:actions) { |d| link_to("Edit", edit_admin_discount_path(d), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
+      <%= t.cell(:name) { |d| link_to d.name, admin_discount_path(d), class: "font-medium text-accent hover:underline", data: { turbo_frame: "_top", turbo_prefetch: true } } %>
+      <%= t.cell(:discount_type) { |d| d.discount_type.humanize } %>
+      <%= t.cell(:value) { |d| d.display_value } %>
+      <%= t.cell(:active) { |d| content_tag(:span, d.active? ? "Yes" : "No", class: d.active? ? "text-green-600" : "text-muted") } %>
+      <%= t.cell(:starts_at) { |d| d.starts_at ? local_time(d.starts_at, format: :short) : "—" } %>
+      <%= t.cell(:ends_at)   { |d| d.ends_at   ? local_time(d.ends_at,   format: :short) : "—" } %>
+      <%= t.cell(:actions) { |d| link_to("Edit", edit_admin_discount_path(d), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>
 </div>

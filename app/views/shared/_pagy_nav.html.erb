@@ -1,14 +1,15 @@
-<% if @pagy.present? %>
+<% pagy = local_assigns[:pagy] %>
+<% if pagy.present? %>
   <div class="mt-2 flex w-full flex-wrap items-center justify-between gap-2">
     <div class="flex items-center gap-3">
-      <%= render "shared/pagy_limit_selector" %>
+      <%= render "shared/pagy_limit_selector", pagy: pagy %>
       <span class="text-xs text-muted">
-        <%= @pagy.from %>–<%= @pagy.to %> of <%= number_with_delimiter(@pagy.count) %>
+        <%= pagy.from %>–<%= pagy.to %> of <%= number_with_delimiter(pagy.count) %>
       </span>
     </div>
-    <% if @pagy.pages > 1 %>
+    <% if pagy.pages > 1 %>
       <nav aria-label="Pagination" class="flex flex-wrap justify-end gap-2 pagy-nav">
-        <%== @pagy.series_nav %>
+        <%== pagy.series_nav %>
       </nav>
     <% else %>
       <span></span>
