@@ -1,7 +1,7 @@
 # Run using bin/ci
 
 CI.run do
-  step "Setup", "bin/setup --skip-server"
+  step "Setup", "bin/setup --skip-server --skip-docker --skip-seed"
 
   step "Style: Ruby", "bin/rubocop"
   step "Style: ERB", "bundle exec herb analyze app"
