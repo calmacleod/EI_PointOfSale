@@ -3,6 +3,15 @@
 require "test_helper"
 
 class DatabaseBackupJobTest < ActiveJob::TestCase
+  setup do
+    FileUtils.mkdir_p(Rails.root.join("tmp"))
+    Dir.glob(Rails.root.join("tmp", "db_backup_*")).each { |f| FileUtils.rm_f(f) }
+  end
+
+  teardown do
+    Dir.glob(Rails.root.join("tmp", "db_backup_*")).each { |f| FileUtils.rm_f(f) }
+  end
+
   test "perform creates dump, uploads to drive, and cleans up temp files" do
     upload_called = false
     prune_called = false

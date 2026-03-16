@@ -4,6 +4,15 @@ require "test_helper"
 require "aws-sdk-s3"
 
 class GarageBackupJobTest < ActiveJob::TestCase
+  setup do
+    FileUtils.mkdir_p(Rails.root.join("tmp"))
+    Dir.glob(Rails.root.join("tmp", "garage_backup_*")).each { |f| FileUtils.rm_f(f) }
+  end
+
+  teardown do
+    Dir.glob(Rails.root.join("tmp", "garage_backup_*")).each { |f| FileUtils.rm_f(f) }
+  end
+
   test "perform creates archive, uploads to drive, and cleans up temp file" do
     upload_called = false
     prune_called = false
