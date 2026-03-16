@@ -66,6 +66,19 @@ class Orders::ProcessRefundTest < ActiveSupport::TestCase
     assert_includes result.errors.join, "Only completed orders"
   end
 
+  test "does not update last_restocked_at when restocking via refund" do
+    product = @line.sellable
+    original_time = 1.week.ago
+    product.update_column(:last_restocked_at, original_time)
+
+    line_params = [
+      { order_line_id: @line.id, quantity: 1, restock: true }
+    ]
+
+    Orders::ProcessRefund.call(order: @order, actor: @admin, line_params: line_params)
+    assert_equal original_time, product.reload.last_restocked_at
+  end
+
   test "records a refund event" do
     line_params = [
       { order_line_id: @line.id, quantity: 1, restock: false }

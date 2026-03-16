@@ -23,6 +23,8 @@ class Product < ApplicationRecord
   validates :name, presence: true
   validates :code, presence: true, uniqueness: true
 
+  before_save :capture_restock_timestamp
+
   # Barcode scan lookup — uses the unique index on `code`.
   def self.find_by_exact_code(code)
     kept.find_by(code: code.to_s.strip)
@@ -31,4 +33,12 @@ class Product < ApplicationRecord
   def sellable_price
     selling_price || 0
   end
+
+  private
+
+    def capture_restock_timestamp
+      if stock_level_changed? && stock_level > stock_level_was.to_i
+        self.last_restocked_at = Time.current
+      end
+    end
 end

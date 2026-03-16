@@ -121,6 +121,38 @@ module Importers
       assert_equal hst, Product.find_by(code: "TAX-2").tax_code, "Tax_Applied 2 should map to HST"
     end
 
+    test "execute sets last_restocked_at on new products" do
+      importer = Importers::StockImporter.new(@data_import)
+
+      freeze_time do
+        importer.execute(sample_csv)
+        product = Product.find_by(code: "IMP-001")
+        assert_equal Time.current, product.last_restocked_at
+      end
+    end
+
+    test "execute updates last_restocked_at when stock increases on existing product" do
+      product = Product.create!(code: "IMP-001", name: "Old Name", selling_price: 5.99, stock_level: 1)
+      original_time = 2.weeks.ago
+      product.update_column(:last_restocked_at, original_time)
+
+      freeze_time do
+        importer = Importers::StockImporter.new(@data_import)
+        importer.execute(sample_csv)  # CSV has stock_level: 5 for IMP-001
+        assert_equal Time.current, product.reload.last_restocked_at
+      end
+    end
+
+    test "execute does not update last_restocked_at when stock decreases on existing product" do
+      product = Product.create!(code: "IMP-001", name: "Old Name", selling_price: 5.99, stock_level: 100)
+      original_time = 2.weeks.ago
+      product.update_column(:last_restocked_at, original_time)
+
+      importer = Importers::StockImporter.new(@data_import)
+      importer.execute(sample_csv)  # CSV has stock_level: 5 for IMP-001
+      assert_equal original_time, product.reload.last_restocked_at
+    end
+
     test "execute handles re-import (upsert)" do
       Product.create!(code: "IMP-001", name: "Old Name", selling_price: 5.99)
 

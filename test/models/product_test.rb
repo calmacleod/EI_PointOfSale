@@ -61,6 +61,34 @@ class ProductTest < ActiveSupport::TestCase
     assert_equal product, Product.find_by_exact_code("  DS-MAT-RED  ")
   end
 
+  test "sets last_restocked_at when stock_level increases" do
+    product = products(:dragon_shield_red)
+    product.update!(last_restocked_at: nil)
+
+    freeze_time do
+      product.update!(stock_level: product.stock_level + 10)
+      assert_equal Time.current, product.reload.last_restocked_at
+    end
+  end
+
+  test "does not change last_restocked_at when stock_level decreases" do
+    product = products(:dragon_shield_red)
+    original_time = 1.week.ago
+    product.update!(last_restocked_at: original_time)
+
+    product.update!(stock_level: product.stock_level - 1)
+    assert_equal original_time, product.reload.last_restocked_at
+  end
+
+  test "does not change last_restocked_at when stock_level is unchanged" do
+    product = products(:dragon_shield_red)
+    original_time = 1.week.ago
+    product.update!(last_restocked_at: original_time)
+
+    product.update!(name: "Updated Name")
+    assert_equal original_time, product.reload.last_restocked_at
+  end
+
   test "belongs to optional product_group" do
     product = products(:dragon_shield_red)
     assert_nil product.product_group

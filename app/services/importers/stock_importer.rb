@@ -161,6 +161,10 @@ module Importers
           end
         end
 
+        if !was_new && attrs[:stock_level].present? && attrs[:stock_level] > product.stock_level.to_i
+          attrs[:last_restocked_at] = Time.current
+        end
+
         product.assign_attributes(attrs)
         product.save!
 
