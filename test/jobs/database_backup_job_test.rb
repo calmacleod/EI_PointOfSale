@@ -32,10 +32,12 @@ class DatabaseBackupJobTest < ActiveJob::TestCase
       true
     }
 
-    GoogleDriveService.stub(:upload, upload_stub) do
-      GoogleDriveService.stub(:prune, prune_stub) do
-        DatabaseBackupJob.new.stub(:system, system_stub) do |job|
-          job.perform_now
+    travel_to Time.zone.parse("2025-01-01 02:00:00") do
+      GoogleDriveService.stub(:upload, upload_stub) do
+        GoogleDriveService.stub(:prune, prune_stub) do
+          DatabaseBackupJob.new.stub(:system, system_stub) do |job|
+            job.perform_now
+          end
         end
       end
     end
@@ -61,10 +63,12 @@ class DatabaseBackupJobTest < ActiveJob::TestCase
       true
     }
 
-    GoogleDriveService.stub(:upload, upload_stub) do
-      DatabaseBackupJob.new.stub(:system, system_stub) do |job|
-        assert_raises(RuntimeError) do
-          job.perform_now
+    travel_to Time.zone.parse("2025-01-01 03:00:00") do
+      GoogleDriveService.stub(:upload, upload_stub) do
+        DatabaseBackupJob.new.stub(:system, system_stub) do |job|
+          assert_raises(RuntimeError) do
+            job.perform_now
+          end
         end
       end
     end

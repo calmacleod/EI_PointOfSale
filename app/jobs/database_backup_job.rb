@@ -46,7 +46,8 @@ class DatabaseBackupJob < ApplicationJob
       success = system(env, *cmd)
       raise "pg_dump failed" unless success
 
-      Rails.logger.info { "[DatabaseBackupJob] Dump created: #{dump_path} (#{File.size(dump_path)} bytes)" }
+      size = File.exist?(dump_path) ? File.size(dump_path) : "unknown"
+      Rails.logger.info { "[DatabaseBackupJob] Dump created: #{dump_path} (#{size} bytes)" }
     end
 
     def compress(source, destination)
