@@ -1,0 +1,2 @@
+# Order line discounts are created in tests as needed to avoid unique constraint conflicts.
+# The constraint idx_line_discounts_uniq_auto enforces uniqueness on (order_line_id, source_discount_id).

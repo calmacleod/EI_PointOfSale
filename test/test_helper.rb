@@ -12,6 +12,7 @@ end
 Minitest::Reporters.use!(reporters, ENV, Minitest.backtrace_filter)
 
 require_relative "test_helpers/session_test_helper"
+require_relative "test_helpers/turbo_stream_test_helper"
 
 module ActiveSupport
   class TestCase
