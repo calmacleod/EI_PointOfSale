@@ -53,11 +53,10 @@
       New
     <% end %>
     <%# Show total held count from database for the badge, but we only display current held order in tabs %>
-    <% held_count = Order.held.count %>
-    <% if held_count > 0 %>
+    <% if @held_count > 0 %>
       <%= link_to held_orders_path, class: "ml-auto inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body" do %>
         Held
-        <span class="rounded-full bg-yellow-100 px-1.5 py-0.5 text-[10px] font-bold text-yellow-800"><%= held_count %></span>
+        <span class="rounded-full bg-yellow-100 px-1.5 py-0.5 text-[10px] font-bold text-yellow-800"><%= @held_count %></span>
       <% end %>
     <% end %>
   </div>

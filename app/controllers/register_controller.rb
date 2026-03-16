@@ -40,6 +40,7 @@ class RegisterController < ApplicationController
     )
 
     @active_orders = (draft_orders.to_a + held_orders.to_a).sort_by(&:created_at).reverse
+    @held_count = Order.held.count
 
     # NOTE: We do NOT load all customers here - the customer search uses AJAX via search_customers_path
     # This prevents loading thousands of customers into memory on every register page load
