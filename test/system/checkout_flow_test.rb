@@ -25,10 +25,10 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     fill_in_payment(method: "cash", amount: order.total, tendered: order.total + 5)
 
     # Complete the order
-    click_button "Complete Order"
+    click_button "Complete"
 
-    # Verify redirect to completed order
-    assert_current_path order_path(Order.completed.last)
+    # Verify redirect to this order's show page
+    assert_current_path order_path(order), wait: 5
     assert_text "Order completed"
   end
 
@@ -56,7 +56,7 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     fill_in_code_lookup("DS-MAT-RED")
 
     # Hold the order
-    click_button "Hold Order"
+    click_button "Hold"
     assert_current_path register_path
 
     # Visit held orders
@@ -67,7 +67,9 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     order = Order.held.last
     visit register_path(order_id: order.id)
 
-    click_button "Resume"
+    click_button "Resume Order"
+    # Wait for navigation to complete — after resume the action buttons change to Hold/Complete
+    assert_selector "button", text: "Hold", wait: 5
     assert order.reload.draft?
   end
 
@@ -75,18 +77,23 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    # Search for customer via customer panel
+    # Open customer search modal via the panel button
     within "#order_customer_panel" do
-      fill_in placeholder: /search/i, with: "Acme"
-      find("button[type='submit']").click
+      click_button "Search & assign customer"
+    end
+
+    # Fill in search in the now-visible modal
+    assert_selector "#customer_search_modal:not(.hidden)", wait: 5
+    within "#customer_search_modal" do
+      fill_in placeholder: /search by name/i, with: "Acme"
     end
 
     # Click the customer in results
-    assert_text "Acme Corp"
+    assert_text "Acme Corp", wait: 5
     click_on "Acme Corp"
 
     within "#order_customer_panel" do
-      assert_text "Acme Corp"
+      assert_text "Acme Corp", wait: 5
     end
   end
 
@@ -94,17 +101,16 @@ class CheckoutFlowTest < ApplicationSystemTestCase
 
     def fill_in_code_lookup(code)
       fill_in "code", with: code
-      find("input[name='code']").send_keys(:return)
-      # Wait for Turbo stream to update line items
-      assert_selector "#order_line_items", wait: 5
+      click_button "Add"
+      assert_field "code", with: "", wait: 5
     end
 
     def fill_in_payment(method:, amount:, tendered: nil)
       within "#order_payments_panel" do
-        select method.humanize, from: "order_payment[payment_method]"
-        fill_in "order_payment[amount]", with: amount.to_s
-        fill_in "order_payment[amount_tendered]", with: tendered.to_s if tendered
-        find("button[type='submit']").click
+        find("button[data-method='#{method}']").click
+        find("[name='order_payment[amount]']").set(amount.to_s)
+        find("[name='order_payment[amount_tendered]']").set(tendered.to_s) if tendered
+        click_button "Record Payment"
       end
       assert_selector "#order_payments_panel", wait: 5
     end

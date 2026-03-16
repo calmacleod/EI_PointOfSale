@@ -30,7 +30,7 @@ bin/rails test:system
 # Linting
 bin/rubocop              # Ruby/Rails
 bin/rubocop -a           # Auto-fix safe violations
-bundle exec herb analyze app --no-log-file  # ERB analysis
+bundle exec herb analyze app  # ERB analysis
 npm run herb:lint        # ERB lint
 
 # Security

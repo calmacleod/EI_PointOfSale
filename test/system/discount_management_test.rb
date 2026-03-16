@@ -33,9 +33,9 @@ class DiscountManagementTest < ApplicationSystemTestCase
     end
     assert order.reload.total < original_total
 
-    # Remove the discount
+    # Remove the discount (delete button is an SVG icon, find it via the discount's row)
     within "#order_discounts_panel" do
-      click_button "Remove"
+      find("div.flex.items-start.justify-between", text: /Manager 10%/).find("button[type='submit']").click
     end
 
     within "#order_discounts_panel" do
@@ -75,7 +75,7 @@ class DiscountManagementTest < ApplicationSystemTestCase
 
     def fill_in_code_lookup(code)
       fill_in "code", with: code
-      find("input[name='code']").send_keys(:return)
-      assert_selector "#order_line_items", wait: 5
+      click_button "Add"
+      assert_field "code", with: "", wait: 5
     end
 end

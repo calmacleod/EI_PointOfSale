@@ -66,12 +66,12 @@ jobs:
         run: bin/rubocop -f github
 
       - name: Analyze HTML+ERB templates
-        run: bundle exec herb analyze app --no-log-file
+        run: bundle exec herb analyze app
 
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "npm"
 
       - name: Lint HTML+ERB templates
