@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "google/apis/drive_v3"
 
 module AdminArea
   class BackupsControllerTest < ActionDispatch::IntegrationTest
