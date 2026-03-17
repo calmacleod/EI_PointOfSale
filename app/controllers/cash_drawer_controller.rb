@@ -11,6 +11,8 @@ class CashDrawerController < ApplicationController
   # GET /cash_drawer
   def show
     @session = CashDrawerSession.current
+    @pending_reconciliation = @session.nil? ? CashDrawerSession.pending_reconciliation : nil
+    @recent_sessions = CashDrawerSession.closed.order(closed_at: :desc).limit(5)
   end
 
   # GET /cash_drawer/open
@@ -70,6 +72,7 @@ class CashDrawerController < ApplicationController
       closing_total_cents: total_cents,
       notes: [ @session.notes, params[:notes] ].compact_blank.join("\n---\n")
     )
+    @session.discrepancy_cents = @session.compute_discrepancy_cents
 
     if @session.save
       redirect_to reconcile_cash_drawer_path, notice: "Cash drawer closed. Now reconcile the payment terminal."

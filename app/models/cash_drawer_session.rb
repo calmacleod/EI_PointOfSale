@@ -97,10 +97,16 @@ class CashDrawerSession < ApplicationRecord
     expected_closing_total_cents / 100.0
   end
 
-  def discrepancy_cents
+  def compute_discrepancy_cents
     return nil unless closed?
 
     (closing_total_cents || 0) - expected_closing_total_cents
+  end
+
+  def discrepancy_cents
+    return nil unless closed?
+
+    self[:discrepancy_cents] || compute_discrepancy_cents
   end
 
   def discrepancy
