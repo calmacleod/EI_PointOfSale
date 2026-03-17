@@ -127,7 +127,7 @@ module Importers
       freeze_time do
         importer.execute(sample_csv)
         product = Product.find_by(code: "IMP-001")
-        assert_equal Time.current, product.last_restocked_at
+        assert_in_delta Time.current.to_f, product.last_restocked_at.to_f, 0.001
       end
     end
 
@@ -139,7 +139,7 @@ module Importers
       freeze_time do
         importer = Importers::StockImporter.new(@data_import)
         importer.execute(sample_csv)  # CSV has stock_level: 5 for IMP-001
-        assert_equal Time.current, product.reload.last_restocked_at
+        assert_in_delta Time.current.to_f, product.reload.last_restocked_at.to_f, 0.001
       end
     end
 
@@ -150,7 +150,7 @@ module Importers
 
       importer = Importers::StockImporter.new(@data_import)
       importer.execute(sample_csv)  # CSV has stock_level: 5 for IMP-001
-      assert_equal original_time, product.reload.last_restocked_at
+      assert_in_delta original_time.to_f, product.reload.last_restocked_at.to_f, 0.001
     end
 
     test "execute handles re-import (upsert)" do

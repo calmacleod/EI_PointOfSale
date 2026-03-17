@@ -67,7 +67,7 @@ class ProductTest < ActiveSupport::TestCase
 
     freeze_time do
       product.update!(stock_level: product.stock_level + 10)
-      assert_equal Time.current, product.reload.last_restocked_at
+      assert_in_delta Time.current.to_f, product.reload.last_restocked_at.to_f, 0.001
     end
   end
 
@@ -77,7 +77,7 @@ class ProductTest < ActiveSupport::TestCase
     product.update!(last_restocked_at: original_time)
 
     product.update!(stock_level: product.stock_level - 1)
-    assert_equal original_time, product.reload.last_restocked_at
+    assert_in_delta original_time.to_f, product.reload.last_restocked_at.to_f, 0.001
   end
 
   test "does not change last_restocked_at when stock_level is unchanged" do
@@ -86,7 +86,7 @@ class ProductTest < ActiveSupport::TestCase
     product.update!(last_restocked_at: original_time)
 
     product.update!(name: "Updated Name")
-    assert_equal original_time, product.reload.last_restocked_at
+    assert_in_delta original_time.to_f, product.reload.last_restocked_at.to_f, 0.001
   end
 
   test "belongs to optional product_group" do

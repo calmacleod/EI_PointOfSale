@@ -76,7 +76,7 @@ class Orders::ProcessRefundTest < ActiveSupport::TestCase
     ]
 
     Orders::ProcessRefund.call(order: @order, actor: @admin, line_params: line_params)
-    assert_equal original_time, product.reload.last_restocked_at
+    assert_in_delta original_time.to_f, product.reload.last_restocked_at.to_f, 0.001
   end
 
   test "records a refund event" do

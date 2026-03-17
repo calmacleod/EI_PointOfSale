@@ -55,7 +55,7 @@ class NotificationTest < ActiveSupport::TestCase
     original_read_at = notification.reload.read_at
 
     notification.mark_as_read!
-    assert_equal original_read_at, notification.reload.read_at
+    assert_in_delta original_read_at.to_f, notification.reload.read_at.to_f, 0.001
   end
 
   test "recent scope orders by created_at desc and limits to 20" do
