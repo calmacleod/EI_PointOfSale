@@ -78,18 +78,8 @@
         <%# Precompute renderers once so we avoid a hash lookup per cell per row %>
         <% column_renderers = config.columns.map { |col| [col, table.renderer_for(col.key)] } %>
         <% actions_renderer = table.renderer_for(:actions) %>
-        <% records.each do |record| %>
-          <tr>
-            <% column_renderers.each do |col, renderer| %>
-              <td class="whitespace-nowrap px-3 py-1.5 text-sm text-body" data-column="<%= col.key %>">
-                <%= renderer.call(record) if renderer %>
-              </td>
-            <% end %>
-            <td class="px-3 py-1.5 text-right text-sm" data-column="actions">
-              <%= actions_renderer.call(record) if actions_renderer %>
-            </td>
-          </tr>
-        <% end %>
+        <%= render partial: "shared/data_table_row", collection: records,
+                   locals: { column_renderers: column_renderers, actions_renderer: actions_renderer } %>
       </tbody>
     </table>
       </div>
