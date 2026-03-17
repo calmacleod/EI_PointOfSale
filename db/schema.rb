@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_17_124234) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_17_135323) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -705,6 +705,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_124234) do
     t.integer "unread_notifications_count", default: 0, null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
+    t.check_constraint "unread_notifications_count >= 0", name: "check_unread_notifications_count_non_negative"
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

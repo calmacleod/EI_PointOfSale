@@ -28,12 +28,12 @@ class Notification < ApplicationRecord
   end
 
   def decrement_unread_count
-    user.decrement!(:unread_notifications_count)
+    user.decrement!(:unread_notifications_count) if user.unread_notifications_count > 0
   end
 
   def adjust_unread_count
     if read_at_before_last_save.nil? && read_at.present?
-      user.decrement!(:unread_notifications_count)
+      user.decrement!(:unread_notifications_count) if user.unread_notifications_count > 0
     elsif read_at_before_last_save.present? && read_at.nil?
       user.increment!(:unread_notifications_count)
     end

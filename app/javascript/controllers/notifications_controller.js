@@ -138,6 +138,14 @@ export default class extends Controller {
   }
 
   handlePopoverClick = (e) => {
+    // Handle no-URL unread notifications — data-mark-read-id avoids double-firing
+    // with Stimulus's action system since we don't use data-action here
+    const markReadEl = e.target.closest("[data-mark-read-id]")
+    if (markReadEl?.dataset.markReadId) {
+      this.markReadById(markReadEl.dataset.markReadId, { refresh: true })
+      return
+    }
+
     const target = e.target.closest("[data-action]")
     if (!target) return
 
@@ -177,7 +185,7 @@ export default class extends Controller {
     if (id) this.markReadById(id)
   }
 
-  markReadById(id) {
+  markReadById(id, { refresh = false } = {}) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
     fetch(`/notifications/${id}/mark_read`, {
       method: "PATCH",
@@ -186,6 +194,7 @@ export default class extends Controller {
     }).then(response => response.json())
       .then(data => {
         this.updateBadgeCount(data.unread_count)
+        if (refresh) this.refreshPopover()
       }).catch(() => {})
   }
 
