@@ -1,24 +1,19 @@
 # Name of your application. Used to uniquely configure containers.
 service: ei_point_of_sale
 
-# Name of the container image (use your-user/app-name on external registries).
+# Name of the container image.
+# Update to your registry path, e.g. ghcr.io/your-user/ei_point_of_sale
 image: ei_point_of_sale
 
 # Deploy to these servers.
 servers:
   web:
-    - 192.168.0.1
-  # job:
-  #   hosts:
-  #     - 192.168.0.1
-  #   cmd: bin/jobs
+    - YOUR_SERVER_IP  # Replace with your server's IP address
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
 #
 # Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
-#
-# Don't use this when deploying to multiple web servers (then you have to terminate SSL at your load balancer).
 #
 # proxy:
 #   ssl: true
@@ -26,7 +21,8 @@ servers:
 
 # Where you keep your container images.
 registry:
-  # Alternatives: hub.docker.com / registry.digitalocean.com / ghcr.io / ...
+  # Update to your registry. Examples:
+  #   ghcr.io / registry.digitalocean.com / hub.docker.com
   server: localhost:5555
 
   # Needed for authenticated registries.
@@ -40,81 +36,82 @@ registry:
 env:
   secret:
     - RAILS_MASTER_KEY
+    - DATABASE_URL           # postgres://postgres:<password>@ei_point_of_sale-db-1:5432/ei_point_of_sale_production
+    - DATABASE_PASSWORD      # Same password used by cache/queue/cable databases
+    - GARAGE_ACCESS_KEY
+    - GARAGE_SECRET_KEY
   clear:
-    # Run the Solid Queue Supervisor inside the web server's Puma process to do jobs.
-    # When you start using multiple servers, you should split out job processing to a dedicated machine.
+    # Run Solid Queue inside Puma (no separate worker process needed).
     SOLID_QUEUE_IN_PUMA: true
 
-    # Set number of processes dedicated to Solid Queue (default: 1)
-    # JOB_CONCURRENCY: 3
+    # Database connection for cache/queue/cable databases (all on the same postgres accessory).
+    # The container name ei_point_of_sale-db-1 is the Kamal internal hostname for the db accessory.
+    DATABASE_HOST: ei_point_of_sale-db-1
+    DATABASE_USERNAME: postgres
+
+    # Garage S3 endpoint (internal Docker network address of the garage accessory).
+    GARAGE_ENDPOINT: "http://ei_point_of_sale-garage-1:3900"
+
+    # Use Garage for Active Storage (set ACTIVE_STORAGE_SERVICE=railway on Railway).
+    ACTIVE_STORAGE_SERVICE: garage
 
     # Set number of cores available to the application on each server (default: 1).
     # WEB_CONCURRENCY: 2
 
-    # Match this to any external database server to configure Active Record correctly
-    # Use ei_point_of_sale-db for a db accessory server on same machine via local kamal docker network.
-    # DB_HOST: 192.168.0.2
+    # Set number of processes dedicated to Solid Queue (default: 1).
+    # JOB_CONCURRENCY: 3
 
-    # Log everything from Rails
+    # Log level
     # RAILS_LOG_LEVEL: debug
 
-# Aliases are triggered with "bin/kamal <alias>". You can overwrite arguments on invocation:
-# "bin/kamal logs -r job" will tail logs from the first server in the job section.
+# Aliases are triggered with "bin/kamal <alias>".
 aliases:
   console: app exec --interactive --reuse "bin/rails console"
   shell: app exec --interactive --reuse "bash"
   logs: app logs -f
   dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"
 
-# Use a persistent storage volume for sqlite database files and local Active Storage files.
-# Recommended to change this to a mounted volume path that is backed up off server.
+# Persistent storage volume for Active Storage files.
 volumes:
   - "ei_point_of_sale_storage:/rails/storage"
 
-# Bridge fingerprinted assets, like JS and CSS, between versions to avoid
-# hitting 404 on in-flight requests. Combines all files from new and old
-# version inside the asset_path.
+# Bridge fingerprinted assets between versions to avoid 404s on in-flight requests.
 asset_path: /rails/public/assets
-
 
 # Configure the image builder.
 builder:
   arch: amd64
 
-  # # Build image via remote server (useful for faster amd64 builds on arm64 computers)
+  # Build image via remote server (useful for faster amd64 builds on arm64 computers).
   # remote: ssh://docker@docker-builder-server
-  #
-  # # Pass arguments and secrets to the Docker build process
-  # args:
-  #   RUBY_VERSION: 3.4.5
-  # secrets:
-  #   - GITHUB_TOKEN
-  #   - RAILS_MASTER_KEY
 
-# Use a different ssh user than root
-# ssh:
-#   user: app
+# Accessory services.
+accessories:
+  db:
+    image: postgres:18
+    host: YOUR_SERVER_IP  # Replace with your server's IP address
+    port: "127.0.0.1:5432:5432"
+    env:
+      clear:
+        POSTGRES_USER: postgres
+        POSTGRES_DB: ei_point_of_sale_production
+      secret:
+        - POSTGRES_PASSWORD
+    files:
+      # Init script creates the cache, queue, and cable databases on first boot.
+      - config/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    directories:
+      - data:/var/lib/postgresql/data
 
-# Use accessory services (secrets come from .kamal/secrets).
-# accessories:
-#   db:
-#     image: mysql:8.0
-#     host: 192.168.0.2
-#     # Change to 3306 to expose port to the world instead of just local network.
-#     port: "127.0.0.1:3306:3306"
-#     env:
-#       clear:
-#         MYSQL_ROOT_HOST: '%'
-#       secret:
-#         - MYSQL_ROOT_PASSWORD
-#     files:
-#       - config/mysql/production.cnf:/etc/mysql/my.cnf
-#       - db/production.sql:/docker-entrypoint-initdb.d/setup.sql
-#     directories:
-#       - data:/var/lib/mysql
-#   redis:
-#     image: valkey/valkey:8
-#     host: 192.168.0.2
-#     port: 6379
-#     directories:
-#       - data:/data
+  garage:
+    image: dxflrs/garage:v2.2.0
+    host: YOUR_SERVER_IP  # Replace with your server's IP address
+    port:
+      - "3900:3900"   # S3 API — must be publicly accessible for presigned URLs
+      - "127.0.0.1:3901:3901"  # RPC (internal only)
+      - "127.0.0.1:3903:3903"  # Admin API (internal only)
+    files:
+      - config/garage/garage.toml:/etc/garage.toml
+    directories:
+      - meta:/var/lib/garage/meta
+      - data:/var/lib/garage/data

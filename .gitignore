@@ -50,5 +50,8 @@
 !/tmp/herb/.keep
 /tmp/herb/*.log
 
+# Kamal deployment secrets (copy from .kamal/secrets.env.example)
+/.kamal/secrets.env
+
 # Other
 .DS_Store
