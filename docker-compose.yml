@@ -31,10 +31,10 @@ services:
       - garage_meta:/var/lib/garage/meta
       - ./config/garage.toml:/etc/garage.toml:ro
     healthcheck:
-      test: ["CMD-SHELL", "garage status || exit 1"]
+      test: ["CMD", "/garage", "-c", "/etc/garage.toml", "status"]
       interval: 5s
       timeout: 3s
-      retries: 10
+      retries: 5
 
 volumes:
   postgres_data:
