@@ -22,7 +22,7 @@ Rails.application.configure do
   # config.asset_host = "http://assets.example.com"
 
   # Store uploaded files in Garage (local S3-compatible object storage).
-  config.active_storage.service = :garage
+  config.active_storage.service = :railway
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true

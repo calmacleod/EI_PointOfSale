@@ -15,3 +15,11 @@ garage:
   bucket: ei-pointofsale-<%= Rails.env %>
   endpoint: <%= ENV.fetch("GARAGE_ENDPOINT", "http://localhost:3900") %>
   force_path_style: true
+
+railway:
+  service: S3
+  access_key_id: <%= ENV.fetch("AWS_ACCESS_KEY_ID") %>
+  secret_access_key: <%= ENV.fetch("AWS_SECRET_ACCESS_KEY") %>
+  region: <%= ENV.fetch("AWS_REGION") %>
+  bucket: <%= ENV.fetch("AWS_BUCKET") %>
+  endpoint: <%= ENV.fetch("AWS_ENDPOINT") %>
