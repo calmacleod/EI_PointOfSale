@@ -25,7 +25,7 @@ module AdminArea
       @saved_queries = current_user.saved_queries.for_resource("users")
 
       @pagy, @users = filter_and_paginate(
-        @users,
+        @users.select(:id, :name, :email_address, :type, :phone, :active, :created_at, :updated_at),
         config: @filter_config
       )
     end

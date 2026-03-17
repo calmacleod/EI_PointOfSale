@@ -23,7 +23,7 @@ module AdminArea
       @saved_queries = current_user.saved_queries.for_resource("receipt_templates")
 
       @pagy, @receipt_templates = filter_and_paginate(
-        ReceiptTemplate.all,
+        ReceiptTemplate.select(:id, :name, :paper_width_mm, :chars_per_line, :active, :created_at),
         config: @filter_config
       )
     end

@@ -24,7 +24,7 @@ module AdminArea
       @saved_queries = current_user.saved_queries.for_resource("tax_codes")
 
       @pagy, @tax_codes = filter_and_paginate(
-        TaxCode.kept,
+        TaxCode.kept.select(:id, :code, :name, :rate, :exemption_type, :province_code, :created_at, :updated_at),
         config: @filter_config
       )
     end

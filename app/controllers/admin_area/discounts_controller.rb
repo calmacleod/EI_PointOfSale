@@ -28,7 +28,7 @@ module AdminArea
       @saved_queries = current_user.saved_queries.for_resource("discounts")
 
       @pagy, @discounts = filter_and_paginate(
-        Discount.kept,
+        Discount.kept.select(:id, :name, :discount_type, :value, :active, :starts_at, :ends_at),
         config: @filter_config
       )
     end

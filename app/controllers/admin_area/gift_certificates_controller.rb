@@ -33,7 +33,8 @@ module AdminArea
       @saved_queries = current_user.saved_queries.for_resource("gift_certificates")
 
       @pagy, @gift_certificates = filter_and_paginate(
-        GiftCertificate.includes(:customer, :sold_on_order),
+        GiftCertificate.select(:id, :code, :status, :initial_amount, :remaining_balance, :customer_id, :sold_on_order_id, :created_at)
+                       .includes(:customer, :sold_on_order),
         config: @filter_config
       )
     end

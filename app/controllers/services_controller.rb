@@ -28,7 +28,8 @@ class ServicesController < ApplicationController
     @saved_queries = current_user.saved_queries.for_resource("services")
 
     @pagy, @services = filter_and_paginate(
-      @services.kept.includes(:tax_code),
+      @services.kept.select(:id, :name, :code, :price, :description, :tax_code_id, :created_at, :updated_at)
+                    .includes(:tax_code),
       config: @filter_config
     )
   end

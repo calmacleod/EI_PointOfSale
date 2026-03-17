@@ -28,7 +28,9 @@ class OrdersController < ApplicationController
     @saved_queries = current_user.saved_queries.for_resource("orders")
 
     @pagy, @orders = filter_and_paginate(
-      Order.kept.where.not(status: :draft).includes(:customer, :created_by, :order_lines),
+      Order.kept.where.not(status: :draft)
+           .select(:id, :number, :status, :customer_id, :created_by_id, :total, :created_at, :completed_at)
+           .includes(:customer, :created_by, :order_lines),
       config: @filter_config
     )
   end
@@ -201,7 +203,9 @@ class OrdersController < ApplicationController
     @saved_queries = current_user&.saved_queries&.for_resource("held_orders")
 
     @pagy, @held_orders = filter_and_paginate(
-      Order.held.includes(:customer, :created_by, order_lines: :sellable),
+      Order.held
+           .select(:id, :number, :status, :customer_id, :created_by_id, :total, :held_at)
+           .includes(:customer, :created_by, order_lines: :sellable),
       config: @filter_config
     )
   end

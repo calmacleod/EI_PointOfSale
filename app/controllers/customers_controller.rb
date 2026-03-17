@@ -26,7 +26,8 @@ class CustomersController < ApplicationController
     @saved_queries = current_user.saved_queries.for_resource("customers")
 
     @pagy, @customers = filter_and_paginate(
-      @customers.kept.includes(:added_by),
+      @customers.kept.select(:id, :name, :member_number, :phone, :email, :city, :province, :active, :created_at, :updated_at, :added_by_id)
+                     .includes(:added_by),
       config: @filter_config
     )
   end

@@ -133,7 +133,8 @@ class CashDrawerController < ApplicationController
     @saved_queries = current_user.saved_queries.for_resource("cash_drawer_history")
 
     @pagy, @sessions = filter_and_paginate(
-      CashDrawerSession.includes(:opened_by, :closed_by),
+      CashDrawerSession.select(:id, :opened_at, :opened_by_id, :closed_at, :closed_by_id, :opening_total_cents, :closing_total_cents)
+                       .includes(:opened_by, :closed_by),
       config: @filter_config
     )
   end

@@ -27,7 +27,7 @@ class ReportsController < ApplicationController
     @saved_queries = current_user.saved_queries.for_resource("reports")
 
     @pagy, @reports = filter_and_paginate(
-      Report.includes(:generated_by),
+      Report.includes(:generated_by).select(:id, :title, :report_type, :status, :generated_by_id, :created_at),
       config: @filter_config
     )
   end

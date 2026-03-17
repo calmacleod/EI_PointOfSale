@@ -21,7 +21,7 @@ module AdminArea
       @saved_queries = current_user.saved_queries.for_resource("suppliers")
 
       @pagy, @suppliers = filter_and_paginate(
-        Supplier.kept,
+        Supplier.kept.select(:id, :name, :phone, :created_at, :updated_at),
         config: @filter_config
       )
     end
