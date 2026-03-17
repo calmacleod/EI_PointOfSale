@@ -1,5 +1,5 @@
 <div data-confirm-modal-target="modal"
-     class="confirm-modal-overlay fixed inset-0 z-[60] hidden"
+     class="confirm-modal-overlay fixed inset-0 z-60 hidden"
      role="dialog"
      aria-modal="true"
      aria-labelledby="sign-out-modal-title">
@@ -15,7 +15,7 @@
           <button type="button"
                   data-action="click->confirm-modal#close"
                   data-autofocus
-                  class="rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]">
+                  class="rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-(--color-border)">
             Cancel
           </button>
           <%= button_to session_path, method: :delete,

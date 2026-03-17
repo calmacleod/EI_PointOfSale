@@ -28,10 +28,10 @@
         </div>
       <% else %>
         <div class="flex items-center gap-2">
-          <span class="inline-block h-2.5 w-2.5 rounded-full bg-[var(--color-border)]"></span>
+          <span class="inline-block h-2.5 w-2.5 rounded-full bg-(--color-border)"></span>
           <span class="text-sm font-medium text-body">Not configured</span>
         </div>
-        <div class="rounded-md bg-[var(--color-border)]/10 px-3 py-2">
+        <div class="rounded-md bg-(--color-border)/10 px-3 py-2">
           <p class="text-sm text-body font-medium">Setup instructions</p>
           <ol class="mt-1 list-decimal pl-5 text-sm text-muted space-y-1">
             <li>Go to <strong>Shopify Admin</strong> > Settings > Apps and sales channels > Develop apps</li>
@@ -56,7 +56,7 @@
       <h2 class="text-sm font-semibold text-body">Sync status</h2>
       <p class="text-xs text-muted">Products flagged for Shopify synchronisation</p>
     </div>
-    <dl class="divide-y divide-[var(--color-border)]">
+    <dl class="divide-y divide-(--color-border)">
       <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
         <dt class="text-xs font-medium text-muted">Products to sync</dt>
         <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @synced_count %></dd>
@@ -86,7 +86,7 @@
   <% end %>
 
   <%# ── Per-product toggle hint ────────────────────────────────────── %>
-  <div class="mt-2 rounded-lg border border-theme bg-[var(--color-border)]/10 px-3 py-2.5 text-center">
+  <div class="mt-2 rounded-lg border border-theme bg-(--color-border)/10 px-3 py-2.5 text-center">
     <p class="text-sm text-muted">
       To flag individual products for Shopify sync, use the
       <strong class="text-body">"Sync to Shopify"</strong> checkbox on each product's edit page.

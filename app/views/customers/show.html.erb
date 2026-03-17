@@ -26,7 +26,7 @@
           <h2 id="customer-contact-heading" class="text-sm font-semibold text-body">Contact</h2>
           <p class="text-xs text-muted">Name, member number, phone, and email</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Name</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @customer.name %></dd>
@@ -74,7 +74,7 @@
             <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
               <h2 id="customer-notes-heading" class="text-sm font-semibold text-body">Notes & alerts</h2>
             </div>
-            <dl class="divide-y divide-[var(--color-border)]">
+            <dl class="divide-y divide-(--color-border)">
               <% if @customer.notes.present? %>
                 <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
                   <dt class="text-xs font-medium text-muted">Notes</dt>
@@ -110,7 +110,7 @@
             <h2 id="customer-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
             <p class="text-xs text-muted">Timestamps</p>
           </div>
-          <dl class="divide-y divide-[var(--color-border)]">
+          <dl class="divide-y divide-(--color-border)">
             <% if @customer.added_by.present? %>
               <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
                 <dt class="text-xs font-medium text-muted">Added by</dt>

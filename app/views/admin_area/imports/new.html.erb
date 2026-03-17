@@ -25,10 +25,10 @@
       </div>
       <div class="flex gap-2">
         <button type="submit" name="preview" value="1"
-            class="inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30 cursor-pointer">Preview</button>
+            class="inline-flex min-h-7.5 items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-(--color-border)/30 cursor-pointer">Preview</button>
         <button type="submit" name="import" value="1"
             data-turbo-confirm="This will start importing the CSV immediately. Continue?"
-            class="inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)] cursor-pointer">Import now</button>
+            class="inline-flex min-h-7.5 items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-(--color-page) hover:bg-(--color-accent-hover) cursor-pointer">Import now</button>
       </div>
     <% end %>
   </section>
@@ -40,7 +40,7 @@
         <h2 class="text-sm font-semibold text-body">Recent imports</h2>
       </div>
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-[var(--color-border)]">
+        <table class="min-w-full divide-y divide-(--color-border)">
           <thead class="bg-surface-alt">
             <tr>
               <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">File</th>
@@ -50,7 +50,7 @@
               <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted"></th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+          <tbody class="divide-y divide-(--color-border) bg-surface">
             <% @recent_imports.each do |import| %>
               <tr>
                 <td class="px-3 py-1.5 text-sm text-body"><%= import.file_name %></td>

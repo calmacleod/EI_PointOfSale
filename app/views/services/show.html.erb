@@ -26,7 +26,7 @@
           <h2 id="service-details-heading" class="text-sm font-semibold text-body">Details</h2>
           <p class="text-xs text-muted">Service information and pricing</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Name</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @service.name %></dd>
@@ -63,7 +63,7 @@
           <h2 id="service-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
           <p class="text-xs text-muted">Timestamps and provenance</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <% if @service.added_by.present? %>
             <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
               <dt class="text-xs font-medium text-muted">Added by</dt>

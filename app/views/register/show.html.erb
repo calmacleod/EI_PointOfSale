@@ -8,7 +8,7 @@
     <% @active_orders.each do |o| %>
       <% is_current = o.id == @order.id %>
       <div class="group/tab inline-flex items-center gap-0.5 rounded-md text-xs font-medium transition cursor-grab active:cursor-grabbing
-                  <%= is_current ? 'bg-accent text-white' : 'text-muted hover:bg-[var(--color-border)] hover:text-body' %>"
+                  <%= is_current ? 'bg-accent text-white' : 'text-muted hover:bg-(--color-border) hover:text-body' %>"
            draggable="true"
            data-tab-reorder-target="tab"
            data-order-id="<%= o.id %>"
@@ -18,7 +18,7 @@
             class: "inline-flex items-center gap-1.5 pl-3 pr-1 py-1" do %>
           <span><%= o.number %></span>
           <% if o.customer.present? %>
-            <span class="text-[10px] opacity-70 max-w-[6rem] truncate"><%= o.customer.name %></span>
+            <span class="text-[10px] opacity-70 max-w-24 truncate"><%= o.customer.name %></span>
           <% end %>
           <% if o.held? %>
             <span class="inline-block h-1.5 w-1.5 rounded-full bg-yellow-400" title="On hold"></span>
@@ -101,15 +101,15 @@
 
       <%# Code lookup bar — pinned at bottom %>
       <div class="shrink-0 border-t border-theme bg-surface px-4 py-2">
-        <div id="lookup_flash" class="mb-1 min-h-[1rem] text-xs"></div>
+        <div id="lookup_flash" class="mb-1 min-h-4 text-xs"></div>
         <%= form_with url: quick_lookup_orders_path, method: :post, data: { turbo_stream: true, action: "submit->order-form#handleLookup" } do |f| %>
           <%= f.hidden_field :order_id, value: @order.id %>
           <div class="flex gap-2">
             <%= render "orders/code_lookup_input", order: @order %>
-            <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
+            <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-xs font-medium text-white hover:bg-(--color-accent-hover) transition">
               Add
             </button>
-            <button type="button" class="rounded-lg border border-theme px-3 py-2 text-xs font-medium text-muted hover:bg-[var(--color-border)] transition"
+            <button type="button" class="rounded-lg border border-theme px-3 py-2 text-xs font-medium text-muted hover:bg-(--color-border) transition"
                     data-action="click->order-form#openSearch">
               Search
             </button>
@@ -175,9 +175,9 @@
             <%= f.hidden_field :filter, value: "all", data: { customer_search_target: "filterInput" } %>
             <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition bg-accent text-white"
                     data-action="click->customer-search#setFilter" data-filter="all">All</button>
-            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-[var(--color-border)]"
+            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-(--color-border)"
                     data-action="click->customer-search#setFilter" data-filter="active">Active</button>
-            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-[var(--color-border)]"
+            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-(--color-border)"
                     data-action="click->customer-search#setFilter" data-filter="tax_exempt">Tax Exempt</button>
           </div>
         <% end %>
@@ -190,7 +190,7 @@
   </div>
 
   <%# ── Item preview modal (triggered from cart line items) ──────── %>
-  <div id="item_preview_modal" class="fixed inset-0 z-[60] hidden" role="dialog"
+  <div id="item_preview_modal" class="fixed inset-0 z-60 hidden" role="dialog"
        data-item-preview-target="modal">
     <div class="fixed inset-0 bg-black/40" data-action="click->item-preview#close"></div>
     <div class="fixed inset-0 flex items-center justify-center p-8">
@@ -210,7 +210,7 @@
 
   <%# ── Cancel order confirm modal ─────────────────────────────── %>
   <div data-cancel-order-target="modal"
-       class="fixed inset-0 z-[70] hidden" role="dialog" aria-modal="true">
+       class="fixed inset-0 z-70 hidden" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-black/50" data-action="click->cancel-order#close"></div>
     <div class="fixed inset-0 flex items-start justify-center pt-[22vh] p-4" style="pointer-events: none;">
       <div class="w-full max-w-sm rounded-xl border border-red-200 bg-surface shadow-2xl overflow-hidden" style="pointer-events: auto;">
@@ -233,7 +233,7 @@
           <button type="button"
                   data-action="click->cancel-order#close"
                   data-autofocus
-                  class="rounded-lg border border-theme px-3.5 py-1.5 text-xs font-medium text-body hover:bg-[var(--color-border)] transition">
+                  class="rounded-lg border border-theme px-3.5 py-1.5 text-xs font-medium text-body hover:bg-(--color-border) transition">
             Keep Order
           </button>
           <form data-cancel-order-target="form" method="post">
@@ -276,9 +276,9 @@
           <div class="flex items-center gap-1.5 border-b border-theme px-4 py-2 bg-surface-alt shrink-0" data-product-search-target="filterBar">
             <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition bg-accent text-white"
                     data-action="click->product-search#setFilter" data-filter="all">All</button>
-            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-[var(--color-border)]"
+            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-(--color-border)"
                     data-action="click->product-search#setFilter" data-filter="Product">Products</button>
-            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-[var(--color-border)]"
+            <button type="button" class="rounded-full px-2.5 py-0.5 text-[11px] font-medium transition text-muted hover:bg-(--color-border)"
                     data-action="click->product-search#setFilter" data-filter="Service">Services</button>
           </div>
           <div class="flex-1 overflow-y-auto" data-product-search-target="results">

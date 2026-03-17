@@ -1,8 +1,8 @@
 <%= form_with model: user, url: profile_path, method: :patch, class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if user.errors.any? %>
-    <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
-      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
+    <div class="rounded-t-lg bg-(--color-error-bg) px-3 py-2">
+      <p class="text-sm font-semibold text-(--color-error-text)">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-(--color-error-text)">
         <% user.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -16,7 +16,7 @@
         <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Contact</h2>
         <p class="text-xs text-muted">How we reach you and how you sign in.</p>
       </div>
-      <span class="inline-flex items-center rounded-full bg-[var(--color-border)]/50 px-2 py-0.5 text-xs font-medium text-body">
+      <span class="inline-flex items-center rounded-full bg-(--color-border)/50 px-2 py-0.5 text-xs font-medium text-body">
         <%= user.type %>
       </span>
     </div>
@@ -70,7 +70,7 @@
       </div>
 
       <div class="sm:col-span-2">
-        <div class="flex min-h-[30px] items-center justify-between rounded-md border border-theme bg-[var(--color-border)]/20 px-3 py-1.5">
+        <div class="flex min-h-7.5 items-center justify-between rounded-md border border-theme bg-(--color-border)/20 px-3 py-1.5">
           <div>
             <p class="text-sm font-medium text-body">Collapse sidebar on desktop</p>
             <p class="text-xs text-muted">Hide the sidebar by default on large screens.</p>
@@ -87,7 +87,7 @@
         <p class="text-xs text-muted">Choose which metrics to show on the dashboard. Leave all checked for default.</p>
         <div class="mt-1.5 flex flex-wrap gap-x-3 gap-y-1">
           <% DashboardMetrics.available_keys.each do |key| %>
-            <label class="flex min-h-[30px] cursor-pointer items-center gap-1.5 rounded-md border border-theme bg-[var(--color-border)]/20 px-2.5 py-1 hover:bg-[var(--color-border)]/30">
+            <label class="flex min-h-7.5 cursor-pointer items-center gap-1.5 rounded-md border border-theme bg-(--color-border)/20 px-2.5 py-1 hover:bg-(--color-border)/30">
               <%= f.check_box :dashboard_metric_keys,
                   { multiple: true, include_hidden: false, checked: user.dashboard_metric_keys_for_form.include?(key), class: "h-3.5 w-3.5 border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]" },
                   key,
@@ -105,7 +105,7 @@
     <p class="text-xs text-muted">Receive browser notifications when reports finish or backups complete.</p>
 
     <div class="mt-2">
-      <div class="flex min-h-[30px] items-center justify-between rounded-md border border-theme bg-[var(--color-border)]/20 px-3 py-1.5">
+      <div class="flex min-h-7.5 items-center justify-between rounded-md border border-theme bg-(--color-border)/20 px-3 py-1.5">
         <div>
           <p class="text-sm font-medium text-body">Enable push notifications</p>
           <p class="text-xs text-muted" data-push-permission-target="status">Checking status...</p>
@@ -114,7 +114,7 @@
           <input type="checkbox"
                  data-push-permission-target="toggle"
                  data-action="change->push-permission#togglePush"
-                 class="h-4 w-4 border-[var(--color-border)] text-accent focus:ring-[var(--color-accent)]">
+                 class="h-4 w-4 border-(--color-border) text-accent focus:ring-(--color-accent)">
         </div>
       </div>
     </div>

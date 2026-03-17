@@ -73,7 +73,7 @@
   <td class="px-4 py-2 text-center align-top">
     <% if line.order.draft? %>
       <div data-controller="inline-quantity" data-inline-quantity-url-value="<%= order_line_path(line) %>">
-        <button type="button" class="inline-flex items-center justify-center rounded-md border border-theme bg-surface-alt px-2.5 py-0.5 text-sm font-medium text-body hover:bg-[var(--color-border)] transition"
+        <button type="button" class="inline-flex items-center justify-center rounded-md border border-theme bg-surface-alt px-2.5 py-0.5 text-sm font-medium text-body hover:bg-(--color-border) transition"
                 data-inline-quantity-target="display"
                 data-action="click->inline-quantity#edit">
           <%= line.quantity %>

@@ -3,21 +3,21 @@
       class="fixed top-9 bottom-0 left-0 z-40 flex w-56 shrink-0 -translate-x-full flex-col overflow-hidden duration-200 lg:static lg:top-auto lg:bottom-auto lg:translate-x-0 lg:h-full lg:max-h-full lg:min-h-0 sidebar-chrome <%= sidebar_collapsed ? 'sidebar-mini' : 'sidebar-expanded' %>">
   <div class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
     <%# ── Brand ── %>
-    <div class="sidebar-brand flex shrink-0 items-center justify-between gap-2 px-3 py-2.5 lg:min-h-[44px]">
+    <div class="sidebar-brand flex shrink-0 items-center justify-between gap-2 px-3 py-2.5 lg:min-h-11">
       <div class="flex min-w-0 flex-1 items-center gap-2.5 overflow-hidden">
-        <div class="logo-easter-egg-logo flex h-7 w-7 shrink-0 cursor-default items-center justify-center rounded-md bg-accent text-[10px] font-bold text-[color:var(--color-page)] select-none"
+        <div class="logo-easter-egg-logo flex h-7 w-7 shrink-0 cursor-default items-center justify-center rounded-md bg-accent text-[10px] font-bold text-(--color-page) select-none"
              data-controller="logo-easter-egg"
              data-action="click->logo-easter-egg#click keydown->logo-easter-egg#click"
              role="button"
              tabindex="0"
              aria-label="EI logo">EI</div>
         <div class="sidebar-text min-w-0 flex-1 overflow-hidden">
-          <p class="truncate text-[13px] font-semibold text-[var(--sidebar-text-bright)] leading-tight">Point of Sale</p>
-          <p class="truncate text-[11px] text-[var(--sidebar-text-muted)] leading-tight"><%= Current.user&.name.presence || Current.user&.email_address %></p>
+          <p class="truncate text-[13px] font-semibold text-(--sidebar-text-bright) leading-tight">Point of Sale</p>
+          <p class="truncate text-[11px] text-(--sidebar-text-muted) leading-tight"><%= Current.user&.name.presence || Current.user&.email_address %></p>
         </div>
       </div>
       <button type="button"
-              class="flex h-6 w-6 items-center justify-center rounded text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)] lg:hidden"
+              class="flex h-6 w-6 items-center justify-center rounded text-(--sidebar-text-muted) hover:bg-(--sidebar-hover) hover:text-(--sidebar-text) lg:hidden"
               data-action="click->sidebar#close"
               aria-label="Close menu">
         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +28,7 @@
 
     <%# ── Navigation ── %>
     <nav class="sidebar-nav min-h-0 flex-1 overflow-y-auto px-2.5 pb-1">
-      <p class="sidebar-section-label mb-0.5 mt-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--sidebar-text-muted)] opacity-70">
+      <p class="sidebar-section-label mb-0.5 mt-2 px-2 text-[10px] font-semibold uppercase tracking-wider text-(--sidebar-text-muted) opacity-70">
         <span class="sidebar-text">Main</span>
       </p>
 
@@ -173,8 +173,8 @@
       <% end %>
 
       <% if Current.user.is_a?(Admin) %>
-        <div class="mt-3 mb-0.5 border-t border-[var(--sidebar-border)] pt-2">
-          <p class="sidebar-section-label px-2 text-[10px] font-semibold uppercase tracking-wider text-[var(--sidebar-text-muted)] opacity-70">
+        <div class="mt-3 mb-0.5 border-t border-(--sidebar-border) pt-2">
+          <p class="sidebar-section-label px-2 text-[10px] font-semibold uppercase tracking-wider text-(--sidebar-text-muted) opacity-70">
             <span class="sidebar-text">Manage</span>
           </p>
         </div>
@@ -212,11 +212,11 @@
     </nav>
 
     <%# ── Bottom ── %>
-    <div class="sidebar-bottom shrink-0 border-t border-[var(--sidebar-border)] px-2.5 py-1.5">
+    <div class="sidebar-bottom shrink-0 border-t border-(--sidebar-border) px-2.5 py-1.5">
       <div class="relative hidden lg:block">
         <button type="button"
                 data-action="click->notifications#toggleDropdown"
-                class="nav-link group flex h-[30px] w-full items-center gap-2.5 rounded-md px-2 text-[13px] font-medium text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-bright)]"
+                class="nav-link group flex h-7.5 w-full items-center gap-2.5 rounded-md px-2 text-[13px] font-medium text-(--sidebar-text) hover:bg-(--sidebar-hover) hover:text-(--sidebar-text-bright)"
                 aria-label="Notifications">
           <div class="relative">
             <svg class="h-4 w-4 shrink-0 opacity-50 group-hover:opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -259,7 +259,7 @@
       <div class="mt-1 flex items-center gap-0.5">
         <button type="button"
                 data-action="click->confirm-modal#open"
-                class="nav-link group flex h-[28px] flex-1 items-center justify-center gap-2 rounded-md text-[12px] font-medium text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]">
+                class="nav-link group flex h-7 flex-1 items-center justify-center gap-2 rounded-md text-[12px] font-medium text-(--sidebar-text-muted) hover:bg-(--sidebar-hover) hover:text-(--sidebar-text)">
           <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
           </svg>
@@ -267,7 +267,7 @@
         </button>
         <button type="button"
                 data-action="click->sidebar#toggle"
-                class="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-md text-[var(--sidebar-text-muted)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text)]"
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-(--sidebar-text-muted) hover:bg-(--sidebar-hover) hover:text-(--sidebar-text)"
                 aria-label="Collapse sidebar">
           <span class="expand-icon hidden">
             <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

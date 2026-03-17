@@ -8,7 +8,7 @@
       <div class="border-b border-theme bg-surface-alt px-4 py-2">
         <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Select Items to Refund</h2>
       </div>
-      <table class="min-w-full divide-y divide-[var(--color-border)]">
+      <table class="min-w-full divide-y divide-(--color-border)">
         <thead class="bg-surface-alt">
           <tr>
             <th class="px-4 py-2 text-center" style="width:3rem"></th>
@@ -19,7 +19,7 @@
             <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">Unit Price</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-[var(--color-border)]">
+        <tbody class="divide-y divide-(--color-border)">
           <% @order.order_lines.each_with_index do |line, idx| %>
             <% already_refunded = line.refund_lines.sum(:quantity) rescue 0 %>
             <% max_qty = line.quantity - already_refunded %>

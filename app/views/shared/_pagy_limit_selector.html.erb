@@ -11,7 +11,7 @@
       <%= hidden_field_tag :page, 1 %>
       <label for="pagy_limit_select" class="text-xs text-muted">Per page:</label>
       <select name="limit" id="pagy_limit_select"
-              class="pagy-limit-select select input-field min-h-[28px] w-auto min-w-[3.5rem] cursor-pointer py-0.5 pl-2 text-xs"
+              class="pagy-limit-select select input-field min-h-7 w-auto min-w-14 cursor-pointer py-0.5 pl-2 text-xs"
               onchange="this.form.requestSubmit()">
         <% page_sizes.each do |size| %>
           <%= tag.option size, value: size, selected: pagy.limit == size %>

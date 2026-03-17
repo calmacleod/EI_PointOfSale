@@ -11,7 +11,7 @@
 <div class="mx-auto max-w-lg p-4 lg:p-6 space-y-4">
   <%= render "shared/page_header", title: "Receipt — #{@order.number}" do %>
     <%= link_to "Back to Order", order_path(@order), class: "rounded-lg border border-theme px-3 py-1.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] transition" %>
-    <button onclick="window.print()" class="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
+    <button onclick="window.print()" class="rounded-lg bg-accent px-3 py-1.5 text-xs font-medium text-white hover:bg-(--color-accent-hover) transition">
       Print Receipt
     </button>
   <% end %>

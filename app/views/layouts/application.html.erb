@@ -39,7 +39,7 @@
         <header class="fixed inset-x-0 top-0 z-50 flex h-9 items-center gap-2 border-b border-theme bg-surface px-2 lg:hidden">
           <button type="button"
                   data-action="click->sidebar#toggle"
-                  class="flex h-7 w-7 -ml-0.5 items-center justify-center rounded-md text-body hover:bg-[var(--color-border)]"
+                  class="flex h-7 w-7 -ml-0.5 items-center justify-center rounded-md text-body hover:bg-(--color-border)"
                   aria-label="Open menu">
             <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -49,7 +49,7 @@
           <div class="relative">
             <button type="button"
                     data-action="click->notifications#toggleDropdown"
-                    class="flex h-7 w-7 items-center justify-center rounded-md text-body hover:bg-[var(--color-border)]"
+                    class="flex h-7 w-7 items-center justify-center rounded-md text-body hover:bg-(--color-border)"
                     aria-label="Notifications">
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
@@ -67,12 +67,12 @@
         <%= render "shared/sign_out_modal" %>
         <%= render "shared/search_modal" %>
 
-        <main class="min-h-0 flex-1 <%= content_for?(:full_bleed) ? 'flex flex-col overflow-hidden pt-9 lg:pt-0' : 'overflow-y-auto px-3 pt-9 pb-3 lg:flex lg:flex-col lg:overflow-hidden lg:pt-3 lg:px-4' %>">
+        <main class="min-h-0 flex-1 <%= content_for?(:full_bleed) ? 'flex flex-col overflow-hidden pt-9 lg:pt-0' : 'overflow-y-auto px-3 pb-3 lg:flex lg:flex-col lg:overflow-hidden lg:pt-3 lg:px-4' %>">
           <% if content_for?(:full_bleed) %>
             <div id="flash_container" class="shrink-0 px-3 lg:px-0"><%= render "shared/flash" %></div>
             <%= yield %>
           <% else %>
-            <div class="mx-auto w-full max-w-screen-xl lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-y-auto">
+            <div class="mx-auto w-full max-w-7xl lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-y-auto">
               <%= render "shared/breadcrumbs" %>
               <div id="flash_container"><%= render "shared/flash" %></div>
               <%= yield %>
@@ -86,12 +86,12 @@
 
         <%# Toast notification container %>
         <div id="toast_container" data-notifications-target="toastContainer"
-             class="fixed top-12 right-3 z-[60] flex flex-col items-end gap-2 lg:top-3 lg:right-4">
+             class="fixed top-12 right-3 z-60 flex flex-col items-end gap-2 lg:top-3 lg:right-4">
         </div>
 
         <%# Notifications popover - positioned via Stimulus, outside sidebar to avoid z-index issues %>
         <div data-notifications-target="popover"
-             class="fixed hidden z-[100] rounded-lg border border-theme bg-surface shadow-xl overflow-hidden"
+             class="fixed hidden z-100 rounded-lg border border-theme bg-surface shadow-xl overflow-hidden"
              style="max-height: 24rem; width: 20rem;">
           <%= turbo_frame_tag "notifications_popover", src: notifications_path, loading: "lazy" do %>
             <div class="p-4 text-center text-sm text-muted">Loading...</div>
@@ -103,7 +103,7 @@
       </div>
     <% else %>
       <main class="min-h-screen w-full px-3 py-3 lg:px-4">
-        <div class="mx-auto w-full max-w-screen-xl">
+        <div class="mx-auto w-full max-w-7xl">
           <%= render "shared/breadcrumbs" %>
           <div id="flash_container"><%= render "shared/flash" %></div>
           <%= yield %>

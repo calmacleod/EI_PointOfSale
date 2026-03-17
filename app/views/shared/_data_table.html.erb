@@ -25,7 +25,7 @@
     <div class="flex items-center justify-end rounded-t-lg border-b border-theme bg-surface-alt px-2 py-1">
       <div class="relative">
         <button type="button" data-action="click->column-toggle#togglePopover"
-                class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body"
+                class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted hover:bg-(--color-border) hover:text-body"
                 title="Toggle columns">
           <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -34,9 +34,9 @@
           <span>Columns</span>
         </button>
         <div data-column-toggle-target="popover"
-             class="absolute right-0 z-20 mt-1 hidden min-w-[180px] rounded-lg border border-theme bg-surface py-1 shadow-lg">
+             class="absolute right-0 z-20 mt-1 hidden min-w-45 rounded-lg border border-theme bg-surface py-1 shadow-lg">
           <% config.columns.each do |col| %>
-            <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-[var(--color-border)]">
+            <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-(--color-border)">
               <input type="checkbox" data-action="change->column-toggle#toggleColumn"
                      data-column-key="<%= col.key %>"
                      checked
@@ -57,7 +57,7 @@
          data-controller="scroll-shadow">
       <div class="overflow-x-auto lg:flex-1 lg:overflow-y-auto"
            data-scroll-shadow-target="scroller">
-      <table class="min-w-full divide-y divide-[var(--color-border)]" data-column-toggle-target="table">
+      <table class="min-w-full divide-y divide-(--color-border)" data-column-toggle-target="table">
       <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
         <tr>
           <% config.columns.each do |col| %>
@@ -74,7 +74,7 @@
           <th class="px-3 py-1 text-right text-xs font-medium uppercase tracking-wider text-muted" style="min-width:4rem;width:4rem" data-column="actions"></th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+      <tbody class="divide-y divide-(--color-border) bg-surface">
         <%# Precompute renderers once so we avoid a hash lookup per cell per row %>
         <% column_renderers = config.columns.map { |col| [col, table.renderer_for(col.key)] } %>
         <% actions_renderer = table.renderer_for(:actions) %>

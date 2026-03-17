@@ -3,7 +3,7 @@
 <% from_key = "#{filter.key}_from" %>
 <% to_key = "#{filter.key}_to" %>
 <% current_preset = params[preset_key] || (params[from_key].present? || params[to_key].present? ? "custom" : "") %>
-<div class="inline-flex items-center gap-1 rounded-full border border-theme bg-[var(--color-border)]/20 px-2 py-0.5"
+<div class="inline-flex items-center gap-1 rounded-full border border-theme bg-(--color-border)/20 px-2 py-0.5"
      data-controller="date-range-filter"
      data-filter-key="<%= filter.key %>">
   <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>

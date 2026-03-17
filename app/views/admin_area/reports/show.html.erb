@@ -77,9 +77,9 @@
 
   <% elsif @report.failed? %>
     <%# ── Failed state ────────────────────────────────────────────── %>
-    <div class="mt-2 rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-2.5">
-      <h2 class="text-sm font-semibold text-[var(--color-error-text)]">Report generation failed</h2>
-      <p class="mt-0.5 text-xs text-[var(--color-error-text)]"><%= @report.error_message %></p>
+    <div class="mt-2 rounded-lg border border-(--color-error-border) bg-(--color-error-bg) p-2.5">
+      <h2 class="text-sm font-semibold text-(--color-error-text)">Report generation failed</h2>
+      <p class="mt-0.5 text-xs text-(--color-error-text)"><%= @report.error_message %></p>
     </div>
 
   <% elsif @report.completed? %>
@@ -125,7 +125,7 @@
                 <% end %>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[var(--color-border)]">
+            <tbody class="divide-y divide-(--color-border)">
               <% result[:table].each do |row| %>
                 <% row = row.symbolize_keys %>
                 <tr>

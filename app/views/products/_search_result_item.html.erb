@@ -1,5 +1,5 @@
 <button type="button"
-        class="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-[var(--color-border)] transition <%= selected ? 'bg-accent/10 border-l-2 border-l-accent' : 'border-l-2 border-l-transparent' %>"
+        class="flex w-full items-center justify-between px-4 py-2.5 text-left hover:bg-(--color-border) transition <%= selected ? 'bg-accent/10 border-l-2 border-l-accent' : 'border-l-2 border-l-transparent' %>"
         data-action="click->product-search#selectItem dblclick->product-search#addItem"
         data-index="<%= index %>"
         data-type="Product"

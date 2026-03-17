@@ -216,7 +216,7 @@ export default class extends Controller {
       ${html}
       <div class="px-5 pb-5 border-t border-theme pt-3">
         <button type="button"
-                class="w-full rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-[var(--color-accent-hover)] transition"
+                class="w-full rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-(--color-accent-hover) transition"
                 data-action="click->product-search#addPreviewItem"
                 data-type="${type}"
                 data-id="${id}">
@@ -232,7 +232,7 @@ export default class extends Controller {
         <p class="text-xs text-muted">Detailed preview unavailable for this item.</p>
         <div class="border-t border-theme pt-3">
           <button type="button"
-                  class="w-full rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-[var(--color-accent-hover)] transition"
+                  class="w-full rounded-lg bg-accent px-4 py-2 text-xs font-semibold text-white hover:bg-(--color-accent-hover) transition"
                   data-action="click->product-search#addPreviewItem"
                   data-type="${type}"
                   data-id="${id}">

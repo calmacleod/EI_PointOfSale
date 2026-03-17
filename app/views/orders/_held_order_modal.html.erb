@@ -1,6 +1,6 @@
 <div id="<%= dom_id(order, :modal) %>"
      data-modal-target="modal"
-     class="modal-overlay fixed inset-0 z-[60] hidden"
+     class="modal-overlay fixed inset-0 z-60 hidden"
      role="dialog"
      aria-modal="true"
      aria-labelledby="<%= dom_id(order, :modal_title) %>">
@@ -25,7 +25,7 @@
         </div>
         <button type="button"
                 data-action="click->modal#close"
-                class="rounded-md p-1 text-muted hover:bg-[var(--color-border)] hover:text-body">
+                class="rounded-md p-1 text-muted hover:bg-(--color-border) hover:text-body">
           <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
           </svg>
@@ -87,7 +87,7 @@
                   <th class="px-4 py-1.5 text-right font-medium text-muted">Total</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[var(--color-border)]">
+              <tbody class="divide-y divide-(--color-border)">
                 <% order.order_lines.each do |line| %>
                   <tr>
                     <td class="px-4 py-1.5 text-body">
@@ -125,7 +125,7 @@
                 <span class="text-body"><%= number_to_currency(order.tax_total) %></span>
               </div>
             <% end %>
-            <div class="flex justify-between border-t border-[var(--color-border)] pt-1 mt-1">
+            <div class="flex justify-between border-t border-(--color-border) pt-1 mt-1">
               <span class="font-medium text-body">Total</span>
               <span class="font-semibold text-body"><%= number_to_currency(order.total) %></span>
             </div>

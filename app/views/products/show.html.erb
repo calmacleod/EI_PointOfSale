@@ -26,7 +26,7 @@
           <h2 id="product-details-heading" class="text-sm font-semibold text-body">Details</h2>
           <p class="text-xs text-muted">Product identification and classification</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Code</dt>
             <dd class="mt-0.5 text-sm font-mono text-body sm:col-span-2 sm:mt-0"><%= @product.code %></dd>
@@ -67,7 +67,7 @@
           <h2 id="product-pricing-heading" class="text-sm font-semibold text-body">Pricing</h2>
           <p class="text-xs text-muted">Cost and selling prices</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Selling price</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.selling_price) || "—" %></dd>
@@ -90,7 +90,7 @@
           <h2 id="product-inventory-heading" class="text-sm font-semibold text-body">Inventory</h2>
           <p class="text-xs text-muted">Stock levels and ordering</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Stock level</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.stock_level %></dd>
@@ -117,7 +117,7 @@
           <h2 id="product-supplier-heading" class="text-sm font-semibold text-body">Supplier</h2>
           <p class="text-xs text-muted">Procurement details</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Supplier</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.supplier&.name || "—" %></dd>
@@ -136,7 +136,7 @@
           <h2 id="product-notes-heading" class="text-sm font-semibold text-body">Notes</h2>
           <p class="text-xs text-muted">Internal notes and reference</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <div class="px-3 py-1.5">
             <dd class="text-sm text-body"><%= @product.notes.present? ? simple_format(@product.notes) : "—" %></dd>
           </div>
@@ -150,7 +150,7 @@
           <h2 id="product-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
           <p class="text-xs text-muted">Timestamps and provenance</p>
         </div>
-        <dl class="divide-y divide-[var(--color-border)]">
+        <dl class="divide-y divide-(--color-border)">
           <% if @product.added_by.present? %>
             <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
               <dt class="text-xs font-medium text-muted">Added by</dt>

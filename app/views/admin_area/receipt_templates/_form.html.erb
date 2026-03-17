@@ -11,9 +11,9 @@
   <div>
     <%= form_with model: [:admin, receipt_template], class: "space-y-3" do |f| %>
       <% if receipt_template.errors.any? %>
-        <div class="rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2">
-          <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-          <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
+        <div class="rounded-lg border border-(--color-error-border) bg-(--color-error-bg) px-3 py-2">
+          <p class="text-sm font-semibold text-(--color-error-text)">Please fix the following:</p>
+          <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-(--color-error-text)">
             <% receipt_template.errors.full_messages.each do |message| %>
               <li><%= message %></li>
             <% end %>
@@ -194,7 +194,7 @@
                     data: { receipt_preview_target: "logoImage" } %>
               </div>
             <% else %>
-              <div data-receipt-preview-target="logoContainer" class="mb-2 flex justify-center hidden">
+              <div data-receipt-preview-target="logoContainer" class="mb-2 flex justify-center">
                 <% if store.logo.attached? %>
                   <%= image_tag store.logo_for_receipt(paper_width_mm: receipt_template.paper_width_mm, trim: receipt_template.trim_logo?),
                       class: "max-w-full",

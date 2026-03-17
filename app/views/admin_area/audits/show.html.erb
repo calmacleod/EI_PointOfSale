@@ -68,7 +68,7 @@
              end %>
           <% if meaningful_changes.any? %>
             <div class="mt-2 overflow-x-auto">
-              <table class="min-w-full divide-y divide-[var(--color-border)]">
+              <table class="min-w-full divide-y divide-(--color-border)">
                 <thead class="bg-surface-alt">
                   <tr>
                     <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Attribute</th>
@@ -76,7 +76,7 @@
                     <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">After</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[var(--color-border)]">
+                <tbody class="divide-y divide-(--color-border)">
                   <% meaningful_changes.each do |attr, values| %>
                     <% old_val, new_val = values.is_a?(Array) ? values : [values, nil] %>
                     <tr>
@@ -93,14 +93,14 @@
           <% end %>
         <% elsif @audit.action == "create" %>
           <div class="mt-2 overflow-x-auto">
-            <table class="min-w-full divide-y divide-[var(--color-border)]">
+            <table class="min-w-full divide-y divide-(--color-border)">
               <thead class="bg-surface-alt">
                 <tr>
                   <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Attribute</th>
                   <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Value</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-[var(--color-border)]">
+              <tbody class="divide-y divide-(--color-border)">
                 <% @audit.audited_changes.reject { |_k, v| v.to_s.blank? }.each do |attr, value| %>
                   <tr>
                     <td class="px-3 py-1.5 font-medium text-sm text-body"><%= attr.humanize %></td>
@@ -114,14 +114,14 @@
           <% if @audit.audited_changes.any? %>
             <p class="mt-2 text-xs text-muted">Record as it was before deletion:</p>
             <div class="mt-2 overflow-x-auto">
-              <table class="min-w-full divide-y divide-[var(--color-border)]">
+              <table class="min-w-full divide-y divide-(--color-border)">
                 <thead class="bg-surface-alt">
                   <tr>
                     <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Attribute</th>
                     <th class="px-3 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Value</th>
                   </tr>
                 </thead>
-                <tbody class="divide-y divide-[var(--color-border)]">
+                <tbody class="divide-y divide-(--color-border)">
                   <% @audit.audited_changes.each do |attr, value| %>
                     <tr>
                       <td class="px-3 py-1.5 font-medium text-sm text-body"><%= attr.humanize %></td>

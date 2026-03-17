@@ -27,9 +27,9 @@
   </div>
 
   <% if @reconciliation.errors.any? %>
-    <div class="mt-2 rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-3 py-2">
-      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
+    <div class="mt-2 rounded-lg border border-(--color-error-border) bg-(--color-error-bg) px-3 py-2">
+      <p class="text-sm font-semibold text-(--color-error-text)">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-(--color-error-text)">
         <% @reconciliation.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>
@@ -132,7 +132,7 @@
       <%= link_to "Skip for now", session_detail_cash_drawer_path(@session),
           class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30" %>
       <button type="submit"
-              class="inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]">
+              class="inline-flex min-h-7.5 items-center justify-center rounded-md bg-accent px-3 py-1.5 text-sm font-semibold text-(--color-page) hover:bg-(--color-accent-hover)">
         Save Reconciliation
       </button>
     </div>

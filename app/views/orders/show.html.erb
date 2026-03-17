@@ -50,7 +50,7 @@
     <div class="border-b border-theme bg-surface-alt px-4 py-2">
       <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Line Items</h2>
     </div>
-    <table class="min-w-full divide-y divide-[var(--color-border)]">
+    <table class="min-w-full divide-y divide-(--color-border)">
       <thead class="bg-surface-alt">
         <tr>
           <th class="px-4 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Code</th>
@@ -61,7 +61,7 @@
           <th class="px-4 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">Total</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-[var(--color-border)]">
+      <tbody class="divide-y divide-(--color-border)">
         <% @order.order_lines.each do |line| %>
           <tr>
             <td class="px-4 py-2 text-xs font-mono text-muted"><%= line.code %></td>
@@ -173,7 +173,7 @@
       <div class="border-b border-theme bg-surface-alt px-4 py-2">
         <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">Payments</h2>
       </div>
-      <div class="divide-y divide-[var(--color-border)]">
+      <div class="divide-y divide-(--color-border)">
         <% @order.order_payments.each do |payment| %>
           <div class="flex items-center justify-between px-4 py-2.5 text-sm">
             <div>
@@ -234,7 +234,7 @@
       <summary class="cursor-pointer border-b border-theme bg-surface-alt px-4 py-2 text-xs font-semibold uppercase tracking-wider text-muted">
         Event History (<%= @order.order_events.count %>)
       </summary>
-      <div class="divide-y divide-[var(--color-border)] max-h-64 overflow-y-auto">
+      <div class="divide-y divide-(--color-border) max-h-64 overflow-y-auto">
         <% @order.order_events.chronological.each do |event| %>
           <div class="flex items-center justify-between px-4 py-2 text-xs">
             <span class="text-body"><%= event.description %></span>

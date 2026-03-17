@@ -1,7 +1,7 @@
 <%# Number range filter chip: renders min/max inputs inside a pill. %>
 <% min_key = "#{filter.key}_min" %>
 <% max_key = "#{filter.key}_max" %>
-<div class="inline-flex items-center gap-1 rounded-full border border-theme bg-[var(--color-border)]/20 px-2 py-0.5"
+<div class="inline-flex items-center gap-1 rounded-full border border-theme bg-(--color-border)/20 px-2 py-0.5"
      data-filter-key="<%= filter.key %>">
   <span class="text-xs font-medium text-muted"><%= filter.label %>:</span>
   <input type="number" name="<%= min_key %>" value="<%= params[min_key] %>"

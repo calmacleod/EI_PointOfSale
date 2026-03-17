@@ -25,7 +25,7 @@
         <h2 id="supplier-details-heading" class="text-sm font-semibold text-body">Details</h2>
         <p class="text-xs text-muted">Contact information</p>
       </div>
-      <dl class="divide-y divide-[var(--color-border)]">
+      <dl class="divide-y divide-(--color-border)">
         <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
           <dt class="text-xs font-medium text-muted">Name</dt>
           <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @supplier.name %></dd>
@@ -42,7 +42,7 @@
         <h2 id="supplier-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
         <p class="text-xs text-muted">Timestamps</p>
       </div>
-      <dl class="divide-y divide-[var(--color-border)]">
+      <dl class="divide-y divide-(--color-border)">
         <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
           <dt class="text-xs font-medium text-muted">Created</dt>
           <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@supplier.created_at, format: :long) %></dd>

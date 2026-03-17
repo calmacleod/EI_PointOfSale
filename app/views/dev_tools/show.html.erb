@@ -40,13 +40,13 @@
       <div class="border border-theme bg-surface p-2.5">
         <h3 class="text-sm font-medium text-body">Buttons</h3>
         <div class="mt-2 flex flex-wrap gap-2">
-          <button type="button" class="inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]">
+          <button type="button" class="inline-flex min-h-7.5 items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-(--color-page) hover:bg-(--color-accent-hover)">
             Primary
           </button>
-          <button type="button" class="inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]">
+          <button type="button" class="inline-flex min-h-7.5 items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-(--color-border)">
             Secondary
           </button>
-          <button type="button" class="text-sm font-medium text-[var(--color-error-text)] hover:opacity-80">
+          <button type="button" class="text-sm font-medium text-(--color-error-text) hover:opacity-80">
             Danger link
           </button>
         </div>
@@ -57,7 +57,7 @@
         <div class="mt-2 space-y-2 max-w-md">
           <div>
             <label class="block text-sm font-medium text-body">Text field</label>
-            <input type="text" placeholder="Placeholder" class="input-field mt-1 block w-full min-h-[34px]" autocomplete="off">
+            <input type="text" placeholder="Placeholder" class="input-field mt-1 block w-full min-h-8.5" autocomplete="off">
           </div>
           <div>
             <label class="block text-sm font-medium text-body">Textarea</label>
@@ -65,7 +65,7 @@
           </div>
           <div>
             <label class="block text-sm font-medium text-body">Select</label>
-            <select class="input-field mt-1 block w-full min-h-[34px]">
+            <select class="input-field mt-1 block w-full min-h-8.5">
               <option>Option 1</option>
               <option>Option 2</option>
             </select>
@@ -76,11 +76,11 @@
       <div class="border border-theme bg-surface p-2.5">
         <h3 class="text-sm font-medium text-body">Cards and alerts</h3>
         <div class="mt-2 space-y-2">
-          <div class="border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-2 py-1.5">
-            <p class="text-sm font-semibold text-[var(--color-success-text)]">Success message</p>
+          <div class="border border-(--color-success-border) bg-(--color-success-bg) px-2 py-1.5">
+            <p class="text-sm font-semibold text-(--color-success-text)">Success message</p>
           </div>
-          <div class="border border-[var(--color-error-border)] bg-[var(--color-error-bg)] px-2 py-1.5">
-            <p class="text-sm font-semibold text-[var(--color-error-text)]">Error message</p>
+          <div class="border border-(--color-error-border) bg-(--color-error-bg) px-2 py-1.5">
+            <p class="text-sm font-semibold text-(--color-error-text)">Error message</p>
           </div>
         </div>
       </div>
@@ -97,14 +97,14 @@
       <div class="border border-theme bg-surface p-2.5">
         <h3 class="text-sm font-medium text-body">Table</h3>
         <div class="mt-2 overflow-x-auto border border-theme">
-          <table class="min-w-full divide-y divide-[var(--color-border)]">
+          <table class="min-w-full divide-y divide-(--color-border)">
             <thead class="bg-surface-alt">
               <tr>
                 <th class="px-2 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Column A</th>
                 <th class="px-2 py-1 text-left text-xs font-medium uppercase tracking-wider text-muted">Column B</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-[var(--color-border)] bg-surface">
+            <tbody class="divide-y divide-(--color-border) bg-surface">
               <tr>
                 <td class="px-2 py-1.5 text-sm font-medium text-body">Row 1</td>
                 <td class="px-2 py-1.5 text-sm text-body">Value</td>

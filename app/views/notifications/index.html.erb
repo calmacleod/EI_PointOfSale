@@ -21,7 +21,7 @@
     </div>
 
     <% if @notifications.any? %>
-      <div class="divide-y divide-[var(--color-border)]">
+      <div class="divide-y divide-(--color-border)">
         <% @notifications.each do |notification| %>
           <div class="group relative <%= 'bg-[var(--color-accent)]/5' unless notification.read? %>">
             <% if notification.url.present? %>
@@ -44,7 +44,7 @@
               </div>
             <% end %>
             <button type="button"
-                    class="absolute top-2 right-2 hidden h-5 w-5 items-center justify-center rounded text-muted hover:text-body hover:bg-[var(--color-border)]/30 group-hover:flex"
+                    class="absolute top-2 right-2 hidden h-5 w-5 items-center justify-center rounded text-muted hover:text-body hover:bg-(--color-border)/30 group-hover:flex"
                     data-action="click->notifications#dismissNotification"
                     data-notification-id="<%= notification.id %>"
                     aria-label="Dismiss notification">

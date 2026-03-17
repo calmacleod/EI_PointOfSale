@@ -66,7 +66,7 @@
         <option value="<%= value %>"><%= label %></option>
       <% end %>
     </select>
-    <div data-date-range-filter-target="customFields" class="hidden flex items-center gap-1">
+    <div data-date-range-filter-target="customFields" class="hidden items-center gap-1">
       <input type="date" name="<%= filter.key %>_from" form="<%= form_id %>" autocomplete="off" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange">
       <span class="text-xs text-muted">–</span>
       <input type="date" name="<%= filter.key %>_to" form="<%= form_id %>" autocomplete="off" class="input-field-compact h-6 w-28 px-1 py-0 text-xs" data-action="change->filter-builder#handleFilterChange">
@@ -89,9 +89,9 @@
       <span data-multi-select-filter-target="label">Select…</span>
       <svg class="h-3 w-3 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
     </button>
-    <div data-multi-select-filter-target="dropdown" class="absolute left-0 top-full z-20 mt-1 hidden max-h-60 min-w-[200px] overflow-y-auto rounded-lg border border-theme bg-surface py-1 shadow-lg">
+    <div data-multi-select-filter-target="dropdown" class="absolute left-0 top-full z-20 mt-1 hidden max-h-60 min-w-50 overflow-y-auto rounded-lg border border-theme bg-surface py-1 shadow-lg">
       <% choices.each do |choice| %>
-        <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-[var(--color-border)]">
+        <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-(--color-border)">
           <input type="checkbox" name="<%= filter.key %>[]" value="<%= choice[:value] %>" form="<%= form_id %>" class="rounded border-theme text-accent focus:ring-accent" data-action="change->multi-select-filter#changed change->filter-builder#handleFilterChange">
           <%= choice[:label] %>
         </label>

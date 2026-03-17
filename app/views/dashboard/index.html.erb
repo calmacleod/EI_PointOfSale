@@ -2,7 +2,7 @@
 
 <div class="mx-auto flex w-full max-w-6xl flex-col gap-2">
   <% if Current.user.nil? %>
-    <div class="rounded-lg border border-[var(--color-success-border)] bg-[var(--color-success-bg)] p-2.5 text-[var(--color-success-text)]">
+    <div class="rounded-lg border border-(--color-success-border) bg-(--color-success-bg) p-2.5 text-(--color-success-text)">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-sm font-semibold">You're viewing the dashboard as a guest.</p>
@@ -73,7 +73,7 @@
               <% end %>
             </div>
             <% if metric[:icon].present? %>
-              <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
+              <div class="rounded-md bg-(--color-border)/30 p-1.5 ring-1 ring-inset border-theme">
                 <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="<%= metric[:icon] %>" />
                 </svg>
@@ -98,7 +98,7 @@
               <% end %>
             </div>
             <% if metric[:icon].present? %>
-              <div class="rounded-md bg-[var(--color-border)]/30 p-1.5 ring-1 ring-inset border-theme">
+              <div class="rounded-md bg-(--color-border)/30 p-1.5 ring-1 ring-inset border-theme">
                 <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="<%= metric[:icon] %>" />
                 </svg>
@@ -120,7 +120,7 @@
           <%= link_to "View all", orders_path, class: "text-xs font-medium text-accent hover:opacity-80" %>
         </div>
 
-        <table class="min-w-full divide-y divide-[var(--color-border)]">
+        <table class="min-w-full divide-y divide-(--color-border)">
           <thead class="bg-surface-alt">
             <tr>
               <th scope="col" class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Order</th>
@@ -130,7 +130,7 @@
               <th scope="col" class="px-3 py-2 text-right text-xs font-medium uppercase tracking-wider text-muted">When</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-[var(--color-border)]">
+          <tbody class="divide-y divide-(--color-border)">
             <% if @recent_orders.any? %>
               <% @recent_orders.each do |order| %>
                 <tr>
@@ -174,7 +174,7 @@
           <div class="mt-2 flex flex-col gap-1.5">
             <% @my_tasks.each do |task| %>
               <div class="flex items-start gap-2 rounded-lg border border-theme px-2 py-1.5 <%= task.overdue? ? 'bg-[var(--color-error-bg)]' : 'bg-surface' %>">
-                <div class="mt-0.5 flex-shrink-0">
+                <div class="mt-0.5 shrink-0">
                   <%
                     task_dot_colors = {
                       "not_started" => "bg-[var(--color-neutral-text)]",
@@ -218,7 +218,7 @@
               data: { turbo_prefetch: true },
               class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v5a1 1 0 11-2 0V4H5v12h6a1 1 0 110 2H4a1 1 0 01-1-1V3z" />
                   <path d="M14 12a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2h-2a1 1 0 110-2h2v-2a1 1 0 011-1z" />
@@ -236,7 +236,7 @@
               data: { turbo_prefetch: true },
               class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 3a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z" />
                 </svg>
@@ -253,7 +253,7 @@
               data: { turbo_prefetch: true },
               class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" />
                 </svg>
@@ -270,7 +270,7 @@
               data: { turbo_prefetch: true },
               class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M2 5a2 2 0 012-2h6a2 2 0 012 2v1h4a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2 0v10h12V8h-4a2 2 0 01-2-2V5H4z" />
                 </svg>
@@ -288,7 +288,7 @@
                 data: { turbo_prefetch: true },
                 class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
               <div class="flex items-center gap-2">
-                <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+                <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
                   <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                   </svg>
@@ -306,7 +306,7 @@
               data: { turbo_prefetch: true },
               class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-[color:var(--color-page)]">
+              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9a1 1 0 01-1-1V6a1 1 0 112 0v5h1a1 1 0 110 2z" />
                 </svg>

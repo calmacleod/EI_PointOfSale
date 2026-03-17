@@ -53,16 +53,16 @@
           <%= f.hidden_field :order_id, value: @order.id %>
           <div class="flex gap-2">
             <%= render "orders/code_lookup_input", order: @order %>
-            <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-xs font-medium text-white hover:bg-[var(--color-accent-hover)] transition">
+            <button type="submit" class="rounded-lg bg-accent px-4 py-2 text-xs font-medium text-white hover:bg-(--color-accent-hover) transition">
               Add
             </button>
-            <button type="button" class="rounded-lg border border-theme px-3 py-2 text-xs font-medium text-muted hover:bg-[var(--color-border)] transition"
+            <button type="button" class="rounded-lg border border-theme px-3 py-2 text-xs font-medium text-muted hover:bg-(--color-border) transition"
                     data-action="click->order-form#openSearch">
               Search
             </button>
           </div>
         <% end %>
-        <div id="lookup_flash" class="mt-1 min-h-[1.25rem] text-xs"></div>
+        <div id="lookup_flash" class="mt-1 min-h-5 text-xs"></div>
       </div>
 
       <%# Line items %>
@@ -143,7 +143,7 @@
   </div>
 
   <%# ── Product preview modal ──────────────────────────────────────── %>
-  <div id="product_preview_modal" class="fixed inset-0 z-[60] hidden" role="dialog"
+  <div id="product_preview_modal" class="fixed inset-0 z-60 hidden" role="dialog"
        data-controller="product-preview">
     <div class="fixed inset-0 bg-black/30" data-action="click->product-preview#close"></div>
     <div class="fixed inset-0 flex items-center justify-center p-8">

@@ -1,8 +1,8 @@
 <%= form_with model: customer, class: "divide-y divide-[var(--color-border)]" do |f| %>
   <% if customer.errors.any? %>
-    <div class="rounded-t-lg bg-[var(--color-error-bg)] px-3 py-2">
-      <p class="text-sm font-semibold text-[var(--color-error-text)]">Please fix the following:</p>
-      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-[var(--color-error-text)]">
+    <div class="rounded-t-lg bg-(--color-error-bg) px-3 py-2">
+      <p class="text-sm font-semibold text-(--color-error-text)">Please fix the following:</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5 text-sm text-(--color-error-text)">
         <% customer.errors.full_messages.each do |message| %>
           <li><%= message %></li>
         <% end %>

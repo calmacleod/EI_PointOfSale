@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "discount_modal" do %>
-  <div class="fixed inset-0 z-[70]" role="dialog" aria-modal="true">
+  <div class="fixed inset-0 z-70" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-black/50" data-action="click->discount-modal#close"></div>
     <div class="fixed inset-0 flex items-start justify-center pt-[10vh] p-4" style="pointer-events: none;">
       <div class="w-full max-w-md rounded-xl bg-surface shadow-2xl overflow-hidden" style="pointer-events: auto;">
@@ -57,7 +57,7 @@
               </div>
             </div>
             <button type="submit"
-                    class="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-accent-hover)] transition">
+                    class="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-(--color-accent-hover) transition">
               Apply Discount
             </button>
           <% end %>
@@ -121,7 +121,7 @@
               <% end %>
             </div>
             <button type="submit"
-                    class="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--color-accent-hover)] transition">
+                    class="w-full rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-white hover:bg-(--color-accent-hover) transition">
               Apply to Selected Items
             </button>
           <% end %>

@@ -32,7 +32,7 @@
         <h2 id="discount-details-heading" class="text-sm font-semibold text-body">Details</h2>
         <p class="text-xs text-muted">Discount configuration</p>
       </div>
-      <dl class="divide-y divide-[var(--color-border)]">
+      <dl class="divide-y divide-(--color-border)">
         <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
           <dt class="text-xs font-medium text-muted">Name</dt>
           <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @discount.name %></dd>
@@ -84,7 +84,7 @@
         <h2 id="discount-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
         <p class="text-xs text-muted">Timestamps</p>
       </div>
-      <dl class="divide-y divide-[var(--color-border)]">
+      <dl class="divide-y divide-(--color-border)">
         <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
           <dt class="text-xs font-medium text-muted">Created</dt>
           <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= local_time(@discount.created_at, format: :long) %></dd>
@@ -113,7 +113,7 @@
       <button type="button"
               data-action="click->modal#open"
               data-modal-id="allow-list-modal"
-              class="inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]">
+              class="inline-flex min-h-7.5 items-center justify-center rounded-md bg-accent px-2.5 py-1 text-xs font-medium text-(--color-page) hover:bg-(--color-accent-hover)">
         <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
@@ -128,7 +128,7 @@
   <%# Allow List Modal %>
   <div id="allow-list-modal"
        data-modal-target="modal"
-       class="modal-overlay fixed inset-0 z-[60] hidden"
+       class="modal-overlay fixed inset-0 z-60 hidden"
        role="dialog"
        aria-modal="true"
        aria-labelledby="allow-list-modal-title">
@@ -144,7 +144,7 @@
           </div>
           <button type="button"
                   data-action="click->modal#close"
-                  class="rounded-md p-1 text-muted hover:bg-[var(--color-border)] hover:text-body">
+                  class="rounded-md p-1 text-muted hover:bg-(--color-border) hover:text-body">
             <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
@@ -165,7 +165,7 @@
                   {}, class: "input-field min-h-[30px] w-full text-xs",
                   data: { discount_items_target: "typeFilter", action: "change->discount-items#filterByType" } %>
             </div>
-            <div class="flex-[2]">
+            <div class="flex-2">
               <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
               <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
                   class: "input-field min-h-[30px] w-full text-xs",
@@ -185,7 +185,7 @@
             <div class="mt-4 flex justify-end gap-2">
               <button type="button"
                       data-action="click->modal#close"
-                      class="inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-xs font-semibold text-body hover:bg-[var(--color-border)]/30">
+                      class="inline-flex min-h-7.5 items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-xs font-semibold text-body hover:bg-(--color-border)/30">
                 Cancel
               </button>
               <%= f.button type: "submit", disabled: true,
@@ -215,7 +215,7 @@
         <button type="button"
                 data-action="click->modal#open"
                 data-modal-id="deny-list-modal"
-                class="inline-flex min-h-[30px] items-center justify-center rounded-md bg-red-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-red-700">
+                class="inline-flex min-h-7.5 items-center justify-center rounded-md bg-red-600 px-2.5 py-1 text-xs font-medium text-white hover:bg-red-700">
           <svg class="h-3 w-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
           </svg>
@@ -230,7 +230,7 @@
     <%# Deny List Modal %>
     <div id="deny-list-modal"
          data-modal-target="modal"
-         class="modal-overlay fixed inset-0 z-[60] hidden"
+         class="modal-overlay fixed inset-0 z-60 hidden"
          role="dialog"
          aria-modal="true"
          aria-labelledby="deny-list-modal-title">
@@ -246,7 +246,7 @@
             </div>
             <button type="button"
                     data-action="click->modal#close"
-                    class="rounded-md p-1 text-muted hover:bg-[var(--color-border)] hover:text-body">
+                    class="rounded-md p-1 text-muted hover:bg-(--color-border) hover:text-body">
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
               </svg>
@@ -267,7 +267,7 @@
                     {}, class: "input-field min-h-[30px] w-full text-xs",
                     data: { discount_items_target: "typeFilter", action: "change->discount-items#filterByType" } %>
               </div>
-              <div class="flex-[2]">
+              <div class="flex-2">
                 <%= f.label :q, "Search", class: "text-xs font-medium text-body" %>
                 <%= f.text_field :q, placeholder: "Name or code...", autocomplete: "off",
                     class: "input-field min-h-[30px] w-full text-xs",
@@ -287,7 +287,7 @@
               <div class="mt-4 flex justify-end gap-2">
                 <button type="button"
                         data-action="click->modal#close"
-                        class="inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-xs font-semibold text-body hover:bg-[var(--color-border)]/30">
+                        class="inline-flex min-h-7.5 items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-xs font-semibold text-body hover:bg-(--color-border)/30">
                   Cancel
                 </button>
                 <%= f.button type: "submit", disabled: true,
