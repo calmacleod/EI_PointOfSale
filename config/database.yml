@@ -114,21 +114,27 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
+  primary:
     <<: *default
-    url: <%= ENV.fetch('DATABASE_URL', 'localhost') %>
-    username: <%= ENV.fetch('DATABASE_USERNAME', 'ei_point_of_sale') %>
-    password: <%= ENV.fetch('DATABASE_PASSWORD', 'ei_point_of_sale') %>
-    database: ei_point_of_sale_production
+    url: <%= ENV['DATABASE_URL'] %>
   cache:
-    <<: *primary_production
-    database: ei_point_of_sale_production_cache
+    <<: *default
+    host: <%= ENV.fetch('DATABASE_HOST', 'localhost') %>
+    username: <%= ENV.fetch('DATABASE_USERNAME', 'postgres') %>
+    password: <%= ENV.fetch('DATABASE_PASSWORD', 'postgres') %>
+    database: cache
     migrations_paths: db/cache_migrate
   queue:
-    <<: *primary_production
-    database: ei_point_of_sale_production_queue
+    <<: *default
+    host: <%= ENV.fetch('DATABASE_HOST', 'localhost') %>
+    username: <%= ENV.fetch('DATABASE_USERNAME', 'postgres') %>
+    password: <%= ENV.fetch('DATABASE_PASSWORD', 'postgres') %>
+    database: queue
     migrations_paths: db/queue_migrate
   cable:
-    <<: *primary_production
-    database: ei_point_of_sale_production_cable
+    <<: *default
+    host: <%= ENV.fetch('DATABASE_HOST', 'localhost') %>
+    username: <%= ENV.fetch('DATABASE_USERNAME', 'postgres') %>
+    password: <%= ENV.fetch('DATABASE_PASSWORD', 'postgres') %>
+    database: cable
     migrations_paths: db/cable_migrate
