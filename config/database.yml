@@ -116,9 +116,9 @@ test:
 production:
   primary: &primary_production
     <<: *default
+    username: <%= ENV.fetch('DATABASE_USERNAME', 'ei_point_of_sale') %>
+    password: <%= ENV.fetch('DATABASE_PASSWORD', 'ei_point_of_sale') %>
     database: ei_point_of_sale_production
-    username: ei_point_of_sale
-    password: <%= ENV["EI_POINT_OF_SALE_DATABASE_PASSWORD"] %>
   cache:
     <<: *primary_production
     database: ei_point_of_sale_production_cache
