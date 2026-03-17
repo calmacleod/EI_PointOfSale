@@ -57,7 +57,7 @@ class FiltersController < ApplicationController
 
     def build_product_config
       FilterConfig.new(:products, products_path) do |f|
-        f.association  :supplier_id,      label: "Supplier",      collection: -> { Supplier.kept.order(:name) }
+        f.multi_select :supplier_id,      label: "Supplier",      collection: -> { Supplier.kept.order(:name) }
         f.association  :tax_code_id,      label: "Tax Code",      collection: -> { TaxCode.kept.order(:code) }, display: :code
         f.association  :product_group_id, label: "Product Group",  collection: -> { ProductGroup.order(:name) }
         f.multi_select :category_ids,     label: "Categories",
