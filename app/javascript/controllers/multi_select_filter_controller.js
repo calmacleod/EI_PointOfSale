@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["label", "dropdown"]
+  static targets = ["label", "dropdown", "search", "list"]
 
   connect() {
     this.boundClose = this.closeOnOutsideClick.bind(this)
@@ -14,9 +14,23 @@ export default class extends Controller {
 
   toggle(event) {
     event.stopPropagation()
-    if (this.hasDropdownTarget) {
-      this.dropdownTarget.classList.toggle("hidden")
+    if (!this.hasDropdownTarget) return
+
+    const isNowHidden = this.dropdownTarget.classList.toggle("hidden")
+    if (!isNowHidden && this.hasSearchTarget) {
+      this.searchTarget.value = ""
+      this.filterOptions()
+      this.searchTarget.focus()
     }
+  }
+
+  filterOptions() {
+    if (!this.hasListTarget) return
+
+    const query = this.hasSearchTarget ? this.searchTarget.value.toLowerCase() : ""
+    this.listTarget.querySelectorAll("label").forEach(label => {
+      label.hidden = query.length > 0 && !label.textContent.toLowerCase().includes(query)
+    })
   }
 
   changed() {
@@ -39,5 +53,9 @@ export default class extends Controller {
     if (!this.hasDropdownTarget) return
     if (this.element.contains(event.target)) return
     this.dropdownTarget.classList.add("hidden")
+    if (this.hasSearchTarget) {
+      this.searchTarget.value = ""
+      this.filterOptions()
+    }
   }
 }
