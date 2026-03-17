@@ -12,7 +12,7 @@ class StoreTasksController < ApplicationController
       f.select :status, label: "Status",
                options: StoreTask.statuses.keys.map { |s| [ s.humanize.titleize, s ] }
       f.select :assigned_to_id, label: "Assigned To",
-               options: User.order(:name).pluck(:name, :id)
+               options: Rails.cache.fetch("users_for_select", expires_in: 5.minutes) { User.order(:name).pluck(:name, :id) }
       f.date_range :due_date, label: "Due Date"
       f.date_range :created_at, label: "Created"
 
