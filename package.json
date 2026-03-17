@@ -2,10 +2,13 @@
   "name": "ei-point-of-sale",
   "private": true,
   "devDependencies": {
-    "@herb-tools/linter": "latest"
+    "@herb-tools/linter": "latest",
+    "tailwind-lint": "latest"
   },
   "scripts": {
     "herb:lint": "herb-lint",
-    "herb:lint:fix": "herb-lint --fix"
+    "herb:lint:fix": "herb-lint --fix",
+    "tailwind:lint": "tailwind-lint \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\"",
+    "tailwind:lint:fix": "tailwind-lint --fix \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\""
   }
 }
