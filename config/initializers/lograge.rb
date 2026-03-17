@@ -22,6 +22,7 @@ if Rails.env.development?
 
       data = {
         time: time_str,
+        user_id: event.payload[:headers]&.env&.dig("current_user_id"),
         db: event.payload[:db_runtime]&.round(2),
         view: event.payload[:view_runtime]&.round(2)
       }

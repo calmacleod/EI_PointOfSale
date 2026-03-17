@@ -23,6 +23,8 @@ module Authentication
 
     def resume_session
       Current.session ||= find_session_by_cookie
+      request.env["current_user_id"] = Current.session&.user_id
+      Current.session
     end
 
     def find_session_by_cookie
