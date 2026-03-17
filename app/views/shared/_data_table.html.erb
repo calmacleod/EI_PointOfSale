@@ -78,8 +78,7 @@
         <%# Precompute renderers once so we avoid a hash lookup per cell per row %>
         <% column_renderers = config.columns.map { |col| [col, table.renderer_for(col.key)] } %>
         <% actions_renderer = table.renderer_for(:actions) %>
-        <%= render partial: "shared/data_table_row", collection: records,
-                   locals: { column_renderers: column_renderers, actions_renderer: actions_renderer } %>
+        <%= render_table_rows(records, column_renderers, actions_renderer) %>
       </tbody>
     </table>
       </div>

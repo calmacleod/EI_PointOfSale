@@ -39,10 +39,11 @@ module Filterable
     # Options:
     #   config: - A FilterConfig instance (required).
     #   items:  - Override per-page count.
+    #   count:  - Pre-computed count to pass to Pagy (avoids COUNT(*) query).
     #
     # Returns [pagy, records].
     #
-    def filter_and_paginate(scope, config:, items: nil)
+    def filter_and_paginate(scope, config:, items: nil, count: nil)
       scope = apply_search(scope, config.search_scope)
       scope = config.apply_filters(scope, params)
 
@@ -52,6 +53,7 @@ module Filterable
                          default_direction: config.sort_default_direction)
 
       pagy_opts = items ? { limit: items } : {}
+      pagy_opts[:count] = count if count
       pagy(:offset, scope, **pagy_opts)
     end
 

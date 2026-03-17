@@ -15,7 +15,7 @@ module SortHelper
     is_active = current_sort_column == column
     next_dir  = is_active && current_sort_direction == "asc" ? "desc" : "asc"
 
-    url = url_for(request.query_parameters.merge(sort: column, dir: next_dir, page: nil))
+    url = url_for(sort_base_params.merge(sort: column, dir: next_dir))
 
     arrow = if is_active
               current_sort_direction == "asc" ? "▲" : "▼"
@@ -31,4 +31,12 @@ module SortHelper
       ].compact)
     end
   end
+
+  private
+
+    # Memoized base params for sort URL building — avoids re-allocating and
+    # re-parsing query_parameters for every sortable column in the header.
+    def sort_base_params
+      @sort_base_params ||= request.query_parameters.except("page")
+    end
 end

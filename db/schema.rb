@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_17_210507) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -90,6 +90,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_categories_on_discarded_at"
+    t.index ["discarded_at"], name: "index_categories_on_discarded_at_null", where: "(discarded_at IS NULL)"
     t.index ["name"], name: "index_categories_on_name", unique: true
   end
 
@@ -104,6 +105,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.index ["categorizable_type", "categorizable_id"], name: "index_categorizations_on_categorizable"
     t.index ["category_id"], name: "index_categorizations_on_category_id"
     t.index ["discarded_at"], name: "index_categorizations_on_discarded_at"
+    t.index ["discarded_at"], name: "index_categorizations_on_discarded_at_null", where: "(discarded_at IS NULL)"
   end
 
   create_table "customers", force: :cascade do |t|
@@ -132,6 +134,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.datetime "updated_at", null: false
     t.index ["added_by_id"], name: "index_customers_on_added_by_id"
     t.index ["discarded_at"], name: "index_customers_on_discarded_at"
+    t.index ["discarded_at"], name: "index_customers_on_discarded_at_null", where: "(discarded_at IS NULL)"
     t.index ["discount_id"], name: "index_customers_on_discount_id"
     t.index ["member_number"], name: "index_customers_on_member_number", unique: true
     t.index ["tax_code_id"], name: "index_customers_on_tax_code_id"
@@ -190,6 +193,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.decimal "value", precision: 10, scale: 2, null: false
     t.index ["active"], name: "index_discounts_on_active"
     t.index ["discarded_at"], name: "index_discounts_on_discarded_at"
+    t.index ["discarded_at"], name: "index_discounts_on_discarded_at_null", where: "(discarded_at IS NULL)"
   end
 
   create_table "gift_certificates", force: :cascade do |t|
@@ -332,6 +336,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.index ["created_by_id"], name: "index_orders_on_created_by_id"
     t.index ["customer_id"], name: "index_orders_on_customer_id"
     t.index ["discarded_at"], name: "index_orders_on_discarded_at"
+    t.index ["discarded_at"], name: "index_orders_on_discarded_at_null", where: "(discarded_at IS NULL)"
     t.index ["metadata"], name: "index_orders_on_metadata", using: :gin
     t.index ["number"], name: "index_orders_on_number", unique: true
     t.index ["status"], name: "index_orders_on_status"
@@ -387,6 +392,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.index ["discarded_at", "code"], name: "index_products_on_discarded_at_and_code"
     t.index ["discarded_at", "name"], name: "index_products_on_discarded_at_and_name"
     t.index ["discarded_at"], name: "index_products_on_discarded_at"
+    t.index ["discarded_at"], name: "index_products_on_discarded_at_null", where: "(discarded_at IS NULL)"
     t.index ["name"], name: "index_products_on_name_kept", where: "(discarded_at IS NULL)"
     t.index ["product_group_id"], name: "index_products_on_product_group_id"
     t.index ["search_vector"], name: "index_products_on_search_vector", where: "(discarded_at IS NULL)", using: :gin
@@ -493,6 +499,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.index ["added_by_id"], name: "index_services_on_added_by_id"
     t.index ["code"], name: "index_services_on_code", unique: true
     t.index ["discarded_at"], name: "index_services_on_discarded_at"
+    t.index ["discarded_at"], name: "index_services_on_discarded_at_null", where: "(discarded_at IS NULL)"
     t.index ["tax_code_id"], name: "index_services_on_tax_code_id"
   end
 
@@ -661,6 +668,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.string "phone"
     t.datetime "updated_at", null: false
     t.index ["discarded_at"], name: "index_suppliers_on_discarded_at"
+    t.index ["discarded_at"], name: "index_suppliers_on_discarded_at_null", where: "(discarded_at IS NULL)"
   end
 
   create_table "tax_codes", force: :cascade do |t|
@@ -675,6 +683,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_205026) do
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_tax_codes_on_code", unique: true
     t.index ["discarded_at"], name: "index_tax_codes_on_discarded_at"
+    t.index ["discarded_at"], name: "index_tax_codes_on_discarded_at_null", where: "(discarded_at IS NULL)"
   end
 
   create_table "terminal_reconciliations", force: :cascade do |t|

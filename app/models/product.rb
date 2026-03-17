@@ -24,6 +24,8 @@ class Product < ApplicationRecord
   validates :code, presence: true, uniqueness: true
 
   before_save :capture_restock_timestamp
+  after_commit :invalidate_kept_count, on: [ :create, :destroy ]
+  after_commit :invalidate_kept_count, if: :saved_change_to_discarded_at?
 
   # Barcode scan lookup — uses the unique index on `code`.
   def self.find_by_exact_code(code)
@@ -35,6 +37,10 @@ class Product < ApplicationRecord
   end
 
   private
+
+    def invalidate_kept_count
+      Rails.cache.delete("products/kept_count")
+    end
 
     def capture_restock_timestamp
       if stock_level_changed? && stock_level > stock_level_was.to_i
