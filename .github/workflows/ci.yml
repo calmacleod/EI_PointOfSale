@@ -77,6 +77,9 @@ jobs:
       - name: Lint HTML+ERB templates
         run: npm ci && npm run herb:lint
 
+      - name: Lint Tailwind CSS classes
+        run: npm run tailwind:lint
+
   test:
     runs-on: ubuntu-latest
 
