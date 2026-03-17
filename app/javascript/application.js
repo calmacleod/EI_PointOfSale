@@ -4,6 +4,9 @@ import "controllers"
 import LocalTime from "local-time"
 
 LocalTime.start()
+
+Turbo.config.drive.progressBarDelay = 500
+
 document.addEventListener("turbo:morph", () => LocalTime.run())
 
 // Intercept Turbo navigations to filter pages and rewrite the URL with
