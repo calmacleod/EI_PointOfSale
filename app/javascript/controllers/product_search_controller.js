@@ -13,6 +13,7 @@ export default class extends Controller {
     this.searchResults = []
     this.debounceTimer = null
     this.activeFilter = "all"
+    this.previewKey = null
 
     document.addEventListener("keydown", this.boundKeydown = (e) => {
       if (e.key === "Escape" && !this.element.classList.contains("hidden")) {
@@ -77,7 +78,7 @@ export default class extends Controller {
 
       if (response.ok) {
         const html = await response.text()
-        this.resultsTarget.innerHTML = html
+        await this.swapResults(html)
 
         // Parse the results from the DOM to update state
         this.refreshSearchResultsFromDom()
@@ -90,11 +91,16 @@ export default class extends Controller {
           this.clearPreview()
         }
       } else {
-        this.resultsTarget.innerHTML = '<div class="p-6 text-center text-sm text-red-500">Search failed</div>'
+        await this.swapResults('<div class="p-6 text-center text-sm text-red-500">Search failed</div>')
       }
     } catch (e) {
-      this.resultsTarget.innerHTML = '<div class="p-6 text-center text-sm text-red-500">Search failed</div>'
+      await this.swapResults('<div class="p-6 text-center text-sm text-red-500">Search failed</div>')
     }
+  }
+
+  async swapResults(html) {
+    const el = this.resultsTarget
+    el.innerHTML = html
   }
 
   refreshSearchResultsFromDom() {
@@ -116,11 +122,18 @@ export default class extends Controller {
     buttons.forEach((btn, idx) => {
       if (idx === this.selectedIndex) {
         btn.classList.remove("border-l-transparent")
-        btn.classList.add("bg-accent/10", "border-l-2", "border-l-accent")
-        btn.scrollIntoView({ block: "nearest" })
+        btn.classList.add("bg-accent/20", "border-l-4", "border-l-accent")
+        const container = this.resultsTarget
+        const btnTop = btn.offsetTop
+        const btnBottom = btnTop + btn.offsetHeight
+        if (btnTop < container.scrollTop) {
+          container.scrollTop = btnTop
+        } else if (btnBottom > container.scrollTop + container.clientHeight) {
+          container.scrollTop = btnBottom - container.clientHeight
+        }
       } else {
-        btn.classList.remove("bg-accent/10", "border-l-2", "border-l-accent")
-        btn.classList.add("border-l-2", "border-l-transparent")
+        btn.classList.remove("bg-accent/20", "border-l-4", "border-l-accent")
+        btn.classList.add("border-l-4", "border-l-transparent")
       }
     })
   }
@@ -189,25 +202,36 @@ export default class extends Controller {
 
   async loadPreview(type, id) {
     if (!this.hasPreviewTarget) return
-
-    this.previewTarget.innerHTML = `
-      <div class="flex h-full items-center justify-center p-6">
-        <div class="text-center text-sm text-muted">Loading...</div>
-      </div>`
+    const key = `${type}-${id}`
+    if (key === this.previewKey) return
+    this.previewKey = key
 
     try {
       const url = type === "Product" ? `/products/${id}/preview` : `/services/${id}/preview`
       const response = await fetch(url, { headers: { "Accept": "text/html" } })
-
-      if (response.ok) {
-        const html = await response.text()
-        this.previewTarget.innerHTML = this.wrapPreviewWithAddButton(html, type, id)
-      } else {
-        this.renderBasicPreview(type, id)
-      }
+      const html = response.ok
+        ? this.wrapPreviewWithAddButton(await response.text(), type, id)
+        : this.basicPreviewHtml(type, id)
+      await this.swapPreview(html)
     } catch {
-      this.renderBasicPreview(type, id)
+      await this.swapPreview(this.basicPreviewHtml(type, id))
     }
+  }
+
+  async swapPreview(html) {
+    const el = this.previewTarget
+    await el.animate(
+      [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-12px)" }],
+      { duration: 100, easing: "ease-in", fill: "forwards" }
+    ).finished
+    el.scrollTop = 0
+    el.innerHTML = html
+    await el.animate(
+      [{ opacity: 0, transform: "translateY(12px)" }, { opacity: 1, transform: "translateY(0)" }],
+      { duration: 150, easing: "ease-out", fill: "forwards" }
+    ).finished
+    el.style.opacity = ""
+    el.style.transform = ""
   }
 
   wrapPreviewWithAddButton(html, type, id) {
@@ -226,8 +250,8 @@ export default class extends Controller {
       </div>`
   }
 
-  renderBasicPreview(type, id) {
-    this.previewTarget.innerHTML = `
+  basicPreviewHtml(type, id) {
+    return `
       <div class="p-5 space-y-4">
         <p class="text-xs text-muted">Detailed preview unavailable for this item.</p>
         <div class="border-t border-theme pt-3">
@@ -250,13 +274,13 @@ export default class extends Controller {
 
   clearPreview() {
     if (!this.hasPreviewTarget) return
-    this.previewTarget.innerHTML = `
+    this.swapPreview(`
       <div class="flex h-full items-center justify-center p-6">
         <div class="text-center">
           <svg class="mx-auto h-10 w-10 text-muted opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
           <p class="mt-2 text-xs text-muted">Select an item to preview</p>
         </div>
-      </div>`
+      </div>`)
   }
 
   close() {
@@ -265,6 +289,7 @@ export default class extends Controller {
     this.searchResults = []
     this.selectedIndex = -1
     this.activeFilter = "all"
+    this.previewKey = null
     this.updateFilterPills()
     this.showPlaceholder()
 
