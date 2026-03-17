@@ -16,7 +16,7 @@ module Dev
     #   Dev::Notifications.send("alice@example.com", "Your title", body: "Optional body")
     def self.send(email, title, body: nil)
       user = User.find_by!(email_address: email)
-      n = user.notifications.create!(title: title, body: body, persistent: true)
+      n = NotifyService.call(user: user, title: title, body: body, persistent: true)
       puts "Sent notification ##{n.id} to #{user.email_address} (unread count: #{user.reload.unread_notifications_count})"
       n
     end
@@ -26,7 +26,7 @@ module Dev
     #   Dev::Notifications.send_all("System maintenance tonight")
     def self.send_all(title, body: nil)
       User.find_each do |user|
-        n = user.notifications.create!(title: title, body: body, persistent: true)
+        n = NotifyService.call(user: user, title: title, body: body, persistent: true)
         puts "  → #{user.email_address} (##{n.id})"
       end
       puts "Done."

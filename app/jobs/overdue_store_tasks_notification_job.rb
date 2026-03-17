@@ -7,7 +7,8 @@ class OverdueStoreTasksNotificationJob < ApplicationJob
     StoreTask.overdue.where.not(assigned_to_id: nil).includes(:assigned_to).find_each do |task|
       next if already_notified_today?(task)
 
-      task.assigned_to.notifications.create!(
+      NotifyService.call(
+        user: task.assigned_to,
         title: "Overdue task: #{task.title}",
         body: "\"#{task.title}\" was due on #{I18n.l(task.due_date, format: :short)}.",
         persistent: true
