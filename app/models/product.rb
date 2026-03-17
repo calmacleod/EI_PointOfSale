@@ -8,8 +8,8 @@ class Product < ApplicationRecord
   include AsyncPgSearch
 
   multisearchable against: [ :name, :code, :notes ], if: :kept?
-  pg_search_scope :search, against: [ :name, :code, :notes ],
-    using: { tsearch: { prefix: true }, trigram: {} }
+  pg_search_scope :search,
+    using: { tsearch: { prefix: true, tsvector_column: "search_vector" } }
 
   belongs_to :tax_code, optional: true
   belongs_to :supplier, optional: true

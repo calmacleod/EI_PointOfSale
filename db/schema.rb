@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_17_135323) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_17_194708) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -368,6 +368,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_135323) do
     t.string "product_url"
     t.decimal "purchase_price", precision: 10, scale: 2
     t.integer "reorder_level", default: 0
+    t.virtual "search_vector", type: :tsvector, as: "to_tsvector('simple'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((code)::text, ''::text)) || ' '::text) || COALESCE(notes, ''::text)))", stored: true
     t.decimal "selling_price", precision: 10, scale: 2
     t.string "shopify_inventory_item_id"
     t.string "shopify_product_id"
@@ -387,6 +388,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_135323) do
     t.index ["discarded_at"], name: "index_products_on_discarded_at"
     t.index ["name"], name: "index_products_on_name_kept", where: "(discarded_at IS NULL)"
     t.index ["product_group_id"], name: "index_products_on_product_group_id"
+    t.index ["search_vector"], name: "index_products_on_search_vector", where: "(discarded_at IS NULL)", using: :gin
     t.index ["shopify_product_id"], name: "index_products_on_shopify_product_id"
     t.index ["shopify_variant_id"], name: "index_products_on_shopify_variant_id"
     t.index ["supplier_id"], name: "index_products_on_supplier_id"

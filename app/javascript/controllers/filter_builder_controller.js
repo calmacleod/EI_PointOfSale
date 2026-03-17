@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-const DEBOUNCE_MS = 300
+const DEBOUNCE_MS = 150
 const STORAGE_PREFIX = "table_filters_"
 const PATH_MAP_KEY = "table_filter_paths"
 
