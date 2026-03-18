@@ -113,3 +113,5 @@ group :test do
   gem "minitest-mock"
   gem "minitest-reporters"
 end
+
+gem "newrelic_rpm", "~> 10.2"
