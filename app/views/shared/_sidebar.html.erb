@@ -75,7 +75,7 @@
       <% end %>
 
       <%= link_to products_path,
-          data: { turbo_prefetch: true, turbo_preload: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(products_path) ?
