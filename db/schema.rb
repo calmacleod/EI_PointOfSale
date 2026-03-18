@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_17_210507) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_18_143321) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -344,11 +344,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_17_210507) do
 
   create_table "pg_search_documents", force: :cascade do |t|
     t.text "content"
+    t.virtual "content_tsv", type: :tsvector, as: "to_tsvector('simple'::regconfig, COALESCE(content, ''::text))", stored: true
     t.datetime "created_at", null: false
     t.bigint "searchable_id"
     t.string "searchable_type"
     t.datetime "updated_at", null: false
     t.index ["content"], name: "index_pg_search_documents_on_content_trgm", opclass: :gin_trgm_ops, using: :gin
+    t.index ["content_tsv"], name: "index_pg_search_documents_on_content_tsv", using: :gin
     t.index ["searchable_type", "searchable_id"], name: "index_pg_search_documents_on_searchable"
   end
 

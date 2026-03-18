@@ -58,7 +58,7 @@ class SearchController < ApplicationController
         docs = docs.where(searchable_type: [ "Product", "Service" ])
         docs = docs.where(searchable_type: type_filter) if type_filter.present?
 
-        docs.limit(limit).each do |doc|
+        docs.includes(:searchable).limit(limit).each do |doc|
           record = doc.searchable
           next unless record && record.respond_to?(:kept?)
 
