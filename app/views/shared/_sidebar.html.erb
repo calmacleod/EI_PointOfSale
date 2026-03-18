@@ -33,7 +33,7 @@
       </p>
 
       <%= link_to root_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(root_path) ?
@@ -181,7 +181,7 @@
 
         <% admin_link_active = nav_section_active?("/admin") && !nav_section_active?(admin_gift_certificates_path) %>
         <%= link_to admin_settings_path,
-            data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+            data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
             class: [
               "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
               (admin_link_active ?
@@ -231,7 +231,7 @@
       </div>
 
       <%= link_to edit_profile_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(edit_profile_path) ?

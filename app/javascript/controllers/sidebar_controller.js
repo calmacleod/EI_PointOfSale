@@ -19,10 +19,12 @@ export default class extends Controller {
     this.swipeState = null
     this.rafId = null
     this.setupTouchListeners()
+    this.setupPrefetchRewriting()
   }
 
   disconnect() {
     this.teardownTouchListeners()
+    this.teardownPrefetchRewriting()
     if (this.rafId) cancelAnimationFrame(this.rafId)
   }
 
@@ -96,7 +98,53 @@ export default class extends Controller {
   navigate(event) {
     const link = event.target.closest("a")
     if (!link?.href) return
+    this.rewriteLinkWithFilters(link)
     if (!this.isDesktop()) this.closeMobileDrawer()
+  }
+
+  // ── Filter URL rewriting ─────────────────────────────────────────
+
+  setupPrefetchRewriting() {
+    this.boundMouseEnter = (event) => {
+      const link = event.target.closest("a[data-turbo-prefetch]")
+      if (!link) return
+      this.rewriteLinkWithFilters(link)
+      link.dataset.turboPrefetch = "true"
+    }
+    this.element.addEventListener("mouseover", this.boundMouseEnter)
+  }
+
+  teardownPrefetchRewriting() {
+    if (this.boundMouseEnter) {
+      this.element.removeEventListener("mouseover", this.boundMouseEnter)
+    }
+  }
+
+  rewriteLinkWithFilters(link) {
+    try {
+      const url = new URL(link.href)
+      if (url.search) return // already has params, don't overwrite
+
+      const pathMap = JSON.parse(localStorage.getItem("table_filter_paths") || "{}")
+      const storageKey = pathMap[url.pathname]
+      if (!storageKey) return
+
+      const raw = localStorage.getItem(storageKey)
+      if (!raw) return
+
+      const stored = JSON.parse(raw)
+      if (Object.keys(stored).length === 0) return
+
+      const newUrl = new URL(url.pathname, url.origin)
+      for (const [key, value] of Object.entries(stored)) {
+        if (Array.isArray(value)) {
+          value.forEach(v => newUrl.searchParams.append(key, v))
+        } else {
+          newUrl.searchParams.set(key, value)
+        }
+      }
+      link.href = newUrl.toString()
+    } catch (_e) { /* localStorage unavailable or bad JSON */ }
   }
 
   toggleMobileDrawer() {
