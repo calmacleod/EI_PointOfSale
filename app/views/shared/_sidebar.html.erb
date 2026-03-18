@@ -75,7 +75,7 @@
       <% end %>
 
       <%= link_to products_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(products_path) ?
@@ -89,7 +89,7 @@
       <% end %>
 
       <%= link_to services_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(services_path) ?
@@ -103,7 +103,7 @@
       <% end %>
 
       <%= link_to customers_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(customers_path) ?
@@ -117,7 +117,7 @@
       <% end %>
 
       <%= link_to cash_drawer_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(cash_drawer_path) ?
@@ -131,7 +131,7 @@
       <% end %>
 
       <%= link_to orders_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(orders_path) ?
@@ -145,7 +145,7 @@
       <% end %>
 
       <%= link_to store_tasks_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(store_tasks_path) ?
@@ -159,7 +159,7 @@
       <% end %>
 
       <%= link_to reports_path,
-          data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+          data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [
             "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
             (nav_section_active?(reports_path) ?
@@ -196,7 +196,7 @@
         <% end %>
 
         <%= link_to admin_gift_certificates_path,
-            data: { turbo_prefetch: true, action: "mousedown->sidebar#navigate" },
+            data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
             class: [
               "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
               (nav_section_active?(admin_gift_certificates_path) ?
