@@ -8,7 +8,7 @@ image: ei_point_of_sale
 # Deploy to these servers.
 servers:
   web:
-    - YOUR_SERVER_IP  # Replace with your server's IP address
+    - 144.217.240.192  # Replace with your server's IP address
 
 # Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
 # If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
