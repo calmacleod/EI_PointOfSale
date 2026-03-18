@@ -1,11 +1,11 @@
 <% content_for :title, "Data export" %>
 
 <% content_for :breadcrumbs do %>
-  <li><%= link_to "Dashboard", root_path, class: "font-medium text-body hover:text-accent" %></li>
-  <li><span aria-hidden="true">›</span></li>
-  <li><%= link_to "Admin settings", admin_settings_path, class: "font-medium text-body hover:text-accent" %></li>
-  <li><span aria-hidden="true">›</span></li>
-  <li aria-current="page" class="text-muted">Data export</li>
+  <li><%= link_to "Dashboard", root_path, class: "text-muted hover:text-body transition-colors" %></li>
+  <li aria-hidden="true" class="flex items-center text-muted/40"><svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "text-muted hover:text-body transition-colors" %></li>
+  <li aria-hidden="true" class="flex items-center text-muted/40"><svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></li>
+  <li aria-current="page" class="text-body font-medium">Data export</li>
 <% end %>
 
 <div class="mx-auto max-w-6xl">

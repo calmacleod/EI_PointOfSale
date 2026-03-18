@@ -1,10 +1,4 @@
 <% content_for :title, "Sign in" %>
-<% content_for :breadcrumbs do %>
-  <li><%= link_to "Point of Sale", root_path, class: "font-medium text-body hover:text-accent" %></li>
-  <li><span aria-hidden="true">›</span></li>
-  <li aria-current="page" class="text-muted">Sign in</li>
-<% end %>
-
 <div class="w-full flex items-start justify-center">
   <div class="w-full max-w-sm">
     <% if flash[:alert].present? %>

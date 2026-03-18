@@ -1,10 +1,4 @@
 <% content_for :title, "Forgot password?" %>
-<% content_for :breadcrumbs do %>
-  <li><%= link_to "Point of Sale", root_path, class: "font-medium text-body hover:text-accent" %></li>
-  <li><span aria-hidden="true">›</span></li>
-  <li aria-current="page" class="text-muted">Forgot password</li>
-<% end %>
-
 <div class="mx-auto max-w-md">
   <% if flash[:alert].present? %>
     <div class="mb-2 rounded-md border border-(--color-error-border) bg-(--color-error-bg) px-3 py-2 text-sm text-(--color-error-text)">

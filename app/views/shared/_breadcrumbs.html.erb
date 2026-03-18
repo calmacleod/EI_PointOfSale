@@ -1,11 +1,7 @@
-<nav aria-label="Breadcrumb" class="mb-1">
-  <ol class="flex flex-wrap items-center gap-x-1.5 text-xs text-muted">
-    <% if content_for?(:breadcrumbs) %>
-      <%= yield :breadcrumbs %>
-    <% else %>
-      <li>
-        <%= link_to authenticated? ? "Dashboard" : "Point of Sale", root_path, class: "font-medium text-body hover:text-accent" %>
-      </li>
-    <% end %>
+<% if content_for?(:breadcrumbs) %>
+<nav aria-label="Breadcrumb" class="mb-1.5">
+  <ol class="flex flex-wrap items-center gap-x-1 text-xs">
+    <%= yield :breadcrumbs %>
   </ol>
 </nav>
+<% end %>
