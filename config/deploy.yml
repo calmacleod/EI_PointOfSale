@@ -89,7 +89,7 @@ builder:
 accessories:
   db:
     image: postgres:18
-    host: YOUR_SERVER_IP  # Replace with your server's IP address
+    host: 144.217.240.192 # Replace with your server's IP address
     port: "127.0.0.1:5432:5432"
     env:
       clear:
@@ -105,7 +105,7 @@ accessories:
 
   garage:
     image: dxflrs/garage:v2.2.0
-    host: YOUR_SERVER_IP  # Replace with your server's IP address
+    host: 144.217.240.192 # Replace with your server's IP address
     port: "3900:3900"  # S3 API — must be publicly accessible for presigned URLs
     options:
       publish:
