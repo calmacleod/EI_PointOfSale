@@ -106,10 +106,11 @@ accessories:
   garage:
     image: dxflrs/garage:v2.2.0
     host: YOUR_SERVER_IP  # Replace with your server's IP address
-    ports:
-      - "3900:3900"   # S3 API — must be publicly accessible for presigned URLs
-      - "127.0.0.1:3901:3901"  # RPC (internal only)
-      - "127.0.0.1:3903:3903"  # Admin API (internal only)
+    port: "3900:3900"  # S3 API — must be publicly accessible for presigned URLs
+    options:
+      publish:
+        - "127.0.0.1:3901:3901"  # RPC (internal only)
+        - "127.0.0.1:3903:3903"  # Admin API (internal only)
     files:
       - config/garage/garage.toml:/etc/garage.toml
     directories:
