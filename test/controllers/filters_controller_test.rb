@@ -8,7 +8,7 @@ class FiltersControllerTest < ActionDispatch::IntegrationTest
     get filter_chip_path, params: { resource: "products", key: "supplier_id", form_id: "products_filter_form" }
     assert_response :success
     assert_select "[data-filter-key='supplier_id']"
-    assert_select "select[name='supplier_id']"
+    assert_select "input[name='supplier_id[]']"
   end
 
   test "chip action renders filter chip for products boolean filter" do

@@ -106,7 +106,7 @@ class CashDrawerSession < ApplicationRecord
   def discrepancy_cents
     return nil unless closed?
 
-    self[:discrepancy_cents] || compute_discrepancy_cents
+    compute_discrepancy_cents
   end
 
   def discrepancy
