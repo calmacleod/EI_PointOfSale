@@ -96,14 +96,7 @@ export default class extends Controller {
   navigate(event) {
     const link = event.target.closest("a")
     if (!link?.href) return
-    if (event.button !== 0) return
-    if (event.ctrlKey || event.metaKey || event.shiftKey) return
-    if (link.target === "_blank") return
-    if (!link.href.startsWith(window.location.origin)) return
-
-    event.preventDefault()
     if (!this.isDesktop()) this.closeMobileDrawer()
-    Turbo.visit(link.href)
   }
 
   toggleMobileDrawer() {
