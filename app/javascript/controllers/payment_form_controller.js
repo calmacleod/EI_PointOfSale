@@ -6,12 +6,14 @@ export default class extends Controller {
   static targets = [
     "methodInput", "methodButton", "amountInput", "cashSection", "tenderedInput", "changeDisplay",
     "gcBalanceDisplay", "gcBalanceAmount", "gcNotFound", "referenceInput",
-    "adjustModal", "adjustModalMessage"
+    "adjustModal", "adjustModalMessage",
+    "overpayModal", "overpayModalMessage"
   ]
   static values = { remaining: Number, gcLookupUrl: String }
 
   // Store pending submit event for modal confirmation
   #pendingSubmitEvent = null
+  #overpayConfirmed = false
 
   connect() {
     this.#updateMethodUI(this.methodInputTarget.value, { applyRounding: true })
@@ -105,13 +107,30 @@ export default class extends Controller {
   }
 
   validateBeforeSubmit(event) {
-    // Only check for cash payments
-    if (this.methodInputTarget.value !== "cash") return
+    const amount = parseFloat(this.amountInputTarget.value) || 0
+    const remaining = this.remainingValue
 
-    // Only check if cash section is visible and tendered input has a value
+    // Check for overpayment (amount exceeds remaining balance by more than rounding tolerance)
+    if (amount > remaining + 0.03 && !this.#overpayConfirmed) {
+      event.preventDefault()
+      this.#pendingSubmitEvent = event
+
+      const overpay = (amount - remaining).toFixed(2)
+      if (this.hasOverpayModalMessageTarget) {
+        this.overpayModalMessageTarget.textContent =
+          `This payment of $${amount.toFixed(2)} exceeds the remaining balance of $${remaining.toFixed(2)} ` +
+          `by $${overpay}. Are you sure you want to overpay?`
+      }
+      if (this.hasOverpayModalTarget) {
+        this.overpayModalTarget.classList.remove("hidden")
+      }
+      return
+    }
+
+    // Only check tendered amount for cash payments
+    if (this.methodInputTarget.value !== "cash") return
     if (!this.hasTenderedInputTarget) return
 
-    const amount = parseFloat(this.amountInputTarget.value) || 0
     const tendered = parseFloat(this.tenderedInputTarget.value) || 0
 
     // If tendered is less than amount, show modal to ask user if they want to lower the payment
@@ -119,14 +138,11 @@ export default class extends Controller {
       event.preventDefault()
       this.#pendingSubmitEvent = event
 
-      // Update modal message
       if (this.hasAdjustModalMessageTarget) {
         this.adjustModalMessageTarget.textContent =
           `Amount tendered ($${tendered.toFixed(2)}) is less than the payment amount ($${amount.toFixed(2)}). ` +
           `Do you want to lower the payment to $${tendered.toFixed(2)}?`
       }
-
-      // Show the modal
       if (this.hasAdjustModalTarget) {
         this.adjustModalTarget.classList.remove("hidden")
       }
@@ -159,6 +175,28 @@ export default class extends Controller {
     // Submit the form
     this.#pendingSubmitEvent.target.requestSubmit()
     this.#pendingSubmitEvent = null
+  }
+
+  closeOverpayModal() {
+    if (this.hasOverpayModalTarget) {
+      this.overpayModalTarget.classList.add("hidden")
+    }
+    this.#pendingSubmitEvent = null
+  }
+
+  confirmOverpay() {
+    if (!this.#pendingSubmitEvent) return
+
+    this.#overpayConfirmed = true
+
+    if (this.hasOverpayModalTarget) {
+      this.overpayModalTarget.classList.add("hidden")
+    }
+
+    // Re-submit the form (will pass through validateBeforeSubmit again, but skip overpay check)
+    this.#pendingSubmitEvent.target.requestSubmit()
+    this.#pendingSubmitEvent = null
+    this.#overpayConfirmed = false
   }
 
   // Private

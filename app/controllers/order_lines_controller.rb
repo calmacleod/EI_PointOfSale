@@ -25,7 +25,8 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
           turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order })
+          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order }),
+          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
       format.html { redirect_to edit_order_path(order) }
@@ -53,7 +54,8 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
           turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order })
+          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order }),
+          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
       format.html { redirect_to edit_order_path(order) }
@@ -83,7 +85,8 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
           turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order })
+          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order }),
+          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
       format.html { redirect_to edit_order_path(order) }
