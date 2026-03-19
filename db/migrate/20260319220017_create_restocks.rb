@@ -8,6 +8,6 @@ class CreateRestocks < ActiveRecord::Migration[8.1]
       t.text :notes
       t.timestamps
     end
-    add_index :restocks, [:product_id, :created_at]
+    add_index :restocks, [ :product_id, :created_at ]
   end
 end
