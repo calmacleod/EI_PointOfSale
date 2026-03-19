@@ -1,0 +1,49 @@
+<% content_for :title, "Restock History — #{@product.name}" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "text-muted hover:text-body transition-colors" %></li>
+  <li aria-hidden="true" class="flex items-center text-muted/40"><svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></li>
+  <li><%= link_to "Products", products_path, class: "text-muted hover:text-body transition-colors" %></li>
+  <li aria-hidden="true" class="flex items-center text-muted/40"><svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></li>
+  <li><%= link_to @product.name, product_path(@product), class: "text-muted hover:text-body transition-colors" %></li>
+  <li aria-hidden="true" class="flex items-center text-muted/40"><svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></li>
+  <li aria-current="page" class="text-body font-medium">Restock History</li>
+<% end %>
+
+<div>
+  <%= render "shared/page_header", title: "Restock History", description: "#{@product.name} — all restocking events." do %>
+    <%= link_to "Back to product", product_path(@product), class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30" %>
+  <% end %>
+
+  <div class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+    <table class="min-w-full divide-y divide-(--color-border) text-sm">
+      <thead class="bg-surface-alt">
+        <tr>
+          <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Date</th>
+          <th class="px-3 py-1.5 text-right text-xs font-medium text-muted">Qty Added</th>
+          <th class="px-3 py-1.5 text-right text-xs font-medium text-muted">New Total</th>
+          <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Restocked By</th>
+          <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Notes</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-(--color-border)">
+        <% if @restocks.any? %>
+          <% @restocks.each do |restock| %>
+            <tr>
+              <td class="whitespace-nowrap px-3 py-1.5 text-body"><%= local_time(restock.created_at, format: :long) %></td>
+              <td class="whitespace-nowrap px-3 py-1.5 text-right font-semibold text-body">+<%= restock.quantity %></td>
+              <td class="whitespace-nowrap px-3 py-1.5 text-right text-body"><%= restock.stock_level_after %></td>
+              <td class="px-3 py-1.5 text-body"><%= restock.user.name.presence || restock.user.email_address %></td>
+              <td class="px-3 py-1.5 text-muted"><%= restock.notes.presence || "—" %></td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="5" class="px-3 py-6 text-center text-muted">No restock history yet.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <%= render "shared/pagy_nav", pagy: @pagy %>
+</div>

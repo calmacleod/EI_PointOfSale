@@ -1,0 +1,13 @@
+recent_restock:
+  product: dragon_shield_red
+  user: admin
+  quantity: 10
+  stock_level_after: 34
+  notes: "Weekly restock from supplier"
+
+older_restock:
+  product: dragon_shield_red
+  user: one
+  quantity: 5
+  stock_level_after: 24
+  notes:

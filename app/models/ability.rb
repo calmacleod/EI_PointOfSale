@@ -12,6 +12,8 @@ class Ability
       can :manage, CashDrawerSession
       can :manage, TerminalReconciliation
       can :manage, StoreTask
+      can :manage, Restock
+      can %i[show lookup restock import], :inventory
 
       # Register (POS cashier workspace)
       can :show, :register

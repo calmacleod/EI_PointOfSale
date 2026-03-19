@@ -119,7 +119,14 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :inventory, only: [ :show ], controller: "inventory" do
+    get :lookup
+    post :restock
+    post :import
+  end
+
   resources :products do
+    resources :restocks, only: [ :index ]
     member do
       delete :purge_image
       get :preview

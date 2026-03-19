@@ -1,0 +1,121 @@
+<% content_for :title, "Inventory Restock" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "text-muted hover:text-body transition-colors" %></li>
+  <li aria-hidden="true" class="flex items-center text-muted/40"><svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></li>
+  <li aria-current="page" class="text-body font-medium">Inventory Restock</li>
+<% end %>
+
+<div data-controller="bulk-restock"
+     data-bulk-restock-lookup-url-value="<%= lookup_inventory_path %>"
+     data-bulk-restock-storage-key-value="inventory_restock_draft">
+
+  <%= render "shared/page_header", title: "Inventory Restock", description: "Add products by code or search, enter quantities, then commit all at once." do %>
+    <button type="button" data-action="click->bulk-restock#openCsvModal"
+            class="inline-flex min-h-7.5 items-center justify-center gap-1.5 rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-(--color-border)/30">
+      <svg class="h-3.5 w-3.5 opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+      Import CSV
+    </button>
+  <% end %>
+
+  <%# ── CSV Import Modal ── %>
+  <div data-bulk-restock-target="csvModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50">
+    <div class="w-full max-w-md rounded-lg border border-theme bg-surface p-4 shadow-xl">
+      <h3 class="text-sm font-semibold text-body">Import Restock CSV</h3>
+      <p class="mt-1 text-xs text-muted">CSV must have columns: <code class="rounded bg-surface-alt px-1 font-mono text-[11px]">code</code>, <code class="rounded bg-surface-alt px-1 font-mono text-[11px]">quantity</code>, and optionally <code class="rounded bg-surface-alt px-1 font-mono text-[11px]">notes</code>.</p>
+      <%= form_with url: import_inventory_path, method: :post, multipart: true, class: "mt-3" do |f| %>
+        <%= f.file_field :csv_file, accept: ".csv", class: "block w-full text-sm text-body file:mr-2 file:rounded-md file:border file:border-theme file:bg-surface-alt file:px-2.5 file:py-1 file:text-sm file:font-medium file:text-body hover:file:bg-(--color-border)/30" %>
+        <div class="mt-3 flex items-center justify-end gap-2">
+          <button type="button" data-action="click->bulk-restock#closeCsvModal"
+                  class="inline-flex min-h-7.5 items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-(--color-border)/30">
+            Cancel
+          </button>
+          <%= f.submit "Upload & Restock", class: "inline-flex min-h-7.5 items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-(--color-page) hover:bg-(--color-accent-hover) cursor-pointer" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <%# ── Product Search Modal (split-pane, matches register search) ── %>
+  <div data-bulk-restock-target="searchModal" class="fixed inset-0 z-50 hidden" role="dialog"
+       data-controller="inventory-search"
+       data-inventory-search-lookup-url-value="<%= lookup_inventory_path %>">
+    <div class="fixed inset-0 bg-black/50" data-action="click->inventory-search#close"></div>
+    <div class="fixed inset-0 flex items-start justify-center pt-[5vh]" style="pointer-events: none;">
+      <div class="flex w-full max-w-5xl rounded-xl bg-surface shadow-2xl overflow-hidden" style="pointer-events: auto; height: 70vh;">
+        <%# Left pane: search + results %>
+        <div class="flex w-1/2 flex-col border-r border-theme">
+          <div class="flex items-center gap-3 border-b border-theme px-4 py-3 shrink-0">
+            <svg class="h-5 w-5 shrink-0 text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" class="flex-1 bg-transparent text-sm text-body outline-none placeholder:text-muted"
+                   autocomplete="off"
+                   placeholder="Search products…"
+                   data-inventory-search-target="input"
+                   data-action="input->inventory-search#search keydown->inventory-search#navigate">
+            <kbd class="rounded border border-theme px-1.5 py-0.5 text-[10px] text-muted">ESC</kbd>
+          </div>
+          <div class="flex-1 overflow-y-auto" data-inventory-search-target="results">
+            <div class="p-6 text-center text-sm text-muted">Type to search for products</div>
+          </div>
+        </div>
+        <%# Right pane: preview %>
+        <div class="flex w-1/2 flex-col">
+          <div class="flex items-center border-b border-theme px-4 py-3 shrink-0">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-muted">Preview</h3>
+          </div>
+          <div class="flex-1 overflow-y-auto" data-inventory-search-target="preview">
+            <div class="flex h-full items-center justify-center p-6">
+              <div class="text-center">
+                <svg class="mx-auto h-10 w-10 text-muted opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                <p class="mt-2 text-xs text-muted">Select a product to preview</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <%# ── Restock Entry Form ── %>
+  <%= form_with url: restock_inventory_path, method: :post, class: "mt-2",
+        data: { bulk_restock_target: "form", action: "submit->bulk-restock#handleSubmit" } do %>
+
+    <div class="overflow-hidden rounded-lg border border-theme bg-surface">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5 flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-semibold text-body">Restock Items</h2>
+          <p class="text-xs text-muted" data-bulk-restock-target="summary">No items added yet</p>
+        </div>
+        <div class="flex items-center gap-1.5">
+          <button type="button" data-action="click->bulk-restock#clearAll"
+                  data-bulk-restock-target="clearBtn"
+                  class="hidden min-h-7.5 items-center justify-center rounded-md border border-red-300 bg-surface px-2.5 py-1 text-sm font-semibold text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-950/30">
+            Clear All
+          </button>
+        </div>
+      </div>
+
+      <table class="min-w-full divide-y divide-(--color-border) text-sm">
+        <thead class="bg-surface-alt">
+          <tr>
+            <th class="w-44 px-3 py-1.5 text-left text-xs font-medium text-muted">Code</th>
+            <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Product</th>
+            <th class="w-20 px-3 py-1.5 text-right text-xs font-medium text-muted">Stock</th>
+            <th class="w-24 px-3 py-1.5 text-center text-xs font-medium text-muted">Qty</th>
+            <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Notes</th>
+            <th class="w-10 px-3 py-1.5"></th>
+          </tr>
+        </thead>
+        <tbody data-bulk-restock-target="tbody" class="divide-y divide-(--color-border)">
+          <%# Rows are added dynamically by the Stimulus controller %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-2 flex items-center justify-end">
+      <button type="submit" data-bulk-restock-target="submitBtn" disabled
+              class="inline-flex min-h-7.5 items-center justify-center rounded-md bg-accent px-3 py-1 text-sm font-semibold text-(--color-page) hover:bg-(--color-accent-hover) disabled:opacity-40 disabled:cursor-not-allowed">
+        Commit Restock
+      </button>
+    </div>
+  <% end %>
+</div>

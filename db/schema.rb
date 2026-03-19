@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_18_143321) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_19_220017) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -476,6 +476,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_143321) do
     t.index ["status"], name: "index_reports_on_status"
   end
 
+  create_table "restocks", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "notes"
+    t.bigint "product_id", null: false
+    t.integer "quantity", null: false
+    t.integer "stock_level_after", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["product_id", "created_at"], name: "index_restocks_on_product_id_and_created_at"
+    t.index ["product_id"], name: "index_restocks_on_product_id"
+    t.index ["user_id"], name: "index_restocks_on_user_id"
+  end
+
   create_table "saved_queries", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
@@ -761,6 +774,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_18_143321) do
   add_foreign_key "refunds", "orders"
   add_foreign_key "refunds", "users", column: "processed_by_id"
   add_foreign_key "reports", "users", column: "generated_by_id"
+  add_foreign_key "restocks", "products"
+  add_foreign_key "restocks", "users"
   add_foreign_key "saved_queries", "users"
   add_foreign_key "services", "tax_codes"
   add_foreign_key "services", "users", column: "added_by_id"

@@ -17,6 +17,7 @@ class Product < ApplicationRecord
   belongs_to :product_group, optional: true
 
   has_many :discount_items, as: :discountable, dependent: :destroy
+  has_many :restocks, dependent: :destroy
 
   has_many_attached :images
 

@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(source ~/.zshrc)",
+      "Bash(nvm use:*)",
+      "Bash(npx @herb-tools/linter app/views/inventory/show.html.erb)",
+      "Bash(npx tailwind-lint:*)"
     ]
   }
 }
