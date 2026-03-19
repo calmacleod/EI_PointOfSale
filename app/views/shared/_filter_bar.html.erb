@@ -10,9 +10,9 @@
      data-filter-builder-search-path-value="<%= config.search_path %>"
      data-filter-builder-filters-value="<%= config.filters_json %>"
      data-filter-builder-active-keys-value="<%= active_filter_keys.to_json %>"
-     data-filter-builder-turbo-frame-value="<%= turbo_frame %>">
+     data-filter-builder-turbo-frame-value="<%= turbo_frame %>"
 
-  <aside class="flex flex-col gap-1.5 rounded-lg border border-theme bg-surface px-2 py-1.5" aria-label="Filters">
+  <aside class="relative flex flex-col gap-1.5 rounded-lg border border-theme bg-surface px-2 py-1.5" aria-label="Filters">
     <%# Hidden form that owns the search input and filter chip inputs %>
     <%= form_with url: config.search_path,
         method: :get,
@@ -36,7 +36,7 @@
              data-action="input->filter-builder#handleSearchInput">
 
       <%# Add filter dropdown %>
-      <div class="relative shrink-0" data-filter-builder-target="addFilterWrapper">
+      <div class="static shrink-0 sm:relative" data-filter-builder-target="addFilterWrapper">
         <button type="button"
                 data-action="click->filter-builder#toggleAddFilter"
                 class="inline-flex min-h-7.5 items-center gap-1 rounded-md border border-theme bg-surface px-2 py-1 text-xs font-medium text-muted hover:bg-(--color-border) hover:text-body">
@@ -44,7 +44,7 @@
           <span>Add filter</span>
         </button>
         <div data-filter-builder-target="addFilterDropdown"
-             class="absolute left-0 z-20 mt-1 hidden min-w-45 rounded-lg border border-theme bg-surface py-1 shadow-lg">
+             class="absolute left-0 right-0 z-20 mt-1 hidden rounded-lg border border-theme bg-surface py-1 shadow-lg sm:left-0 sm:right-auto sm:min-w-45">
           <% config.filters.each do |filter| %>
             <%= tag.button filter.label,
                   type: "button",
@@ -56,7 +56,7 @@
       </div>
 
       <%# Saved queries dropdown %>
-      <div class="relative shrink-0" data-controller="saved-query"
+      <div class="static shrink-0 sm:relative" data-controller="saved-query"
            data-saved-query-resource-value="<%= config.resource_name %>"
            data-saved-query-search-path-value="<%= config.search_path %>">
         <button type="button"
@@ -66,7 +66,7 @@
           <span>Saved</span>
         </button>
         <div data-saved-query-target="dropdown"
-             class="absolute right-0 z-20 mt-1 hidden min-w-55 rounded-lg border border-theme bg-surface shadow-lg">
+             class="absolute left-0 right-0 z-20 mt-1 hidden rounded-lg border border-theme bg-surface shadow-lg sm:left-auto sm:right-0 sm:w-auto sm:min-w-55">
           <div class="border-b border-theme px-3 py-2">
             <div class="flex items-center gap-1">
               <input type="text" data-saved-query-target="nameInput"

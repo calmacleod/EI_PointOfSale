@@ -14,16 +14,33 @@ export default class extends Controller {
   connect() {
     this.boundClose = this.closeOnOutsideClick.bind(this)
     document.addEventListener("click", this.boundClose)
+
+    // Close when a sibling dropdown opens
+    this.boundCloseSibling = (e) => {
+      if (e.detail?.source !== this.element) this.closeDropdown()
+    }
+    document.addEventListener("filter-bar:dropdown-opened", this.boundCloseSibling)
   }
 
   disconnect() {
     document.removeEventListener("click", this.boundClose)
+    document.removeEventListener("filter-bar:dropdown-opened", this.boundCloseSibling)
   }
 
   toggle(event) {
     event.stopPropagation()
     if (this.hasDropdownTarget) {
+      const wasHidden = this.dropdownTarget.classList.contains("hidden")
       this.dropdownTarget.classList.toggle("hidden")
+      if (wasHidden) {
+        document.dispatchEvent(new CustomEvent("filter-bar:dropdown-opened", { detail: { source: this.element } }))
+      }
+    }
+  }
+
+  closeDropdown() {
+    if (this.hasDropdownTarget) {
+      this.dropdownTarget.classList.add("hidden")
     }
   }
 

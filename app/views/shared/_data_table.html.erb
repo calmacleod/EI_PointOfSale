@@ -34,7 +34,7 @@
           <span>Columns</span>
         </button>
         <div data-column-toggle-target="popover"
-             class="absolute right-0 z-20 mt-1 hidden min-w-45 rounded-lg border border-theme bg-surface py-1 shadow-lg">
+             class="absolute right-0 z-20 mt-1 hidden w-[calc(100vw-2rem)] rounded-lg border border-theme bg-surface py-1 shadow-lg sm:w-auto sm:min-w-45">
           <% config.columns.each do |col| %>
             <label class="flex cursor-pointer items-center gap-2 px-3 py-1 text-sm text-body hover:bg-(--color-border)">
               <input type="checkbox" data-action="change->column-toggle#toggleColumn"

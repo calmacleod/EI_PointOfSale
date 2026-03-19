@@ -29,11 +29,18 @@ export default class extends Controller {
     // Close dropdown when clicking outside
     this.boundCloseDropdown = this.closeAddFilterDropdown.bind(this)
     document.addEventListener("click", this.boundCloseDropdown)
+
+    // Close when a sibling dropdown opens
+    this.boundCloseSibling = (e) => {
+      if (e.detail?.source !== this.element) this.closeAddFilterDropdownImmediate()
+    }
+    document.addEventListener("filter-bar:dropdown-opened", this.boundCloseSibling)
   }
 
   disconnect() {
     if (this.debounceTimer) clearTimeout(this.debounceTimer)
     document.removeEventListener("click", this.boundCloseDropdown)
+    document.removeEventListener("filter-bar:dropdown-opened", this.boundCloseSibling)
   }
 
   // --- Search ---
@@ -48,7 +55,17 @@ export default class extends Controller {
   toggleAddFilter(event) {
     event.stopPropagation()
     if (this.hasAddFilterDropdownTarget) {
+      const wasHidden = this.addFilterDropdownTarget.classList.contains("hidden")
       this.addFilterDropdownTarget.classList.toggle("hidden")
+      if (wasHidden) {
+        document.dispatchEvent(new CustomEvent("filter-bar:dropdown-opened", { detail: { source: this.element } }))
+      }
+    }
+  }
+
+  closeAddFilterDropdownImmediate() {
+    if (this.hasAddFilterDropdownTarget) {
+      this.addFilterDropdownTarget.classList.add("hidden")
     }
   }
 
