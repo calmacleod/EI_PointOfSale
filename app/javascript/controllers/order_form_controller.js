@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Main orchestrator for the order edit form.
 // Keeps the code input focused and handles keyboard shortcuts.
 export default class extends Controller {
-  static targets = ["codeInput"]
+  static targets = ["codeInput", "panel", "panelToggle", "panelChevron"]
   static values = { orderId: Number }
 
   connect() {
@@ -74,6 +74,15 @@ export default class extends Controller {
         row.remove()
       }
     }, 0)
+  }
+
+  togglePanel() {
+    if (!this.hasPanelTarget) return
+    const isHidden = this.panelTarget.classList.contains("hidden")
+    this.panelTarget.classList.toggle("hidden", !isHidden)
+    if (this.hasPanelChevronTarget) {
+      this.panelChevronTarget.classList.toggle("rotate-180", isHidden)
+    }
   }
 
   isModalOpen() {
