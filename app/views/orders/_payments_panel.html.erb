@@ -34,7 +34,7 @@
 
   <% if order.draft? && order.order_lines.any? %>
     <button type="button"
-            class="mt-2 w-full rounded-md border border-theme bg-surface px-3 py-2 text-xs font-medium text-body hover:bg-[var(--color-border)] transition"
+            class="mt-2 w-full rounded-md border border-theme bg-surface px-3 py-2 text-xs font-medium text-body hover:bg-(--color-border) transition"
             onclick="document.getElementById('payment_modal').classList.remove('hidden')">
       <svg class="inline h-3.5 w-3.5 mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       Add Payment

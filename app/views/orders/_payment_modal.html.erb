@@ -28,7 +28,7 @@
             <div class="flex flex-wrap gap-1.5" data-payment-form-target="methodButtons">
               <% OrderPayment.payment_methods.keys.each_with_index do |method, index| %>
                 <button type="button"
-                        class="rounded-md px-3 py-2 text-xs font-medium border transition flex-1 min-w-[5rem]
+                        class="rounded-md px-3 py-2 text-xs font-medium border transition flex-1 min-w-20
                                <%= index == 0 ? 'bg-accent text-white border-accent' : 'bg-surface text-muted border-theme hover:bg-[var(--color-border)]' %>"
                         data-method="<%= method %>"
                         data-payment-form-target="methodButton"
@@ -129,8 +129,6 @@
           </div>
         </div>
       </div>
-    </div>
-
       <%# Overpayment confirmation modal (nested inside payment modal) %>
       <div data-payment-form-target="overpayModal" class="hidden fixed inset-0 z-60" role="dialog">
         <div class="fixed inset-0 bg-black/50" data-action="click->payment-form#closeOverpayModal"></div>

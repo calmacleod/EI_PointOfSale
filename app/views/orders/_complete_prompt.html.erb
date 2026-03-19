@@ -18,7 +18,7 @@
       <div class="flex justify-end gap-2 border-t border-green-200 bg-surface px-5 py-3">
         <button type="button"
                 onclick="document.getElementById('complete_prompt_modal').remove()"
-                class="rounded-lg border border-theme px-3.5 py-1.5 text-xs font-medium text-body hover:bg-[var(--color-border)] transition">
+                class="rounded-lg border border-theme px-3.5 py-1.5 text-xs font-medium text-body hover:bg-(--color-border) transition">
           Not Yet
         </button>
         <%= button_to "Complete Order", complete_order_path(order), method: :post,

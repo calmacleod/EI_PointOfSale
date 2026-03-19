@@ -7,7 +7,8 @@
       "Bash(npx @herb-tools/linter app/views/inventory/show.html.erb)",
       "Bash(npx tailwind-lint:*)",
       "Bash(eval '$\\(mise activate zsh\\)')",
-      "Bash(bin/rails runner:*)"
+      "Bash(bin/rails runner:*)",
+      "Bash(npx @herb-tools/linter)"
     ]
   }
 }

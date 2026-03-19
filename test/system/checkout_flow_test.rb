@@ -24,8 +24,11 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     order.reload
     fill_in_payment(method: "cash", amount: order.total, tendered: order.total + 5)
 
-    # Complete the order
-    click_button "Complete"
+    # Complete the order via the prompt modal
+    assert_selector "#complete_prompt_modal", wait: 5
+    within "#complete_prompt_modal" do
+      click_button "Complete Order"
+    end
 
     # Verify redirect to this order's show page
     assert_current_path order_path(order), wait: 5
