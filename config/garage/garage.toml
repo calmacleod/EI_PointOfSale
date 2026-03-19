@@ -3,13 +3,10 @@ data_dir = "/var/lib/garage/data"
 db_engine = "lmdb"
 replication_factor = 1
 
-[rpc_bind_addr]
-host = "0.0.0.0"
-port = 3901
-
-[rpc_public_addr]
-host = "127.0.0.1"
-port = 3901
+rpc_bind_addr = "0.0.0.0:3901"
+rpc_public_addr = "127.0.0.1:3901"
+# Not a secret - only used internally
+rpc_secret = "1f84beba28b753a388c94d6cc5d420e11306798ce24ffc8a05bbe0ab5d1ab73b"
 
 [s3_api]
 s3_region = "garage"

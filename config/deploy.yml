@@ -1,36 +1,26 @@
 # Name of your application. Used to uniquely configure containers.
-service: ei_point_of_sale
+service: ei-point-of-sale
 
-# Name of the container image.
-# Update to your registry path, e.g. ghcr.io/your-user/ei_point_of_sale
 image: ei_point_of_sale
 
 # Deploy to these servers.
 servers:
   web:
-    - 144.217.240.192  # Replace with your server's IP address
+    - &server_ip 144.217.240.192 
+  worker:
+    hosts:
+      - *server_ip
+    cmd: bin/jobs
 
-# Enable SSL auto certification via Let's Encrypt and allow for multiple apps on a single web server.
-# If used with Cloudflare, set encryption mode in SSL/TLS setting to "Full" to enable CF-to-app encryption.
-#
-# Using an SSL proxy like this requires turning on config.assume_ssl and config.force_ssl in production.rb!
-#
-# proxy:
-#   ssl: true
-#   host: app.example.com
+proxy:
+  ssl: true
+  host: pos.callummacleod.ca
+  run:
+    version: v0.9.2
 
 # Where you keep your container images.
 registry:
-  # Update to your registry. Examples:
-  #   ghcr.io / registry.digitalocean.com / hub.docker.com
   server: localhost:5555
-
-  # Needed for authenticated registries.
-  # username: your-user
-
-  # Always use an access token rather than real password when possible.
-  # password:
-  #   - KAMAL_REGISTRY_PASSWORD
 
 # Inject ENV variables into containers (secrets come from .kamal/secrets).
 env:
@@ -40,29 +30,19 @@ env:
     - DATABASE_PASSWORD      # Same password used by cache/queue/cable databases
     - GARAGE_ACCESS_KEY
     - GARAGE_SECRET_KEY
+    - NEW_RELIC_LICENSE_KEY
   clear:
-    # Run Solid Queue inside Puma (no separate worker process needed).
-    SOLID_QUEUE_IN_PUMA: true
-
     # Database connection for cache/queue/cable databases (all on the same postgres accessory).
     # The container name ei_point_of_sale-db-1 is the Kamal internal hostname for the db accessory.
-    DATABASE_HOST: ei_point_of_sale-db-1
+    DATABASE_HOST: ei-point-of-sale-db
     DATABASE_USERNAME: postgres
 
     # Garage S3 endpoint (internal Docker network address of the garage accessory).
-    GARAGE_ENDPOINT: "http://ei_point_of_sale-garage-1:3900"
+    GARAGE_ENDPOINT: "http://ei-point-of-sale-garage:3900"
 
     # Use Garage for Active Storage (set ACTIVE_STORAGE_SERVICE=railway on Railway).
     ACTIVE_STORAGE_SERVICE: garage
 
-    # Set number of cores available to the application on each server (default: 1).
-    # WEB_CONCURRENCY: 2
-
-    # Set number of processes dedicated to Solid Queue (default: 1).
-    # JOB_CONCURRENCY: 3
-
-    # Log level
-    # RAILS_LOG_LEVEL: debug
 
 # Aliases are triggered with "bin/kamal <alias>".
 aliases:
@@ -89,7 +69,7 @@ builder:
 accessories:
   db:
     image: postgres:18
-    host: 144.217.240.192 # Replace with your server's IP address
+    host: *server_ip
     port: "127.0.0.1:5432:5432"
     env:
       clear:
@@ -101,11 +81,11 @@ accessories:
       # Init script creates the cache, queue, and cable databases on first boot.
       - config/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     directories:
-      - data:/var/lib/postgresql/data
+      - data:/var/lib/postgresql
 
   garage:
     image: dxflrs/garage:v2.2.0
-    host: 144.217.240.192 # Replace with your server's IP address
+    host: *server_ip
     port: "3900:3900"  # S3 API — must be publicly accessible for presigned URLs
     options:
       publish:
