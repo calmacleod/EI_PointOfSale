@@ -10,6 +10,11 @@
 #     schedule: at 5am every day
 
 development:
+  refresh_sales_counts:
+    class: RefreshSalesCountsJob
+    schedule: every 6 hours
+    queue: low
+
   refresh_dashboard_metrics:
     class: RefreshDashboardMetricsJob
     schedule: every 15 minutes
@@ -21,6 +26,11 @@ development:
     queue: default
 
 production:
+  refresh_sales_counts:
+    class: RefreshSalesCountsJob
+    schedule: every 6 hours
+    queue: low
+
   refresh_dashboard_metrics:
     class: RefreshDashboardMetricsJob
     schedule: every 15 minutes

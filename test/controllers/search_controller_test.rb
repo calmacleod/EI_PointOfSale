@@ -38,14 +38,16 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, product.name
   end
 
-  test "empty query returns empty results" do
+  test "empty query returns best-selling items" do
     sign_in_as(users(:one))
+    products(:dragon_shield_red).update_column(:sales_count, 10)
 
     get search_path(q: "", format: :json)
 
     assert_response :success
     data = JSON.parse(response.body)
-    assert_equal [], data["results"]
+    assert data["results"].any?, "Expected best-selling items for empty query"
+    assert_equal "Product", data["results"].first["type"]
   end
 
   test "non-empty query returns array of results" do
@@ -70,6 +72,37 @@ class SearchControllerTest < ActionDispatch::IntegrationTest
     first = data["results"].first
     assert first, "Expected at least one result for exact code"
     assert_equal "Product", first["type"]
+  end
+
+  test "product_results empty query returns best-selling items" do
+    sign_in_as(users(:one))
+    products(:dragon_shield_red).update_column(:sales_count, 10)
+    products(:dragon_shield_blue).update_column(:sales_count, 5)
+
+    get product_results_search_path(q: "")
+
+    assert_response :success
+    assert_includes response.body, products(:dragon_shield_red).name
+    assert_includes response.body, products(:dragon_shield_blue).name
+  end
+
+  test "product_results fuzzy results sorted by sales_count descending" do
+    sign_in_as(users(:one))
+    PgSearch::Multisearch.rebuild(Product)
+
+    # Blue has higher sales_count, should appear first
+    products(:dragon_shield_blue).update_column(:sales_count, 100)
+    products(:dragon_shield_red).update_column(:sales_count, 5)
+
+    get product_results_search_path(q: "Dragon Shield")
+
+    assert_response :success
+    body = response.body
+    blue_pos = body.index(products(:dragon_shield_blue).name)
+    red_pos = body.index(products(:dragon_shield_red).name)
+    assert blue_pos, "Expected Blue to appear in results"
+    assert red_pos, "Expected Red to appear in results"
+    assert blue_pos < red_pos, "Expected Blue (higher sales_count) to appear before Red"
   end
 
   test "exact service code match appears first in results" do

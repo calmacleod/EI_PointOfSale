@@ -55,6 +55,9 @@ Rails.application.routes.draw do
       resources :discount_items, only: %i[create destroy], shallow: true
     end
     resources :gift_certificates, only: %i[index show]
+    resources :recurring_tasks, only: %i[index] do
+      post :run, on: :member
+    end
   end
 
   resources :notifications, only: [ :index, :destroy ] do

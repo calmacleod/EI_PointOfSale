@@ -161,6 +161,21 @@
       </div>
     <% end %>
 
+    <%= link_to admin_recurring_tasks_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
+      <div class="flex items-start justify-between gap-2">
+        <div>
+          <h2 class="text-sm font-semibold text-body group-hover:text-accent">Recurring tasks</h2>
+          <p class="mt-0.5 text-xs text-muted">Monitor scheduled jobs and run them manually.</p>
+          <p class="mt-1.5 text-xs font-medium text-accent">View tasks →</p>
+        </div>
+        <div class="rounded-md bg-(--color-border)/30 p-1 group-hover:bg-(--color-accent)/10">
+          <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.414L11 9.586V6z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+      </div>
+    <% end %>
+
     <%= link_to admin_shopify_path, class: "group block rounded-lg border border-theme bg-surface p-2.5 transition hover:border-[var(--color-accent)]", data: { turbo_prefetch: true } do %>
       <div class="flex items-start justify-between gap-2">
         <div>

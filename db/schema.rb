@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_19_220017) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_19_231915) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -376,6 +376,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_19_220017) do
     t.string "product_url"
     t.decimal "purchase_price", precision: 10, scale: 2
     t.integer "reorder_level", default: 0
+    t.integer "sales_count", default: 0, null: false
     t.virtual "search_vector", type: :tsvector, as: "to_tsvector('simple'::regconfig, ((((COALESCE((name)::text, ''::text) || ' '::text) || COALESCE((code)::text, ''::text)) || ' '::text) || COALESCE(notes, ''::text)))", stored: true
     t.decimal "selling_price", precision: 10, scale: 2
     t.string "shopify_inventory_item_id"
@@ -397,6 +398,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_19_220017) do
     t.index ["discarded_at"], name: "index_products_on_discarded_at_null", where: "(discarded_at IS NULL)"
     t.index ["name"], name: "index_products_on_name_kept", where: "(discarded_at IS NULL)"
     t.index ["product_group_id"], name: "index_products_on_product_group_id"
+    t.index ["sales_count"], name: "index_products_on_sales_count", order: :desc
     t.index ["search_vector"], name: "index_products_on_search_vector", where: "(discarded_at IS NULL)", using: :gin
     t.index ["shopify_product_id"], name: "index_products_on_shopify_product_id"
     t.index ["shopify_variant_id"], name: "index_products_on_shopify_variant_id"
@@ -509,12 +511,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_19_220017) do
     t.jsonb "metadata", default: {}
     t.string "name", null: false
     t.decimal "price", precision: 10, scale: 2, null: false
+    t.integer "sales_count", default: 0, null: false
     t.bigint "tax_code_id"
     t.datetime "updated_at", null: false
     t.index ["added_by_id"], name: "index_services_on_added_by_id"
     t.index ["code"], name: "index_services_on_code", unique: true
     t.index ["discarded_at"], name: "index_services_on_discarded_at"
     t.index ["discarded_at"], name: "index_services_on_discarded_at_null", where: "(discarded_at IS NULL)"
+    t.index ["sales_count"], name: "index_services_on_sales_count", order: :desc
     t.index ["tax_code_id"], name: "index_services_on_tax_code_id"
   end
 

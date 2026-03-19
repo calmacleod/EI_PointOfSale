@@ -1,0 +1,65 @@
+<% content_for :title, "Recurring Tasks" %>
+<% content_for :breadcrumbs do %>
+  <li><%= link_to "Dashboard", root_path, class: "text-muted hover:text-body transition-colors" %></li>
+  <li aria-hidden="true" class="flex items-center text-muted/40"><svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></li>
+  <li><%= link_to "Admin settings", admin_settings_path, class: "text-muted hover:text-body transition-colors" %></li>
+  <li aria-hidden="true" class="flex items-center text-muted/40"><svg class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"/></svg></li>
+  <li aria-current="page" class="text-body font-medium">Recurring Tasks</li>
+<% end %>
+
+<div class="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+  <%= render "shared/page_header", title: "Recurring Tasks",
+        description: "Monitor scheduled background jobs and trigger them manually." %>
+
+  <div class="mt-2 overflow-x-auto rounded-lg border border-theme">
+    <table class="min-w-full divide-y divide-[var(--color-border)]">
+      <thead class="bg-surface">
+        <tr>
+          <th class="px-3 py-2 text-left text-xs font-semibold text-muted uppercase tracking-wider">Task</th>
+          <th class="px-3 py-2 text-left text-xs font-semibold text-muted uppercase tracking-wider">Class / Command</th>
+          <th class="px-3 py-2 text-left text-xs font-semibold text-muted uppercase tracking-wider">Schedule</th>
+          <th class="px-3 py-2 text-left text-xs font-semibold text-muted uppercase tracking-wider">Queue</th>
+          <th class="px-3 py-2 text-left text-xs font-semibold text-muted uppercase tracking-wider">Last Run</th>
+          <th class="px-3 py-2 text-left text-xs font-semibold text-muted uppercase tracking-wider">Status</th>
+          <th class="px-3 py-2 text-right text-xs font-semibold text-muted uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-[var(--color-border)] bg-page">
+        <% @tasks.each do |entry| %>
+          <% task = entry[:task] %>
+          <tr>
+            <td class="px-3 py-2 text-sm font-medium text-body whitespace-nowrap"><%= task.key.humanize %></td>
+            <td class="px-3 py-2 text-sm text-muted font-mono whitespace-nowrap"><%= task.class_name.presence || task.command.truncate(60) %></td>
+            <td class="px-3 py-2 text-sm text-muted whitespace-nowrap"><%= task.schedule %></td>
+            <td class="px-3 py-2 text-sm text-muted whitespace-nowrap"><%= task.queue_name.presence || "default" %></td>
+            <td class="px-3 py-2 text-sm text-muted whitespace-nowrap">
+              <% if entry[:last_run_at] %>
+                <%= local_time(entry[:last_run_at], format: :short) %>
+              <% else %>
+                <span class="text-muted/50">Never</span>
+              <% end %>
+            </td>
+            <td class="px-3 py-2 text-sm whitespace-nowrap">
+              <% badge_class = case entry[:last_job_status]
+                               when :completed then "bg-green-100 text-green-800"
+                               when :running   then "bg-blue-100 text-blue-800"
+                               when :pending   then "bg-yellow-100 text-yellow-800"
+                               when :failed    then "bg-red-100 text-red-700"
+                               else "bg-gray-100 text-gray-600"
+                               end %>
+              <span class="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold <%= badge_class %>">
+                <%= entry[:last_job_status].to_s.humanize %>
+              </span>
+            </td>
+            <td class="px-3 py-2 text-sm text-right whitespace-nowrap">
+              <%= button_to "Run now", run_admin_recurring_task_path(task),
+                    method: :post,
+                    class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)] transition",
+                    data: { turbo_confirm: "Run \"#{task.key.humanize}\" now?" } %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

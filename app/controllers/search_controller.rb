@@ -7,21 +7,27 @@ class SearchController < ApplicationController
     limit = [ (params[:limit] || 10).to_i, 25 ].min
     type_filter = params[:type].to_s.presence
 
-    # Fast path: exact code match for barcode scans
-    exact = exact_code_matches(raw_query, type_filter:)
+    if query.present?
+      # Fast path: exact code match for barcode scans
+      exact = exact_code_matches(raw_query, type_filter:)
 
-    # Fill remaining slots with fuzzy pg_search results
-    remaining = limit - exact.size
-    if remaining > 0 && query.present?
-      exact_keys = exact.map { |r| [ r[:type], r[:record_id] ] }.to_set
-      docs = PgSearch.multisearch(query)
-      docs = docs.where(searchable_type: type_filter) if type_filter.present?
-      docs = docs.limit(limit)
-      fuzzy = docs.filter_map { |doc| search_result_for(doc) }
-      fuzzy.reject! { |r| exact_keys.include?([ r[:type], r[:record_id] ]) }
-      @results = exact + fuzzy.first(remaining)
+      # Fill remaining slots with fuzzy pg_search results
+      remaining = limit - exact.size
+      if remaining > 0
+        exact_keys = exact.map { |r| [ r[:type], r[:record_id] ] }.to_set
+        docs = PgSearch.multisearch(query)
+        docs = docs.where(searchable_type: type_filter) if type_filter.present?
+        docs = docs.limit(limit)
+        fuzzy = docs.filter_map { |doc| search_result_for(doc) }
+        fuzzy.reject! { |r| exact_keys.include?([ r[:type], r[:record_id] ]) }
+        @results = exact + fuzzy.first(remaining)
+      else
+        @results = exact
+      end
     else
-      @results = exact
+      product_types = [ "Product", "Service" ]
+      filter = type_filter && product_types.include?(type_filter) ? type_filter : nil
+      @results = best_selling_items(limit, type_filter: filter).map { |r| build_result(r[:record], r[:type]) }
     end
 
     respond_to do |format|
@@ -64,7 +70,11 @@ class SearchController < ApplicationController
 
           @results << { type: doc.searchable_type, record: record }
         end
+
+        @results.sort_by! { |r| -(r[:record].try(:sales_count) || 0) }
       end
+    else
+      @results = best_selling_items(limit, type_filter:)
     end
 
     respond_to do |format|
@@ -138,6 +148,25 @@ class SearchController < ApplicationController
       when "TaxCode" then nil
       else nil
       end
+    end
+
+    def best_selling_items(limit, type_filter: nil)
+      results = []
+
+      if type_filter.nil? || type_filter == "Product"
+        Product.kept.where("sales_count > 0").order(sales_count: :desc).limit(limit).each do |product|
+          results << { type: "Product", record: product }
+        end
+      end
+
+      if type_filter.nil? || type_filter == "Service"
+        Service.kept.where("sales_count > 0").order(sales_count: :desc).limit(limit).each do |service|
+          results << { type: "Service", record: service }
+        end
+      end
+
+      results.sort_by! { |r| -(r[:record].sales_count) }
+      results.first(limit)
     end
 
     def search_url_for(record, type)
