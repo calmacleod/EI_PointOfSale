@@ -15,6 +15,15 @@ export default class extends Controller {
 
   connect() {
     this.#updateMethodUI(this.methodInputTarget.value, { applyRounding: true })
+
+    // Close modal on successful Turbo Stream response (panel gets replaced)
+    this.element.addEventListener("turbo:submit-end", (event) => {
+      if (event.detail.success) this.closeModal()
+    })
+  }
+
+  closeModal() {
+    this.element.classList.add("hidden")
   }
 
   selectMethod(event) {

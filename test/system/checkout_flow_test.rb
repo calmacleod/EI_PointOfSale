@@ -107,6 +107,9 @@ class CheckoutFlowTest < ApplicationSystemTestCase
 
     def fill_in_payment(method:, amount:, tendered: nil)
       within "#order_payments_panel" do
+        click_button "Add Payment"
+      end
+      within "#payment_modal" do
         find("button[data-method='#{method}']").click
         find("[name='order_payment[amount]']").set(amount.to_s)
         find("[name='order_payment[amount_tendered]']").set(tendered.to_s) if tendered

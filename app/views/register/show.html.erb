@@ -260,6 +260,9 @@
     </div>
   </div>
 
+  <%# ── Payment modal ────────────────────────────────────────────── %>
+  <%= render "orders/payment_modal", order: @order %>
+
   <%# ── Discount modal (lazy-loaded via Turbo Frame) ──────────────── %>
   <%= turbo_frame_tag "discount_modal",
         data: { controller: "discount-modal",
