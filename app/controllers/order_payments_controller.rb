@@ -27,12 +27,19 @@ class OrderPaymentsController < ApplicationController
 
       respond_to do |format|
         format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: @order.reload }),
+          @order.reload
+          streams = [
+            turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: @order }),
             turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: @order }),
             turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
             turbo_stream.replace("order_action_buttons", partial: "register/action_buttons", locals: { order: @order })
           ]
+
+          if @order.payment_complete?
+            streams << turbo_stream.append("order_form_container", partial: "orders/complete_prompt", locals: { order: @order })
+          end
+
+          render turbo_stream: streams
         }
         format.html { redirect_to edit_order_path(@order) }
       end

@@ -1,6 +1,6 @@
 <% content_for :full_bleed, true %>
 
-<div class="flex flex-1 min-h-0 flex-col overflow-hidden" data-controller="order-form item-preview cancel-order" data-order-form-order-id-value="<%= @order.id %>">
+<div id="order_form_container" class="flex flex-1 min-h-0 flex-col overflow-hidden" data-controller="order-form item-preview cancel-order" data-order-form-order-id-value="<%= @order.id %>">
   <%# ── Tab bar ─────────────────────────────────────────────────────── %>
   <div class="flex items-center gap-1 border-b border-theme bg-surface-alt px-3 py-1 overflow-x-auto select-none shrink-0"
        data-controller="tab-reorder"
