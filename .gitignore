@@ -55,3 +55,5 @@
 
 # Other
 .DS_Store
+
+/.claude/*
