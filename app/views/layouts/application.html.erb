@@ -29,6 +29,7 @@
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= accent_color_style_tag %>
     <%= javascript_importmap_tags %>
+    <%== Sentry.get_trace_propagation_meta %>
   </head>
 
   <body class="bg-page text-body overflow-x-hidden" data-controller="pwa">

@@ -31,6 +31,7 @@ env:
     - GARAGE_ACCESS_KEY
     - GARAGE_SECRET_KEY
     - NEW_RELIC_LICENSE_KEY
+    - SENTRY_DSN
   clear:
     # Database connection for cache/queue/cable databases (all on the same postgres accessory).
     # The container name ei_point_of_sale-db-1 is the Kamal internal hostname for the db accessory.

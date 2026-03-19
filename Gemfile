@@ -84,8 +84,10 @@ gem "audited"
 
 # Client-side local time display
 gem "local_time"
-
 gem "shopify_api", "~> 16.1"
+gem "newrelic_rpm", "~> 10.2"
+gem "sentry-ruby"
+gem "sentry-rails"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -113,5 +115,3 @@ group :test do
   gem "minitest-mock"
   gem "minitest-reporters"
 end
-
-gem "newrelic_rpm", "~> 10.2"
