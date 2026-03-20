@@ -161,71 +161,44 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
     assert_turbo_stream_replaces(*ORDER_PANELS)
   end
 
-  # PATCH exclude
-  test "PATCH exclude increments excluded_quantity" do
+  # PATCH update
+  test "PATCH update sets applied quantity directly" do
     discount = @line.order_line_discounts.create!(
       name: "Auto", discount_type: :percentage, value: 10,
       calculated_amount: 4.50, excluded_quantity: 0, auto_applied: true
     )
 
-    patch exclude_order_line_discount_path(discount), headers: TURBO_HEADERS
+    patch order_line_discount_path(discount),
+          params: { order_line_discount: { applied_quantity: 1 } },
+          headers: TURBO_HEADERS
     assert_response :success
-    assert_equal 1, discount.reload.excluded_quantity
+    assert_equal 1, discount.reload.applied_quantity
+    assert_equal 2, discount.excluded_quantity
   end
 
-  test "PATCH exclude returns turbo stream replacing individual line target and panels" do
+  test "PATCH update clamps to valid range" do
     discount = @line.order_line_discounts.create!(
       name: "Auto", discount_type: :percentage, value: 10,
       calculated_amount: 4.50, excluded_quantity: 0, auto_applied: true
     )
 
-    patch exclude_order_line_discount_path(discount), headers: TURBO_HEADERS
+    patch order_line_discount_path(discount),
+          params: { order_line_discount: { applied_quantity: 99 } },
+          headers: TURBO_HEADERS
+    assert_response :success
+    assert_equal @line.quantity, discount.reload.applied_quantity
+  end
+
+  test "PATCH update returns turbo stream replacing line and panels" do
+    discount = @line.order_line_discounts.create!(
+      name: "Auto", discount_type: :percentage, value: 10,
+      calculated_amount: 4.50, excluded_quantity: 0, auto_applied: true
+    )
+
+    patch order_line_discount_path(discount),
+          params: { order_line_discount: { applied_quantity: 2 } },
+          headers: TURBO_HEADERS
     assert_response :success
     assert_turbo_stream_replaces("order_line_#{@line.id}", "order_discounts_panel", "order_totals")
-  end
-
-  test "PATCH exclude on fully excluded discount is a no-op" do
-    discount = @line.order_line_discounts.create!(
-      name: "Auto", discount_type: :percentage, value: 10,
-      calculated_amount: 4.50, excluded_quantity: @line.quantity, auto_applied: true
-    )
-
-    patch exclude_order_line_discount_path(discount), headers: TURBO_HEADERS
-    assert_response :success
-    assert_equal @line.quantity, discount.reload.excluded_quantity
-  end
-
-  # PATCH restore
-  test "PATCH restore decrements excluded_quantity" do
-    discount = @line.order_line_discounts.create!(
-      name: "Auto", discount_type: :percentage, value: 10,
-      calculated_amount: 4.50, excluded_quantity: 2, auto_applied: true
-    )
-
-    patch restore_order_line_discount_path(discount), headers: TURBO_HEADERS
-    assert_response :success
-    assert_equal 1, discount.reload.excluded_quantity
-  end
-
-  test "PATCH restore returns turbo stream replacing individual line target and panels" do
-    discount = @line.order_line_discounts.create!(
-      name: "Auto", discount_type: :percentage, value: 10,
-      calculated_amount: 4.50, excluded_quantity: 1, auto_applied: true
-    )
-
-    patch restore_order_line_discount_path(discount), headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces("order_line_#{@line.id}", "order_discounts_panel", "order_totals")
-  end
-
-  test "PATCH restore when excluded_quantity is 0 is a no-op" do
-    discount = @line.order_line_discounts.create!(
-      name: "Auto", discount_type: :percentage, value: 10,
-      calculated_amount: 4.50, excluded_quantity: 0, auto_applied: true
-    )
-
-    patch restore_order_line_discount_path(discount), headers: TURBO_HEADERS
-    assert_response :success
-    assert_equal 0, discount.reload.excluded_quantity
   end
 end

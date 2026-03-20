@@ -5,7 +5,7 @@
 # and destroying manual discounts.
 class OrderLineDiscountsController < ApplicationController
   before_action :set_order, only: :create
-  before_action :set_line_discount, only: %i[exclude restore destroy]
+  before_action :set_line_discount, only: %i[update destroy]
 
   # Create a manual line discount applied to selected units across one or more order lines.
   # Expects line_quantities: { line_id => applied_unit_count } built by the discount-modal
@@ -46,6 +46,33 @@ class OrderLineDiscountsController < ApplicationController
     end
   end
 
+  # Update the applied quantity for a line discount (set how many units receive the discount)
+  def update
+    order = @line_discount.order_line.order
+    authorize! :update, order
+
+    applied_qty = params.dig(:order_line_discount, :applied_quantity).to_i
+    @line_discount.set_applied_quantity!(applied_qty)
+    Orders::CalculateTotals.call(order)
+
+    respond_to do |format|
+      format.turbo_stream {
+        render turbo_stream: [
+          turbo_stream.replace("order_line_#{@line_discount.order_line_id}",
+                              partial: "orders/line_item",
+                              locals: { line: @line_discount.order_line.reload }),
+          turbo_stream.replace("order_discounts_panel",
+                              partial: "orders/discounts_panel",
+                              locals: { order: order.reload }),
+          turbo_stream.replace("order_totals",
+                              partial: "orders/totals_panel",
+                              locals: { order: order })
+        ]
+      }
+      format.html { redirect_to edit_order_path(order) }
+    end
+  end
+
   # Destroy a manual line discount (auto-applied discounts are managed via exclude/restore)
   def destroy
     order = @line_discount.order_line.order
@@ -66,58 +93,6 @@ class OrderLineDiscountsController < ApplicationController
           turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order.reload }),
           turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order })
-        ]
-      }
-      format.html { redirect_to edit_order_path(order) }
-    end
-  end
-
-  # Exclude discount from one more unit
-  def exclude
-    order = @line_discount.order_line.order
-    authorize! :update, order
-
-    @line_discount.exclude_one!
-    Orders::CalculateTotals.call(order)
-
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_line_#{@line_discount.order_line_id}",
-                              partial: "orders/line_item",
-                              locals: { line: @line_discount.order_line.reload }),
-          turbo_stream.replace("order_discounts_panel",
-                              partial: "orders/discounts_panel",
-                              locals: { order: order.reload }),
-          turbo_stream.replace("order_totals",
-                              partial: "orders/totals_panel",
-                              locals: { order: order })
-        ]
-      }
-      format.html { redirect_to edit_order_path(order) }
-    end
-  end
-
-  # Restore discount to one more unit
-  def restore
-    order = @line_discount.order_line.order
-    authorize! :update, order
-
-    @line_discount.restore_one!
-    Orders::CalculateTotals.call(order)
-
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_line_#{@line_discount.order_line_id}",
-                              partial: "orders/line_item",
-                              locals: { line: @line_discount.order_line.reload }),
-          turbo_stream.replace("order_discounts_panel",
-                              partial: "orders/discounts_panel",
-                              locals: { order: order.reload }),
-          turbo_stream.replace("order_totals",
-                              partial: "orders/totals_panel",
-                              locals: { order: order })
         ]
       }
       format.html { redirect_to edit_order_path(order) }

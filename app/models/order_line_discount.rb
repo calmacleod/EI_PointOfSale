@@ -61,6 +61,12 @@ class OrderLineDiscount < ApplicationRecord
     update!(excluded_quantity: 0)
   end
 
+  # Set exactly how many units should receive the discount
+  def set_applied_quantity!(count)
+    clamped = count.to_i.clamp(0, order_line.quantity)
+    update!(excluded_quantity: order_line.quantity - clamped)
+  end
+
   def display_value
     case discount_type
     when "percentage"

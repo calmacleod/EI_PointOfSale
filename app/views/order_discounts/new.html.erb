@@ -96,22 +96,16 @@
                 <div class="space-y-2 max-h-52 overflow-y-auto rounded-lg border border-theme p-2">
                   <% discountable_lines.each do |line| %>
                     <div class="rounded p-1.5 bg-surface-alt">
-                      <div class="flex items-baseline justify-between mb-1.5">
+                      <div class="flex items-center justify-between">
                         <span class="text-xs font-medium text-body truncate mr-2"><%= line.name %></span>
-                        <span class="text-[10px] text-muted shrink-0"><%= number_to_currency(line.unit_price) %> each</span>
-                      </div>
-                      <div class="flex flex-wrap gap-1">
-                        <% line.quantity.times do |i| %>
-                          <button type="button"
-                                  class="w-6 h-6 rounded text-[10px] font-medium transition bg-gray-100 text-gray-400 hover:bg-green-100 hover:text-green-700"
-                                  data-action="click->discount-modal#toggleUnit"
-                                  data-discount-modal-target="unitBtn"
-                                  data-line-id="<%= line.id %>"
-                                  data-active="false"
-                                  title="Unit <%= i + 1 %> — click to apply to discount">
-                            <%= i + 1 %>
-                          </button>
-                        <% end %>
+                        <div class="flex items-center gap-1 shrink-0">
+                          <input type="number" min="0" max="<%= line.quantity %>" value="<%= line.quantity %>" autocomplete="off"
+                                 class="w-10 rounded border border-theme bg-surface px-1 py-0.5 text-center text-xs text-body focus:outline-none focus:ring-1 focus:ring-accent"
+                                 data-discount-modal-target="lineQty"
+                                 data-line-id="<%= line.id %>">
+                          <span class="text-xs text-muted">/</span>
+                          <span class="text-xs text-muted"><%= line.quantity %></span>
+                        </div>
                       </div>
                     </div>
                   <% end %>

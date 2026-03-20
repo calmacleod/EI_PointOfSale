@@ -132,6 +132,23 @@ class OrderLineDiscountTest < ActiveSupport::TestCase
     assert_equal 0, @discount.reload.excluded_quantity
   end
 
+  # set_applied_quantity!
+  test "set_applied_quantity! sets excluded_quantity from applied count" do
+    @discount.set_applied_quantity!(1)
+    assert_equal 1, @discount.reload.excluded_quantity
+    assert_equal 1, @discount.applied_quantity
+  end
+
+  test "set_applied_quantity! clamps to valid range" do
+    @discount.set_applied_quantity!(99)
+    assert_equal 0, @discount.reload.excluded_quantity
+    assert_equal @line.quantity, @discount.applied_quantity
+
+    @discount.set_applied_quantity!(-5)
+    assert_equal @line.quantity, @discount.reload.excluded_quantity
+    assert_equal 0, @discount.applied_quantity
+  end
+
   # display_value
   test "display_value formats percentage" do
     @discount.discount_type = :percentage

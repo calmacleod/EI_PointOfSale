@@ -101,15 +101,9 @@ module Orders
         line_discounts_to_update = []
 
         lines.each do |line|
-          active_discounts = (line_discounts_by_line[line.id] || []).select(&:active?)
+          all_discounts = line_discounts_by_line[line.id] || []
 
-          if active_discounts.empty?
-            # Reset discount_amount to 0 when no active discounts
-            line.discount_amount = 0 if line.discount_amount != 0
-            next
-          end
-
-          active_discounts.each do |line_discount|
+          all_discounts.each do |line_discount|
             new_amount = calculate_line_discount_amount(line_discount, line)
 
             if line_discount.calculated_amount != new_amount
@@ -119,7 +113,8 @@ module Orders
           end
 
           # Update the line's total discount amount
-          line.discount_amount = active_discounts.sum(&:calculated_amount)
+          active_discounts = all_discounts.select(&:active?)
+          line.discount_amount = active_discounts.any? ? active_discounts.sum(&:calculated_amount) : 0
         end
 
         # Bulk update line discounts
