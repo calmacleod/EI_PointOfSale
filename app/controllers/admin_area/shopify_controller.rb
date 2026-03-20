@@ -8,6 +8,14 @@ module AdminArea
       @configured = shopify_configured?
       @synced_count = Product.kept.where(sync_to_shopify: true).count
       @last_synced = Product.kept.where.not(shopify_synced_at: nil).maximum(:shopify_synced_at)
+
+      if @configured
+        @webhooks = ShopifySync::WebhookInspector.new.call
+        @webhook_error = nil
+      end
+    rescue => e
+      @webhooks = []
+      @webhook_error = e.message
     end
 
     def sync_all
@@ -18,6 +26,18 @@ module AdminArea
       ShopifySync::SyncInventoryJob.perform_later
 
       redirect_to admin_shopify_path, notice: "Sync jobs enqueued for #{products.count} products."
+    end
+
+    def register_webhooks
+      if !shopify_configured?
+        redirect_to admin_shopify_path, alert: "Shopify credentials are not configured."
+        return
+      end
+
+      ShopifySync::WebhookRegistrar.new.call
+      redirect_to admin_shopify_path, notice: "Webhooks registered with Shopify."
+    rescue => e
+      redirect_to admin_shopify_path, alert: "Webhook registration failed: #{e.message}"
     end
 
     def test_connection

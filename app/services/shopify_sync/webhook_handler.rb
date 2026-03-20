@@ -8,6 +8,8 @@ module ShopifySync
       case topic
       when "orders/create"
         handle_order_created(payload)
+      when "orders/paid"
+        handle_order_paid(payload)
       when "products/update"
         handle_product_updated(payload)
       else
@@ -16,6 +18,28 @@ module ShopifySync
     end
 
     private
+
+      def handle_order_paid(payload)
+        order_number = payload["order_number"] || payload["name"]
+        line_items = payload["line_items"] || []
+
+        quantities = line_items.filter_map do |item|
+          variant_id = "gid://shopify/ProductVariant/#{item['variant_id']}"
+          product = Product.find_by(shopify_variant_id: variant_id)
+          next unless product
+
+          quantity = item["quantity"].to_i
+          new_stock = [ product.stock_level - quantity, 0 ].max
+          product.update!(stock_level: new_stock)
+
+          { code: product.code, name: product.name, quantity: quantity, stock_after: new_stock }
+        end
+
+        Rails.logger.info(
+          "Shopify orders/paid ##{order_number}: " \
+          "#{quantities.map { |q| "#{q[:code]} ×#{q[:quantity]}" }.join(', ')}"
+        )
+      end
 
       def handle_order_created(payload)
         line_items = payload["line_items"] || []

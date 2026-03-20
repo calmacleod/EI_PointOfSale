@@ -45,7 +45,8 @@
   shop_domain: "yourstore.myshopify.com"
   client_id: "your-client-id"
   client_secret: "your-client-secret"
-  api_version: "2026-01"</code></pre>
+  api_version: "2026-01"
+  app_url: "https://your-app-domain.com"  # required for webhook registration</code></pre>
         </div>
       <% end %>
     </div>
@@ -82,7 +83,50 @@
         <%= button_to "Sync all products", sync_all_admin_shopify_path, method: :post,
             data: { turbo_confirm: "This will enqueue sync jobs for all products flagged for Shopify. Continue?" },
             class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        <%= button_to "Register webhooks", register_webhooks_admin_shopify_path, method: :post,
+            data: { turbo_confirm: "This will register the orders/paid webhook with Shopify. Continue?" },
+            class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-medium text-body hover:bg-[var(--color-border)]/30" %>
       </div>
+    </section>
+  <% end %>
+
+  <%# ── Registered webhooks ─────────────────────────────────────────── %>
+  <% if @configured %>
+    <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface">
+      <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <h2 class="text-sm font-semibold text-body">Registered webhooks</h2>
+        <p class="text-xs text-muted">Webhook subscriptions currently active on your Shopify store</p>
+      </div>
+      <% if @webhook_error %>
+        <div class="px-3 py-2.5 text-sm text-red-600">
+          Could not load webhooks: <%= @webhook_error %>
+        </div>
+      <% elsif @webhooks.blank? %>
+        <div class="px-3 py-2.5 text-sm text-muted">
+          No webhooks registered. Use the <strong class="text-body">Register webhooks</strong> button above to set them up.
+        </div>
+      <% else %>
+        <table class="min-w-full divide-y divide-(--color-border) text-sm">
+          <thead class="bg-surface-alt">
+            <tr>
+              <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Topic</th>
+              <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Callback URL</th>
+              <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Registered</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-(--color-border)">
+            <% @webhooks.each do |wh| %>
+              <tr>
+                <td class="px-3 py-1.5 font-mono text-xs text-body"><%= wh[:topic] %></td>
+                <td class="px-3 py-1.5 text-xs text-muted break-all"><%= wh[:callback_url] %></td>
+                <td class="px-3 py-1.5 text-xs text-muted whitespace-nowrap">
+                  <%= wh[:created_at] ? local_time(wh[:created_at], format: :short) : "—" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% end %>
     </section>
   <% end %>
 

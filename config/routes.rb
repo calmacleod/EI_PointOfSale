@@ -29,6 +29,7 @@ Rails.application.routes.draw do
     resource :shopify, only: %i[show], controller: "shopify" do
       post :sync_all, on: :member
       post :test_connection, on: :member
+      post :register_webhooks, on: :member
     end
     resource :backups, only: %i[ show ] do
       get :download, on: :member
@@ -145,6 +146,9 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Shopify webhook receiver — public endpoint, verified via HMAC
+  post "shopify/webhooks", to: "shopify_webhooks#create", as: :shopify_webhooks
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # PWA: manifest and service worker for installable app
