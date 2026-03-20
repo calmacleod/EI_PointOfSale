@@ -97,7 +97,7 @@
   </td>
   <td class="px-4 py-2 text-center align-top">
     <div class="flex items-center justify-center gap-1">
-      <% if line.sellable.present? %>
+      <% if line.sellable.present? && line.sellable_type.in?(%w[Product Service]) %>
         <button type="button"
                 class="text-muted opacity-0 group-hover:opacity-100 hover:text-accent transition"
                 title="Preview <%= line.sellable_type.downcase %>"
