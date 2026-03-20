@@ -35,6 +35,7 @@ env:
     # The container name ei_point_of_sale-db-1 is the Kamal internal hostname for the db accessory.
     DATABASE_HOST: ei-point-of-sale-db
     DATABASE_USERNAME: postgres
+    APP_URL: https://pos.callummacleod.ca
 
     # Garage S3 endpoint (internal Docker network address of the garage accessory).
     GARAGE_ENDPOINT: "https://s3.pos.callummacleod.ca"
