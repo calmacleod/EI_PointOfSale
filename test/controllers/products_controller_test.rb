@@ -108,6 +108,23 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 2, @product.reload.images.count
   end
 
+  test "update with existing images and empty file input saves successfully" do
+    @product.images.attach(
+      io: File.open(Rails.root.join("test/fixtures/files/test_image.png")),
+      filename: "existing.png",
+      content_type: "image/png"
+    )
+
+    # Simulate what a browser sends when no new file is chosen: images: [""]
+    patch product_path(@product), params: {
+      product: { selling_price: 19.99, images: [ "" ] }
+    }
+
+    assert_redirected_to product_path(@product)
+    assert_equal 19.99, @product.reload.selling_price.to_f
+    assert_equal 1, @product.reload.images.count
+  end
+
   # ── Image purge ─────────────────────────────────────────────────────
 
   test "purge_image removes a single image" do

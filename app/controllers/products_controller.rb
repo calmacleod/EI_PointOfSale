@@ -62,7 +62,8 @@ class ProductsController < ApplicationController
 
   def create
     @product.added_by = current_user
-    @product.images.attach(product_params[:images]) if product_params[:images].present?
+    images = Array(product_params[:images]).reject(&:blank?)
+    @product.images.attach(images) if images.any?
 
     if @product.save
       redirect_to products_path, notice: "Product created."
@@ -97,7 +98,8 @@ class ProductsController < ApplicationController
   end
 
   def update
-    @product.images.attach(product_params[:images]) if product_params[:images].present?
+    images = Array(product_params[:images]).reject(&:blank?)
+    @product.images.attach(images) if images.any?
 
     if @product.update(product_params.except(:images))
       redirect_to product_path(@product), notice: "Product updated."
