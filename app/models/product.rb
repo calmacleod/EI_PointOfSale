@@ -28,9 +28,9 @@ class Product < ApplicationRecord
   after_commit :invalidate_kept_count, on: [ :create, :destroy ]
   after_commit :invalidate_kept_count, if: :saved_change_to_discarded_at?
 
-  # Barcode scan lookup — uses the unique index on `code`.
+  # Barcode scan lookup — case-insensitive match against `code`.
   def self.find_by_exact_code(code)
-    kept.find_by(code: code.to_s.strip)
+    kept.where("LOWER(code) = LOWER(?)", code.to_s.strip).first
   end
 
   def sellable_price

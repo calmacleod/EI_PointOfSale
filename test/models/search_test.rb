@@ -115,8 +115,8 @@ class SearchTest < ActiveSupport::TestCase
     product = Product.create!(code: "EXACT-SCAN-001", name: "Scannable")
 
     assert_equal product, Product.find_by_exact_code("EXACT-SCAN-001")
+    assert_equal product, Product.find_by_exact_code("exact-scan-001")
     assert_nil Product.find_by_exact_code("EXACT-SCAN")
-    assert_nil Product.find_by_exact_code("exact-scan-001")
   end
 
   test "Product.find_by_exact_code excludes discarded products" do

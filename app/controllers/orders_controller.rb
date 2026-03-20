@@ -215,7 +215,7 @@ class OrdersController < ApplicationController
     order_id = params[:order_id]
     order = Order.find(order_id)
 
-    sellable = Product.find_by_exact_code(code) || Service.kept.find_by(code: code)
+    sellable = Product.find_by_exact_code(code) || Service.find_by_exact_code(code)
 
     if sellable
       OrderLines::Add.call(

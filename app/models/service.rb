@@ -18,6 +18,11 @@ class Service < ApplicationRecord
   validates :name, presence: true
   validates :price, presence: true, numericality: { greater_than_or_equal_to: 0 }
 
+  # Case-insensitive code lookup, mirrors Product.find_by_exact_code.
+  def self.find_by_exact_code(code)
+    kept.where("LOWER(code) = LOWER(?)", code.to_s.strip).first
+  end
+
   def sellable_price
     price
   end

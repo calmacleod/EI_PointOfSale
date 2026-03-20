@@ -48,12 +48,12 @@ class SearchController < ApplicationController
     if raw_query.present?
       # Fast path: exact code match
       if type_filter.nil? || type_filter == "Product"
-        product = Product.kept.find_by(code: raw_query)
+        product = Product.find_by_exact_code(raw_query)
         @results << { type: "Product", record: product } if product
       end
 
       if type_filter.nil? || type_filter == "Service"
-        service = Service.kept.find_by(code: raw_query)
+        service = Service.find_by_exact_code(raw_query)
         @results << { type: "Service", record: service } if service
       end
 
@@ -92,13 +92,13 @@ class SearchController < ApplicationController
       results = []
 
       if type_filter.nil? || type_filter == "Product"
-        if (product = Product.kept.find_by(code: query))
+        if (product = Product.find_by_exact_code(query))
           results << build_result(product, "Product")
         end
       end
 
       if type_filter.nil? || type_filter == "Service"
-        if (service = Service.kept.find_by(code: query))
+        if (service = Service.find_by_exact_code(query))
           results << build_result(service, "Service")
         end
       end
