@@ -4,10 +4,21 @@ require "test_helper"
 
 module AdminArea
   class ShopifyControllerTest < ActionDispatch::IntegrationTest
+    # Stub WebhookInspector so controller tests never make real Shopify API calls.
+    def with_stubbed_webhook_inspector(webhooks: [])
+      stub_inspector = ->() { webhooks }
+      ShopifySync::WebhookInspector.stub(:new, -> { Object.new.tap { |o| o.define_singleton_method(:call) { webhooks } } }) do
+        yield
+      end
+    end
+
     test "show renders for admin" do
       sign_in_as(users(:admin))
 
-      get admin_shopify_path
+      with_stubbed_webhook_inspector do
+        get admin_shopify_path
+      end
+
       assert_response :success
       assert_includes response.body, "Shopify Integration"
     end
@@ -22,7 +33,10 @@ module AdminArea
     test "show displays setup instructions when not configured" do
       sign_in_as(users(:admin))
 
-      get admin_shopify_path
+      Rails.application.credentials.stub(:dig, ->(*) { nil }) do
+        get admin_shopify_path
+      end
+
       assert_response :success
       assert_includes response.body, "Not configured"
       assert_includes response.body, "Setup instructions"
@@ -32,7 +46,10 @@ module AdminArea
       sign_in_as(users(:admin))
       products(:dragon_shield_red).update!(sync_to_shopify: true)
 
-      get admin_shopify_path
+      with_stubbed_webhook_inspector do
+        get admin_shopify_path
+      end
+
       assert_response :success
       assert_includes response.body, "Products to sync"
     end

@@ -114,4 +114,5 @@ group :test do
   gem "minitest", ">= 6"
   gem "minitest-mock"
   gem "minitest-reporters"
+  gem "webmock"
 end

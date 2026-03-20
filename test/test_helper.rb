@@ -3,12 +3,21 @@ require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/mock"
 require "minitest/reporters"
+require "webmock/minitest"
+
+# Block all outgoing network requests. Any test that needs to simulate an HTTP
+# interaction must stub the call explicitly (e.g. via WebMock.stub_request or
+# the ShopifyTestHelper#stub_shopify_api helper).
+WebMock.disable_net_connect!(allow_localhost: true)
 
 require_relative "test_helpers/session_test_helper"
 require_relative "test_helpers/turbo_stream_test_helper"
+require_relative "test_helpers/shopify_test_helper"
 
 module ActiveSupport
   class TestCase
+    include ShopifyTestHelper
+
     # Run tests in parallel (single worker in CI for JUnit report)
     parallelize(workers: :number_of_processors)
 

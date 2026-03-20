@@ -12,10 +12,7 @@ module ShopifySync
       end
 
       with_shopify_session do
-        products.each do |p|
-          puts "Syncing Inventory for #{p.code} (Shopify Item ID: #{p.shopify_inventory_item_id})"
-          sync_inventory_for(p)
-        end
+        products.each { |p| sync_inventory_for(p) }
       end
     end
 
@@ -23,35 +20,27 @@ module ShopifySync
 
       def sync_inventory_for(product)
         location_id = primary_location_id
-        puts "  Location ID: #{location_id.inspect}"
         raise "No Shopify location found — cannot set inventory" unless location_id
-        puts "  Stock level: #{product.stock_level}"
 
-        tracking_response = enable_tracking(product)
-        puts "  Enable tracking response: #{tracking_response.body.to_json}"
-
-        variables = {
-          input: {
-            reason: "correction",
-            name: "available",
-            ignoreCompareQuantity: true,
-            quantities: [
-              {
-                inventoryItemId: product.shopify_inventory_item_id,
-                locationId: location_id,
-                quantity: product.stock_level
-              }
-            ]
-          }
-        }
-        puts "  inventorySetQuantities variables: #{variables.to_json}"
+        enable_tracking(product)
 
         response = graphql_client.query(
           query: inventory_adjust_mutation,
-          variables: variables
+          variables: {
+            input: {
+              reason: "correction",
+              name: "available",
+              ignoreCompareQuantity: true,
+              quantities: [
+                {
+                  inventoryItemId: product.shopify_inventory_item_id,
+                  locationId: location_id,
+                  quantity: product.stock_level
+                }
+              ]
+            }
+          }
         )
-
-        puts "  inventorySetQuantities response: #{response.body.to_json}"
 
         extract_data!(response, "inventorySetQuantities")
         product.update_column(:shopify_synced_at, Time.current)
@@ -85,11 +74,8 @@ module ShopifySync
       end
 
       def primary_location_id
-        @primary_location_id ||= begin
-          response = graphql_client.query(query: location_query)
-          puts "  Location query response: #{response.body.to_json}"
-          response.body.dig("data", "locations", "nodes", 0, "id")
-        end
+        @primary_location_id ||= graphql_client.query(query: location_query)
+          .body.dig("data", "locations", "nodes", 0, "id")
       end
 
       def inventory_adjust_mutation
