@@ -10,34 +10,32 @@
 #
 #   shopify:
 #     shop_domain: "yourstore.myshopify.com"
-#     api_key: "your-api-key"
-#     api_secret: "your-api-secret"
-#     access_token: "shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-#     api_version: "2025-10"
+#     client_id: "your-client-id"
+#     client_secret: "your-client-secret"
+#     api_version: "2026-01"
 #
 # === How to get your Shopify API credentials ===
 #
-# 1. Go to Shopify Admin > Settings > Apps and sales channels > Develop apps
-# 2. Click "Create an app" and name it (e.g., "EI POS Integration")
-# 3. Configure Admin API scopes:
+# 1. Go to https://partners.shopify.com/ and open your Dev Dashboard
+# 2. Click "Create app" and name it (e.g., "EI POS Integration")
+# 3. Under Configuration > API access, set Admin API scopes:
 #    - read_products, write_products
 #    - read_inventory, write_inventory
 #    - read_orders
-# 4. Install the app to your store
-# 5. Copy the Admin API access token (starts with "shpat_")
-# 6. Copy the API key and API secret from the app credentials page
+# 4. Install the app on your store
+# 5. Copy the Client ID and Client secret from the app's overview page
 #
 
 shopify_creds = Rails.application.credentials.dig(:shopify)
 
 if shopify_creds.present? && shopify_creds[:shop_domain].present?
   ShopifyAPI::Context.setup(
-    api_key: shopify_creds[:api_key],
-    api_secret_key: shopify_creds[:api_secret],
+    api_key: shopify_creds[:client_id],
+    api_secret_key: shopify_creds[:client_secret],
     host_name: shopify_creds[:shop_domain],
     scope: "read_products,write_products,read_inventory,write_inventory,read_orders",
-    is_private: true,
     is_embedded: false,
-    api_version: shopify_creds[:api_version] || "2025-10"
+    is_private: true,
+    api_version: shopify_creds[:api_version] || "2026-01"
   )
 end

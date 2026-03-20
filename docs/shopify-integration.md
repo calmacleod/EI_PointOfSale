@@ -2,7 +2,7 @@
 
 ## Overview
 
-The app integrates with Shopify to synchronise products and inventory between the in-store POS system and an online Shopify storefront. The integration uses Shopify's Admin GraphQL API via the `shopify_api` gem (v16+) and is designed for a **custom app** (private API credentials, not an embedded app).
+The app integrates with Shopify to synchronise products and inventory between the in-store POS system and an online Shopify storefront. The integration uses Shopify's Admin GraphQL API via the `shopify_api` gem (v16+) and is designed for a **custom app** created through the Shopify Dev Dashboard.
 
 Key capabilities:
 
@@ -13,19 +13,20 @@ Key capabilities:
 
 ## Setup
 
-### 1. Create a Shopify Custom App
+### 1. Create a Shopify App via the Dev Dashboard
 
-1. Go to **Shopify Admin** > Settings > Apps and sales channels > **Develop apps**
-2. Click **Create an app** and name it (e.g. "EI POS Integration")
-3. Under **Configuration**, set the required **Admin API scopes**:
+> **Note:** As of January 2026, Shopify no longer allows creating new custom apps directly in the Shopify admin. All new apps must be created through the Dev Dashboard.
+
+1. Go to the **Shopify Dev Dashboard** at [partners.shopify.com](https://partners.shopify.com/)
+2. Click **Create app** and name it (e.g. "EI POS Integration")
+3. Under **Configuration > API access**, set the required **Admin API scopes**:
    - `read_products`
    - `write_products`
    - `read_inventory`
    - `write_inventory`
    - `read_orders`
 4. Click **Install app** on your store
-5. Copy the **Admin API access token** (starts with `shpat_`)
-6. Copy the **API key** and **API secret** from the app's credentials page
+5. Copy the **Client ID** and **Client secret** from the app's overview page
 
 ### 2. Store Credentials
 
@@ -40,15 +41,23 @@ Add the following block:
 ```yaml
 shopify:
   shop_domain: "yourstore.myshopify.com"
-  api_key: "your-api-key"
-  api_secret: "your-api-secret"
-  access_token: "shpat_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  api_version: "2025-10"
+  client_id: "your-client-id"
+  client_secret: "your-client-secret"
+  api_version: "2026-01"
 ```
 
 ### 3. Verify Connection
 
 After configuring credentials, restart the Rails server and visit **Admin > Settings > Shopify**. Click **Test connection** to verify the API credentials are working.
+
+## Authentication
+
+The integration uses the **Client Credentials Grant** to obtain access tokens from Shopify. This replaces the older static access token (`shpat_`) approach.
+
+- Tokens are obtained by POSTing `client_id` and `client_secret` to the store's `/admin/oauth/access_token` endpoint with `grant_type=client_credentials`.
+- Tokens expire after **24 hours**.
+- The app caches tokens for 23 hours via `Rails.cache` to avoid unnecessary token requests.
+- Token fetching is handled transparently by `ShopifySync::Base`.
 
 ## Architecture
 
@@ -58,7 +67,7 @@ All Shopify communication lives in `app/services/shopify_sync/`:
 
 | Service | Purpose |
 |---------|---------|
-| `ShopifySync::Base` | Base class providing session management and GraphQL client helpers |
+| `ShopifySync::Base` | Base class providing session management, token fetching, and GraphQL client helpers |
 | `ShopifySync::ProductPusher` | Pushes a product (or product group) to Shopify. Creates or updates. |
 | `ShopifySync::ProductPuller` | Pulls all products from Shopify into local database |
 | `ShopifySync::InventorySyncer` | Synchronises stock levels for all (or one) synced product(s) |
@@ -76,7 +85,7 @@ All jobs live in `app/jobs/shopify_sync/` and run via Solid Queue:
 
 ### Initializer
 
-`config/initializers/shopify.rb` sets up `ShopifyAPI::Context` at boot time using Rails credentials. If credentials are missing, the integration gracefully stays dormant.
+`config/initializers/shopify.rb` sets up `ShopifyAPI::Context` at boot time using `client_id` and `client_secret` from Rails credentials. If credentials are missing, the integration gracefully stays dormant.
 
 ## How Sync Works
 

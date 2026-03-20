@@ -34,17 +34,18 @@
         <div class="rounded-md bg-(--color-border)/10 px-3 py-2">
           <p class="text-sm text-body font-medium">Setup instructions</p>
           <ol class="mt-1 list-decimal pl-5 text-sm text-muted space-y-1">
-            <li>Go to <strong>Shopify Admin</strong> > Settings > Apps and sales channels > Develop apps</li>
-            <li>Create a custom app with these Admin API scopes: <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_products</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">write_products</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_inventory</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">write_inventory</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_orders</code></li>
-            <li>Install the app and copy the Admin API access token</li>
+            <li>Go to the <strong>Shopify Dev Dashboard</strong> at <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">partners.shopify.com</code></li>
+            <li>Click <strong>Create app</strong> and name it (e.g. "EI POS Integration")</li>
+            <li>Under Configuration > API access, set Admin API scopes: <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_products</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">write_products</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_inventory</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">write_inventory</code>, <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">read_orders</code></li>
+            <li>Install the app on your store</li>
+            <li>Copy the <strong>Client ID</strong> and <strong>Client secret</strong> from the app overview page</li>
             <li>Run <code class="text-xs bg-surface-alt px-1 py-0.5 rounded">bin/rails credentials:edit</code> and add:</li>
           </ol>
           <pre class="mt-2 rounded bg-surface-alt px-3 py-2 text-xs text-body overflow-x-auto"><code>shopify:
   shop_domain: "yourstore.myshopify.com"
-  api_key: "your-api-key"
-  api_secret: "your-api-secret"
-  access_token: "shpat_xxxxxxxx"
-  api_version: "2025-10"</code></pre>
+  client_id: "your-client-id"
+  client_secret: "your-client-secret"
+  api_version: "2026-01"</code></pre>
         </div>
       <% end %>
     </div>

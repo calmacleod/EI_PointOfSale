@@ -26,11 +26,8 @@ module AdminArea
         return
       end
 
-      creds = Rails.application.credentials.dig(:shopify)
-      session = ShopifyAPI::Auth::Session.new(
-        shop: creds[:shop_domain],
-        access_token: creds[:access_token]
-      )
+      service = ShopifySync::Base.new
+      session = service.send(:shopify_session)
       ShopifyAPI::Context.activate_session(session)
 
       client = ShopifyAPI::Clients::Graphql::Admin.new(session: session)
@@ -52,7 +49,7 @@ module AdminArea
 
       def shopify_configured?
         creds = Rails.application.credentials.dig(:shopify)
-        creds.present? && creds[:shop_domain].present? && creds[:access_token].present?
+        creds.present? && creds[:shop_domain].present? && creds[:client_id].present? && creds[:client_secret].present?
       end
 
       def require_admin
