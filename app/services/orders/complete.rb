@@ -26,6 +26,7 @@ module Orders
         record_event
       end
 
+      enqueue_inventory_sync
       Result.new(success?: true, order: @order, errors: [])
     rescue => e
       Result.new(success?: false, order: @order, errors: [ e.message ])
@@ -66,6 +67,13 @@ module Orders
           completed_at: Time.current,
           cash_drawer_session: CashDrawerSession.current
         )
+      end
+
+      def enqueue_inventory_sync
+        @order.order_lines.includes(:sellable).each do |line|
+          next unless line.sellable.is_a?(Product) && line.sellable.sync_to_shopify?
+          ShopifySync::SyncInventoryJob.perform_later(line.sellable_id)
+        end
       end
 
       def record_event

@@ -16,6 +16,12 @@ module Orders
         RecordEvent.call(order: order, event_type: "cancelled", actor: actor)
       end
 
+      order.order_lines.includes(:sellable).each do |line|
+        next unless line.sellable.is_a?(Product) && line.sellable.sync_to_shopify?
+
+        ShopifySync::SyncCommittedJob.perform_later(line.sellable_id, -line.quantity)
+      end
+
       order
     end
   end

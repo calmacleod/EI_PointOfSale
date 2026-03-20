@@ -26,13 +26,14 @@ module ShopifySync
           shopify_product = data["product"]
           shopify_variant = shopify_product.dig("variants", "nodes", 0)
 
-          product.update!(
+          product.update_columns(
             shopify_product_id: shopify_product["id"],
             shopify_variant_id: shopify_variant&.dig("id"),
             shopify_inventory_item_id: shopify_variant&.dig("inventoryItem", "id"),
             shopify_synced_at: Time.current
           )
 
+          set_source_metafield(shopify_product["id"], product.id)
           sync_image(shopify_product["id"], product)
           sync_inventory(product)
         end
@@ -58,13 +59,14 @@ module ShopifySync
           data = extract_data!(response, "productSet")
           shopify_product = data["product"]
           group.update!(shopify_product_id: shopify_product["id"])
+          set_source_metafield(shopify_product["id"], group.id)
 
           shopify_variants = shopify_product.dig("variants", "nodes") || []
           siblings.each_with_index do |sib, i|
             sv = shopify_variants[i]
             next unless sv
 
-            sib.update!(
+            sib.update_columns(
               shopify_product_id: shopify_product["id"],
               shopify_variant_id: sv["id"],
               shopify_inventory_item_id: sv.dig("inventoryItem", "id"),
@@ -101,6 +103,23 @@ module ShopifySync
         v
       end
 
+      def set_source_metafield(shopify_product_id, source_id)
+        graphql_client.query(
+          query: metafields_set_mutation,
+          variables: {
+            metafields: [
+              {
+                ownerId: shopify_product_id,
+                namespace: "ei_pos",
+                key: "source_product_id",
+                value: source_id.to_s,
+                type: "single_line_text_field"
+              }
+            ]
+          }
+        )
+      end
+
       def sync_inventory(product)
         return unless product.shopify_inventory_item_id.present?
 
@@ -120,6 +139,24 @@ module ShopifySync
             media: [ { originalSource: image_url, mediaContentType: "IMAGE" } ]
           }
         )
+      end
+
+      def metafields_set_mutation
+        <<~GRAPHQL
+          mutation metafieldsSet($metafields: [MetafieldsSetInput!]!) {
+            metafieldsSet(metafields: $metafields) {
+              metafields {
+                key
+                namespace
+                value
+              }
+              userErrors {
+                field
+                message
+              }
+            }
+          }
+        GRAPHQL
       end
 
       def product_create_media_mutation

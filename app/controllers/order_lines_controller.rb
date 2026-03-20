@@ -37,9 +37,11 @@ class OrderLinesController < ApplicationController
     authorize! :update, @order_line.order
 
     old_qty = @order_line.quantity
-    @order_line.update!(quantity: params[:order_line][:quantity].to_i)
+    new_qty = params[:order_line][:quantity].to_i
+    @order_line.update!(quantity: new_qty)
     Discounts::AutoApply.call(@order_line.order)
     Orders::CalculateTotals.call(@order_line.order)
+    enqueue_committed_sync(@order_line, new_qty - old_qty)
     Orders::RecordEvent.call(
       order: @order_line.order, event_type: "line_quantity_changed", actor: current_user,
       data: { name: @order_line.name, old_quantity: old_qty, new_quantity: @order_line.quantity }
@@ -68,7 +70,9 @@ class OrderLinesController < ApplicationController
     authorize! :update, order
 
     name = @order_line.name
+    qty = @order_line.quantity
     @order_line.destroy!
+    enqueue_committed_sync(@order_line, -qty)
     Discounts::AutoApply.call(order)
     Orders::CalculateTotals.call(order)
     Orders::RecordEvent.call(
@@ -101,6 +105,14 @@ class OrderLinesController < ApplicationController
 
     def set_order_line
       @order_line = OrderLine.find(params[:id])
+    end
+
+    def enqueue_committed_sync(line, delta)
+      return if delta == 0
+      sellable = line.sellable
+      return unless sellable.is_a?(Product) && sellable.sync_to_shopify?
+
+      ShopifySync::SyncCommittedJob.perform_later(sellable.id, delta)
     end
 
     def find_sellable(type, id)

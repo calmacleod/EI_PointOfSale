@@ -25,6 +25,7 @@ module OrderLines
       line, action = find_or_create_line
       apply_discounts_and_totals
       record_event(line, action)
+      enqueue_committed_sync(line)
 
       Result.new(success?: true, line:, action:)
     end
@@ -72,6 +73,12 @@ module OrderLines
             data: { name: line.name, code: line.code, quantity: line.quantity, unit_price: line.unit_price.to_s }
           )
         end
+      end
+
+      def enqueue_committed_sync(line)
+        return unless line.sellable.is_a?(Product) && line.sellable.sync_to_shopify?
+
+        ShopifySync::SyncCommittedJob.perform_later(line.sellable_id, @quantity)
       end
 
       def error_result(message)

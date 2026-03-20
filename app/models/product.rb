@@ -27,6 +27,10 @@ class Product < ApplicationRecord
   before_save :capture_restock_timestamp
   after_commit :invalidate_kept_count, on: [ :create, :destroy ]
   after_commit :invalidate_kept_count, if: :saved_change_to_discarded_at?
+  SHOPIFY_SYNC_COLUMNS = %w[shopify_product_id shopify_variant_id shopify_inventory_item_id shopify_synced_at updated_at].freeze
+
+  after_commit :enqueue_shopify_push, on: [ :create, :update ],
+    if: -> { sync_to_shopify? && (saved_changes.keys - SHOPIFY_SYNC_COLUMNS).any? }
 
   # Barcode scan lookup — case-insensitive match against `code`.
   def self.find_by_exact_code(code)
@@ -41,6 +45,10 @@ class Product < ApplicationRecord
 
     def invalidate_kept_count
       Rails.cache.delete("products/kept_count")
+    end
+
+    def enqueue_shopify_push
+      ShopifySync::PushProductJob.perform_later(id)
     end
 
     def capture_restock_timestamp
