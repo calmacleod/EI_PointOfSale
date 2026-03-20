@@ -25,9 +25,8 @@ Rails.application.configure do
   # Set ACTIVE_STORAGE_SERVICE=garage for Kamal deployments, railway for Railway deployments.
   config.active_storage.service = ENV.fetch("ACTIVE_STORAGE_SERVICE", "railway").to_sym
 
-  # Route ActiveStorage URLs through the Rails app (and thus through Kamal proxy)
-  # instead of generating direct S3 presigned URLs to the internal Garage endpoint.
-  config.active_storage.resolve_model_to_urls = true
+  # Set the host for ActiveStorage URL generation
+  config.active_storage.default_url_options = { host: "s3.pos.callummacleod.ca", protocol: "https" }
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   # config.assume_ssl = true

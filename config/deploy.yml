@@ -15,8 +15,6 @@ servers:
 proxy:
   ssl: true
   host: pos.callummacleod.ca
-  run:
-    version: v0.9.2
 
 # Where you keep your container images.
 registry:
@@ -39,7 +37,7 @@ env:
     DATABASE_USERNAME: postgres
 
     # Garage S3 endpoint (internal Docker network address of the garage accessory).
-    GARAGE_ENDPOINT: "http://ei-point-of-sale-garage:3900"
+    GARAGE_ENDPOINT: "https://s3.pos.callummacleod.ca"
 
     # Use Garage for Active Storage (set ACTIVE_STORAGE_SERVICE=railway on Railway).
     ACTIVE_STORAGE_SERVICE: garage
@@ -87,7 +85,6 @@ accessories:
   garage:
     image: dxflrs/garage:v2.2.0
     host: *server_ip
-    port: "3900:3900"  # S3 API — must be publicly accessible for presigned URLs
     options:
       publish:
         - "127.0.0.1:3901:3901"  # RPC (internal only)
@@ -97,3 +94,13 @@ accessories:
     directories:
       - meta:/var/lib/garage/meta
       - data:/var/lib/garage/data
+
+  garage-proxy:
+    image: nginx:alpine
+    host: *server_ip
+    proxy:
+      ssl: true
+      host: s3.pos.callummacleod.ca
+      app_port: 8080
+    files:
+      - config/garage/nginx.conf:/etc/nginx/conf.d/default.conf
