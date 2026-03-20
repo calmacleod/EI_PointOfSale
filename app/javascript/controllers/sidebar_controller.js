@@ -100,6 +100,12 @@ export default class extends Controller {
     if (!link?.href) return
     this.rewriteLinkWithFilters(link)
     if (!this.isDesktop()) this.closeMobileDrawer()
+
+    // Trigger navigation on mousedown by firing a synthetic click
+    if (event.type === "mousedown" && event.button === 0) {
+      event.preventDefault()
+      link.click()
+    }
   }
 
   // ── Filter URL rewriting ─────────────────────────────────────────
