@@ -105,6 +105,17 @@ class DashboardMetrics
       DashboardMetric.find_by(key: key.to_s)&.computed_at
     end
 
+    def fetch_all(keys)
+      records = DashboardMetric.where(key: keys.map(&:to_s)).index_by(&:key)
+      keys.each_with_object({}) do |key, hash|
+        record = records[key.to_s]
+        hash[key.to_sym] = {
+          value: record&.value || compute_fallback(key.to_sym),
+          computed_at: record&.computed_at
+        }
+      end
+    end
+
     private
 
       def compute_fallback(key)

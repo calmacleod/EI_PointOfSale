@@ -1,22 +1,25 @@
 class DashboardController < ApplicationController
   def index
     visible_keys = Current.user&.visible_dashboard_metric_keys || DashboardMetrics.available_keys
+    preloaded_metrics = DashboardMetrics.fetch_all(visible_keys)
+
     @visible_metrics = visible_keys.map do |key|
+      metric = preloaded_metrics[key.to_sym]
       {
         key: key,
-        value: DashboardMetrics[key],
+        value: metric[:value],
         label: DashboardMetrics.label_for(key),
         description: DashboardMetrics.description_for(key),
         icon: DashboardMetrics.icon_path_for(key),
         format: metric_format_for(key),
         link_path: DashboardMetrics.link_path_for(key),
-        computed_at: DashboardMetrics.computed_at(key)
+        computed_at: metric[:computed_at]
       }
     end
 
     @metrics_last_updated = @visible_metrics.map { |m| m[:computed_at] }.compact.max
 
-    @recent_orders = Order.kept.recent.limit(5)
+    @recent_orders = Order.kept.recent.includes(:customer).limit(5)
 
     if Current.user
       @my_tasks = StoreTask.where.not(status: :done)
