@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require "application_system_test_case"
+require_relative "../test_helpers/register_helper"
 
 class CheckoutFlowTest < ApplicationSystemTestCase
+  include RegisterHelper
   setup do
     @admin = users(:admin)
     system_sign_in_as(@admin)
@@ -99,25 +101,4 @@ class CheckoutFlowTest < ApplicationSystemTestCase
       assert_text "Acme Corp", wait: 5
     end
   end
-
-  private
-
-    def fill_in_code_lookup(code)
-      fill_in "code", with: code
-      click_button "Add"
-      assert_field "code", with: "", wait: 5
-    end
-
-    def fill_in_payment(method:, amount:, tendered: nil)
-      within "#order_payments_panel" do
-        click_button "Add Payment"
-      end
-      within "#payment_modal" do
-        find("button[data-method='#{method}']").click
-        find("[name='order_payment[amount]']").set(amount.to_s)
-        find("[name='order_payment[amount_tendered]']").set(tendered.to_s) if tendered
-        click_button "Record Payment"
-      end
-      assert_selector "#order_payments_panel", wait: 5
-    end
 end

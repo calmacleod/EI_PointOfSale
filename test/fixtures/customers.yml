@@ -22,3 +22,15 @@ inactive_customer:
   name: Inactive Customer
   member_number: "100003"
   active: false
+
+tax_exempt_customer:
+  name: Tax Exempt Corp
+  member_number: "100004"
+  tax_code: two
+  active: true
+
+discount_customer:
+  name: Discount Dave
+  member_number: "100005"
+  discount: percentage_all
+  active: true

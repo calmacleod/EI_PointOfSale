@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 require "application_system_test_case"
+require_relative "../test_helpers/register_helper"
 
 class DiscountManagementTest < ApplicationSystemTestCase
+  include RegisterHelper
   setup do
     @admin = users(:admin)
     system_sign_in_as(@admin)
@@ -70,12 +72,4 @@ class DiscountManagementTest < ApplicationSystemTestCase
     discount = line.order_line_discounts.reload.first
     assert_equal 1, discount.excluded_quantity if discount
   end
-
-  private
-
-    def fill_in_code_lookup(code)
-      fill_in "code", with: code
-      click_button "Add"
-      assert_field "code", with: "", wait: 5
-    end
 end
