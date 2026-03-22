@@ -31,7 +31,7 @@ module Orders
     private
 
       def load_order_lines
-        @order.order_lines.includes(:tax_code).to_a
+        @order.order_lines.includes(:tax_code, :sellable).to_a
       end
 
       def load_order_discounts
@@ -45,19 +45,19 @@ module Orders
 
       def recalculate_line_taxes(lines)
         customer_tax_code = @order.customer&.tax_code
-        return if customer_tax_code.nil? && lines.all? { |l| l.tax_code_id.present? }
 
         lines_to_update = []
 
         lines.each do |line|
           next if line.sellable_type == "GiftCertificate"
 
-          effective_tax_code = customer_tax_code || line.tax_code
+          # When no customer override, restore the sellable's original tax code
+          effective_tax_code = customer_tax_code || line.sellable&.tax_code || line.tax_code
           new_rate = effective_tax_code&.rate || 0
 
-          if line.tax_rate != new_rate
+          if line.tax_rate != new_rate || line.tax_code_id != effective_tax_code&.id
             line.tax_rate = new_rate
-            line.tax_code = effective_tax_code if customer_tax_code
+            line.tax_code = effective_tax_code
             lines_to_update << line if line.changed?
           end
         end
