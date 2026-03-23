@@ -24,7 +24,7 @@ export default class extends Controller {
     this.labelTarget.textContent = "Syncing…"
 
     try {
-      const { syncProducts } = await import("/offline/sync.js")
+      const { syncProducts } = await import("lib/sync")
       await syncProducts()
       await this.refresh()
     } catch {
@@ -37,7 +37,7 @@ export default class extends Controller {
 
   async refresh() {
     try {
-      const { getLastSyncedAt, getProductCount } = await import("/offline/sync.js")
+      const { getLastSyncedAt, getProductCount } = await import("lib/sync")
       const [ts, count] = await Promise.all([getLastSyncedAt(), getProductCount()])
       if (count === 0) {
         this.labelTarget.textContent = "Not synced"
