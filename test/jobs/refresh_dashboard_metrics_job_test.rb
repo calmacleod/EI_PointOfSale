@@ -7,6 +7,8 @@ class RefreshDashboardMetricsJobTest < ActiveJob::TestCase
     customers(:acme_corp).update_column(:created_at, 2.days.ago)
     customers(:jane_doe).update_column(:created_at, 10.days.ago)
     customers(:inactive_customer).update_column(:created_at, 10.days.ago)
+    customers(:tax_exempt_customer).update_column(:created_at, 10.days.ago)
+    customers(:discount_customer).update_column(:created_at, 10.days.ago)
 
     RefreshDashboardMetricsJob.perform_now
 

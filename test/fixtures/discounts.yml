@@ -41,3 +41,10 @@ expired_discount:
   active: true
   applies_to_all: true
   ends_at: <%= 1.day.ago %>
+
+customer_percentage:
+  name: "Member 5% Off"
+  discount_type: 0
+  value: 5.00
+  active: true
+  applies_to_all: false

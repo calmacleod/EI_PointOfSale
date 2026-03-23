@@ -165,7 +165,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
   end
 
   test "remove customer with discount removes it" do
-    Discount.where(name: "10% Off Everything").update_all(active: true)
+    Discount.where(name: "10% Off Everything").update_all(active: false)
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
     assign_customer("Discount Dave")

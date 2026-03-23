@@ -32,5 +32,5 @@ tax_exempt_customer:
 discount_customer:
   name: Discount Dave
   member_number: "100005"
-  discount: percentage_all
+  discount: customer_percentage
   active: true

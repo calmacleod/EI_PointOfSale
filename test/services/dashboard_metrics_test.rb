@@ -7,6 +7,8 @@ class DashboardMetricsTest < ActiveSupport::TestCase
     customers(:acme_corp).update_column(:created_at, 3.days.ago)
     customers(:jane_doe).update_column(:created_at, 10.days.ago)
     customers(:inactive_customer).update_column(:created_at, 10.days.ago)
+    customers(:tax_exempt_customer).update_column(:created_at, 10.days.ago)
+    customers(:discount_customer).update_column(:created_at, 10.days.ago)
 
     DashboardMetrics.refresh!
 
@@ -30,6 +32,8 @@ class DashboardMetricsTest < ActiveSupport::TestCase
     customers(:acme_corp).update_column(:created_at, 2.days.ago)
     customers(:jane_doe).update_column(:created_at, 10.days.ago)
     customers(:inactive_customer).update_column(:created_at, 10.days.ago)
+    customers(:tax_exempt_customer).update_column(:created_at, 10.days.ago)
+    customers(:discount_customer).update_column(:created_at, 10.days.ago)
 
     assert_equal 1, DashboardMetrics[:customers_last_7_days].to_i
   end
@@ -54,6 +58,8 @@ class DashboardMetricsTest < ActiveSupport::TestCase
     customer.update_column(:created_at, 3.days.ago)
     customers(:jane_doe).update_column(:created_at, 10.days.ago)
     customers(:inactive_customer).update_column(:created_at, 10.days.ago)
+    customers(:tax_exempt_customer).update_column(:created_at, 10.days.ago)
+    customers(:discount_customer).update_column(:created_at, 10.days.ago)
 
     DashboardMetrics.refresh!
     assert_equal 1, DashboardMetrics[:customers_last_7_days].to_i
