@@ -3,7 +3,11 @@ require_relative "../config/environment"
 require "rails/test_help"
 require "minitest/mock"
 require "minitest/reporters"
+require "minitest/minitest_reporter_plugin"
 require "webmock/minitest"
+
+Minitest.register_plugin :minitest_reporter
+Minitest::Reporters.use! [ Minitest::Reporters::DefaultReporter.new(detailed_skip: false) ]
 
 # Block all outgoing network requests. Any test that needs to simulate an HTTP
 # interaction must stub the call explicitly (e.g. via WebMock.stub_request or
