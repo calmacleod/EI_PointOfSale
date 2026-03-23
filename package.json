@@ -3,12 +3,17 @@
   "private": true,
   "devDependencies": {
     "@herb-tools/linter": "latest",
-    "tailwind-lint": "latest"
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "svelte": "^5.0.0",
+    "tailwind-lint": "latest",
+    "vite": "^5.0.0"
   },
   "scripts": {
     "herb:lint": "herb-lint",
     "herb:lint:fix": "herb-lint --fix",
     "tailwind:lint": "tailwind-lint \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\"",
-    "tailwind:lint:fix": "tailwind-lint --fix \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\""
+    "tailwind:lint:fix": "tailwind-lint --fix \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\"",
+    "offline:build": "vite build --config svelte/vite.config.mjs",
+    "offline:dev": "vite build --config svelte/vite.config.mjs --watch"
   }
 }
