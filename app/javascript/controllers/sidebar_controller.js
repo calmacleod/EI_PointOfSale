@@ -20,12 +20,21 @@ export default class extends Controller {
     this.rafId = null
     this.setupTouchListeners()
     this.setupPrefetchRewriting()
+    this.boundTurboMorph = this.handleTurboMorph.bind(this)
+    document.addEventListener("turbo:morph", this.boundTurboMorph)
   }
 
   disconnect() {
     this.teardownTouchListeners()
     this.teardownPrefetchRewriting()
     if (this.rafId) cancelAnimationFrame(this.rafId)
+    document.removeEventListener("turbo:morph", this.boundTurboMorph)
+  }
+
+  handleTurboMorph() {
+    if (!this.isDesktop() && this.isMobileDrawerOpen()) {
+      this.closeMobileDrawer()
+    }
   }
 
   setupTouchListeners() {
