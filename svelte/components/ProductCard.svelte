@@ -11,15 +11,15 @@
   }
 </script>
 
-<div class="flex items-start justify-between rounded-lg border border-white/5 bg-white/5 p-3 transition hover:bg-white/10">
+<div class="flex items-start justify-between rounded-lg border border-[#c8c8c8] bg-white p-3 transition hover:border-[#0d9488]/30 hover:bg-[#f0f0f0]">
   <div class="min-w-0 flex-1">
     <div class="flex items-center gap-2">
-      <span class="truncate text-sm font-medium text-[var(--sidebar-text-bright)]">{product.name}</span>
+      <span class="truncate text-sm font-medium text-[#1a1a2e]">{product.name}</span>
       {#if isOutOfStock}
-        <span class="shrink-0 rounded-full bg-red-500/20 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-red-400">Out of stock</span>
+        <span class="shrink-0 rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-red-700 border border-red-200">Out of stock</span>
       {/if}
     </div>
-    <div class="mt-0.5 flex items-center gap-2 text-xs text-[var(--sidebar-text)] opacity-70">
+    <div class="mt-0.5 flex items-center gap-2 text-xs text-[#6b6b6b]">
       <span class="font-mono">{product.code}</span>
       {#if product.tax_code}
         <span>·</span>
@@ -32,9 +32,9 @@
     </div>
   </div>
   <div class="ml-3 shrink-0 text-right">
-    <div class="text-sm font-semibold text-[var(--sidebar-text-bright)]">{formatPrice(price)}</div>
+    <div class="text-sm font-semibold text-[#1a1a2e]">{formatPrice(price)}</div>
     {#if taxRate > 0}
-      <div class="text-xs text-[var(--sidebar-text)] opacity-60">{formatPrice(priceWithTax)} w/ tax</div>
+      <div class="text-xs text-[#6b6b6b]">{formatPrice(priceWithTax)} w/ tax</div>
     {/if}
   </div>
 </div>

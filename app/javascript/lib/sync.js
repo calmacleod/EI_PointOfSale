@@ -1,5 +1,5 @@
 const DB_NAME = "ei_pos_offline"
-const DB_VERSION = 1
+const DB_VERSION = 2
 const SYNC_URL = "/api/v1/products/sync"
 const META_KEY = "last_synced_at"
 
@@ -13,6 +13,13 @@ function openDb() {
         const store = db.createObjectStore("products", { keyPath: "id" })
         store.createIndex("code", "code", { unique: true })
         store.createIndex("name", "name", { unique: false })
+        store.createIndex("sales_count", "sales_count", { unique: false })
+      } else {
+        // v1 → v2: add sales_count index
+        const store = event.target.transaction.objectStore("products")
+        if (!store.indexNames.contains("sales_count")) {
+          store.createIndex("sales_count", "sales_count", { unique: false })
+        }
       }
       if (!db.objectStoreNames.contains("meta")) {
         db.createObjectStore("meta", { keyPath: "key" })
@@ -45,6 +52,17 @@ function txComplete(tx) {
     tx.oncomplete = resolve
     tx.onerror = () => reject(tx.error)
   })
+}
+
+export async function fullSyncProducts() {
+  const db = await openDb()
+
+  const wipeTx = db.transaction(["products", "meta"], "readwrite")
+  wipeTx.objectStore("products").clear()
+  wipeTx.objectStore("meta").delete(META_KEY)
+  await txComplete(wipeTx)
+
+  return syncProducts()
 }
 
 export async function syncProducts() {
@@ -93,6 +111,7 @@ export async function searchProducts(query) {
   const q = query.toLowerCase()
   return all
     .filter((p) => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q))
+    .sort((a, b) => (b.sales_count ?? 0) - (a.sales_count ?? 0))
     .slice(0, 50)
 }
 

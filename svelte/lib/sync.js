@@ -3,6 +3,17 @@ import { openDb, idbGet, idbGetAll, txComplete } from "./db.js"
 const SYNC_URL = "/api/v1/products/sync"
 const META_KEY = "last_synced_at"
 
+export async function fullSyncProducts() {
+  const db = await openDb()
+
+  const wipeTx = db.transaction(["products", "meta"], "readwrite")
+  wipeTx.objectStore("products").clear()
+  wipeTx.objectStore("meta").delete(META_KEY)
+  await txComplete(wipeTx)
+
+  return syncProducts()
+}
+
 export async function syncProducts() {
   const db = await openDb()
 
@@ -49,7 +60,17 @@ export async function searchProducts(query) {
   const q = query.toLowerCase()
   return all
     .filter((p) => p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q))
+    .sort((a, b) => (b.sales_count ?? 0) - (a.sales_count ?? 0))
     .slice(0, 50)
+}
+
+export async function getTopProducts(limit = 20) {
+  const db = await openDb()
+  const tx = db.transaction("products", "readonly")
+  const all = await idbGetAll(tx.objectStore("products"))
+  return all
+    .sort((a, b) => (b.sales_count ?? 0) - (a.sales_count ?? 0))
+    .slice(0, limit)
 }
 
 export async function lookupByCode(code) {

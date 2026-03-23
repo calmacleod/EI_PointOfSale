@@ -1,5 +1,5 @@
 const DB_NAME = "ei_pos_offline"
-const DB_VERSION = 1
+const DB_VERSION = 2
 
 export function openDb() {
   return new Promise((resolve, reject) => {
@@ -11,6 +11,13 @@ export function openDb() {
         const store = db.createObjectStore("products", { keyPath: "id" })
         store.createIndex("code", "code", { unique: true })
         store.createIndex("name", "name", { unique: false })
+        store.createIndex("sales_count", "sales_count", { unique: false })
+      } else {
+        // v1 → v2: add sales_count index
+        const store = event.target.transaction.objectStore("products")
+        if (!store.indexNames.contains("sales_count")) {
+          store.createIndex("sales_count", "sales_count", { unique: false })
+        }
       }
       if (!db.objectStoreNames.contains("meta")) {
         db.createObjectStore("meta", { keyPath: "key" })

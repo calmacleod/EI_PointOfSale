@@ -1,1 +1,1 @@
-export { syncProducts, searchProducts, lookupByCode, getLastSyncedAt, getProductCount } from "./lib/sync.js"
+export { syncProducts, fullSyncProducts, searchProducts, getTopProducts, lookupByCode, getLastSyncedAt, getProductCount } from "./lib/sync.js"
