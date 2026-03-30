@@ -77,7 +77,7 @@ gem "discard", "~> 1.4"
 gem "pg_search"
 
 # Pagination
-gem "pagy", "~> 43.2"
+gem "pagy", "~> 43.4"
 
 # Audit trail for model changes
 gem "audited"
