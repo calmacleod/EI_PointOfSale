@@ -42,8 +42,9 @@ class Ability
     # Common users can update their own profile (via Profile, not Admin > Users).
     can %i[edit update], User, id: user.id if user.persisted?
 
-    # Common users can read products, services, and customers.
+    # Common users can read products, services, customers, and tax codes.
     can %i[read search], [ Product, Service, Customer ] if user.persisted?
+    can :read, TaxCode if user.persisted?
 
     # Common users can read discounts (for the register screen).
     can :read, Discount if user.persisted?

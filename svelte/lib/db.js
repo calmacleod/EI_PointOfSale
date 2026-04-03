@@ -1,5 +1,5 @@
 const DB_NAME = "ei_pos_offline"
-const DB_VERSION = 2
+const DB_VERSION = 3
 
 export function openDb() {
   return new Promise((resolve, reject) => {
@@ -21,6 +21,22 @@ export function openDb() {
       }
       if (!db.objectStoreNames.contains("meta")) {
         db.createObjectStore("meta", { keyPath: "key" })
+      }
+      // v3: services, tax_codes, customers
+      if (!db.objectStoreNames.contains("services")) {
+        const store = db.createObjectStore("services", { keyPath: "id" })
+        store.createIndex("code", "code", { unique: false })
+        store.createIndex("name", "name", { unique: false })
+      }
+      if (!db.objectStoreNames.contains("tax_codes")) {
+        const store = db.createObjectStore("tax_codes", { keyPath: "id" })
+        store.createIndex("code", "code", { unique: true })
+      }
+      if (!db.objectStoreNames.contains("customers")) {
+        const store = db.createObjectStore("customers", { keyPath: "id" })
+        store.createIndex("name", "name", { unique: false })
+        store.createIndex("member_number", "member_number", { unique: false })
+        store.createIndex("email", "email", { unique: false })
       }
     }
 

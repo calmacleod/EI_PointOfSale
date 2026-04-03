@@ -1,5 +1,5 @@
 <script>
-  let { syncing = false, lastSyncedAt = null, syncError = null, productCount = 0, onSync, onFullSync } = $props()
+  let { syncing = false, lastSyncedAt = null, syncError = null, productCount = 0, countLabel = "products", onSync, onFullSync } = $props()
 
   let confirmingFullSync = $state(false)
 
@@ -17,7 +17,7 @@
     {:else if syncing}
       <span class="text-[12px] text-amber-600">Syncing…</span>
     {:else}
-      <span class="text-[12px] text-[#6b6b6b]">{productCount} products · {formatTime(lastSyncedAt)}</span>
+      <span class="text-[12px] text-[#6b6b6b]">{productCount} {countLabel} · {formatTime(lastSyncedAt)}</span>
     {/if}
   </div>
 

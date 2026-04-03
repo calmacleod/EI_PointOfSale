@@ -153,7 +153,10 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      get "products/sync", to: "products#sync", as: :products_sync
+      get "products/sync",  to: "products#sync",  as: :products_sync
+      get "services/sync",  to: "services#sync",  as: :services_sync
+      get "tax_codes/sync", to: "tax_codes#sync", as: :tax_codes_sync
+      get "customers/sync", to: "customers#sync", as: :customers_sync
     end
   end
 

@@ -1,5 +1,5 @@
 <script>
-  let { onSearch } = $props()
+  let { onSearch, placeholder = "Search by name or code…" } = $props()
 
   let query = $state("")
   let timer
@@ -26,7 +26,8 @@
   </div>
   <input
     type="search"
-    placeholder="Search by name or code…"
+    {placeholder}
+    
     value={query}
     oninput={handleInput}
     onkeydown={handleKeydown}

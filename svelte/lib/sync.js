@@ -96,3 +96,109 @@ export async function getProductCount() {
     req.onerror = () => reject(req.error)
   })
 }
+
+// --- Services ---
+
+export async function syncServices() {
+  return _syncCollection("services", "/api/v1/services/sync", "services_synced_at")
+}
+
+export async function fullSyncServices() {
+  return _fullSyncCollection("services", "services_synced_at", syncServices)
+}
+
+export async function searchServices(query) {
+  if (!query || !query.trim()) return []
+  const db = await openDb()
+  const all = await idbGetAll(db.transaction("services", "readonly").objectStore("services"))
+  const q = query.toLowerCase()
+  return all
+    .filter((s) => s.name.toLowerCase().includes(q) || (s.code ?? "").toLowerCase().includes(q))
+    .sort((a, b) => (b.sales_count ?? 0) - (a.sales_count ?? 0))
+    .slice(0, 50)
+}
+
+// --- Tax Codes ---
+
+export async function syncTaxCodes() {
+  return _syncCollection("tax_codes", "/api/v1/tax_codes/sync", "tax_codes_synced_at")
+}
+
+export async function fullSyncTaxCodes() {
+  return _fullSyncCollection("tax_codes", "tax_codes_synced_at", syncTaxCodes)
+}
+
+export async function getAllTaxCodes() {
+  const db = await openDb()
+  return idbGetAll(db.transaction("tax_codes", "readonly").objectStore("tax_codes"))
+}
+
+// --- Customers ---
+
+export async function syncCustomers() {
+  return _syncCollection("customers", "/api/v1/customers/sync", "customers_synced_at")
+}
+
+export async function fullSyncCustomers() {
+  return _fullSyncCollection("customers", "customers_synced_at", syncCustomers)
+}
+
+export async function searchCustomers(query) {
+  if (!query || !query.trim()) return []
+  const db = await openDb()
+  const all = await idbGetAll(db.transaction("customers", "readonly").objectStore("customers"))
+  const q = query.toLowerCase()
+  return all
+    .filter(
+      (c) =>
+        c.name?.toLowerCase().includes(q) ||
+        c.email?.toLowerCase().includes(q) ||
+        c.member_number?.toLowerCase().includes(q) ||
+        c.phone?.includes(q),
+    )
+    .slice(0, 50)
+}
+
+// --- Helpers ---
+
+async function _syncCollection(storeName, url, metaKey) {
+  const db = await openDb()
+
+  const metaTx = db.transaction("meta", "readonly")
+  const lastSync = await idbGet(metaTx.objectStore("meta"), metaKey)
+
+  const fetchUrl = new URL(url, window.location.origin)
+  if (lastSync?.value) fetchUrl.searchParams.set("since", lastSync.value)
+
+  const response = await fetch(fetchUrl.toString(), {
+    credentials: "same-origin",
+    headers: { Accept: "application/json" },
+  })
+
+  if (!response.ok) throw new Error(`Sync failed (${storeName}): ${response.status}`)
+
+  const data = await response.json()
+  const records = data[storeName]
+  const synced_at = data.synced_at
+
+  const tx = db.transaction([storeName, "meta"], "readwrite")
+  const store = tx.objectStore(storeName)
+  for (const record of records) {
+    store.put(record)
+  }
+  tx.objectStore("meta").put({ key: metaKey, value: synced_at })
+  await txComplete(tx)
+
+  return { count: records.length, synced_at }
+}
+
+async function _fullSyncCollection(storeName, metaKey, syncFn) {
+  const db = await openDb()
+
+  const wipeTx = db.transaction([storeName, "meta"], "readwrite")
+  wipeTx.objectStore(storeName).clear()
+  wipeTx.objectStore("meta").delete(metaKey)
+  await txComplete(wipeTx)
+
+  return syncFn()
+}
