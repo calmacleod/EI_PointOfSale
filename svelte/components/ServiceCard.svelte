@@ -1,9 +1,9 @@
 <script>
   let { service } = $props()
 
-  const price = parseFloat(service.price || "0")
-  const taxRate = parseFloat(service.tax_rate || "0")
-  const priceWithTax = price * (1 + taxRate)
+  const price = $derived(parseFloat(service.price || "0"))
+  const taxRate = $derived(parseFloat(service.tax_rate || "0"))
+  const priceWithTax = $derived(price * (1 + taxRate))
 
   function formatPrice(n) {
     return n.toLocaleString("en-CA", { style: "currency", currency: "CAD" })

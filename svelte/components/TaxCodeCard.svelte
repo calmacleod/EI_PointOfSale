@@ -1,9 +1,9 @@
 <script>
   let { taxCode } = $props()
 
-  const rate = parseFloat(taxCode.rate || "0")
-  const ratePercent = (rate * 100).toFixed(rate === 0 ? 0 : 2).replace(/\.?0+$/, "") + "%"
-  const isExempt = rate === 0
+  const rate = $derived(parseFloat(taxCode.rate || "0"))
+  const ratePercent = $derived((rate * 100).toFixed(rate === 0 ? 0 : 2).replace(/\.?0+$/, "") + "%")
+  const isExempt = $derived(rate === 0)
 </script>
 
 <div class="card">

@@ -31,12 +31,12 @@
     oninput={handleInput}
     onkeydown={handleKeydown}
     class="search-input"
-    autofocus
   />
   {#if query}
     <button
       onclick={() => { query = ""; onSearch("") }}
       class="clear-btn"
+      aria-label="Clear search"
     >
       <svg class="clear-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

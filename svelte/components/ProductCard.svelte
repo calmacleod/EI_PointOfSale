@@ -1,10 +1,10 @@
 <script>
   let { product } = $props()
 
-  const price = parseFloat(product.selling_price || "0")
-  const taxRate = parseFloat(product.tax_rate || "0")
-  const priceWithTax = price * (1 + taxRate)
-  const isOutOfStock = product.stock_level !== null && product.stock_level <= 0
+  const price = $derived(parseFloat(product.selling_price || "0"))
+  const taxRate = $derived(parseFloat(product.tax_rate || "0"))
+  const priceWithTax = $derived(price * (1 + taxRate))
+  const isOutOfStock = $derived(product.stock_level !== null && product.stock_level <= 0)
 
   function formatPrice(n) {
     return n.toLocaleString("en-CA", { style: "currency", currency: "CAD" })
