@@ -6,6 +6,7 @@
   import Sidebar from "./Sidebar.svelte"
   import ServicesPage from "./ServicesPage.svelte"
   import TaxCodesPage from "./TaxCodesPage.svelte"
+  import CustomersPage from "./CustomersPage.svelte"
   import { syncProducts, fullSyncProducts, searchProducts, getTopProducts, getLastSyncedAt, getProductCount } from "../lib/sync.js"
 
   const TOP_N = 20
@@ -94,6 +95,8 @@
     <ServicesPage />
   {:else if activePage === "tax_codes"}
     <TaxCodesPage />
+  {:else if activePage === "customers"}
+    <CustomersPage />
   {/if}
 </div>
 

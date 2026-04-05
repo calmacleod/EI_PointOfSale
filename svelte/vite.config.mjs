@@ -12,6 +12,7 @@ export default defineConfig({
     outDir: resolve(__dirname, "../public/offline"),
     emptyOutDir: true,
     rollupOptions: {
+      preserveEntrySignatures: false,
       input: {
         bundle: resolve(__dirname, "main.js"),
         sync: resolve(__dirname, "sync-worker.js"),
