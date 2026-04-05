@@ -1,106 +1,113 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guidance for Claude Code when working in this repository.
 
 ## Shell Environment
 
-This project uses **mise** for runtime version management. Prefix shell commands with:
+Uses **mise** for Ruby/Rails, **nvm** for Node. Prefix commands:
 ```bash
 source ~/.zshrc && eval "$(mise activate zsh)" && <command>
+source ~/.zshrc && nvm use && <command>   # for node/npx
 ```
 
 ## Common Commands
 
 ```bash
-# Development server (web + CSS watcher + Solid Queue workers)
-bin/dev
-
-# Run all tests
-bin/rails test
-
-# Run a single test file
-bin/rails test test/controllers/products_controller_test.rb
-
-# Run a single test by line number
-bin/rails test test/controllers/products_controller_test.rb:42
-
-# Run system tests (browser-based)
-bin/rails test:system
-
-# Linting
-bin/rubocop              # Ruby/Rails
-bin/rubocop -a           # Auto-fix safe violations
-bundle exec herb analyze app  # ERB analysis
-npm run herb:lint        # ERB lint
-
-# Security
-bin/bundler-audit
-bin/brakeman --quiet --no-pager
-bin/importmap audit
-
-# Full CI pipeline (setup, lint, security, tests, seed validation)
-bin/ci
-
-# Database
+bin/dev                          # Dev server (web + CSS + Solid Queue)
+bin/rails test                   # All tests
+bin/rails test path/to/test:42   # Single test by line
+bin/rails test:system            # System (browser) tests
+bin/rubocop                      # Lint (run after substantial changes)
+bin/rubocop -a                   # Auto-fix safe violations
+bin/ci                           # Full CI pipeline
 bin/rails db:migrate
 bin/rails db:seed
-env RAILS_ENV=test bin/rails db:seed:replant  # Reseed test DB
+env RAILS_ENV=test bin/rails db:seed:replant
 ```
 
 ## Tech Stack
 
-- **Ruby 4.0 / Rails 8.1** with Propshaft asset pipeline and Importmap for JS
-- **PostgreSQL** with multi-database setup (primary, queue, cable, cache)
-- **Tailwind CSS** for styling
-- **Hotwire** (Stimulus + Turbo) for interactivity
-- **Solid Queue / Solid Cache / Solid Cable** for jobs, caching, Action Cable
-- **Minitest** for testing (not RSpec)
-- **Rubocop Rails Omakase** for linting
+- **Ruby 4.0 / Rails 8.1** — Propshaft, Importmap, Tailwind, Hotwire (Turbo + Stimulus)
+- **PostgreSQL** — multi-database (primary, queue, cable, cache)
+- **Solid Queue / Solid Cache / Solid Cable**
+- **Minitest** (not RSpec), fixtures (not factories)
+- **Rubocop Rails Omakase**
 
 ## Architecture
 
-### Authentication & Authorization
-- **Custom session-based auth** via `Authentication` concern — not Devise or JWT
-- `Current.user` (via `ActiveSupport::CurrentAttributes`) provides the signed-in user
-- **CanCanCan** for authorization (not Pundit) — rules defined in `app/models/ability.rb`
-- **STI** for user roles: `User` base class with `Admin` and `Common` subclasses (check with `user.is_a?(Admin)`)
-- Admin-only controllers live in `AdminArea::` namespace with `require_admin` before_action
+### Auth & Authorization
+- Custom session auth via `Authentication` concern; `Current.user`
+- **CanCanCan** — rules in `app/models/ability.rb`
+- STI roles: `Admin` and `Common` subclasses of `User`
+- Admin controllers in `AdminArea::` namespace with `require_admin`
 
-### Controller Patterns
-- All controllers extend `ApplicationController` which includes `Authentication`
-- Use `load_and_authorize_resource` for resource controllers
-- Strong params in private `*_params` methods
-- Use `allow_unauthenticated_access` for public actions
-- Redirect with `notice:` or `alert:` flash messages
+### Controllers
+- Extend `ApplicationController` (includes `Authentication`)
+- `load_and_authorize_resource` for resource controllers
+- `allow_unauthenticated_access` for public actions
 
-### Model Patterns
-- `normalizes` for attribute cleaning (emails, etc.)
-- `Discard::Model` for soft deletes (not `acts_as_paranoid`)
-- `PgSearch::Model` for full-text search (trigram + tsearch)
+### Models
+- `normalizes` for attribute cleaning
+- `Discard::Model` for soft deletes
+- `PgSearch::Model` for full-text search
 - `audited` for change tracking
-- `Sellable` concern shared by `Product` and `Service` — polymorphic via `OrderLine.sellable`
-- Order state machine: enum-based (`draft → held → completed → voided/refunded`)
+- `Sellable` concern — polymorphic via `OrderLine.sellable` (Product, Service, GiftCertificate)
+- Order state machine: `draft → held → completed → voided/refunded`
 
-### Service Layer
-- Business logic in `app/services/`, namespaced (e.g., `Orders::CalculateTotals`, `Orders::Complete`)
-- Order services handle state transitions, totals recalculation, refund processing
+### Services
+- Business logic in `app/services/` (e.g. `Orders::CalculateTotals`, `Orders::Complete`)
 
 ### Background Jobs
-- Solid Queue with recurring jobs configured in `config/recurring.yml`
-- Dashboard metrics refresh (15 min), nightly backups (DB at 2am, MinIO at 3am), daily notifications
+- Recurring jobs in `config/recurring.yml` (metrics refresh, nightly backups, daily notifications)
 
-### Testing Conventions
-- Integration tests in `test/controllers/`, unit tests in `test/models/`, service tests in `test/services/`
-- Use `sign_in_as(user)` helper from `SessionTestHelper` for authenticated requests
-- Use fixtures (not factories) — all fixtures loaded automatically
-- Tests run in parallel by default
-- `DUMMY_PNG` constant available in test cases for stubbing chart rendering
+### Testing
+- `sign_in_as(user)` helper from `SessionTestHelper`
+- Tests run in parallel; `DUMMY_PNG` constant for chart stubs
+- Fixtures: `admin` (Admin), `one`/`two` (Common); tax codes `one` (HST/0.13), `two` (EXEMPT/0)
 
 ### Views
-- Tailwind CSS utility classes; conditional classes with `class: [...].join(" ")`
-- Shared UI partials in `app/views/shared/`
-- Use `*_path` helpers (not `*_url`) for in-app links
+- Tailwind utility classes; conditional: `class: [...].join(" ")`
+- Shared partials in `app/views/shared/`
+- Use `*_path` helpers (not `*_url`)
+- Pagy: include `Pagy::Method` in controllers; render `shared/pagy_nav` partial in views
 
-## Linting & Style
-- Run `bin/rubocop` after substantial changes and fix all violations before considering work complete
-- Run `bin/rubocop -a` for auto-fix, then manually fix remaining issues
+## Offline / Svelte App
+
+A standalone **Svelte 5** SPA that provides an offline-capable product/service/customer lookup tool. It is separate from the main Rails UI and serves as a reference tool for staff when the server is unreachable.
+
+### Purpose
+- Staff can look up products, services, tax codes, and customers without a live server connection
+- Data is synced from Rails into the browser's **IndexedDB** (via a service worker pattern)
+- Built and served as static files at `/offline/` on the Rails server
+
+### Structure
+```
+svelte/
+  main.js           # SPA entry point
+  sync-worker.js    # Background sync worker
+  vite.config.mjs   # Builds into public/offline/
+  lib/
+    db.js           # IndexedDB helpers
+    sync.js         # Sync logic (fetches from Rails API)
+  components/
+    App.svelte      # Root layout + navigation state
+    Sidebar.svelte
+    SearchBar.svelte
+    ProductList.svelte / ProductCard.svelte
+    ServiceCard.svelte / ServicesPage.svelte
+    CustomersPage.svelte / CustomerCard.svelte
+    TaxCodesPage.svelte / TaxCodeCard.svelte
+    SyncStatus.svelte
+```
+
+### Rails Integration
+- Sync endpoint: `GET /api/v1/products/sync` — accepts `?since=<timestamp>` for incremental sync
+- Returns `{ products: [...], synced_at: "..." }` JSON
+- Auth: uses same-origin session cookies (`credentials: "same-origin"`)
+- Built output lands in `public/offline/` (served as static assets by Rails/Propshaft)
+
+### Build Commands
+```bash
+source ~/.zshrc && nvm use && npm run offline:build   # Production build
+source ~/.zshrc && nvm use && npm run offline:dev     # Watch mode
+```
