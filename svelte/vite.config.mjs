@@ -12,15 +12,19 @@ export default defineConfig({
     outDir: resolve(__dirname, "../public/offline"),
     emptyOutDir: true,
     rollupOptions: {
-      preserveEntrySignatures: false,
       input: {
         bundle: resolve(__dirname, "main.js"),
         sync: resolve(__dirname, "sync-worker.js"),
       },
       output: {
         entryFileNames: "[name].js",
-        chunkFileNames: "chunk-[hash].js",
+        chunkFileNames: "[name].js",
         assetFileNames: "[name].[ext]",
+        manualChunks(id) {
+          if (id.includes("/lib/sync.js") || id.includes("/lib/db.js")) {
+            return "sync-lib"
+          }
+        },
       },
     },
   },

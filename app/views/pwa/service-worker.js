@@ -5,6 +5,7 @@ const PRECACHE_URLS = [
   "/offline",
   "/offline/bundle.js",
   "/offline/sync.js",
+  "/offline/sync-lib.js",
   "/icon.png",
   "/icon-192.png",
   "/icon.svg"
