@@ -149,6 +149,17 @@ Rails.application.routes.draw do
   # Shopify webhook receiver — public endpoint, verified via HMAC
   post "shopify/webhooks", to: "shopify_webhooks#create", as: :shopify_webhooks
 
+  get "offline", to: "offline#show", as: :offline
+
+  namespace :api do
+    namespace :v1 do
+      get "products/sync",  to: "products#sync",  as: :products_sync
+      get "services/sync",  to: "services#sync",  as: :services_sync
+      get "tax_codes/sync", to: "tax_codes#sync", as: :tax_codes_sync
+      get "customers/sync", to: "customers#sync", as: :customers_sync
+    end
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 
   # PWA: manifest and service worker for installable app

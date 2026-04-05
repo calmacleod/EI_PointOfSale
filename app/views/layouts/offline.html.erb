@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Offline — EI POS</title>
+    <%= stylesheet_link_tag :app %>
+    <script>
+      if (localStorage.getItem("ei_pos_fake_offline") === "true") {
+        Object.defineProperty(navigator, "onLine", { get: () => false, configurable: true })
+      }
+    </script>
+    <link rel="stylesheet" href="/offline/bundle.css">
+    <script src="/offline/bundle.js"></script>
+  </head>
+  <body>
+    <div id="offline-app"></div>
+    <%= yield %>
+  </body>
+</html>

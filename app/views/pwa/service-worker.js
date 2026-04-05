@@ -1,6 +1,11 @@
-const CACHE_VERSION = "ei-pos-v1"
+// Bump CACHE_VERSION whenever bundle.js meaningfully changes — this
+// forces SW activation which clears the old cache and re-precaches assets.
+const CACHE_VERSION = "ei-pos-v2"
 const PRECACHE_URLS = [
-  "/offline.html",
+  "/offline",
+  "/offline/bundle.js",
+  "/offline/sync.js",
+  "/offline/sync-lib.js",
   "/icon.png",
   "/icon-192.png",
   "/icon.svg"
@@ -28,6 +33,11 @@ self.addEventListener("fetch", (event) => {
   if (request.method !== "GET") return
 
   if (request.mode === "navigate") {
+    const url = new URL(request.url)
+    if (url.pathname === "/offline") {
+      event.respondWith(cacheFirst(request))
+      return
+    }
     event.respondWith(networkFirstWithOfflineFallback(request))
     return
   }
@@ -51,7 +61,22 @@ async function networkFirstWithOfflineFallback(request) {
   } catch {
     const cached = await caches.match(request)
     if (cached) return cached
-    return caches.match("/offline.html")
+    return caches.match("/offline")
+  }
+}
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request)
+  if (cached) return cached
+  try {
+    const response = await fetch(request)
+    if (response.ok) {
+      const cache = await caches.open(CACHE_VERSION)
+      cache.put(request, response.clone())
+    }
+    return response
+  } catch {
+    return new Response("Offline page not cached yet", { status: 503 })
   }
 }
 

@@ -1,5 +1,37 @@
 <div class="space-y-4">
   <section>
+    <h2 class="text-base font-semibold text-body">Offline mode</h2>
+    <p class="mt-1 text-sm text-muted">
+      Test offline behaviour and sync state.
+    </p>
+    <div class="mt-2 flex flex-wrap items-center gap-2">
+      <%= link_to "Open Offline Mode", offline_path,
+          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+      <button type="button"
+              data-controller="fake-offline"
+              data-action="click->fake-offline#toggle"
+              class="inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]">
+        <span data-fake-offline-target="label">Fake offline</span>
+      </button>
+    </div>
+    <div class="mt-2 flex items-center gap-1.5 rounded-md border border-theme bg-surface px-2 py-1.5" data-controller="offline-status" style="max-width: fit-content;">
+      <svg class="h-3 w-3 shrink-0 text-muted opacity-60" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728M15.536 8.464a5 5 0 010 7.072M12 12h.01M8.464 15.536a5 5 0 010-7.072M5.636 18.364a9 9 0 010-12.728"/>
+      </svg>
+      <span data-offline-status-target="label" class="text-xs text-muted">Loading…</span>
+      <button type="button"
+              data-action="click->offline-status#sync"
+              data-offline-status-target="button"
+              class="flex h-4 w-4 shrink-0 items-center justify-center rounded text-muted hover:text-body disabled:opacity-40"
+              aria-label="Sync offline data">
+        <svg class="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <section>
     <h2 class="text-base font-semibold text-body">Background jobs</h2>
     <p class="mt-1 text-sm text-muted">
       View Solid Queue jobs, retry failed jobs, and inspect what&apos;s being processed.
