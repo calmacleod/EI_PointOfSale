@@ -20,51 +20,49 @@
   ]
 </script>
 
-<aside class="flex w-56 shrink-0 flex-col overflow-hidden border-r border-[#dcdce0] bg-[#f5f5f7]">
+<aside class="sidebar">
   <!-- Brand -->
-  <div class="flex items-center gap-2.5 border-b border-[#dcdce0] px-3 py-2.5">
-    <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-[#0d9488] text-[10px] font-bold text-white select-none">EI</div>
-    <div class="min-w-0 flex-1">
-      <p class="truncate text-[13px] font-semibold leading-tight text-[#1a1a2e]">Point of Sale</p>
-      <p class="truncate text-[11px] leading-tight text-[#8e8e9a]">Offline Mode</p>
+  <div class="brand">
+    <div class="brand-logo">EI</div>
+    <div class="brand-text">
+      <p class="brand-name">Point of Sale</p>
+      <p class="brand-sub">Offline Mode</p>
     </div>
   </div>
 
   <!-- Offline notice -->
-  <div class="border-b border-[#dcdce0] px-3 py-3">
-    <div class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5">
-      <div class="flex items-start gap-2">
-        <svg class="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <div class="offline-notice-wrap">
+    <div class="offline-notice">
+      <div class="offline-notice-inner">
+        <svg class="offline-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728M15.536 8.464a5 5 0 010 7.072M6 18L18 6M8.464 15.536a5 5 0 010-7.072M5.636 18.364a9 9 0 010-12.728"/>
         </svg>
         <div>
-          <p class="text-[12px] font-semibold text-amber-800">App is offline</p>
-          <p class="mt-0.5 text-[11px] leading-snug text-amber-700">Limited features available. Data lookup works with locally cached data.</p>
+          <p class="offline-title">App is offline</p>
+          <p class="offline-body">Limited features available. Data lookup works with locally cached data.</p>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Navigation -->
-  <nav class="flex-1 overflow-y-auto px-2.5 py-2">
-    <p class="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-[#8e8e9a]">Available offline</p>
+  <nav class="nav">
+    <p class="nav-section-label">Available offline</p>
 
     {#each navItems as item}
       <button
         onclick={() => onNavigate(item.id)}
-        class="flex h-7.5 w-full items-center gap-2.5 rounded-md px-2 text-left text-[13px] font-medium transition-colors
-          {activePage === item.id
-            ? 'bg-black/7 text-[#1a1a2e]'
-            : 'text-[#555566] hover:bg-black/4 hover:text-[#1a1a2e]'}"
+        class="nav-item"
+        class:active={activePage === item.id}
       >
-        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d={item.icon}/>
         </svg>
-        <span class="min-w-0 truncate">{item.label}</span>
+        <span class="nav-label">{item.label}</span>
       </button>
     {/each}
 
-    <p class="mb-1 mt-3 px-2 text-[10px] font-semibold uppercase tracking-wider text-[#8e8e9a]">Requires connection</p>
+    <p class="nav-section-label nav-section-label--spaced">Requires connection</p>
 
     {#each [
       { label: "Register", icon: "M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" },
@@ -72,25 +70,231 @@
       { label: "Customers", icon: "M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" },
       { label: "Reports", icon: "M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" },
     ] as item}
-      <div class="flex h-7.5 cursor-not-allowed items-center gap-2.5 rounded-md px-2 text-[13px] font-medium text-[#555566] opacity-35">
-        <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="nav-item nav-item--disabled">
+        <svg class="nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d={item.icon}/>
         </svg>
-        <span class="min-w-0 truncate">{item.label}</span>
+        <span class="nav-label">{item.label}</span>
       </div>
     {/each}
   </nav>
 
   <!-- Bottom: back link -->
-  <div class="shrink-0 border-t border-[#dcdce0] px-2.5 py-2">
-    <a
-      href="/"
-      class="flex h-7.5 items-center gap-2.5 rounded-md px-2 text-[13px] font-medium text-[#555566] hover:bg-black/4 hover:text-[#1a1a2e]"
-    >
-      <svg class="h-4 w-4 shrink-0 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <div class="sidebar-footer">
+    <a href="/" class="back-link">
+      <svg class="back-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
       </svg>
-      <span class="min-w-0 truncate">Back to POS</span>
+      <span class="nav-label">Back to POS</span>
     </a>
   </div>
 </aside>
+
+<style>
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 224px;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-right: 1px solid #dcdce0;
+    background: #f5f5f7;
+  }
+
+  /* Brand */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #dcdce0;
+    padding: 10px 12px;
+  }
+
+  .brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    background: #0d9488;
+    font-size: 10px;
+    font-weight: 700;
+    color: white;
+    user-select: none;
+  }
+
+  .brand-text {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .brand-name {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: #1a1a2e;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .brand-sub {
+    margin: 0;
+    font-size: 11px;
+    color: #8e8e9a;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Offline notice */
+  .offline-notice-wrap {
+    border-bottom: 1px solid #dcdce0;
+    padding: 12px;
+  }
+
+  .offline-notice {
+    border-radius: 6px;
+    border: 1px solid #fde68a;
+    background: #fffbeb;
+    padding: 10px 12px;
+  }
+
+  .offline-notice-inner {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .offline-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+    color: #d97706;
+    margin-top: 2px;
+  }
+
+  .offline-title {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #92400e;
+  }
+
+  .offline-body {
+    margin: 2px 0 0;
+    font-size: 11px;
+    line-height: 1.4;
+    color: #b45309;
+  }
+
+  /* Navigation */
+  .nav {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 10px;
+  }
+
+  .nav-section-label {
+    margin: 0 0 4px;
+    padding: 0 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8e8e9a;
+  }
+
+  .nav-section-label--spaced {
+    margin-top: 12px;
+  }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: 30px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555566;
+    text-align: left;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.1s, color 0.1s;
+  }
+
+  .nav-item:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: #1a1a2e;
+  }
+
+  .nav-item.active {
+    background: rgba(0, 0, 0, 0.07);
+    color: #1a1a2e;
+  }
+
+  .nav-item--disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+
+  .nav-item--disabled:hover {
+    background: transparent;
+    color: #555566;
+  }
+
+  .nav-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+  .nav-label {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Footer */
+  .sidebar-footer {
+    flex-shrink: 0;
+    border-top: 1px solid #dcdce0;
+    padding: 8px 10px;
+  }
+
+  .back-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 30px;
+    padding: 0 8px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #555566;
+    text-decoration: none;
+    transition: background 0.1s, color 0.1s;
+  }
+
+  .back-link:hover {
+    background: rgba(0, 0, 0, 0.04);
+    color: #1a1a2e;
+  }
+
+  .back-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+</style>

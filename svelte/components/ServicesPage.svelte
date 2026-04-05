@@ -93,14 +93,13 @@
   })
 </script>
 
-<div class="flex min-w-0 flex-1 flex-col overflow-hidden">
-  <!-- Top bar -->
-  <div class="flex shrink-0 items-center justify-between border-b border-[#c8c8c8] bg-white px-4 py-2.5">
-    <div class="flex items-center gap-2">
-      <svg class="h-4 w-4 text-[#0d9488]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<div class="page">
+  <div class="topbar">
+    <div class="topbar-title">
+      <svg class="topbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
       </svg>
-      <h1 class="text-sm font-semibold text-[#1a1a2e]">Services</h1>
+      <h1 class="topbar-heading">Services</h1>
     </div>
     <SyncStatus
       {syncing}
@@ -113,21 +112,19 @@
     />
   </div>
 
-  <!-- Search -->
-  <div class="shrink-0 border-b border-[#c8c8c8] bg-white px-4 py-3">
+  <div class="search-section">
     <SearchBar onSearch={handleSearch} placeholder="Search services by name or code…" />
   </div>
 
-  <!-- Results -->
-  <div class="flex-1 overflow-y-auto px-4 py-3">
+  <div class="results-area">
     {#if results.length === 0}
-      <div class="py-16 text-center">
-        <svg class="mx-auto mb-3 h-8 w-8 text-[#c8c8c8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="empty-state">
+        <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
-        <p class="text-sm text-[#6b6b6b]">
+        <p class="empty-text">
           {#if query}
-            No services found for <span class="font-medium text-[#1a1a1a]">"{query}"</span>
+            No services found for <span class="empty-query">"{query}"</span>
           {:else}
             No services cached yet — sync to load data
           {/if}
@@ -135,16 +132,115 @@
       </div>
     {:else}
       {#if !query}
-        <p class="mb-2 text-[11px] font-medium uppercase tracking-wider text-[#8e8e9a]">All services</p>
+        <p class="list-label">All services</p>
       {/if}
-      <div class="space-y-1.5">
+      <div class="card-list">
         {#each results as service (service.id)}
           <ServiceCard {service} />
         {/each}
       </div>
       {#if results.length === 50}
-        <p class="mt-3 text-center text-xs text-[#6b6b6b]">Showing first 50 results — refine your search</p>
+        <p class="limit-note">Showing first 50 results — refine your search</p>
       {/if}
     {/if}
   </div>
 </div>
+
+<style>
+  .page {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    border-bottom: 1px solid #c8c8c8;
+    background: white;
+    padding: 10px 16px;
+  }
+
+  .topbar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar-icon {
+    width: 16px;
+    height: 16px;
+    color: #0d9488;
+    flex-shrink: 0;
+  }
+
+  .topbar-heading {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0;
+  }
+
+  .search-section {
+    flex-shrink: 0;
+    border-bottom: 1px solid #c8c8c8;
+    background: white;
+    padding: 12px 16px;
+  }
+
+  .results-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+  }
+
+  .empty-state {
+    padding: 64px 0;
+    text-align: center;
+  }
+
+  .empty-icon {
+    display: block;
+    margin: 0 auto 12px;
+    width: 32px;
+    height: 32px;
+    color: #c8c8c8;
+  }
+
+  .empty-text {
+    margin: 0;
+    font-size: 14px;
+    color: #6b6b6b;
+  }
+
+  .empty-query {
+    font-weight: 500;
+    color: #1a1a1a;
+  }
+
+  .list-label {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #8e8e9a;
+  }
+
+  .card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .limit-note {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 12px;
+    color: #6b6b6b;
+  }
+</style>

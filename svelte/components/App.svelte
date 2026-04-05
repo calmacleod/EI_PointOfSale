@@ -67,27 +67,26 @@
   })
 </script>
 
-<div class="flex h-screen overflow-hidden bg-[#f0f0f0] font-[Inter,system-ui,sans-serif] text-[#1a1a1a]">
+<div class="app-layout">
   <Sidebar {activePage} onNavigate={(page) => (activePage = page)} />
 
   {#if activePage === "products"}
-    <!-- Main content: Products -->
-    <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
-      <div class="flex shrink-0 items-center justify-between border-b border-[#c8c8c8] bg-white px-4 py-2.5">
-        <div class="flex items-center gap-2">
-          <svg class="h-4 w-4 text-[#0d9488]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="main-content">
+      <div class="topbar">
+        <div class="topbar-title">
+          <svg class="topbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          <h1 class="text-sm font-semibold text-[#1a1a2e]">Product Lookup</h1>
+          <h1 class="topbar-heading">Product Lookup</h1>
         </div>
         <SyncStatus {syncing} {lastSyncedAt} {syncError} {productCount} onSync={runSync} onFullSync={runFullSync} />
       </div>
 
-      <div class="shrink-0 border-b border-[#c8c8c8] bg-white px-4 py-3">
+      <div class="search-section">
         <SearchBar onSearch={handleSearch} />
       </div>
 
-      <div class="flex-1 overflow-y-auto px-4 py-3">
+      <div class="results-area">
         <ProductList products={results} {query} topN={TOP_N} />
       </div>
     </div>
@@ -97,3 +96,65 @@
     <TaxCodesPage />
   {/if}
 </div>
+
+<style>
+  .app-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+    background: #f0f0f0;
+    font-family: Inter, system-ui, sans-serif;
+    color: #1a1a1a;
+  }
+
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    border-bottom: 1px solid #c8c8c8;
+    background: white;
+    padding: 10px 16px;
+  }
+
+  .topbar-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .topbar-icon {
+    width: 16px;
+    height: 16px;
+    color: #0d9488;
+    flex-shrink: 0;
+  }
+
+  .topbar-heading {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 0;
+  }
+
+  .search-section {
+    flex-shrink: 0;
+    border-bottom: 1px solid #c8c8c8;
+    background: white;
+    padding: 12px 16px;
+  }
+
+  .results-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 16px;
+  }
+</style>
