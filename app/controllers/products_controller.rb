@@ -34,7 +34,7 @@ class ProductsController < ApplicationController
       f.column :created_at,      label: "Created",  default: true,  sortable: true,  width: "8.5rem"
       f.column :updated_at,      label: "Updated",  default: false, sortable: true,  width: "8.5rem"
     end
-    @saved_queries = current_user.saved_queries.for_resource("products")
+    @saved_queries = current_user.saved_queries.for_resource("products").load
 
     unfiltered = params.slice(:q, :supplier_id, :tax_code_id, :product_group_id,
                                 :category_ids, :sync_to_shopify, :selling_price_min,

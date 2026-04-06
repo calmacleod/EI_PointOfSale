@@ -53,8 +53,8 @@ module Filterable
                          default_direction: config.sort_default_direction)
 
       pagy_opts = items ? { limit: items } : {}
-      pagy_opts[:count] = count if count
-      pagy(:offset, scope, **pagy_opts)
+      pagy_opts[:ttl] = 5.minutes
+      pagy(:countish, scope, **pagy_opts)
     end
 
     def apply_search(scope, search_scope_name)
