@@ -106,6 +106,7 @@ group :development do
   gem "rack-mini-profiler"   # Request profiling with timing, SQL, and flamegraph analysis
   gem "stackprof"            # Sampling call-stack profiler for Ruby (used with rack-mini-profiler)
   gem "lograge"              # Clean, single-line request logging with timing info
+  gem "memory_profiler"      # Memory usage profiling and analysis
 end
 
 group :test do
