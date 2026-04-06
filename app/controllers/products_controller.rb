@@ -9,9 +9,9 @@ class ProductsController < ApplicationController
     @filter_config = FilterConfig.new(:products, products_path,
                                       sort_default: "name", sort_default_direction: "asc",
                                       search_placeholder: "Search products...") do |f|
-      f.multi_select :supplier_id,       label: "Supplier",      collection: -> { Supplier.kept.order(:name) }
-      f.association  :tax_code_id,      label: "Tax Code",      collection: -> { TaxCode.kept.order(:code) }, display: :code
-      f.association  :product_group_id, label: "Product Group",  collection: -> { ProductGroup.order(:name) }
+      f.multi_select :supplier_id,       label: "Supplier",      collection: -> { Supplier.kept.order(:name).load }
+      f.association  :tax_code_id,      label: "Tax Code",      collection: -> { TaxCode.kept.order(:code).load }, display: :code
+      f.association  :product_group_id, label: "Product Group",  collection: -> { ProductGroup.order(:name).load }
       f.multi_select :category_ids,     label: "Categories",
                      collection: -> { Category.kept.order(:name) },
                      scope: ->(rel, ids) { rel.joins(:categories).where(categories: { id: ids }).distinct }
