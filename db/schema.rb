@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_19_231915) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_06_151040) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -396,6 +396,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_19_231915) do
     t.index ["discarded_at", "name"], name: "index_products_on_discarded_at_and_name"
     t.index ["discarded_at"], name: "index_products_on_discarded_at"
     t.index ["discarded_at"], name: "index_products_on_discarded_at_null", where: "(discarded_at IS NULL)"
+    t.index ["id"], name: "index_products_on_discarded_at_null_test", where: "(discarded_at IS NULL)"
     t.index ["name"], name: "index_products_on_name_kept", where: "(discarded_at IS NULL)"
     t.index ["product_group_id"], name: "index_products_on_product_group_id"
     t.index ["sales_count"], name: "index_products_on_sales_count", order: :desc

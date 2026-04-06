@@ -35,16 +35,6 @@ class ProductsController < ApplicationController
       f.column :updated_at,      label: "Updated",  default: false, sortable: true,  width: "8.5rem"
     end
     @saved_queries = current_user.saved_queries.for_resource("products").load
-
-    unfiltered = params.slice(:q, :supplier_id, :tax_code_id, :product_group_id,
-                                :category_ids, :sync_to_shopify, :selling_price_min,
-                                :selling_price_max, :stock_level_min, :stock_level_max,
-                                :created_at_from, :created_at_to, :updated_at_from,
-                                :updated_at_to).values.all?(&:blank?)
-    cached_count = if unfiltered
-      Rails.cache.fetch("products/kept_count", expires_in: 5.minutes) { Product.kept.count }
-    end
-
     @pagy, @products = filter_and_paginate(
       @products.kept
                .select(:id, :code, :name, :selling_price, :purchase_price,
@@ -53,7 +43,7 @@ class ProductsController < ApplicationController
                        :discarded_at, :created_at, :updated_at)
                .includes(:tax_code, :supplier, :product_group),
       config: @filter_config,
-      count: cached_count
+      ttl: 10.minutes
     )
   end
 

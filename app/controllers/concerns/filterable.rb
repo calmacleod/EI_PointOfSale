@@ -43,7 +43,7 @@ module Filterable
     #
     # Returns [pagy, records].
     #
-    def filter_and_paginate(scope, config:, items: nil, count: nil)
+    def filter_and_paginate(scope, config:, items: nil, count: nil, ttl: 5.minutes)
       scope = apply_search(scope, config.search_scope)
       scope = config.apply_filters(scope, params)
 
@@ -53,7 +53,7 @@ module Filterable
                          default_direction: config.sort_default_direction)
 
       pagy_opts = items ? { limit: items } : {}
-      pagy_opts[:ttl] = 5.minutes
+      pagy_opts[:ttl] = ttl
       pagy, records = pagy(:countish, scope, **pagy_opts)
       records.load
       [ pagy, records ]
