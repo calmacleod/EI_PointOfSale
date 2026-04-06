@@ -39,6 +39,8 @@ common: &default_settings
 development:
   <<: *default_settings
   app_name: 'EI POS (Development)'
+  agent_enabled: false
+  monitor_mode: false
 
 test:
   <<: *default_settings
