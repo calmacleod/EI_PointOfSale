@@ -20,11 +20,6 @@ export default defineConfig({
         entryFileNames: "[name].js",
         chunkFileNames: "[name].js",
         assetFileNames: "[name].[ext]",
-        manualChunks(id) {
-          if (id.includes("/lib/sync.js") || id.includes("/lib/db.js")) {
-            return "sync-lib"
-          }
-        },
       },
     },
   },

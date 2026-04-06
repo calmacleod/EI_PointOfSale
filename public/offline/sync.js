@@ -1,1 +1,1 @@
-import"./sync-lib.js";
+import"./sync2.js";
