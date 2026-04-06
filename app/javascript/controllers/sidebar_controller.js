@@ -110,10 +110,16 @@ export default class extends Controller {
     this.rewriteLinkWithFilters(link)
     if (!this.isDesktop()) this.closeMobileDrawer()
 
-    // Trigger navigation on mousedown by firing a synthetic click
+    // Trigger navigation on mousedown by firing a synthetic click.
+    // Suppress the subsequent native click so Turbo doesn't start a second
+    // navigation and cancel the one we just initiated.
     if (event.type === "mousedown" && event.button === 0) {
       event.preventDefault()
       link.click()
+      link.addEventListener("click", (e) => {
+        e.preventDefault()
+        e.stopImmediatePropagation()
+      }, { capture: true, once: true })
     }
   }
 
