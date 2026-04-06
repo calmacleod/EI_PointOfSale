@@ -54,7 +54,9 @@ module Filterable
 
       pagy_opts = items ? { limit: items } : {}
       pagy_opts[:ttl] = 5.minutes
-      pagy(:countish, scope, **pagy_opts)
+      pagy, records = pagy(:countish, scope, **pagy_opts)
+      records.load
+      [ pagy, records ]
     end
 
     def apply_search(scope, search_scope_name)
