@@ -34,6 +34,7 @@ class ProductsController < ApplicationController
       f.column :created_at,      label: "Created",  default: true,  sortable: true,  width: "8.5rem"
       f.column :updated_at,      label: "Updated",  default: false, sortable: true,  width: "8.5rem"
     end
+    @filter_config.filters_json
     @saved_queries = current_user.saved_queries.for_resource("products").load
     @pagy, @products = filter_and_paginate(
       @products.kept
