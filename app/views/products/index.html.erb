@@ -29,8 +29,8 @@
       <%= t.cell(:reorder_level) { |product| product.reorder_level } %>
       <%= t.cell(:product_group) { |product| product.product_group&.name || "—" } %>
       <%= t.cell(:sync_to_shopify) { |product| product.sync_to_shopify? ? "Yes" : "No" } %>
-      <%= t.cell(:created_at) { |product| local_time(product.created_at, format: :short) } %>
-      <%= t.cell(:updated_at) { |product| local_time(product.updated_at, format: :short) } %>
+      <%= t.cell(:created_at) { |product| local_time(product.created_at_s, format: :short) } %>
+      <%= t.cell(:updated_at) { |product| local_time(product.updated_at_s, format: :short) } %>
       <%= t.cell(:actions) { |product| link_to("Edit", edit_product_path(product), class: "font-medium text-accent hover:opacity-80", data: { turbo_frame: "_top", turbo_prefetch: true }) } %>
     <% end %>
   </div>

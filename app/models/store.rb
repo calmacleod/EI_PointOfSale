@@ -107,7 +107,7 @@ class Store < ApplicationRecord
 
   class << self
     def current
-      Current.store ||= first || create!(name: "Store")
+      Current.store ||= Rails.cache.fetch("store/current", expires_in: 5.minutes) { first || create!(name: "Store") }
     end
   end
 

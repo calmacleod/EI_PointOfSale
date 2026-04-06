@@ -40,7 +40,9 @@ class ProductsController < ApplicationController
                .select(:id, :code, :name, :selling_price, :purchase_price,
                        :stock_level, :reorder_level, :sync_to_shopify,
                        :supplier_id, :tax_code_id, :product_group_id,
-                       :discarded_at, :created_at, :updated_at)
+                       :discarded_at,
+                       Arel.sql("to_char(created_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS created_at_s"),
+                       Arel.sql("to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS updated_at_s"))
                .includes(:tax_code, :supplier, :product_group),
       config: @filter_config,
       ttl: 10.minutes
