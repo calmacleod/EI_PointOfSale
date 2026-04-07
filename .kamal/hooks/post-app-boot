@@ -1,0 +1,22 @@
+#!/bin/sh
+# Warm up the Rails app after boot so the first real user requests are fast.
+# Fires after the healthcheck passes but before the proxy routes traffic here.
+
+APP_HOST="localhost"
+APP_PORT="${KAMAL_CONTAINER_NAME:+$(docker inspect --format='{{(index (index .NetworkSettings.Ports "3000/tcp") 0).HostPort}}' "$KAMAL_CONTAINER_NAME" 2>/dev/null)}"
+APP_PORT="${APP_PORT:-3000}"
+
+echo "Warming up $KAMAL_SERVICE_NAME on $KAMAL_HOSTS (container port $APP_PORT)..."
+
+# Hit the app several times via its exposed port on the host to warm YJIT,
+# DB connection pool, and template cache before real traffic arrives.
+# /up        — exercises Rack middleware + DB ping
+# /session/new — exercises router, view rendering, asset helpers
+for i in $(seq 1 5); do
+  curl --silent --output /dev/null --max-time 10 \
+    "http://${APP_HOST}:${APP_PORT}/up" || true
+  curl --silent --output /dev/null --max-time 10 \
+    "http://${APP_HOST}:${APP_PORT}/session/new" || true
+done
+
+echo "Warm-up complete."
