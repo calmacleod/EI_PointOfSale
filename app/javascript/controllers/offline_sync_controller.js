@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { syncProducts } from "../lib/sync.js"
 
 const SYNC_INTERVAL_MS = 5 * 60 * 1000 // 5 minutes
 
@@ -15,7 +16,6 @@ export default class extends Controller {
   async runSync() {
     if (!navigator.onLine) return
     try {
-      const { syncProducts } = await import("/offline/sync.js")
       const result = await syncProducts()
       window.dispatchEvent(new CustomEvent("offline-sync:synced", { detail: result }))
     } catch {

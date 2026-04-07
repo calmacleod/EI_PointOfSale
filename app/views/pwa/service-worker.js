@@ -1,11 +1,13 @@
 // Bump CACHE_VERSION whenever bundle.js meaningfully changes — this
 // forces SW activation which clears the old cache and re-precaches assets.
-const CACHE_VERSION = "ei-pos-v2"
+const CACHE_VERSION = "ei-pos-v3"
 const PRECACHE_URLS = [
   "/offline",
   "/offline/bundle.js",
+  "/offline/bundle.css",
   "/offline/sync.js",
-  "/offline/sync-lib.js",
+  "/offline/sync2.js",
+  "/offline/db.js",
   "/icon.png",
   "/icon-192.png",
   "/icon.svg"
