@@ -3,6 +3,25 @@
 module ApplicationHelper
   include Pagy::Method
 
+  # Override inertia_root to make the mount div fill available height.
+  # The gem renders a bare <div id="app"> with no class; we add flex layout
+  # classes here so the React tree gets the proper flex context without
+  # relying on a CSS build.
+  def inertia_root(id: nil, page: inertia_page)
+    inertia_config = controller.send(:inertia_configuration)
+    id ||= inertia_config.root_dom_id
+    classes = "flex min-h-0 flex-1 flex-col overflow-hidden"
+
+    if inertia_config.use_script_element_for_initial_page
+      safe_join([
+        tag.script(page.to_json.html_safe, "data-page": id, type: "application/json"),
+        tag.div(id: id, class: classes)
+      ], "\n")
+    else
+      tag.div(id: id, "data-page": page.to_json, class: classes)
+    end
+  end
+
   def nav_section_active?(path_or_prefix)
     path = path_or_prefix.to_s
     return current_page?(root_path) if path.blank? || path == "/"

@@ -74,6 +74,20 @@
         <% end %>
       <% end %>
 
+      <%= link_to inertia_register_path,
+          data: { turbo: false, action: "mousedown->sidebar#navigate" },
+          class: [
+            "nav-link group flex h-[30px] items-center gap-2.5 rounded-md px-2 text-[13px] font-medium",
+            (nav_section_active?(inertia_register_path) ?
+              "bg-[var(--sidebar-active)] text-[var(--sidebar-text-bright)]" :
+              "text-[var(--sidebar-text)] hover:bg-[var(--sidebar-hover)] hover:text-[var(--sidebar-text-bright)]")
+          ].join(" ") do %>
+        <svg class="h-4 w-4 shrink-0 opacity-50 group-hover:opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+        </svg>
+        <span class="sidebar-text min-w-0 flex-1 truncate">Register (Inertia)</span>
+      <% end %>
+
       <%= link_to products_path,
           data: { turbo_prefetch: false, action: "mousedown->sidebar#navigate" },
           class: [

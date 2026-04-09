@@ -75,6 +75,16 @@ Rails.application.routes.draw do
     post :new_order, on: :member
   end
 
+  scope "/inertia", as: "inertia" do
+    resource :register, only: [ :show ], controller: "inertia_register" do
+      post :new_order,  on: :member
+      post :hold,       on: :member
+      post :resume,     on: :member
+      post :complete,   on: :member
+      delete :cancel,   on: :member
+    end
+  end
+
   resource :cash_drawer, only: [ :show ], controller: "cash_drawer" do
     get :open, action: :new_open
     post :open, action: :create_open

@@ -3,7 +3,11 @@
   "private": true,
   "devDependencies": {
     "@herb-tools/linter": "latest",
+    "@inertiajs/react": "^2",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@vitejs/plugin-react": "^4",
+    "react": "^18",
+    "react-dom": "^18",
     "svelte": "^5.0.0",
     "tailwind-lint": "latest",
     "vite": "^8.0.3"
@@ -14,6 +18,8 @@
     "tailwind:lint": "tailwind-lint \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\"",
     "tailwind:lint:fix": "tailwind-lint --fix \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\"",
     "offline:build": "vite build --config svelte/vite.config.mjs",
-    "offline:dev": "vite build --config svelte/vite.config.mjs --watch"
+    "offline:dev": "vite build --config svelte/vite.config.mjs --watch",
+    "inertia:build": "vite build --config inertia/vite.config.mjs",
+    "inertia:dev": "vite build --config inertia/vite.config.mjs --watch"
   }
 }

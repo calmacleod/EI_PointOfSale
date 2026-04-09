@@ -88,6 +88,7 @@ gem "shopify_api", "~> 16.1"
 gem "newrelic_rpm", "~> 10.2"
 gem "sentry-ruby"
 gem "sentry-rails"
+gem "inertia_rails", "~> 3.6"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

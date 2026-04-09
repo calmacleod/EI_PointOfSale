@@ -58,6 +58,7 @@ class OrderDiscountsController < ApplicationController
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order })
         ]
       }
+      format.json { render json: { success: true } }
       format.html { redirect_to edit_order_path(order) }
     end
   end

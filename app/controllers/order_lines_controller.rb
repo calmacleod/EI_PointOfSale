@@ -29,6 +29,7 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
+      format.json { render json: { success: true } }
       format.html { redirect_to edit_order_path(order) }
     end
   end
@@ -60,6 +61,7 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
+      format.json { render json: { success: true } }
       format.html { redirect_to edit_order_path(order) }
     end
   end
@@ -93,6 +95,7 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
+      format.json { render json: { success: true } }
       format.html { redirect_to edit_order_path(order) }
     end
   end

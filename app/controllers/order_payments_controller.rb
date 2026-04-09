@@ -41,6 +41,7 @@ class OrderPaymentsController < ApplicationController
 
           render turbo_stream: streams
         }
+        format.json { render json: { success: true } }
         format.html { redirect_to edit_order_path(@order) }
       end
     else
@@ -70,6 +71,7 @@ class OrderPaymentsController < ApplicationController
           turbo_stream.replace("order_action_buttons", partial: "register/action_buttons", locals: { order: order })
         ]
       }
+      format.json { render json: { success: true } }
       format.html { redirect_to edit_order_path(order) }
     end
   end
@@ -97,6 +99,7 @@ class OrderPaymentsController < ApplicationController
             locals: { order: order.reload, payment_error: message }
           )
         }
+        format.json { render json: { success: false, error: message }, status: :unprocessable_entity }
         format.html { redirect_to edit_order_path(order), alert: message }
       end
     end

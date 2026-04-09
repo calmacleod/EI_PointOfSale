@@ -148,6 +148,7 @@ class OrdersController < ApplicationController
           turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: @order })
         ]
       }
+      format.json { render json: { success: true } }
       format.html { redirect_to register_path(order_id: @order.id) }
     end
   end
@@ -174,6 +175,7 @@ class OrdersController < ApplicationController
           turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: @order })
         ]
       }
+      format.json { render json: { success: true } }
       format.html { redirect_to register_path(order_id: @order.id) }
     end
   end
@@ -241,6 +243,7 @@ class OrdersController < ApplicationController
             turbo_stream.replace("lookup_flash", partial: "orders/lookup_flash", locals: { message: "Added #{sellable.sellable_name}", type: :success })
           ]
         }
+        format.json { render json: { success: true, message: "Added #{sellable.sellable_name}" } }
         format.html { redirect_to register_path(order_id: order.id) }
       end
     else
@@ -250,6 +253,7 @@ class OrdersController < ApplicationController
             turbo_stream.update("lookup_flash", partial: "orders/lookup_flash", locals: { message: "No match for \"#{code}\" — use search", type: :warning })
           ]
         }
+        format.json { render json: { success: false, message: "No match for \"#{code}\"" }, status: :not_found }
         format.html { redirect_to register_path(order_id: order_id), alert: "No product or service found with code: #{code}" }
       end
     end
