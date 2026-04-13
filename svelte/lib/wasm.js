@@ -64,6 +64,10 @@ export function onWasmProgress(callback) {
   }
 }
 
+// Expose WASM helpers on window for console testing.
+// e.g. await window.__wasm.getTaxCodes()
+window.__wasm = { bootWasm, seedTaxCodes, getTaxCodes, calculateOrderTotal }
+
 /** Boot the Rails WASM worker. Idempotent — safe to call multiple times. */
 export function bootWasm() {
   if (bootPromise) return bootPromise
@@ -85,6 +89,19 @@ export async function seedTaxCodes(taxCodes) {
   return new Promise((resolve, reject) => {
     pending.set(id, { resolve, reject })
     worker.postMessage({ type: "seed_tax_codes", id, taxCodes })
+  })
+}
+
+/**
+ * Fetch all tax codes stored in PGlite via the Rails WASM endpoint.
+ * Returns: array of { id, code, name, rate }
+ */
+export async function getTaxCodes() {
+  await bootPromise
+  const id = ++callId
+  return new Promise((resolve, reject) => {
+    pending.set(id, { resolve, reject })
+    getWorker().postMessage({ type: "get_tax_codes", id })
   })
 }
 

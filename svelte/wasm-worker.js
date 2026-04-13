@@ -8,6 +8,7 @@
  * Message protocol:
  *   { type: 'boot' }                             → { type: 'ready' } | { type: 'error', error }
  *   { type: 'seed_tax_codes', id, taxCodes }     → { type: 'seeded', id } | { type: 'error', id, error }
+ *   { type: 'get_tax_codes', id }                → { type: 'result', id, result } | { type: 'error', id, error }
  *   { type: 'calculate', id, lines }             → { type: 'result', id, result } | { type: 'error', id, error }
  */
 
@@ -61,26 +62,32 @@ self.onmessage = async (e) => {
   }
 
   if (type === "seed_tax_codes") {
-    // Seed tax codes from IndexedDB data into PGlite so the Rails VM can look them up.
     const { taxCodes } = e.data
     try {
-      const safeJson = JSON.stringify(taxCodes).replace(/\\/g, "\\\\").replace(/'/g, "\\'")
-      await vm.evalAsync(`
-        require "json"
-        data = JSON.parse('${safeJson}')
-        now = Time.current.utc.iso8601
-        data.each do |tc|
-          TaxCode.find_or_initialize_by(id: tc["id"]).tap do |t|
-            t.code = tc["code"]
-            t.name = tc["name"]
-            t.rate = tc["rate"].to_f
-            t.created_at ||= now
-            t.updated_at = now
-            t.save!
-          end
-        end
-      `)
+      const response = await rackHandler.handle(
+        new Request(`${self.location.origin}/wasm/tax_codes`, {
+          method: "POST",
+          body: JSON.stringify({ tax_codes: taxCodes }),
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+        }),
+      )
+      if (!response.ok) throw new Error(`Seed failed: ${response.status}`)
       self.postMessage({ type: "seeded", id })
+    } catch (err) {
+      self.postMessage({ type: "error", id, error: err.message })
+    }
+    return
+  }
+
+  if (type === "get_tax_codes") {
+    try {
+      const response = await rackHandler.handle(
+        new Request(`${self.location.origin}/wasm/tax_codes`, {
+          headers: { Accept: "application/json" },
+        }),
+      )
+      const result = await response.json()
+      self.postMessage({ type: "result", id, result })
     } catch (err) {
       self.postMessage({ type: "error", id, error: err.message })
     }

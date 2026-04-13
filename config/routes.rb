@@ -157,6 +157,7 @@ Rails.application.routes.draw do
     resources :orders, only: [] do
       collection { post :calculate }
     end
+    resources :tax_codes, only: [ :index, :create ]
   end
 
   namespace :api do
