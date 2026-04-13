@@ -8,6 +8,7 @@
   import TaxCodesPage from "./TaxCodesPage.svelte"
   import CustomersPage from "./CustomersPage.svelte"
   import { syncProducts, fullSyncProducts, searchProducts, getTopProducts, getLastSyncedAt, getProductCount } from "../lib/sync.js"
+  import Cart from "./Cart.svelte"
 
   const TOP_N = 20
 
@@ -97,6 +98,8 @@
     <TaxCodesPage />
   {:else if activePage === "customers"}
     <CustomersPage />
+  {:else if activePage === "cart"}
+    <Cart />
   {/if}
 </div>
 

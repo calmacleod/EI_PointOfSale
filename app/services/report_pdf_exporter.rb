@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-require "prawn"
-require "prawn/table"
+unless Rails.env.wasm?
+  require "prawn"
+  require "prawn/table"
+end
 
 # Generates a PDF document for a completed report.
 #

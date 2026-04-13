@@ -235,6 +235,7 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
+    js (2.9.4)
     json (2.19.3)
     jwt (3.1.2)
       base64
@@ -470,6 +471,18 @@ GEM
     ruby-vips (2.3.0)
       ffi (~> 1.12)
       logger
+    ruby_wasm (2.9.4)
+      logger
+    ruby_wasm (2.9.4-aarch64-linux)
+      logger
+    ruby_wasm (2.9.4-aarch64-linux-musl)
+      logger
+    ruby_wasm (2.9.4-arm64-darwin)
+      logger
+    ruby_wasm (2.9.4-x86_64-linux)
+      logger
+    ruby_wasm (2.9.4-x86_64-linux-musl)
+      logger
     rubyzip (3.2.2)
     securerandom (0.4.1)
     selenium-webdriver (4.41.0)
@@ -554,12 +567,18 @@ GEM
       railties (>= 7.1.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2026.1)
+      tzinfo (>= 1.0.0)
     uber (0.1.0)
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
     uri (1.1.1)
     useragent (0.16.11)
+    wasmify-rails (0.4.1)
+      js (>= 2.6, < 3.0)
+      railties (>= 7.0, < 9.0)
+      ruby_wasm (>= 2.6, < 3.0)
     web-console (4.3.0)
       actionview (>= 8.0.0)
       bindex (>= 0.4.0)
@@ -588,7 +607,6 @@ PLATFORMS
   aarch64-linux-musl
   arm-linux-gnu
   arm-linux-musl
-  arm64-darwin-24
   arm64-darwin-25
   x86_64-linux
   x86_64-linux-gnu
@@ -649,6 +667,7 @@ DEPENDENCIES
   thruster
   turbo-rails
   tzinfo-data
+  wasmify-rails
   web-console
   web-push
   webmock
@@ -740,6 +759,7 @@ CHECKSUMS
   irb (1.17.0) sha256=168c4ddb93d8a361a045c41d92b2952c7a118fa73f23fe14e55609eb7a863aae
   jbuilder (2.14.1) sha256=4eb26376ff60ef100cb4fd6fd7533cd271f9998327e86adf20fd8c0e69fabb42
   jmespath (1.6.2) sha256=238d774a58723d6c090494c8879b5e9918c19485f7e840f2c1c7532cf84ebcb1
+  js (2.9.4) sha256=f969cf2054cf5eb505f51ec0db0b7f72c6ef6b52c828a48e437ed77488def5af
   json (2.19.3) sha256=289b0bb53052a1fa8c34ab33cc750b659ba14a5c45f3fcf4b18762dc67c78646
   jwt (3.1.2) sha256=af6991f19a6bb4060d618d9add7a66f0eeb005ac0bc017cd01f63b42e122d535
   kamal (2.11.0) sha256=1408864425e0dec7e0a14d712a3b13f614e9f3a425b7661d3f9d287a51d7dd75
@@ -833,6 +853,12 @@ CHECKSUMS
   rubocop-rails-omakase (1.1.0) sha256=2af73ac8ee5852de2919abbd2618af9c15c19b512c4cfc1f9a5d3b6ef009109d
   ruby-progressbar (1.13.0) sha256=80fc9c47a9b640d6834e0dc7b3c94c9df37f08cb072b7761e4a71e22cff29b33
   ruby-vips (2.3.0) sha256=e685ec02c13969912debbd98019e50492e12989282da5f37d05f5471442f5374
+  ruby_wasm (2.9.4) sha256=a25481a0d92ca9bf74354260c3de85c619b08da84f6f77b5605b155120ca1a4c
+  ruby_wasm (2.9.4-aarch64-linux) sha256=ce71254c62c7f18cfde319c81e08cb16c260e698cc3f613d03e3377ca1c842d0
+  ruby_wasm (2.9.4-aarch64-linux-musl) sha256=c263aa07e864a159c58ea5fc72f47fd3507953dacea14192c4f9f0e5446c9ba1
+  ruby_wasm (2.9.4-arm64-darwin) sha256=e124b2b68d26b9f8c29873e76e189d29584febce0031285176aca42cf313d05e
+  ruby_wasm (2.9.4-x86_64-linux) sha256=0d5e19430745742c09f35167d58586ce68c7f124090c722b8e4f9c21b6adc943
+  ruby_wasm (2.9.4-x86_64-linux-musl) sha256=05eba60cfb90b2e69068b4bc0b7a2ac74031c9387b4cd3d8094487b161bc31d7
   rubyzip (3.2.2) sha256=c0ed99385f0625415c8f05bcae33fe649ed2952894a95ff8b08f26ca57ea5b3c
   securerandom (0.4.1) sha256=cc5193d414a4341b6e225f0cb4446aceca8e50d5e1888743fac16987638ea0b1
   selenium-webdriver (4.41.0) sha256=cdc1173cd55cf186022cea83156cc2d0bec06d337e039b02ad25d94e41bedd22
@@ -868,11 +894,13 @@ CHECKSUMS
   ttfunk (1.7.0) sha256=2370ba484b1891c70bdcafd3448cfd82a32dd794802d81d720a64c15d3ef2a96
   turbo-rails (2.0.23) sha256=ee0d90733aafff056cf51ff11e803d65e43cae258cc55f6492020ec1f9f9315f
   tzinfo (2.0.6) sha256=8daf828cc77bcf7d63b0e3bdb6caa47e2272dcfaf4fbfe46f8c3a9df087a829b
+  tzinfo-data (1.2026.1) sha256=4ea36519ae5ae2cf0fad471207a519be006daf42e3b2359ee9e9c53f113609fd
   uber (0.1.0) sha256=5beeb407ff807b5db994f82fa9ee07cfceaa561dad8af20be880bc67eba935dc
   unicode-display_width (3.2.0) sha256=0cdd96b5681a5949cdbc2c55e7b420facae74c4aaf9a9815eee1087cb1853c42
   unicode-emoji (4.2.0) sha256=519e69150f75652e40bf736106cfbc8f0f73aa3fb6a65afe62fefa7f80b0f80f
   uri (1.1.1) sha256=379fa58d27ffb1387eaada68c749d1426738bd0f654d812fcc07e7568f5c57c6
   useragent (0.16.11) sha256=700e6413ad4bb954bb63547fa098dddf7b0ebe75b40cc6f93b8d54255b173844
+  wasmify-rails (0.4.1) sha256=f8501c51aa4597884c761f6bd9e47b8453129f3d35cdf8ae308f716c38666717
   web-console (4.3.0) sha256=e13b71301cdfc2093f155b5aa3a622db80b4672d1f2f713119cc7ec7ac6a6da4
   web-push (3.1.0) sha256=501ab00340c58fb70dabda59f28a86b3cccb0930c6f1f30721b2a5b24de7187d
   webmock (3.26.2) sha256=774556f2ea6371846cca68c01769b2eac0d134492d21f6d0ab5dd643965a4c90

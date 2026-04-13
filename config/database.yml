@@ -138,3 +138,6 @@ production:
     password: <%= ENV.fetch('DATABASE_PASSWORD', 'postgres') %>
     database: cable
     migrations_paths: db/cable_migrate
+wasm:
+  adapter: pglite
+  js_interface: pglite4rails

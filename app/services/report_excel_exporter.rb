@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "caxlsx"
+require "caxlsx" unless Rails.env.wasm?
 
 # Generates an Excel (.xlsx) workbook for a completed report.
 #

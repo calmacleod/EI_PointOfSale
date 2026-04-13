@@ -1,0 +1,28 @@
+# Use Ruby 3.4 for the WASM build. Ruby 4.0 has Gem::Deprecate removed,
+# which causes a boot failure in the WASM runtime's bundled RubyGems.
+# The order calculation code is compatible with both 3.4 and 4.0.
+ruby_version: "3.3"
+
+# Specify the list of directories to be included into the final
+# app.wasm file.
+pack_directories:
+  - app
+  - lib
+  - config
+  - db
+
+# Specify the list of gems to skip during the base module compiliation.
+# Usually, you want to specify the gems with native extensions that are
+# not currently Wasm-compatible.
+exclude_gems:
+  - bigdecimal
+  - nio4r
+  - io-console
+  - psych
+  - date
+  - json
+
+# Skip building native extensions for the following gems (and keep their Ruby source)
+ignore_gem_extensions:
+  - psych
+

@@ -15,6 +15,7 @@ export default defineConfig({
       input: {
         bundle: resolve(__dirname, "main.js"),
         sync: resolve(__dirname, "sync-worker.js"),
+        "wasm-worker": resolve(__dirname, "wasm-worker.js"),
       },
       output: {
         entryFileNames: "[name].js",
@@ -23,5 +24,15 @@ export default defineConfig({
       },
     },
   },
+  // Required for SharedArrayBuffer / WASM threading
+  server: {
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin",
+      "Cross-Origin-Embedder-Policy": "require-corp",
+    },
+  },
   base: "/offline/",
+  optimizeDeps: {
+    exclude: ["@electric-sql/pglite"],
+  },
 })

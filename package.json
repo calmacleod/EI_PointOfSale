@@ -8,6 +8,10 @@
     "tailwind-lint": "latest",
     "vite": "^8.0.3"
   },
+  "dependencies": {
+    "@electric-sql/pglite": "~0.2.13",
+    "wasmify-rails": "^0.2.3"
+  },
   "scripts": {
     "herb:lint": "herb-lint",
     "herb:lint:fix": "herb-lint --fix",

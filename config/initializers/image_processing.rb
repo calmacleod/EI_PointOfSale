@@ -7,6 +7,8 @@
 # Usage in a variant:
 #   logo.variant(trim_whitespace: true, resize_to_limit: [384, 384])
 #
+return if Rails.env.wasm?
+
 require "image_processing/vips"
 
 ImageProcessing::Vips::Processor.class_eval do

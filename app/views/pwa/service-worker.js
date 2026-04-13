@@ -1,6 +1,6 @@
 // Bump CACHE_VERSION whenever bundle.js meaningfully changes — this
 // forces SW activation which clears the old cache and re-precaches assets.
-const CACHE_VERSION = "ei-pos-v3"
+const CACHE_VERSION = "ei-pos-v4"
 const PRECACHE_URLS = [
   "/offline",
   "/offline/bundle.js",
@@ -8,6 +8,7 @@ const PRECACHE_URLS = [
   "/offline/sync.js",
   "/offline/sync2.js",
   "/offline/db.js",
+  "/offline/wasm-worker.js",
   "/icon.png",
   "/icon-192.png",
   "/icon.svg"
@@ -45,7 +46,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   const url = new URL(request.url)
-  const isAsset = /\.(css|js|woff2?|ttf|png|jpg|jpeg|gif|svg|ico|webp)$/i.test(url.pathname)
+  const isAsset = /\.(css|js|wasm|woff2?|ttf|png|jpg|jpeg|gif|svg|ico|webp)$/i.test(url.pathname)
 
   if (isAsset) {
     event.respondWith(staleWhileRevalidate(request))

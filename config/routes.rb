@@ -151,6 +151,14 @@ Rails.application.routes.draw do
 
   get "offline", to: "offline#show", as: :offline
 
+  # WASM endpoints — served by the Rails app running in app.wasm inside the browser.
+  # These are called by the offline Svelte app via a Web Worker using wasmify-rails.
+  namespace :wasm do
+    resources :orders, only: [] do
+      collection { post :calculate }
+    end
+  end
+
   namespace :api do
     namespace :v1 do
       get "products/sync",  to: "products#sync",  as: :products_sync

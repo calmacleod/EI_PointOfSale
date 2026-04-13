@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "ferrum"
+require "ferrum" unless Rails.env.wasm?
 require "tempfile"
 require "net/http"
 

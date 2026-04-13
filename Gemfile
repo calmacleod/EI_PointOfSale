@@ -1,26 +1,26 @@
 source "https://rubygems.org"
 
-ruby "~> 4.0.1"
+ruby "~> 4.0.1" unless RUBY_PLATFORM =~ /wasm/
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.2"
+gem "rails", "~> 8.1.2", group: [ :default, :wasm ]
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
-gem "propshaft"
+gem "propshaft", group: [ :default, :wasm ]
 # Use postgresql as the database for Active Record
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails"
+gem "importmap-rails", group: [ :default, :wasm ]
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
+gem "turbo-rails", group: [ :default, :wasm ]
 # Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
+gem "stimulus-rails", group: [ :default, :wasm ]
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
-gem "jbuilder"
+gem "jbuilder", group: [ :default, :wasm ]
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
-gem "bcrypt", "~> 3.1.7"
+gem "bcrypt", "~> 3.1.7", group: [ :default, :wasm ]
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
@@ -68,26 +68,29 @@ gem "dotenv", groups: [ :development, :test ]
 gem "tailwindcss-rails", "~> 4.4"
 
 # Authorization
-gem "cancancan", "~> 3.6"
+gem "cancancan", "~> 3.6", group: [ :default, :wasm ]
 
 # Soft delete
-gem "discard", "~> 1.4"
+gem "discard", "~> 1.4", group: [ :default, :wasm ]
 
 # PostgreSQL full text search
-gem "pg_search"
+gem "pg_search", group: [ :default, :wasm ]
 
 # Pagination
-gem "pagy", "~> 43.2"
+gem "pagy", "~> 43.2", group: [ :default, :wasm ]
 
 # Audit trail for model changes
-gem "audited"
+gem "audited", group: [ :default, :wasm ]
 
 # Client-side local time display
-gem "local_time"
+gem "local_time", group: [ :default, :wasm ]
 gem "shopify_api", "~> 16.1"
 gem "newrelic_rpm", "~> 10.2"
 gem "sentry-ruby"
 gem "sentry-rails"
+
+# WASM — run Rails business logic in the browser
+gem "wasmify-rails", group: [ :default, :wasm ]
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -116,4 +119,8 @@ group :test do
   gem "minitest-mock"
   gem "minitest-reporters"
   gem "webmock"
+end
+
+group :wasm do
+  gem "tzinfo-data"
 end

@@ -1,0 +1,121 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+#
+# Smoke-test the pglite_patches.rb initializer locally without building app.wasm.
+# Run with:  bin/test_wasm_patches
+#
+# This loads only the Rails+AR layer needed to exercise the patches, stubs out
+# the JS runtime (not available outside WASM), and verifies each patch in turn.
+
+ENV["RAILS_ENV"] = "wasm"
+ENV["BUNDLE_GEMFILE"] ||= File.expand_path("../Gemfile", __dir__)
+
+require "bundler/setup"
+require "active_support/all"
+require "active_record"
+
+# Minimal Rails stub so Rails.env / Rails.logger work
+module Rails
+  def self.env = ActiveSupport::StringInquirer.new(ENV["RAILS_ENV"] || "wasm")
+  def self.logger = @logger ||= Logger.new($stdout, level: :warn)
+  def self.root = Pathname.new(File.expand_path("..", __dir__))
+end
+
+# Stub JS runtime constants that pglite_adapter references at require time
+module JS
+  True  = Object.new
+  Null  = Object.new
+  class Object; end
+end
+
+puts "Loading pglite_adapter..."
+require "active_record/connection_adapters/pglite_adapter"
+
+puts "Running initializer (pglite_patches.rb)..."
+load File.expand_path("../config/initializers/pglite_patches.rb", __dir__)
+
+puts "\n--- Running patch assertions ---\n\n"
+
+errors = []
+
+# 1. PGlite::Result#ntuples
+begin
+  mock_res = { rows: [{ "id" => 1 }, { "id" => 2 }], fields: [] }
+  result = PGlite::Result.new(JS::Object.new.tap { |o|
+    o.define_singleton_method(:[]) { |k| mock_res[k.to_sym] }
+  })
+  # Can't fully test without JS interop; just verify the method exists
+  raise "ntuples method missing" unless PGlite::Result.method_defined?(:ntuples)
+  puts "PASS  PGlite::Result#ntuples defined"
+rescue => e
+  errors << "FAIL  PGlite::Result#ntuples — #{e}"
+  puts errors.last
+end
+
+# 2. OID::Array initializer with missing PG::TextEncoder
+begin
+  require "active_record/connection_adapters/postgresql/oid/array"
+  arr_type = ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Array.new(
+    ActiveRecord::Type::String.new
+  )
+  raise "encoder nil" if arr_type.instance_variable_get(:@pg_encoder).nil?
+  encoder = arr_type.instance_variable_get(:@pg_encoder)
+  encoded = encoder.encode(%w[foo bar])
+  raise "encode returned nil" if encoded.nil?
+  puts "PASS  OID::Array NullEncoder#encode => #{encoded.inspect}"
+rescue => e
+  errors << "FAIL  OID::Array — #{e.class}: #{e}"
+  puts errors.last
+end
+
+# 3. NullDecoder#decode
+begin
+  arr_type = ActiveRecord::ConnectionAdapters::PostgreSQL::OID::Array.new(
+    ActiveRecord::Type::String.new
+  )
+  decoder = arr_type.instance_variable_get(:@pg_decoder)
+  decoded = decoder.decode("{foo,bar}")
+  raise "decode returned wrong value: #{decoded.inspect}" unless decoded == %w[foo bar]
+  puts "PASS  OID::Array NullDecoder#decode => #{decoded.inspect}"
+rescue => e
+  errors << "FAIL  OID::Array NullDecoder — #{e.class}: #{e}"
+  puts errors.last
+end
+
+# 4. Date._parse pure-Ruby override
+{
+  "2026-04-06"             => { year: 2026, mon: 4,  mday: 6  },
+  "2024-01-15 10:30:00"    => { year: 2024, mon: 1,  mday: 15, hour: 10, min: 30, sec: 0 },
+  "2024-01-15T10:30:00Z"   => { year: 2024, mon: 1,  mday: 15, hour: 10, min: 30, sec: 0, zone: "Z" },
+  "20260406151040"         => { year: 2026, mon: 4,  mday: 6,  hour: 15, min: 10, sec: 40 },
+}.each do |input, expected|
+  begin
+    result = Date._parse(input)
+    expected.each do |k, v|
+      raise "#{k} expected #{v}, got #{result[k].inspect}" unless result[k] == v
+    end
+    puts "PASS  Date._parse(#{input.inspect}) => #{result.inspect}"
+  rescue => e
+    errors << "FAIL  Date._parse(#{input.inspect}) — #{e.class}: #{e}"
+    puts errors.last
+  end
+end
+
+# 6. PGliteAdapter has enable_extension and add_index overrides
+begin
+  raise "enable_extension not defined" unless ActiveRecord::ConnectionAdapters::PGliteAdapter.method_defined?(:enable_extension)
+  raise "add_index not defined"        unless ActiveRecord::ConnectionAdapters::PGliteAdapter.method_defined?(:add_index)
+  puts "PASS  PGliteAdapter#enable_extension and #add_index overrides present"
+rescue => e
+  errors << "FAIL  PGliteAdapter overrides — #{e}"
+  puts errors.last
+end
+
+puts "\n"
+if errors.empty?
+  puts "All assertions passed."
+  exit 0
+else
+  puts "#{errors.size} assertion(s) failed."
+  exit 1
+end

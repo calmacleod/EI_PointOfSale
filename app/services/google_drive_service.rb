@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-require "google/apis/drive_v3"
-require "googleauth"
+unless Rails.env.wasm?
+  require "google/apis/drive_v3"
+  require "googleauth"
+end
 
 # Uploads files to a Google Drive folder using OAuth 2.0 (personal accounts).
 #

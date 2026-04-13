@@ -60,3 +60,9 @@
 # Ignore key files for decrypting credentials and more.
 /config/credentials/*.key
 
+# Ignore the compiled WebAssembly modules
+*.wasm
+# Ignore ruby.wasm build artefacts
+build/
+rubies/
+dist/

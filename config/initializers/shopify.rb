@@ -26,6 +26,8 @@
 # 5. Copy the Client ID and Client secret from the app's overview page
 #
 
+return if Rails.env.wasm?
+
 shopify_creds = Rails.application.credentials.dig(:shopify)
 
 if shopify_creds.present? && shopify_creds[:shop_domain].present?

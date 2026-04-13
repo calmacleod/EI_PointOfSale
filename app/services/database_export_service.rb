@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "caxlsx"
+require "caxlsx" unless Rails.env.wasm?
 
 # Generates an Excel (.xlsx) export of the application's business data.
 # Each table gets its own worksheet with column headers and all rows.

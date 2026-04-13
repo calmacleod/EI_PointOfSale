@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-require "aws-sdk-s3"
-require "rubygems/package"
+unless Rails.env.wasm?
+  require "aws-sdk-s3"
+  require "rubygems/package"
+end
 
 # Nightly job that archives all objects in the Garage bucket into a compressed
 # tarball and uploads it to Google Drive. Old backups are pruned to keep the last 7.
