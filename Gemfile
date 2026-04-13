@@ -22,8 +22,9 @@ gem "jbuilder", group: [ :default, :wasm ]
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7", group: [ :default, :wasm ]
 
-# Windows does not include zoneinfo files, so bundle the tzinfo-data gem
-gem "tzinfo-data", platforms: %i[ windows jruby ]
+# Windows and WASM do not include zoneinfo files, so bundle the tzinfo-data gem.
+# Pure-Ruby data gem — safe to install on all platforms.
+gem "tzinfo-data", group: [ :default, :wasm ]
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cache"
@@ -122,5 +123,4 @@ group :test do
 end
 
 group :wasm do
-  gem "tzinfo-data"
 end

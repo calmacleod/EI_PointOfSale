@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Watches Ruby app files and re-packs app.wasm on change.
+# Runs as the `wasm` process in Procfile.dev.
+
+require "bundler/setup"
+require "listen"
+
+ROOT = File.expand_path("..", __dir__)
+WATCH_DIRS = %w[app config lib db].map { |d| File.join(ROOT, d) }
+
+def repack
+  puts "[wasm] Change detected — repacking..."
+  if system("bin/rails wasmify:pack") && system("cp dist/app.wasm public/app.wasm")
+    puts "[wasm] Done."
+  else
+    puts "[wasm] Pack failed."
+  end
+end
+
+listener = Listen.to(*WATCH_DIRS, only: /\.(rb|erb|yml|json|sql)\z/) do |_modified, _added, _removed|
+  repack
+end
+
+listener.start
+puts "[wasm] Watching #{WATCH_DIRS.map { |d| d.sub(ROOT + "/", "") }.join(", ")} for changes..."
+sleep

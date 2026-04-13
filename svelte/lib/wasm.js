@@ -15,7 +15,12 @@ const progressListeners = []
 
 function getWorker() {
   if (!worker) {
-    worker = new Worker(new URL("../wasm-worker.js", import.meta.url), {
+    // Use BASE_URL + the known entry filename rather than `new URL(...)`.
+    // Vite's `new URL("./file.js", import.meta.url)` pattern produces a
+    // hashed asset reference that changes on every rebuild, causing 404s
+    // when bundle.js is cached. wasm-worker.js is an explicit entry point
+    // (entryFileNames: "[name].js") so its path is always stable.
+    worker = new Worker(`${import.meta.env.BASE_URL}wasm-worker.js`, {
       type: "module",
     })
     worker.onmessage = (e) => handleMessage(e.data)
@@ -93,6 +98,8 @@ export async function calculateOrderTotal(lines) {
   const id = ++callId
   return new Promise((resolve, reject) => {
     pending.set(id, { resolve, reject })
-    worker.postMessage({ type: "calculate", id, lines })
+    // JSON round-trip strips Svelte 5 reactive proxies, which can't be
+    // serialized by the structured clone algorithm used by postMessage.
+    worker.postMessage({ type: "calculate", id, lines: JSON.parse(JSON.stringify(lines)) })
   })
 }

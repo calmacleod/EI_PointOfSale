@@ -4,8 +4,13 @@
   import { bootWasm, seedTaxCodes, calculateOrderTotal, onWasmProgress } from "../lib/wasm.js"
 
   // --- State ---
-  let lines = $state([])
+  const CART_KEY = "ei_pos_cart"
+  let lines = $state(JSON.parse(localStorage.getItem(CART_KEY) ?? "[]"))
   let totals = $state(null)
+
+  $effect(() => {
+    localStorage.setItem(CART_KEY, JSON.stringify(lines))
+  })
   let wasmStatus = $state("idle") // idle | booting | seeding | ready | error
   let wasmProgress = $state("")
   let wasmError = $state(null)
@@ -27,6 +32,7 @@
     taxCodes = await getAllTaxCodes()
     if (taxCodes.length > 0) formTaxCodeId = String(taxCodes[0].id)
     await initWasm()
+    if (lines.length > 0) await recalculate()
   })
 
   onDestroy(() => unsubProgress())

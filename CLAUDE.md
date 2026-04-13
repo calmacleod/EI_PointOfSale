@@ -111,3 +111,40 @@ svelte/
 source ~/.zshrc && nvm use && npm run offline:build   # Production build
 source ~/.zshrc && nvm use && npm run offline:dev     # Watch mode
 ```
+
+## WASM Build & Deploy
+
+The WASM module (`public/app.wasm`) embeds the full Rails app compiled to WebAssembly. It powers order calculations in the offline Svelte app via an in-browser PGlite database.
+
+### Rebuild & deploy
+
+```bash
+bin/build_wasm        # Build app.wasm + Svelte offline app
+bin/kamal deploy      # Deploy to production (Docker image picks up public/ changes)
+```
+
+### When to rebuild
+
+| Changed | Run |
+|---------|-----|
+| Ruby app code (`app/`, `config/`, `lib/`, `db/schema.rb`) | `bin/build_wasm` |
+| Gem dependencies (`Gemfile`) | `bin/build_wasm` (full recompile) |
+| Svelte source only (`svelte/`) | `bin/build_wasm --svelte` |
+
+The `--svelte` flag skips the slow Ruby WASM compile (~10–30 min first time, faster on
+subsequent builds because `tmp/wasmify/ruby-core.wasm` is cached).
+
+### Pipeline internals
+
+1. `bin/rails wasmify:pack` — compiles Rails → `dist/app.wasm` using the Ruby 3.3 WASM toolchain
+2. `cp dist/app.wasm public/app.wasm` — moves it into the static assets dir
+3. `npm run offline:build` — Vite bundles the Svelte SPA into `public/offline/`
+4. `bin/kamal deploy` — builds the Docker image (which includes `public/`) and pushes to production
+
+### WASM environment notes
+
+- Rails runs with `RAILS_ENV=wasm` (see `config/environments/wasm.rb`)
+- Job adapter is `:inline`; PgSearch callbacks are skipped (`Rails.env.wasm?` guard in `AsyncPgSearch`)
+- No Solid Queue / Solid Cache / Solid Cable — those DB connections are disabled
+- Database is PGlite (in-browser Postgres); schema is loaded fresh on each boot
+- Only `db/schema.rb` is loaded — migrations are not run

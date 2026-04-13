@@ -30,6 +30,8 @@ module Wasm
       discount_total = 0
       total          = (subtotal + tax_total).round(2)
 
+      puts "FROM WASM"
+
       render json: { subtotal:, tax_total:, discount_total:, total:, lines: result_lines }
     end
   end

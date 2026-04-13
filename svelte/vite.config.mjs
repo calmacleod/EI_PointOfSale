@@ -11,6 +11,7 @@ export default defineConfig({
   build: {
     outDir: resolve(__dirname, "../public/offline"),
     emptyOutDir: true,
+    chunkSizeWarningLimit: 5000,
     rollupOptions: {
       input: {
         bundle: resolve(__dirname, "main.js"),
@@ -21,6 +22,14 @@ export default defineConfig({
         entryFileNames: "[name].js",
         chunkFileNames: "[name].js",
         assetFileNames: "[name].[ext]",
+      },
+      onwarn(warning, warn) {
+        // PGlite uses eval internally — nothing we can change
+        if (warning.code === "EVAL" && warning.id?.includes("pglite")) return
+        // PGlite assets (postgres.wasm, postgres.data) are emitted once per entry
+        // point but are identical — the last write wins and the output is correct
+        if (warning.code === "FILE_NAME_CONFLICT") return
+        warn(warning)
       },
     },
   },

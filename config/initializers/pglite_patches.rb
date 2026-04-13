@@ -112,6 +112,15 @@ PGlite::Result.class_eval do
   end
 end
 
+# ActiveRecord::Tasks::DatabaseTasks.prepare_all runs during Rails boot and
+# queries PGlite to check whether schema_migrations exists. PGlite queries
+# require JS::Object#await which is only valid inside RubyVM#evalAsync —
+# unavailable during synchronous boot initialization. The schema is loaded
+# explicitly in wasm-worker.js after initRailsVM, so this check is safe to skip.
+ActiveRecord::Tasks::DatabaseTasks.singleton_class.prepend(Module.new do
+  def prepare_all = nil
+end)
+
 # PGlite doesn't support extensions like pg_trgm or pgcrypto.
 # Silently ignore enable_extension calls for unavailable extensions so that
 # loading db/schema.rb (which calls enable_extension "pg_trgm") doesn't abort boot.

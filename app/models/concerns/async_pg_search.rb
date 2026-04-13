@@ -23,6 +23,7 @@ module AsyncPgSearch
   private
 
     def enqueue_pg_search_update
+      return if Rails.env.wasm?
       return unless pg_search_multisearchable_enabled?
       return unless searchable_columns_changed?
 
@@ -30,6 +31,8 @@ module AsyncPgSearch
     end
 
     def destroy_pg_search_document
+      return if Rails.env.wasm?
+
       pg_search_document&.destroy!
     end
 

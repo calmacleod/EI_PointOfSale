@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Builds the WASM module and the Svelte offline app for production deployment.
+# Run this before `bin/kamal deploy`.
+#
+# In development, `bin/dev` handles rebuilding automatically via Procfile.dev.
+#
+# Usage:
+#   bin/build_wasm            # build both WASM and Svelte
+#   bin/build_wasm --svelte   # rebuild Svelte only (skips the slow WASM compile)
+
+set -euo pipefail
+
+SVELTE_ONLY=false
+for arg in "$@"; do
+  [[ "$arg" == "--svelte" ]] && SVELTE_ONLY=true
+done
+
+cd "$(dirname "$0")/.."
+
+if [[ "$SVELTE_ONLY" == false ]]; then
+  echo "==> Building app.wasm (this may take a while)..."
+  bin/rails wasmify:pack
+
+  echo "==> Copying dist/app.wasm → public/app.wasm..."
+  cp dist/app.wasm public/app.wasm
+fi
+
+echo "==> Building Svelte offline app..."
+npm run offline:build
+
+echo ""
+echo "Done. Deploy with: bin/kamal deploy"

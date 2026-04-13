@@ -2,6 +2,21 @@
 
 require_relative "production"
 
+# wasmify-rails' JS RackHandler converts all headers with an HTTP_ prefix
+# (e.g. Content-Type → HTTP_CONTENT_TYPE), but Rack/Rails reads CONTENT_TYPE
+# (no prefix) when deciding how to parse the request body. Bridge the gap here
+# so JSON POST bodies are parsed correctly by ActionDispatch.
+class WasmRackHeaders
+  def initialize(app) = @app = app
+
+  def call(env)
+    if env["CONTENT_TYPE"].blank? && env["HTTP_CONTENT_TYPE"].present?
+      env["CONTENT_TYPE"] = env["HTTP_CONTENT_TYPE"]
+    end
+    @app.call(env)
+  end
+end
+
 Rails.application.configure do
   config.enable_reloading = false
 
@@ -17,6 +32,8 @@ Rails.application.configure do
     config.log_level = :debug
     config.logger = Logger.new($stdout)
   end
+
+  config.middleware.insert_before 0, WasmRackHeaders
 
   config.cache_store = :memory_store
   config.active_job.queue_adapter = :inline
