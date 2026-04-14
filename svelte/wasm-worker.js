@@ -10,6 +10,7 @@
  *   { type: 'seed_tax_codes', id, taxCodes }     → { type: 'seeded', id } | { type: 'error', id, error }
  *   { type: 'get_tax_codes', id }                → { type: 'result', id, result } | { type: 'error', id, error }
  *   { type: 'calculate', id, lines }             → { type: 'result', id, result } | { type: 'error', id, error }
+ *   { type: 'eval', id, code }                   → { type: 'result', id, result } | { type: 'error', id, error }
  */
 
 import { initRailsVM, registerPGliteWasmInterface, RackHandler } from "wasmify-rails"
@@ -88,6 +89,19 @@ self.onmessage = async (e) => {
       )
       const result = await response.json()
       self.postMessage({ type: "result", id, result })
+    } catch (err) {
+      self.postMessage({ type: "error", id, error: err.message })
+    }
+    return
+  }
+
+  if (type === "eval") {
+    const { code } = e.data
+    try {
+      // Wrap in .inspect so we get IRB-style output (quoted strings, array
+      // structure, AR object repr, etc.). Rescue converts exceptions to strings.
+      const result = await vm.evalAsync(`begin; (${code}).inspect; rescue => e; e.inspect; end`)
+      self.postMessage({ type: "result", id, result: String(result) })
     } catch (err) {
       self.postMessage({ type: "error", id, error: err.message })
     }

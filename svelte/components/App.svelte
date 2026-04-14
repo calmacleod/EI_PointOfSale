@@ -9,6 +9,7 @@
   import CustomersPage from "./CustomersPage.svelte"
   import { syncProducts, fullSyncProducts, searchProducts, getTopProducts, getLastSyncedAt, getProductCount } from "../lib/sync.js"
   import Cart from "./Cart.svelte"
+  import RailsConsole from "./RailsConsole.svelte"
 
   const TOP_N = 20
 
@@ -100,6 +101,8 @@
     <CustomersPage />
   {:else if activePage === "cart"}
     <Cart />
+  {:else if activePage === "console"}
+    <RailsConsole />
   {/if}
 </div>
 

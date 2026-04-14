@@ -66,7 +66,7 @@ export function onWasmProgress(callback) {
 
 // Expose WASM helpers on window for console testing.
 // e.g. await window.__wasm.getTaxCodes()
-window.__wasm = { bootWasm, seedTaxCodes, getTaxCodes, calculateOrderTotal }
+window.__wasm = { bootWasm, seedTaxCodes, getTaxCodes, calculateOrderTotal, evalRuby }
 
 /** Boot the Rails WASM worker. Idempotent — safe to call multiple times. */
 export function bootWasm() {
@@ -110,6 +110,16 @@ export async function getTaxCodes() {
  * lines: array of { name, unit_price, quantity, tax_code_id }
  * Returns: { subtotal, tax_total, discount_total, total, lines: [...] }
  */
+/** Evaluate arbitrary Ruby code in the Rails WASM VM. Returns the inspect string. */
+export async function evalRuby(code) {
+  await bootPromise
+  const id = ++callId
+  return new Promise((resolve, reject) => {
+    pending.set(id, { resolve, reject })
+    getWorker().postMessage({ type: "eval", id, code })
+  })
+}
+
 export async function calculateOrderTotal(lines) {
   await bootPromise
   const id = ++callId
