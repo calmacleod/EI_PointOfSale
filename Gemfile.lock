@@ -200,13 +200,13 @@ GEM
       signet (>= 0.16, < 2.a)
     hash_diff (1.1.1)
     hashdiff (1.2.1)
-    herb (0.9.5-aarch64-linux-gnu)
-    herb (0.9.5-aarch64-linux-musl)
-    herb (0.9.5-arm-linux-gnu)
-    herb (0.9.5-arm-linux-musl)
-    herb (0.9.5-arm64-darwin)
-    herb (0.9.5-x86_64-linux-gnu)
-    herb (0.9.5-x86_64-linux-musl)
+    herb (0.9.7-aarch64-linux-gnu)
+    herb (0.9.7-aarch64-linux-musl)
+    herb (0.9.7-arm-linux-gnu)
+    herb (0.9.7-arm-linux-musl)
+    herb (0.9.7-arm64-darwin)
+    herb (0.9.7-x86_64-linux-gnu)
+    herb (0.9.7-x86_64-linux-musl)
     hotwire-spark (0.1.13)
       listen
       rails (>= 7.0.0)
@@ -723,13 +723,13 @@ CHECKSUMS
   googleauth (1.16.2) sha256=15009502e2e38af71948cda918f230e27d327f6882a1e47967a5a4664930a638
   hash_diff (1.1.1) sha256=8b987e4cd5799c70b9b9761f75a75a3b89d47b91994da6b07c92b9b5352f04a3
   hashdiff (1.2.1) sha256=9c079dbc513dfc8833ab59c0c2d8f230fa28499cc5efb4b8dd276cf931457cd1
-  herb (0.9.5-aarch64-linux-gnu) sha256=3338dcec96e0fae1a384d4e01a64d8c1dddb91ca27b9e61b399d1fe77f654477
-  herb (0.9.5-aarch64-linux-musl) sha256=d444759e9217a40474876989c30ca49a8745653ec3f98a5db14f3bf79558801f
-  herb (0.9.5-arm-linux-gnu) sha256=c118cd3a485945081a4d837dc3e772211ddb358abf4b8559889f5084af64b95f
-  herb (0.9.5-arm-linux-musl) sha256=3e2047c738d61e9f60fef08df62ad6cca43149749b6e775b0e04fb16620635b3
-  herb (0.9.5-arm64-darwin) sha256=342c2065e6bf27b0fc3cd9d52906cf773caa9962642f57dbd2146abf43ce0295
-  herb (0.9.5-x86_64-linux-gnu) sha256=5acd1a63bf456f27d66b5833649e493ab0f1527fb8ae44325cf76639d7b592db
-  herb (0.9.5-x86_64-linux-musl) sha256=799e53792abfd89cdcdd018d661066a28506de25d0de9f05353a65a77af9dc2a
+  herb (0.9.7-aarch64-linux-gnu) sha256=4fb48eefdd3217e9824b2947c1fb6464b9e65159c683c6e408a25bb5fd05bea8
+  herb (0.9.7-aarch64-linux-musl) sha256=fbca76362790653d3251b40f93eb5c0009879797cd636c005f458304a49b84cd
+  herb (0.9.7-arm-linux-gnu) sha256=25b67338e4137e0a9f2065fb649ee623d555eab51699fa523325bb0591b50029
+  herb (0.9.7-arm-linux-musl) sha256=9db724497b220dc4ceec2e4a1ffc655393a3c12d8547306bb50eb5217b81e8ed
+  herb (0.9.7-arm64-darwin) sha256=e3cb927fb1f43b6dd16b984e7c35508ba1b65b0559771ef297d89adae9853fc9
+  herb (0.9.7-x86_64-linux-gnu) sha256=176f9c4c58f59e7f8534368824202a601dd787d89df82be47b8f0ef39801a886
+  herb (0.9.7-x86_64-linux-musl) sha256=a2eb06a36ea90c225019c1bd2e3487de66060730b67973824893288279f05038
   hotwire-spark (0.1.13) sha256=0a24799b0942fc9b7ea3e560a5aba3f4dd9a6086958a25929894340f920fb499
   htmlentities (4.4.2) sha256=bbafbdf69f2eca9262be4efef7e43e6a1de54c95eb600f26984f71d2fe96c5c3
   httparty (0.24.2) sha256=8fca6a54aa0c4aa4303a0fd33e5e2156175d6a5334f714263b458abd7fda9c38
