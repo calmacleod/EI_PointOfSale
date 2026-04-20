@@ -85,7 +85,7 @@ gem "audited"
 # Client-side local time display
 gem "local_time"
 gem "shopify_api", "~> 16.1"
-gem "newrelic_rpm", "~> 10.2"
+gem "newrelic_rpm", "~> 10.4"
 gem "sentry-ruby"
 gem "sentry-rails"
 
