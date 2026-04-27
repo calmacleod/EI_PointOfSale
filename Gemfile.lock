@@ -277,7 +277,7 @@ GEM
     mini_magick (5.3.1)
       logger
     mini_mime (1.1.5)
-    minitest (6.0.3)
+    minitest (6.0.5)
       drb (~> 2.0)
       prism (~> 1.5)
     minitest-mock (5.27.0)
@@ -756,7 +756,7 @@ CHECKSUMS
   memory_profiler (1.1.0) sha256=79a17df7980a140c83c469785905409d3027ca614c42c086089d128b805aa8f8
   mini_magick (5.3.1) sha256=29395dfd76badcabb6403ee5aff6f681e867074f8f28ce08d78661e9e4a351c4
   mini_mime (1.1.5) sha256=8681b7e2e4215f2a159f9400b5816d85e9d8c6c6b491e96a12797e798f8bccef
-  minitest (6.0.3) sha256=88ac8a1de36c00692420e7cb3cc11a0773bbcb126aee1c249f320160a7d11411
+  minitest (6.0.5) sha256=f007d7246bf4feea549502842cd7c6aba8851cdc9c90ba06de9c476c0d01155c
   minitest-mock (5.27.0) sha256=7040ed7185417a966920987eaa6eaf1be4ea1fc5b25bb03ff4703f98564a55b0
   minitest-reporters (1.8.0) sha256=8ce5280fb73ad3178ae525454df169b6f28c1b38b1d088ea91815d3a370ba384
   mission_control-jobs (1.1.0) sha256=b13da9cde3344fec7c744b79d2a34c3ecd454f45d4d593d4c968ba762315e84c
