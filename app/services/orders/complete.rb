@@ -16,10 +16,11 @@ module Orders
     end
 
     def call
-      validate!
-      return failure if @errors.any?
+      @order.with_lock do
+        @order.reload
+        validate!
+        return failure if @errors.any?
 
-      @order.transaction do
         adjust_stock_levels
         activate_gift_certificates
         finalize_order
@@ -49,7 +50,8 @@ module Orders
           sellable = line.sellable
           next unless sellable.is_a?(Product)
 
-          sellable.update_column(:stock_level, sellable.stock_level - line.quantity)
+          product = Product.lock.find(sellable.id)
+          product.update_column(:stock_level, product.stock_level - line.quantity)
         end
       end
 

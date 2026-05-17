@@ -9,9 +9,11 @@ module ShopifySync
       product.update!(sync_to_shopify: true, shopify_inventory_item_id: "gid://shopify/InventoryItem/123")
 
       Rails.application.credentials.stub(:dig, ->(*) { nil }) do
-        assert_raises(RuntimeError, /Shopify credentials not configured/) do
+        error = assert_raises(RuntimeError) do
           ShopifySync::InventorySyncer.new.call(product)
         end
+
+        assert_match(/Shopify credentials not configured/, error.message)
       end
     end
 
@@ -62,9 +64,11 @@ module ShopifySync
       ]
 
       stub_shopify_api(responses: responses) do
-        assert_raises(RuntimeError, /No Shopify location found/) do
+        error = assert_raises(RuntimeError) do
           ShopifySync::InventorySyncer.new.call(product)
         end
+
+        assert_match(/No Shopify location found/, error.message)
       end
     end
   end

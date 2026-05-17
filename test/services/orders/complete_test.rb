@@ -29,6 +29,17 @@ class Orders::CompleteTest < ActiveSupport::TestCase
     assert_equal initial_stock - 2, @product.reload.stock_level
   end
 
+  test "decrements from the latest locked product stock" do
+    @order.order_lines.includes(:sellable).load
+    @product.update!(stock_level: 30)
+    @order.order_payments.create!(payment_method: :cash, amount: @order.total, amount_tendered: @order.total, received_by: @admin)
+
+    result = Orders::Complete.call(order: @order, actor: @admin)
+
+    assert result.success?
+    assert_equal 28, @product.reload.stock_level
+  end
+
   test "fails when payment is insufficient" do
     @order.order_payments.create!(payment_method: :cash, amount: 1.00, amount_tendered: 1.00, received_by: @admin)
 

@@ -30,7 +30,7 @@ All notifications flow through `NotifyService`, which handles persistence, real-
 |------|-----------|---------|
 | Report ready | Yes | Stored in the notification center; user can click to view the report |
 | Database backup complete | No | Toast only; disappears after 5 seconds |
-| MinIO backup complete | No | Toast only; disappears after 5 seconds |
+| Storage backup complete | No | Toast only; disappears after 5 seconds |
 
 **Persistent notifications** are stored in the `notifications` table and appear in the notification bell dropdown. Users can mark them as read, dismiss them individually, or clear all.
 

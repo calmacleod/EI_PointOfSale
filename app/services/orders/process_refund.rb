@@ -43,6 +43,7 @@ module Orders
         end
 
         @errors << "No items selected for refund" if @line_params.blank?
+        validate_refund_quantities if @line_params.present?
       end
 
       def failure
@@ -59,7 +60,7 @@ module Orders
         end
 
         total = refund_lines_attrs.sum { |a| a[:amount] }
-        full = total >= @order.total
+        full = fully_refunded_after?(requested_quantities_by_line_id)
 
         refund = Refund.create!(
           order: @order,
@@ -104,6 +105,49 @@ module Orders
             restocked: refund.refund_lines.where(restock: true).count
           }
         )
+      end
+
+      def validate_refund_quantities
+        requested_quantities_by_line_id.each do |order_line_id, requested_quantity|
+          order_line = @order.order_lines.find_by(id: order_line_id)
+          unless order_line
+            @errors << "Refund line does not belong to this order"
+            next
+          end
+
+          if requested_quantity <= 0
+            @errors << "#{order_line.name} refund quantity must be greater than 0"
+            next
+          end
+
+          remaining_quantity = remaining_refundable_quantity(order_line)
+          if requested_quantity > remaining_quantity
+            @errors << "#{order_line.name} refund quantity exceeds remaining refundable quantity (#{remaining_quantity})"
+          end
+        end
+      end
+
+      def requested_quantities_by_line_id
+        @requested_quantities_by_line_id ||= @line_params.each_with_object(Hash.new(0)) do |line_param, quantities|
+          quantities[line_param[:order_line_id].to_i] += line_param[:quantity].to_i
+        end
+      end
+
+      def remaining_refundable_quantity(order_line)
+        order_line.quantity - refunded_quantities_by_line_id.fetch(order_line.id, 0)
+      end
+
+      def refunded_quantities_by_line_id
+        @refunded_quantities_by_line_id ||= RefundLine.joins(:refund)
+          .where(refunds: { order_id: @order.id })
+          .group(:order_line_id)
+          .sum(:quantity)
+      end
+
+      def fully_refunded_after?(requested_quantities)
+        @order.order_lines.all? do |order_line|
+          remaining_refundable_quantity(order_line) - requested_quantities.fetch(order_line.id, 0) <= 0
+        end
       end
   end
 end

@@ -6,11 +6,11 @@
     </p>
     <div class="mt-2 flex flex-wrap items-center gap-2">
       <%= link_to "Open Offline Mode", offline_path,
-          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+          class: "inline-flex min-h-7.5 items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
       <button type="button"
               data-controller="fake-offline"
               data-action="click->fake-offline#toggle"
-              class="inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]">
+              class="inline-flex min-h-7.5 items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-(--color-border)">
         <span data-fake-offline-target="label">Fake offline</span>
       </button>
     </div>
@@ -38,9 +38,9 @@
     </p>
     <div class="mt-2 flex flex-wrap gap-2">
       <%= link_to "Open Mission Control Jobs", "/jobs", target: "_blank", rel: "noopener",
-          class: "inline-flex min-h-[30px] items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+          class: "inline-flex min-h-7.5 items-center justify-center bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
       <%= button_to "Enqueue test job", dev_tools_test_job_path, method: :post,
-          class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]" %>
+          class: "inline-flex min-h-7.5 items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-(--color-border)" %>
     </div>
     <p class="mt-1 text-xs text-muted">
       Click &ldquo;Enqueue test job&rdquo; then open Mission Control to see the job appear and process.
@@ -55,7 +55,7 @@
     </p>
     <div class="mt-2 flex flex-wrap gap-2">
       <%= button_to "Reindex all models", dev_tools_reindex_search_path, method: :post,
-          class: "inline-flex min-h-[30px] items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]" %>
+          class: "inline-flex min-h-7.5 items-center justify-center border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-(--color-border)" %>
     </div>
     <p class="mt-1 text-xs text-muted">
       Rebuilds: Product, Service, Customer, User, Category, Supplier, TaxCode.

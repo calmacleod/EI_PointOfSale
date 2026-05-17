@@ -4,6 +4,8 @@
 > **Created**: 2026-02-17
 > **Goal**: Allow the POS register to continue processing sales when the server is unavailable, then sync completed orders when connectivity is restored.
 
+> **Launch note**: Full offline sales processing is out of scope for the associate pilot. The current `/offline` app is lookup-only. If the server or network is unavailable during the pilot, write down the sale on paper, include item codes, quantities, customer, payment method, and terminal reference, then enter the order in the POS when service returns.
+
 ---
 
 ## Table of Contents

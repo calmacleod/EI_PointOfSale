@@ -2,12 +2,12 @@
 
 ## Overview
 
-The application performs **nightly automated backups** of both the PostgreSQL database and the MinIO object storage bucket. Backups are compressed and uploaded to a Google Drive folder using OAuth 2.0 (works with personal Google accounts). Old backups are automatically pruned to retain the most recent 7 of each type.
+The application performs **nightly automated backups** of both the PostgreSQL database and the Garage object storage bucket. Backups are compressed and uploaded to a Google Drive folder using OAuth 2.0 (works with personal Google accounts). Old backups are automatically pruned to retain the most recent 7 of each type.
 
 | Job                  | Schedule     | What it backs up                        | File format       |
 |----------------------|--------------|-----------------------------------------|--------------------|
 | `DatabaseBackupJob`  | 2:00 AM daily | Primary PostgreSQL database (`pg_dump`) | `.dump.gz`         |
-| `MinioBackupJob`     | 3:00 AM daily | All objects in the MinIO bucket         | `.tar.gz`          |
+| `GarageBackupJob`    | 3:00 AM daily | All objects in the Garage bucket        | `.tar.gz`          |
 
 Both jobs run via **Solid Queue** recurring tasks defined in `config/recurring.yml`.
 
@@ -95,6 +95,9 @@ GOOGLE_CLIENT_SECRET=GOCSPX-your-secret-here
 
 # The Google Drive folder ID from Step 5
 GOOGLE_DRIVE_BACKUP_FOLDER_ID=1aBcDeFgHiJkLmNoPqRsTuVwXyZ
+
+# Persistent OAuth token path. In Kamal this should stay on the mounted storage volume.
+GOOGLE_DRIVE_TOKEN_PATH=/rails/storage/google_oauth_token.json
 ```
 
 ---
@@ -108,7 +111,7 @@ GOOGLE_DRIVE_BACKUP_FOLDER_ID=1aBcDeFgHiJkLmNoPqRsTuVwXyZ
 5. Sign in with your Google account and grant access
 6. You'll be redirected back to the Backups page showing "Connected" with your email
 
-The app now stores a refresh token at `config/credentials/google_oauth_token.json` (gitignored). This token is long-lived and will be used for all future backup uploads.
+The app now stores a refresh token at `GOOGLE_DRIVE_TOKEN_PATH`, defaulting to `storage/google_oauth_token.json`. In production this must live on persistent storage, not in the release image, so the Kamal default is `/rails/storage/google_oauth_token.json`.
 
 ---
 
@@ -120,13 +123,13 @@ You can test the backup jobs manually from the Rails console:
 # Test database backup
 DatabaseBackupJob.perform_now
 
-# Test MinIO backup
-MinioBackupJob.perform_now
+# Test Garage backup
+GarageBackupJob.perform_now
 ```
 
 After running, check the Google Drive folder — you should see files like:
 - `db_backup_20260215_020000.dump.gz`
-- `minio_backup_20260215_030000.tar.gz`
+- `garage_backup_20260215_030000.tar.gz`
 
 ---
 
@@ -162,12 +165,12 @@ The shared service (`app/services/google_drive_service.rb`) handles:
 4. Prunes old database backups (keeps 7)
 5. Cleans up local temp files (even on failure)
 
-### MinioBackupJob
+### GarageBackupJob
 
-1. Lists all objects in the configured MinIO bucket
+1. Lists all objects in the configured Garage bucket
 2. Downloads each object and writes it into a `.tar.gz` archive
 3. Uploads the archive to Google Drive
-4. Prunes old MinIO backups (keeps 7)
+4. Prunes old Garage backups (keeps 7)
 5. Cleans up local temp files (even on failure)
 
 ---
@@ -178,7 +181,7 @@ The admin backups page at `/admin/backups` shows:
 
 - **Integration status** — whether Google Drive is connected, with the account email
 - **Connect / Disconnect** buttons for managing the OAuth connection
-- **Last backup summary** — when the most recent DB and MinIO backups ran
+- **Last backup summary** — when the most recent DB and Garage backups ran
 - **Full file tables** — all backup files with name, date, size, and download links
 
 ---
@@ -193,15 +196,25 @@ gunzip db_backup_20260215_020000.dump.gz
 pg_restore -h localhost -U postgres -d ei_point_of_sale_production db_backup_20260215_020000.dump
 ```
 
-### MinIO / Object Storage
+### Garage / Object Storage
 
 ```bash
 # Download and extract the archive:
-tar xzf minio_backup_20260215_030000.tar.gz -C /path/to/restore/
+tar xzf garage_backup_20260215_030000.tar.gz -C /path/to/restore/
 
-# Then use the MinIO client (mc) or AWS CLI to re-upload:
-mc cp --recursive /path/to/restore/ minio/ei-pointofsale-production/
+# Then use an S3-compatible client to re-upload:
+aws --endpoint-url https://s3.pos.callummacleod.ca s3 cp --recursive /path/to/restore/ s3://ei-pointofsale-production/
 ```
+
+## Launch Restore Rehearsal
+
+Before the associate pilot, complete and record one restore rehearsal:
+
+1. Run `DatabaseBackupJob.perform_now` and `GarageBackupJob.perform_now` from the production console.
+2. Confirm the two new backup files are visible in Admin > Backups and downloadable.
+3. Restore the database dump into a throwaway local or staging database with `pg_restore`.
+4. Extract the Garage archive into a temporary directory and confirm expected Active Storage object keys exist.
+5. Record the backup filenames, restore target, restore command used, and whether the restored app booted.
 
 ---
 
@@ -211,6 +224,7 @@ mc cp --recursive /path/to/restore/ minio/ei-pointofsale-production/
 |---------|----------|
 | "Not configured" on backups page | Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_DRIVE_BACKUP_FOLDER_ID` in `.env` and restart |
 | "Not connected" on backups page | Click **Connect Google Drive** and complete the OAuth flow |
+| OAuth reconnects after deploy | Ensure `GOOGLE_DRIVE_TOKEN_PATH` points to persistent storage such as `/rails/storage/google_oauth_token.json` |
 | `Google::Apis::AuthorizationError` | The refresh token may have expired or been revoked — click **Disconnect** then **Connect Google Drive** again |
 | `Google::Apis::ClientError: insufficientPermissions` | Make sure the Drive API is enabled (Step 2) and the OAuth scope includes `drive.file` |
 | Google shows "This app isn't verified" warning | This is normal for apps in "Testing" mode — click **Continue** (you added yourself as a test user in Step 3) |

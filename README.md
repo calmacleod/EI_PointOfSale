@@ -68,7 +68,7 @@ After seeding, use the credentials shown on the sign-in page (default: `admin@ex
 | **Customers** | Customer records with addresses, member numbers, and soft delete. |
 | **Users** | Staff accounts (Admin only). Manage roles and activation. |
 | **Admin** | Store settings, tax codes, suppliers, audit trail, backups. Mapbox address autofill for store address. |
-| **Backups** | Nightly database and MinIO backups to Google Drive. OAuth 2.0 integration managed from Admin > Backups. |
+| **Backups** | Nightly database and Garage object-storage backups to Google Drive. OAuth 2.0 integration managed from Admin > Backups. |
 | **Profile** | Edit contact info, theme (light/dark/dim), font size, sidebar preference, and dashboard metric selection. |
 | **Search** | Global search across products, services, customers, users, and more. |
 
@@ -116,14 +116,20 @@ bin/ci
 | Variable | Description |
 |----------|-------------|
 | `RAILS_ENV` | Rails environment (development, test, production) |
+| `APP_URL` | Canonical app URL used for production links and password reset emails |
 | `PGGSSENCMODE` | Set to `disable` for local PostgreSQL with Solid Queue |
 | `MAPBOX_ACCESS_TOKEN` | Mapbox public token for address autofill |
-| `MINIO_ACCESS_KEY` | MinIO access key for local object storage |
-| `MINIO_SECRET_KEY` | MinIO secret key for local object storage |
-| `MINIO_ENDPOINT` | MinIO server URL (default: `http://localhost:9000`) |
+| `GARAGE_ACCESS_KEY` | Garage/S3 access key for object storage |
+| `GARAGE_SECRET_KEY` | Garage/S3 secret key for object storage |
+| `GARAGE_ENDPOINT` | Garage/S3 endpoint |
 | `GOOGLE_CLIENT_ID` | Google OAuth 2.0 client ID for Drive backups |
 | `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 client secret for Drive backups |
 | `GOOGLE_DRIVE_BACKUP_FOLDER_ID` | Google Drive folder ID where backups are stored |
+| `GOOGLE_DRIVE_TOKEN_PATH` | Persistent path for the Google OAuth refresh token |
+| `SMTP_ADDRESS` | SMTP server for password reset emails |
+| `SMTP_USERNAME` | SMTP username |
+| `SMTP_PASSWORD` | SMTP password |
+| `MAILER_FROM` | From address for application emails |
 | `VAPID_PUBLIC_KEY` | VAPID public key for Web Push notifications |
 | `VAPID_PRIVATE_KEY` | VAPID private key for Web Push notifications |
 | `VAPID_CONTACT` | VAPID contact URI (e.g. `mailto:admin@example.com`) |
@@ -137,7 +143,7 @@ See `env.template` for a full list.
 
 ### Google Drive backups (optional)
 
-Nightly backups of the database and MinIO bucket are uploaded to Google Drive. Setup requires a Google Cloud project with OAuth 2.0 credentials. See [docs/google-drive-backups.md](docs/google-drive-backups.md) for full instructions.
+Nightly backups of the database and Garage bucket are uploaded to Google Drive. Setup requires a Google Cloud project with OAuth 2.0 credentials. See [docs/google-drive-backups.md](docs/google-drive-backups.md) for full instructions.
 
 Once configured, connect your Google account from **Admin Settings > Backups**.
 

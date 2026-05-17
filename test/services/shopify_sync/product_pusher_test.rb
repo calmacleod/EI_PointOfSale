@@ -9,9 +9,11 @@ module ShopifySync
       product.update!(sync_to_shopify: true)
 
       Rails.application.credentials.stub(:dig, ->(*) { nil }) do
-        assert_raises(RuntimeError, /Shopify credentials not configured/) do
+        error = assert_raises(RuntimeError) do
           ShopifySync::ProductPusher.new.call(product)
         end
+
+        assert_match(/Shopify credentials not configured/, error.message)
       end
     end
 
@@ -111,9 +113,11 @@ module ShopifySync
       ]
 
       stub_shopify_api(responses: responses) do
-        assert_raises(RuntimeError, /Shopify API error/) do
+        error = assert_raises(RuntimeError) do
           ShopifySync::ProductPusher.new.call(product)
         end
+
+        assert_match(/Shopify API error/, error.message)
       end
     end
   end

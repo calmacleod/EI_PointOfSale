@@ -9,18 +9,22 @@ require "googleauth"
 #   1. Create OAuth client credentials in Google Cloud Console
 #   2. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_DRIVE_BACKUP_FOLDER_ID
 #   3. Visit Admin > Backups and click "Connect Google Drive" to authorize
-#   4. The refresh token is stored in config/credentials/google_oauth_token.json
+#   4. The refresh token is stored in persistent storage
 #
 # Usage:
 #   GoogleDriveService.upload("/tmp/backup.sql.gz", content_type: "application/gzip")
 #
 class GoogleDriveService
   SCOPE = "https://www.googleapis.com/auth/drive.file"
-  TOKEN_PATH = Rails.root.join("config/credentials/google_oauth_token.json")
+  DEFAULT_TOKEN_PATH = Rails.root.join("storage/google_oauth_token.json")
 
   class Error < StandardError; end
 
   class << self
+    def token_path
+      Pathname.new(ENV.fetch("GOOGLE_DRIVE_TOKEN_PATH", DEFAULT_TOKEN_PATH.to_s))
+    end
+
     # Uploads a local file to the configured Google Drive folder.
     def upload(file_path, content_type: "application/octet-stream", folder_id: nil)
       validate_config!
@@ -150,7 +154,7 @@ class GoogleDriveService
 
     # Removes the stored OAuth token (disconnect).
     def disconnect!
-      FileUtils.rm_f(TOKEN_PATH)
+      FileUtils.rm_f(token_path)
       reset!
     end
 
@@ -161,7 +165,7 @@ class GoogleDriveService
 
     # Whether a refresh token is stored on disk.
     def token_stored?
-      TOKEN_PATH.exist?
+      token_path.exist?
     end
 
     private
@@ -177,7 +181,7 @@ class GoogleDriveService
       def load_credentials
         raise Error, "No OAuth token stored — authorize via Admin > Backups first" unless token_stored?
 
-        token_data = JSON.parse(TOKEN_PATH.read)
+        token_data = JSON.parse(token_path.read)
         client = build_oauth_client
         client.refresh_token = token_data["refresh_token"]
         client.fetch_access_token!
@@ -196,17 +200,17 @@ class GoogleDriveService
       end
 
       def store_token(client)
-        TOKEN_PATH.dirname.mkpath
+        token_path.dirname.mkpath
 
         token_data = {
           refresh_token: client.refresh_token,
           stored_at: Time.current.iso8601
         }
 
-        TOKEN_PATH.write(JSON.pretty_generate(token_data))
-        TOKEN_PATH.chmod(0o600)
+        token_path.write(JSON.pretty_generate(token_data))
+        token_path.chmod(0o600)
 
-        Rails.logger.info { "[GoogleDriveService] OAuth token stored at #{TOKEN_PATH}" }
+        Rails.logger.info { "[GoogleDriveService] OAuth token stored at #{token_path}" }
       end
 
       def validate_config!

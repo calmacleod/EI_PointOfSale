@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "securerandom"
 
 class GoogleDriveServiceTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
@@ -9,6 +10,9 @@ class GoogleDriveServiceTest < ActiveSupport::TestCase
     @original_client_id = ENV["GOOGLE_CLIENT_ID"]
     @original_client_secret = ENV["GOOGLE_CLIENT_SECRET"]
     @original_folder = ENV["GOOGLE_DRIVE_BACKUP_FOLDER_ID"]
+    @original_token_path = ENV["GOOGLE_DRIVE_TOKEN_PATH"]
+    @token_path = Rails.root.join("tmp", "google-drive-token-#{SecureRandom.hex}.json")
+    ENV["GOOGLE_DRIVE_TOKEN_PATH"] = @token_path.to_s
     GoogleDriveService.send(:reset!)
   end
 
@@ -16,6 +20,8 @@ class GoogleDriveServiceTest < ActiveSupport::TestCase
     ENV["GOOGLE_CLIENT_ID"] = @original_client_id
     ENV["GOOGLE_CLIENT_SECRET"] = @original_client_secret
     ENV["GOOGLE_DRIVE_BACKUP_FOLDER_ID"] = @original_folder
+    ENV["GOOGLE_DRIVE_TOKEN_PATH"] = @original_token_path
+    FileUtils.rm_f(@token_path)
     GoogleDriveService.send(:reset!)
   end
 
@@ -159,6 +165,43 @@ class GoogleDriveServiceTest < ActiveSupport::TestCase
     end
   end
 
+  test "check_credentials returns connected when token is valid" do
+    configure_oauth!
+
+    about = Google::Apis::DriveV3::About.new(
+      user: Google::Apis::DriveV3::User.new(email_address: "owner@example.com", display_name: "Owner")
+    )
+
+    fake_service = build_fake_drive_service
+    fake_service.define_singleton_method(:get_about) { |**_kwargs| about }
+
+    stub_drive_service(fake_service) do
+      result = GoogleDriveService.check_credentials
+
+      assert_equal true, result[:configured]
+      assert_equal true, result[:connected]
+      assert_nil result[:error]
+      assert_equal "owner@example.com", result[:email]
+    end
+  end
+
+  test "check_credentials returns not connected when token authorization expired" do
+    configure_oauth!
+
+    fake_service = build_fake_drive_service
+    fake_service.define_singleton_method(:get_about) do |**_kwargs|
+      raise Google::Apis::AuthorizationError, "invalid_grant"
+    end
+
+    stub_drive_service(fake_service) do
+      result = GoogleDriveService.check_credentials
+
+      assert_equal true, result[:configured]
+      assert_equal false, result[:connected]
+      assert_match(/Authorization expired/, result[:error])
+    end
+  end
+
   # ── prune ──
 
   test "prune deletes files beyond retention count" do
@@ -251,7 +294,7 @@ class GoogleDriveServiceTest < ActiveSupport::TestCase
   # ── disconnect! ──
 
   test "disconnect! removes the token file" do
-    token_path = GoogleDriveService::TOKEN_PATH
+    token_path = GoogleDriveService.token_path
     token_path.dirname.mkpath
     token_path.write('{"refresh_token":"test"}')
 
@@ -260,6 +303,14 @@ class GoogleDriveServiceTest < ActiveSupport::TestCase
     assert_not token_path.exist?
   ensure
     FileUtils.rm_f(token_path)
+  end
+
+  test "token path defaults to persistent Rails storage" do
+    ENV.delete("GOOGLE_DRIVE_TOKEN_PATH")
+
+    assert_equal Rails.root.join("storage/google_oauth_token.json"), GoogleDriveService.token_path
+  ensure
+    ENV["GOOGLE_DRIVE_TOKEN_PATH"] = @token_path.to_s
   end
 
   private

@@ -80,6 +80,7 @@ export default class extends Controller {
   close() {
     if (this.overlay) {
       this.overlay.classList.add("hidden")
+      this.overlay.classList.remove("flex")
     }
     document.body.classList.remove("overflow-hidden")
     document.removeEventListener("keydown", this.boundKeydown)
@@ -107,6 +108,7 @@ export default class extends Controller {
     }
     if (this.overlay) {
       this.overlay.classList.remove("hidden")
+      this.overlay.classList.add("flex")
     }
     document.body.classList.add("overflow-hidden")
     document.addEventListener("keydown", this.boundKeydown)

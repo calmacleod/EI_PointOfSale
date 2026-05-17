@@ -66,6 +66,71 @@ class Orders::ProcessRefundTest < ActiveSupport::TestCase
     assert_includes result.errors.join, "Only completed orders"
   end
 
+  test "fails when refund quantity is zero" do
+    result = Orders::ProcessRefund.call(
+      order: @order,
+      actor: @admin,
+      line_params: [ { order_line_id: @line.id, quantity: 0, restock: false } ]
+    )
+
+    assert_not result.success?
+    assert_includes result.errors.join, "must be greater than 0"
+    assert_no_difference "Refund.count" do
+      Orders::ProcessRefund.call(order: @order, actor: @admin, line_params: [ { order_line_id: @line.id, quantity: 0 } ])
+    end
+  end
+
+  test "fails when refund quantity exceeds sold quantity" do
+    result = Orders::ProcessRefund.call(
+      order: @order,
+      actor: @admin,
+      line_params: [ { order_line_id: @line.id, quantity: @line.quantity + 1, restock: false } ]
+    )
+
+    assert_not result.success?
+    assert_includes result.errors.join, "exceeds remaining refundable quantity"
+  end
+
+  test "fails when cumulative partial refunds exceed sold quantity" do
+    first = Orders::ProcessRefund.call(
+      order: @order,
+      actor: @admin,
+      line_params: [ { order_line_id: @line.id, quantity: 1, restock: false } ]
+    )
+
+    assert first.success?
+
+    second = Orders::ProcessRefund.call(
+      order: @order.reload,
+      actor: @admin,
+      line_params: [ { order_line_id: @line.id, quantity: @line.quantity, restock: false } ]
+    )
+
+    assert_not second.success?
+    assert_includes second.errors.join, "exceeds remaining refundable quantity"
+  end
+
+  test "marks order fully refunded when final partial refund exhausts all quantities" do
+    first = Orders::ProcessRefund.call(
+      order: @order,
+      actor: @admin,
+      line_params: [ { order_line_id: @line.id, quantity: 1, restock: false } ]
+    )
+
+    assert first.success?
+    assert @order.reload.partially_refunded?
+
+    second = Orders::ProcessRefund.call(
+      order: @order,
+      actor: @admin,
+      line_params: [ { order_line_id: @line.id, quantity: 1, restock: false } ]
+    )
+
+    assert second.success?
+    assert_equal "full", second.refund.refund_type
+    assert @order.reload.refunded?
+  end
+
   test "does not update last_restocked_at when restocking via refund" do
     product = @line.sellable
     original_time = 1.week.ago

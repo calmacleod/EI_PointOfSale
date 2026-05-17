@@ -30,18 +30,33 @@ env:
     - GARAGE_SECRET_KEY
     - NEW_RELIC_LICENSE_KEY
     - SENTRY_DSN
+    - GOOGLE_CLIENT_ID
+    - GOOGLE_CLIENT_SECRET
+    - GOOGLE_DRIVE_BACKUP_FOLDER_ID
+    - SMTP_ADDRESS
+    - SMTP_USERNAME
+    - SMTP_PASSWORD
+    - VAPID_PUBLIC_KEY
+    - VAPID_PRIVATE_KEY
   clear:
     # Database connection for cache/queue/cable databases (all on the same postgres accessory).
     # The container name ei_point_of_sale-db-1 is the Kamal internal hostname for the db accessory.
     DATABASE_HOST: ei-point-of-sale-db
     DATABASE_USERNAME: postgres
     APP_URL: https://pos.callummacleod.ca
+    GOOGLE_DRIVE_TOKEN_PATH: /rails/storage/google_oauth_token.json
+    SMTP_PORT: 587
+    SMTP_DOMAIN: pos.callummacleod.ca
+    SMTP_AUTHENTICATION: plain
+    SMTP_ENABLE_STARTTLS_AUTO: true
+    MAILER_FROM: no-reply@pos.callummacleod.ca
 
     # Garage S3 endpoint (internal Docker network address of the garage accessory).
     GARAGE_ENDPOINT: "https://s3.pos.callummacleod.ca"
 
     # Use Garage for Active Storage (set ACTIVE_STORAGE_SERVICE=railway on Railway).
     ACTIVE_STORAGE_SERVICE: garage
+    VAPID_CONTACT: mailto:admin@pos.callummacleod.ca
 
 
 # Aliases are triggered with "bin/kamal <alias>".
