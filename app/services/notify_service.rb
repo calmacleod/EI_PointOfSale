@@ -75,6 +75,7 @@ class NotifyService
     def send_web_push
       subscriptions = @user.push_subscriptions
       return if subscriptions.none?
+      return unless web_push_configured?
 
       message = { title: @title, body: @body, url: @url }.to_json
 
@@ -99,5 +100,9 @@ class NotifyService
         public_key: ENV.fetch("VAPID_PUBLIC_KEY"),
         private_key: ENV.fetch("VAPID_PRIVATE_KEY")
       }
+    end
+
+    def web_push_configured?
+      ENV["VAPID_PUBLIC_KEY"].present? && ENV["VAPID_PRIVATE_KEY"].present?
     end
 end

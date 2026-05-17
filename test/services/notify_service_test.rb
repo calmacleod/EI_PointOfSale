@@ -46,4 +46,27 @@ class NotifyServiceTest < ActiveSupport::TestCase
     assert_not_nil payload
     assert_equal "Test broadcast", payload[:title]
   end
+
+  test "skips web push when VAPID keys are not configured" do
+    PushSubscription.create!(
+      user: @user,
+      endpoint: "https://fcm.googleapis.com/fcm/send/test123",
+      p256dh_key: "key",
+      auth_key: "auth"
+    )
+
+    original_public_key = ENV["VAPID_PUBLIC_KEY"]
+    original_private_key = ENV["VAPID_PRIVATE_KEY"]
+    ENV.delete("VAPID_PUBLIC_KEY")
+    ENV.delete("VAPID_PRIVATE_KEY")
+
+    WebPush.stub(:payload_send, ->(*) { raise "should not send" }) do
+      assert_nothing_raised do
+        NotifyService.call(user: @user, title: "Test push", persistent: false)
+      end
+    end
+  ensure
+    ENV["VAPID_PUBLIC_KEY"] = original_public_key
+    ENV["VAPID_PRIVATE_KEY"] = original_private_key
+  end
 end
