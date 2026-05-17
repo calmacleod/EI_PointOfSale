@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-4xl p-4 lg:p-6 space-y-6">
+<div class="space-y-6">
   <%= render "shared/page_header", title: "Order #{@order.number}" do %>
     <% if @order.completed? || @order.partially_refunded? %>
       <%= link_to "Receipt", receipt_order_path(@order), class: "rounded-lg border border-theme px-3 py-1.5 text-xs font-medium text-body hover:bg-[var(--color-border)] transition" %>
