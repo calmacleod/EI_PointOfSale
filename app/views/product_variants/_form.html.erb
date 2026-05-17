@@ -99,7 +99,8 @@
           <% product_variant.images.each do |image| %>
             <div class="group relative">
               <%= image_tag image.representation(resize_to_limit: [ 120, 120 ]),
-                  class: "h-[120px] w-[120px] border border-theme object-cover bg-surface-alt" %>
+                  class: "h-[120px] w-[120px] border border-theme object-cover bg-surface-alt",
+                  alt: "#{product.name} #{product_variant.code}" %>
               <% if can?(:update, product_variant) %>
                 <%= button_to purge_image_product_product_variant_path(product, product_variant, image_id: image.id),
                     method: :delete,

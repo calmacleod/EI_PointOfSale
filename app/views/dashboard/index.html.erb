@@ -2,7 +2,7 @@
 
 <div class="mx-auto flex w-full max-w-6xl flex-col gap-2">
   <% if Current.user.nil? %>
-    <div class="rounded-lg border border-(--color-success-border) bg-(--color-success-bg) p-2.5 text-(--color-success-text)">
+    <div class="ui-card border-(--color-success-border) bg-(--color-success-bg) p-2.5 text-(--color-success-text)">
       <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p class="text-sm font-semibold">You're viewing the dashboard as a guest.</p>
@@ -10,9 +10,9 @@
         </div>
         <div class="flex gap-2">
           <%= link_to "Sign in", new_session_path,
-              class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+              class: ui_button_class(variant: :primary, size: :sm) %>
           <%= link_to "Forgot password?", new_password_path,
-              class: "inline-flex min-h-[30px] items-center justify-center rounded-md border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body ring-1 ring-inset hover:bg-[var(--color-border)]" %>
+              class: ui_button_class(variant: :secondary, size: :sm) %>
         </div>
       </div>
     </div>
@@ -23,7 +23,7 @@
 
   <% if Current.user %>
     <% drawer_session = CashDrawerSession.current %>
-    <div class="mt-1 flex items-center gap-2 rounded-lg border border-theme bg-surface px-3 py-1.5">
+    <div class="ui-card mt-1 flex items-center gap-2 px-3 py-1.5">
       <% if drawer_session %>
         <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
         <span class="text-xs font-medium text-body">Register open</span>
@@ -57,7 +57,7 @@
   <div class="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
     <% @visible_metrics.each do |metric| %>
       <% if metric[:link_path].present? %>
-        <%= link_to public_send(metric[:link_path]), class: "group rounded-lg border border-theme bg-surface p-2.5 hover:bg-[var(--color-border)]/30" do %>
+        <%= link_to public_send(metric[:link_path]), class: "group block #{ui_card_class(interactive: true, class_name: 'p-2.5')}" do %>
           <div class="flex items-start justify-between gap-2">
             <div>
               <p class="text-xs font-medium text-muted group-hover:text-body"><%= metric[:label] %></p>
@@ -73,7 +73,7 @@
               <% end %>
             </div>
             <% if metric[:icon].present? %>
-              <div class="rounded-md bg-(--color-border)/30 p-1.5 ring-1 ring-inset border-theme">
+              <div class="ui-icon-tile">
                 <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="<%= metric[:icon] %>" />
                 </svg>
@@ -82,7 +82,7 @@
           </div>
         <% end %>
       <% else %>
-        <div class="rounded-lg border border-theme bg-surface p-2.5">
+        <div class="<%= ui_card_class(class_name: 'p-2.5') %>">
           <div class="flex items-start justify-between gap-2">
             <div>
               <p class="text-xs font-medium text-muted"><%= metric[:label] %></p>
@@ -98,7 +98,7 @@
               <% end %>
             </div>
             <% if metric[:icon].present? %>
-              <div class="rounded-md bg-(--color-border)/30 p-1.5 ring-1 ring-inset border-theme">
+              <div class="ui-icon-tile">
                 <svg class="h-4 w-4 text-body" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="<%= metric[:icon] %>" />
                 </svg>
@@ -114,13 +114,13 @@
     <%# === Left column: Recent orders + Store tasks === %>
     <div class="lg:col-span-8 flex flex-col gap-2">
       <%# --- Recent orders table --- %>
-      <div class="rounded-lg border border-theme bg-surface overflow-hidden">
-        <div class="flex items-center justify-between border-b border-theme bg-surface-alt px-3 py-2">
+      <div class="ui-card">
+        <div class="ui-card-header">
           <h2 class="text-sm font-semibold text-body">Recent orders</h2>
           <%= link_to "View all", orders_path, class: "text-xs font-medium text-accent hover:opacity-80" %>
         </div>
 
-        <table class="min-w-full divide-y divide-(--color-border)">
+        <table class="ui-table divide-y divide-(--color-border)">
           <thead class="bg-surface-alt">
             <tr>
               <th scope="col" class="px-3 py-2 text-left text-xs font-medium uppercase tracking-wider text-muted">Order</th>
@@ -139,16 +139,7 @@
                   </td>
                   <td class="px-3 py-2 text-sm text-muted"><%= order.customer_name %></td>
                   <td class="px-3 py-2 text-sm">
-                    <% status_class = case order.status
-                                     when "draft" then "bg-blue-100 text-blue-800"
-                                     when "held" then "bg-yellow-100 text-yellow-800"
-                                     when "completed" then "bg-green-100 text-green-800"
-                                     when "voided" then "bg-red-100 text-red-800"
-                                     when "refunded" then "bg-purple-100 text-purple-800"
-                                     when "partially_refunded" then "bg-orange-100 text-orange-800"
-                                     when "cancelled" then "bg-slate-100 text-slate-600"
-                                     end %>
-                    <span class="rounded-full px-2 py-0.5 text-xs font-medium <%= status_class %>"><%= order.display_status %></span>
+                    <%= order_status_chip(order) %>
                   </td>
                   <td class="px-3 py-2 text-right text-sm font-medium text-body"><%= number_to_currency(order.total) %></td>
                   <td class="px-3 py-2 text-right text-sm text-muted"><%= time_ago_in_words(order.created_at) %> ago</td>
@@ -165,7 +156,7 @@
 
       <%# --- Store tasks (current user) --- %>
       <% if Current.user && @my_tasks.present? %>
-        <div class="rounded-lg border border-theme bg-surface p-2.5">
+        <div class="<%= ui_card_class(class_name: 'p-2.5') %>">
           <div class="flex items-center justify-between">
             <h2 class="text-sm font-semibold text-body">Your tasks</h2>
             <%= link_to "All tasks", store_tasks_path, class: "text-xs font-medium text-accent hover:opacity-80" %>
@@ -207,7 +198,7 @@
 
     <%# === Right column: Quick actions === %>
     <div class="lg:col-span-4">
-      <div class="rounded-lg border border-theme bg-surface p-2.5">
+      <div class="<%= ui_card_class(class_name: 'p-2.5') %>">
         <div class="flex items-center justify-between">
           <h2 class="text-sm font-semibold text-body">Quick actions</h2>
           <span class="text-xs text-muted"><%= local_date(Time.current, "%b %e, %Y") %></span>
@@ -216,9 +207,9 @@
         <div class="mt-2 grid grid-cols-1 gap-1.5">
           <%= link_to register_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group ui-list-action" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
+              <div class="ui-icon-tile ui-icon-tile-accent">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M3 3a1 1 0 011-1h12a1 1 0 011 1v5a1 1 0 11-2 0V4H5v12h6a1 1 0 110 2H4a1 1 0 01-1-1V3z" />
                   <path d="M14 12a1 1 0 011 1v2h2a1 1 0 110 2h-2v2a1 1 0 11-2 0v-2h-2a1 1 0 110-2h2v-2a1 1 0 011-1z" />
@@ -234,9 +225,9 @@
 
           <%= link_to orders_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group ui-list-action" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
+              <div class="ui-icon-tile ui-icon-tile-accent">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm3 3a1 1 0 000 2h6a1 1 0 100-2H7zm0 4a1 1 0 000 2h6a1 1 0 100-2H7z" />
                 </svg>
@@ -251,9 +242,9 @@
 
           <%= link_to held_orders_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group ui-list-action" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
+              <div class="ui-icon-tile ui-icon-tile-accent">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" />
                 </svg>
@@ -268,9 +259,9 @@
 
           <%= link_to products_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group ui-list-action" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
+              <div class="ui-icon-tile ui-icon-tile-accent">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M2 5a2 2 0 012-2h6a2 2 0 012 2v1h4a2 2 0 012 2v7a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2 0v10h12V8h-4a2 2 0 01-2-2V5H4z" />
                 </svg>
@@ -286,9 +277,9 @@
           <% if Current.user.is_a?(Admin) %>
             <%= link_to admin_users_path,
                 data: { turbo_prefetch: true },
-                class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
+                class: "group ui-list-action" do %>
               <div class="flex items-center gap-2">
-                <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
+                <div class="ui-icon-tile ui-icon-tile-accent">
                   <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                   </svg>
@@ -304,9 +295,9 @@
 
           <%= link_to rails_health_check_path,
               data: { turbo_prefetch: true },
-              class: "group flex min-h-[30px] items-center justify-between px-2 py-1 rounded-lg border border-theme hover:bg-[var(--color-border)]/30" do %>
+              class: "group ui-list-action" do %>
             <div class="flex items-center gap-2">
-              <div class="rounded-md bg-accent p-1.5 text-(--color-page)">
+              <div class="ui-icon-tile ui-icon-tile-accent">
                 <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 11H9a1 1 0 01-1-1V6a1 1 0 112 0v5h1a1 1 0 110 2z" />
                 </svg>

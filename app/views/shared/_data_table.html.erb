@@ -16,16 +16,16 @@
 <% yield table if block_given? %>
 
 <%= turbo_frame_tag turbo_frame, data: { turbo_action: "advance" }, class: "lg:flex lg:min-h-0 lg:flex-1 lg:flex-col" do %>
-  <div class="rounded-lg border border-theme bg-surface lg:flex lg:min-h-0 lg:flex-1 lg:flex-col"
+  <div class="ui-card lg:flex lg:min-h-0 lg:flex-1 lg:flex-col"
        data-controller="column-toggle"
        data-column-toggle-resource-value="<%= config.resource_name %>"
        data-column-toggle-columns-value="<%= config.columns_json %>">
 
     <%# Column toggle button %>
-    <div class="flex items-center justify-end rounded-t-lg border-b border-theme bg-surface-alt px-2 py-1">
+    <div class="ui-card-header justify-end py-1">
       <div class="relative">
         <button type="button" data-action="click->column-toggle#togglePopover"
-                class="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-xs font-medium text-muted hover:bg-(--color-border) hover:text-body"
+                class="<%= ui_button_class(variant: :ghost, size: :xs) %>"
                 title="Toggle columns">
           <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
@@ -57,7 +57,7 @@
          data-controller="scroll-shadow">
       <div class="overflow-x-auto lg:flex-1 lg:overflow-y-auto"
            data-scroll-shadow-target="scroller">
-      <table class="min-w-full divide-y divide-(--color-border)" data-column-toggle-target="table">
+      <table class="ui-table divide-y divide-(--color-border)" data-column-toggle-target="table">
       <thead class="bg-surface-alt lg:sticky lg:top-0 lg:z-10">
         <tr>
           <% config.columns.each do |col| %>

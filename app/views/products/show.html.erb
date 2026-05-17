@@ -10,10 +10,10 @@
 <div>
   <%= render "shared/page_header", title: @product.name, description: "Product details, pricing, and inventory." do %>
     <div class="flex items-center gap-1.5">
-      <%= link_to "Back to products", products_path, class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30", data: { turbo_prefetch: true } %>
+      <%= link_to "Back to products", products_path, class: ui_button_class(variant: :secondary, size: :sm), data: { turbo_prefetch: true } %>
       <% if can? :update, @product %>
         <%= link_to "Edit", edit_product_path(@product),
-            class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
+            class: ui_button_class(variant: :primary, size: :sm),
             data: { turbo_prefetch: true } %>
       <% end %>
     </div>
@@ -21,12 +21,12 @@
 
   <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
     <% cache [@product, @product.tax_code, @product.product_group, "details"] do %>
-      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-details-heading">
-        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <section class="ui-card" aria-labelledby="product-details-heading">
+        <div class="ui-card-header">
           <h2 id="product-details-heading" class="text-sm font-semibold text-body">Details</h2>
           <p class="text-xs text-muted">Product identification and classification</p>
         </div>
-        <dl class="divide-y divide-(--color-border)">
+        <dl class="ui-detail-list divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Code</dt>
             <dd class="mt-0.5 text-sm font-mono text-body sm:col-span-2 sm:mt-0"><%= @product.code %></dd>
@@ -62,12 +62,12 @@
     <% end %>
 
     <% cache [@product, "pricing"] do %>
-      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-pricing-heading">
-        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <section class="ui-card" aria-labelledby="product-pricing-heading">
+        <div class="ui-card-header">
           <h2 id="product-pricing-heading" class="text-sm font-semibold text-body">Pricing</h2>
           <p class="text-xs text-muted">Cost and selling prices</p>
         </div>
-        <dl class="divide-y divide-(--color-border)">
+        <dl class="ui-detail-list divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Selling price</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= number_to_currency(@product.selling_price) || "—" %></dd>
@@ -85,12 +85,12 @@
     <% end %>
 
     <% cache [@product, "inventory"] do %>
-      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-inventory-heading">
-        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <section class="ui-card" aria-labelledby="product-inventory-heading">
+        <div class="ui-card-header">
           <h2 id="product-inventory-heading" class="text-sm font-semibold text-body">Inventory</h2>
           <p class="text-xs text-muted">Stock levels and ordering</p>
         </div>
-        <dl class="divide-y divide-(--color-border)">
+        <dl class="ui-detail-list divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Stock level</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.stock_level %></dd>
@@ -112,12 +112,12 @@
     <% end %>
 
     <% cache [@product, @product.supplier, "supplier"] do %>
-      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-supplier-heading">
-        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <section class="ui-card" aria-labelledby="product-supplier-heading">
+        <div class="ui-card-header">
           <h2 id="product-supplier-heading" class="text-sm font-semibold text-body">Supplier</h2>
           <p class="text-xs text-muted">Procurement details</p>
         </div>
-        <dl class="divide-y divide-(--color-border)">
+        <dl class="ui-detail-list divide-y divide-(--color-border)">
           <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
             <dt class="text-xs font-medium text-muted">Supplier</dt>
             <dd class="mt-0.5 text-sm text-body sm:col-span-2 sm:mt-0"><%= @product.supplier&.name || "—" %></dd>
@@ -131,12 +131,12 @@
     <% end %>
 
     <% cache [@product, "notes"] do %>
-      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-notes-heading">
-        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <section class="ui-card" aria-labelledby="product-notes-heading">
+        <div class="ui-card-header">
           <h2 id="product-notes-heading" class="text-sm font-semibold text-body">Notes</h2>
           <p class="text-xs text-muted">Internal notes and reference</p>
         </div>
-        <dl class="divide-y divide-(--color-border)">
+        <dl class="ui-detail-list divide-y divide-(--color-border)">
           <div class="px-3 py-1.5">
             <dd class="text-sm text-body"><%= @product.notes.present? ? simple_format(@product.notes) : "—" %></dd>
           </div>
@@ -145,12 +145,12 @@
     <% end %>
 
     <% cache [@product, @product.added_by, "meta"] do %>
-      <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-meta-heading">
-        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+      <section class="ui-card" aria-labelledby="product-meta-heading">
+        <div class="ui-card-header">
           <h2 id="product-meta-heading" class="text-sm font-semibold text-body">Record info</h2>
           <p class="text-xs text-muted">Timestamps and provenance</p>
         </div>
-        <dl class="divide-y divide-(--color-border)">
+        <dl class="ui-detail-list divide-y divide-(--color-border)">
           <% if @product.added_by.present? %>
             <div class="px-3 py-1.5 sm:grid sm:grid-cols-3 sm:gap-3">
               <dt class="text-xs font-medium text-muted">Added by</dt>
@@ -177,11 +177,11 @@
 
     <%# Images section not cached — contains generated URLs that change per request %>
     <% if @product.images.attached? %>
-      <section class="overflow-hidden rounded-lg border border-theme bg-surface lg:col-span-2"
+      <section class="ui-card lg:col-span-2"
                aria-labelledby="product-images-heading"
                data-controller="image-lightbox"
                data-image-lightbox-urls-value="<%= @product.images.map { |img| url_for(img) }.to_json %>">
-        <div class="border-b border-theme bg-surface-alt px-3 py-1.5">
+        <div class="ui-card-header">
           <h2 id="product-images-heading" class="text-sm font-semibold text-body">Images</h2>
           <p class="text-xs text-muted"><%= pluralize(@product.images.count, "image") %> attached</p>
         </div>
@@ -204,15 +204,15 @@
 
   <% recent_restocks = @product.restocks.includes(:user).order(created_at: :desc).limit(5) %>
   <% if recent_restocks.any? %>
-    <section class="mt-2 overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="product-restocks-heading">
-      <div class="border-b border-theme bg-surface-alt px-3 py-1.5 flex items-center justify-between">
+    <section class="ui-card mt-2" aria-labelledby="product-restocks-heading">
+      <div class="ui-card-header">
         <div>
           <h2 id="product-restocks-heading" class="text-sm font-semibold text-body">Recent Restocks</h2>
           <p class="text-xs text-muted">Last <%= recent_restocks.size %> restocking events</p>
         </div>
         <%= link_to "View all", product_restocks_path(@product), class: "text-xs font-medium text-accent hover:underline" %>
       </div>
-      <table class="min-w-full divide-y divide-(--color-border) text-sm">
+      <table class="ui-table divide-y divide-(--color-border)">
         <thead class="bg-surface-alt">
           <tr>
             <th class="px-3 py-1.5 text-left text-xs font-medium text-muted">Date</th>

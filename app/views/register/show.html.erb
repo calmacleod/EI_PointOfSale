@@ -48,15 +48,15 @@
         <% end %>
       </div>
     <% end %>
-    <%= button_to new_order_register_path, method: :post, class: "inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body" do %>
+    <%= button_to new_order_register_path, method: :post, class: ui_button_class(variant: :ghost, size: :xs) do %>
       <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
       New
     <% end %>
     <%# Show total held count from database for the badge, but we only display current held order in tabs %>
     <% if @held_count > 0 %>
-      <%= link_to held_orders_path, class: "ml-auto inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-medium text-muted hover:bg-[var(--color-border)] hover:text-body" do %>
+      <%= link_to held_orders_path, class: "ml-auto #{ui_button_class(variant: :ghost, size: :xs)}" do %>
         Held
-        <span class="rounded-full bg-yellow-100 px-1.5 py-0.5 text-[10px] font-bold text-yellow-800"><%= @held_count %></span>
+        <%= status_chip(@held_count, :warning) %>
       <% end %>
     <% end %>
   </div>
@@ -65,21 +65,13 @@
   <div class="flex items-center justify-between border-b border-theme bg-surface px-4 py-1.5 shrink-0">
     <div class="flex items-center gap-3">
       <h1 class="text-sm font-semibold text-body"><%= @order.number %></h1>
-      <span class="rounded-full px-2 py-0.5 text-[10px] font-medium
-        <%= case @order.status
-            when 'draft' then 'bg-blue-100 text-blue-800'
-            when 'held' then 'bg-yellow-100 text-yellow-800'
-            when 'completed' then 'bg-green-100 text-green-800'
-            else 'bg-gray-100 text-gray-800'
-            end %>">
-        <%= @order.display_status %>
-      </span>
+      <%= order_status_chip(@order) %>
     </div>
     <div class="flex items-center gap-3">
       <span class="text-xs text-muted"><%= @order.created_by.name || @order.created_by.email_address %></span>
       <% if @order.draft? || @order.held? %>
         <button type="button"
-                class="text-xs text-muted hover:text-red-500 transition"
+                class="<%= ui_button_class(variant: :danger, size: :xs) %>"
                 data-action="click->cancel-order#open"
                 data-order-number="<%= @order.number %>"
                 data-cancel-path="<%= cancel_order_path(@order) %>">
@@ -106,16 +98,16 @@
           <%= f.hidden_field :order_id, value: @order.id %>
           <div class="flex gap-1.5 sm:gap-2">
             <%= render "orders/code_lookup_input", order: @order %>
-            <button type="submit" class="rounded-lg bg-accent px-3 sm:px-4 py-2 text-xs font-medium text-white hover:bg-(--color-accent-hover) transition">
+            <button type="submit" class="<%= ui_button_class(variant: :primary, size: :sm, class_name: 'px-3 sm:px-4') %>">
               Add
             </button>
-            <button type="button" class="rounded-lg border border-theme px-2.5 sm:px-3 py-2 text-xs font-medium text-muted hover:bg-(--color-border) transition"
+            <button type="button" class="<%= ui_button_class(variant: :secondary, size: :sm, class_name: 'px-2.5 sm:px-3') %>"
                     data-action="click->order-form#openSearch">
               Search
             </button>
             <% if @order.draft? %>
               <%= link_to new_order_gift_certificate_path(@order),
-                    class: "hidden sm:inline-flex rounded-lg border border-theme px-3 py-2 text-xs font-medium text-purple-600 hover:bg-purple-50 transition",
+                    class: ui_button_class(variant: :secondary, size: :sm, class_name: "hidden sm:inline-flex"),
                     data: { turbo_frame: "gift_cert_modal" } do %>
                 Gift Cert
               <% end %>
@@ -167,7 +159,7 @@
        data-customer-search-order-id-value="<%= @order.id %>">
     <div class="fixed inset-0 bg-black/50" data-action="click->customer-search#close"></div>
     <div class="fixed inset-0 flex items-start justify-center pt-[10vh]" style="pointer-events: none;">
-      <div class="w-full max-w-2xl rounded-xl bg-surface shadow-2xl overflow-hidden" style="pointer-events: auto; max-height: 70vh;">
+      <div class="ui-modal-panel w-full max-w-2xl" style="pointer-events: auto; max-height: 70vh;">
         <%= form_with url: search_customers_path, method: :get,
               data: { turbo_stream: true, customer_search_target: "form",
                       action: "turbo:submit-end->customer-search#onResultsLoaded" },
@@ -205,7 +197,7 @@
        data-item-preview-target="modal">
     <div class="fixed inset-0 bg-black/40" data-action="click->item-preview#close"></div>
     <div class="fixed inset-0 flex items-center justify-center p-8">
-      <div class="w-full max-w-md rounded-xl bg-surface shadow-2xl overflow-hidden">
+      <div class="ui-modal-panel w-full max-w-md">
         <div class="flex items-center justify-between border-b border-theme px-5 py-3">
           <h3 class="text-sm font-semibold text-body" data-item-preview-target="title">Item Preview</h3>
           <button type="button" class="text-muted hover:text-body transition" data-action="click->item-preview#close">
@@ -229,15 +221,15 @@
        class="fixed inset-0 z-70 hidden" role="dialog" aria-modal="true">
     <div class="fixed inset-0 bg-black/50" data-action="click->cancel-order#close"></div>
     <div class="fixed inset-0 flex items-start justify-center pt-[22vh] p-4" style="pointer-events: none;">
-      <div class="w-full max-w-sm rounded-xl border border-red-200 bg-surface shadow-2xl overflow-hidden" style="pointer-events: auto;">
-        <div class="bg-red-50 px-5 py-4">
+      <div class="ui-modal-panel w-full max-w-sm border-(--color-error-border)" style="pointer-events: auto;">
+        <div class="bg-(--color-error-bg) px-5 py-4">
           <div class="flex items-start gap-3">
-            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-(--color-error-bg)">
               <svg class="h-4 w-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
             <div>
-              <h3 class="text-sm font-semibold text-red-900">Cancel order?</h3>
-              <p class="mt-1 text-xs text-red-700">
+              <h3 class="text-sm font-semibold text-(--color-error-text)">Cancel order?</h3>
+              <p class="mt-1 text-xs text-(--color-error-text)">
                 This will permanently cancel order
                 <strong data-cancel-order-target="orderNumber" class="font-semibold"></strong>.
                 All line items, payments, and discounts will be cancelled. This action cannot be undone.
@@ -245,18 +237,18 @@
             </div>
           </div>
         </div>
-        <div class="flex justify-end gap-2 border-t border-red-200 bg-surface px-5 py-3">
+        <div class="flex justify-end gap-2 border-t border-(--color-error-border) bg-surface px-5 py-3">
           <button type="button"
                   data-action="click->cancel-order#close"
                   data-autofocus
-                  class="rounded-lg border border-theme px-3.5 py-1.5 text-xs font-medium text-body hover:bg-(--color-border) transition">
+                  class="<%= ui_button_class(variant: :secondary, size: :sm) %>">
             Keep Order
           </button>
           <form data-cancel-order-target="form" method="post">
             <input type="hidden" name="_method" value="delete">
             <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
             <button type="submit"
-                    class="rounded-lg bg-red-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-red-700 transition">
+                    class="<%= ui_button_class(variant: :danger, size: :sm) %>">
               Cancel Order
             </button>
           </form>
@@ -279,7 +271,7 @@
        data-product-search-order-id-value="<%= @order.id %>">
     <div class="fixed inset-0 bg-black/50" data-action="click->product-search#close"></div>
     <div class="fixed inset-0 flex items-start justify-center pt-[5vh]" style="pointer-events: none;">
-      <div class="flex w-full max-w-5xl rounded-xl bg-surface shadow-2xl overflow-hidden flex-col md:flex-row" style="pointer-events: auto; height: 70vh;">
+      <div class="ui-modal-panel flex w-full max-w-5xl flex-col md:flex-row" style="pointer-events: auto; height: 70vh;">
         <%# Left pane: search + filters + results list %>
         <div class="flex w-full md:w-1/2 flex-col border-b md:border-b-0 md:border-r border-theme">
           <div class="flex items-center gap-3 border-b border-theme px-4 py-3 shrink-0">

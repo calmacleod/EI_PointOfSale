@@ -131,7 +131,8 @@
           <% product.images.each do |image| %>
             <div class="group relative">
               <%= image_tag image.representation(resize_to_limit: [ 120, 120 ]),
-                  class: "h-[120px] w-[120px] border border-theme object-cover bg-surface-alt" %>
+                  class: "h-[120px] w-[120px] border border-theme object-cover bg-surface-alt",
+                  alt: product.name %>
               <% if can?(:update, product) %>
                 <%= link_to purge_image_product_path(product, image_id: image.id),
                     data: { turbo_method: :delete, turbo_confirm: "Remove this image?" },
@@ -155,11 +156,11 @@
     <% if product.persisted? && can?(:destroy, product) %>
       <%= button_to "Remove", product_path(product), method: :delete,
           data: { turbo_confirm: "Remove this product?" },
-          class: "inline-flex min-h-[30px] items-center justify-center rounded-md px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: ui_button_class(variant: :danger, size: :sm) %>
     <% else %>
       <span></span>
     <% end %>
     <%= f.submit product.persisted? ? "Save changes" : "Create product",
-        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        class: ui_button_class(variant: :primary, size: :sm) %>
   </div>
 <% end %>

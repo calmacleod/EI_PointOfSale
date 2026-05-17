@@ -7,8 +7,8 @@ module DataTableHelper
   def render_table_rows(records, column_renderers, actions_renderer)
     # Build raw (pre-trusted) td open strings — col.key is a symbol from app
     # code, never user input, so no HTML escaping is needed.
-    td_opens = column_renderers.map { |col, _| %(<td class="whitespace-nowrap px-3 py-1.5 text-sm text-body" data-column="#{col.key}">) }
-    actions_td = %(<td class="px-3 py-1.5 text-right text-sm" data-column="actions">)
+    td_opens = column_renderers.map { |col, _| %(<td class="whitespace-nowrap" data-column="#{col.key}">) }
+    actions_td = %(<td class="text-right" data-column="actions">)
 
     buf = ActiveSupport::SafeBuffer.new
     records.each do |record|

@@ -9,7 +9,7 @@
   <%= render "shared/page_header", title: "Services" do %>
     <% if can? :create, Service %>
       <%= link_to "Add service", new_service_path,
-          class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]",
+          class: ui_button_class(variant: :primary, size: :sm),
           data: { turbo_prefetch: true } %>
     <% end %>
   <% end %>

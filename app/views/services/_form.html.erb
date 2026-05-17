@@ -58,11 +58,11 @@
     <% if service.persisted? && can?(:destroy, service) %>
       <%= button_to "Remove", service_path(service), method: :delete,
           data: { turbo_confirm: "Remove this service?" },
-          class: "inline-flex min-h-[30px] items-center justify-center rounded-md px-2.5 py-1 text-sm font-medium text-[var(--color-error-text)] hover:opacity-80" %>
+          class: ui_button_class(variant: :danger, size: :sm) %>
     <% else %>
       <span></span>
     <% end %>
     <%= f.submit service.persisted? ? "Save changes" : "Create service",
-        class: "inline-flex min-h-[30px] items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-medium text-[color:var(--color-page)] hover:bg-[var(--color-accent-hover)]" %>
+        class: ui_button_class(variant: :primary, size: :sm) %>
   </div>
 <% end %>
