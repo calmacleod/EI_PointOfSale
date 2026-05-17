@@ -85,5 +85,35 @@ class ReportTemplate
     # Table column definitions for displaying results:
     #   [{ key: :name, label: "Name" }, ...]
     def table_columns = raise(NotImplementedError)
+
+    private
+
+      def parse_report_date(value, default)
+        return default if value.blank?
+
+        Date.parse(value.to_s)
+      rescue ArgumentError
+        default
+      end
+
+      def report_date_range(params, default_start: 30.days.ago.to_date, default_end: Date.current)
+        start_date = parse_report_date(params[:start_date], default_start)
+        end_date = parse_report_date(params[:end_date], default_end)
+
+        [ start_date, end_date ]
+      end
+
+      def format_currency(amount)
+        amount = amount.to_d
+        "$#{format('%.2f', amount)}"
+      end
+
+      def format_percentage(amount)
+        "#{format('%.1f', amount.to_d)}%"
+      end
+
+      def format_date_range(start_date, end_date)
+        "#{start_date.strftime('%b %d, %Y')} - #{end_date.strftime('%b %d, %Y')}"
+      end
   end
 end
