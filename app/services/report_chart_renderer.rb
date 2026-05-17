@@ -19,10 +19,12 @@ class ReportChartRenderer
   CHART_JS_CACHE = Rails.root.join("tmp", "chart.umd.min.js")
   CANVAS_WIDTH  = 900
   CANVAS_HEIGHT = 400
+  SUPPORTED_CHART_TYPES = %w[bar line pie doughnut].freeze
 
   class << self
     def render(chart_data, chart_type: "bar")
       chart_data = chart_data.deep_symbolize_keys
+      chart_type = normalize_chart_type(chart_type)
       html = build_html(chart_data, chart_type)
 
       tmpfile = Tempfile.new([ "chart", ".html" ])
@@ -69,6 +71,11 @@ class ReportChartRenderer
 
           sleep 0.1
         end
+      end
+
+      def normalize_chart_type(chart_type)
+        chart_type = chart_type.to_s
+        SUPPORTED_CHART_TYPES.include?(chart_type) ? chart_type : "bar"
       end
 
       # Downloads Chart.js once and caches it locally in tmp/

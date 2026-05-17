@@ -63,13 +63,16 @@ class DiscountManagementTest < ApplicationSystemTestCase
 
     visit register_path(order_id: order.id)
 
-    # Find exclude button for the line discount and click it
+    # Reduce the auto-applied quantity from 2 to 1, excluding one unit.
     within "#order_line_#{line.id}" do
-      first("button[data-action*='exclude']").click rescue skip("Exclude button not found — UI may differ")
+      input = all("input[data-discount-quantity-target='input']").first
+      input.set("1")
+      input.send_keys(:enter)
+      assert_text "Partial", wait: 5
     end
 
     # Excluded quantity should be 1
-    discount = line.order_line_discounts.reload.first
-    assert_equal 1, discount.excluded_quantity if discount
+    excluded_quantities = line.order_line_discounts.reload.map(&:excluded_quantity)
+    assert_includes excluded_quantities, 1
   end
 end

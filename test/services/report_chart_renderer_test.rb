@@ -3,9 +3,40 @@
 require "test_helper"
 
 class ReportChartRendererTest < ActiveSupport::TestCase
+  PNG_DATA_URL = "data:image/png;base64,#{Base64.strict_encode64(DUMMY_PNG)}"
+
   setup do
-    unless ENV["BROWSER_TESTS"]
-      skip "Requires headless browser (run with BROWSER_TESTS=1)"
+    @original_chart_js_source = ReportChartRenderer.instance_variable_get(:@chart_js_source)
+    ReportChartRenderer.instance_variable_set(:@chart_js_source, "window.Chart = function() {};")
+  end
+
+  teardown do
+    ReportChartRenderer.instance_variable_set(:@chart_js_source, @original_chart_js_source)
+  end
+
+  FakePage = Struct.new(:html, :visited_url) do
+    def go_to(url)
+      self.visited_url = url
+      self.html = File.read(url.delete_prefix("file://"))
+    end
+
+    def evaluate(script)
+      case script
+      when "window.__chartRendered === true"
+        true
+      when "document.getElementById('chart').toDataURL('image/png')"
+        PNG_DATA_URL
+      end
+    end
+  end
+
+  FakeBrowser = Struct.new(:page, :quit_called, keyword_init: true) do
+    def create_page
+      page
+    end
+
+    def quit
+      self.quit_called = true
     end
   end
 
@@ -43,38 +74,49 @@ class ReportChartRendererTest < ActiveSupport::TestCase
     }
   end
 
+  def render_with_fake_browser(chart_data, chart_type:)
+    fake_browser = FakeBrowser.new(page: FakePage.new, quit_called: false)
+
+    Ferrum::Browser.stub(:new, fake_browser) do
+      png = ReportChartRenderer.render(chart_data, chart_type: chart_type)
+      [ png, fake_browser ]
+    end
+  end
+
   test "renders a bar chart as PNG binary" do
-    png = ReportChartRenderer.render(sample_bar_chart_data, chart_type: "bar")
+    png, browser = render_with_fake_browser(sample_bar_chart_data, chart_type: "bar")
 
     assert png.present?
     assert_kind_of String, png
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
+    assert browser.quit_called
   end
 
   test "renders a line chart as PNG binary" do
-    png = ReportChartRenderer.render(sample_line_chart_data, chart_type: "line")
+    png, = render_with_fake_browser(sample_line_chart_data, chart_type: "line")
 
     assert png.present?
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
   end
 
   test "renders a pie chart as PNG binary" do
-    png = ReportChartRenderer.render(sample_pie_chart_data, chart_type: "pie")
+    png, = render_with_fake_browser(sample_pie_chart_data, chart_type: "pie")
 
     assert png.present?
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
   end
 
   test "defaults to bar chart for unknown chart type" do
-    png = ReportChartRenderer.render(sample_bar_chart_data, chart_type: "unknown")
+    png, browser = render_with_fake_browser(sample_bar_chart_data, chart_type: "unknown")
 
     assert png.present?
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
+    assert_includes browser.page.html, 'const chartType = "bar";'
   end
 
   test "handles empty datasets gracefully" do
     empty_data = { labels: %w[A B C], datasets: [] }
-    png = ReportChartRenderer.render(empty_data, chart_type: "bar")
+    png, = render_with_fake_browser(empty_data, chart_type: "bar")
 
     assert png.present?
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
@@ -87,10 +129,11 @@ class ReportChartRendererTest < ActiveSupport::TestCase
         { "label" => "Test", "data" => [ 1, 2, 3 ] }
       ]
     }
-    png = ReportChartRenderer.render(string_keyed, chart_type: "bar")
+    png, browser = render_with_fake_browser(string_keyed, chart_type: "bar")
 
     assert png.present?
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
+    assert_includes browser.page.html, '"labels":["A","B","C"]'
   end
 
   test "renders chart with many data points" do
@@ -99,7 +142,7 @@ class ReportChartRendererTest < ActiveSupport::TestCase
       labels: many_labels,
       datasets: [ { label: "Counts", data: many_labels.map { rand(10) } } ]
     }
-    png = ReportChartRenderer.render(data, chart_type: "bar")
+    png, = render_with_fake_browser(data, chart_type: "bar")
 
     assert png.present?
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
@@ -128,9 +171,10 @@ class ReportChartRendererTest < ActiveSupport::TestCase
   end
 
   test "renders stacked line chart with stack property" do
-    png = ReportChartRenderer.render(sample_stacked_line_chart_data, chart_type: "line")
+    png, browser = render_with_fake_browser(sample_stacked_line_chart_data, chart_type: "line")
 
     assert png.present?
     assert png.start_with?("\x89PNG".b), "Expected PNG file signature"
+    assert_includes browser.page.html, "const stacked = true;"
   end
 end
