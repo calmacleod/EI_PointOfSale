@@ -9,14 +9,29 @@
   <li aria-current="page" class="text-body font-medium"><%= @gift_certificate.code %></li>
 <% end %>
 
-<div>
+<div id="gift-certificate-admin-page">
   <%= render "shared/page_header", title: @gift_certificate.code, description: "Gift certificate details and redemption history." do %>
+    <button type="button"
+            onclick="window.print()"
+            class="inline-flex min-h-7.5 items-center justify-center rounded-md bg-accent px-2.5 py-1 text-sm font-semibold text-white hover:bg-(--color-accent-hover)">
+      Print Certificate
+    </button>
     <%= link_to "Back to gift certificates", admin_gift_certificates_path,
           class: "inline-flex min-h-[30px] items-center justify-center rounded-md border border-theme bg-surface px-2.5 py-1 text-sm font-semibold text-body hover:bg-[var(--color-border)]/30",
           data: { turbo_prefetch: true } %>
   <% end %>
 
-  <div class="mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
+  <section id="gift-certificate-print" class="mt-2" aria-labelledby="gift-certificate-print-heading">
+    <div class="gift-certificate-no-print mb-1 flex items-center justify-between gap-2">
+      <div>
+        <h2 id="gift-certificate-print-heading" class="text-sm font-semibold text-body">Printable certificate</h2>
+        <p class="text-xs text-muted">Preview of what will be printed for the customer.</p>
+      </div>
+    </div>
+    <%= render "printable_certificate", gift_certificate: @gift_certificate, store: @store %>
+  </section>
+
+  <div class="gift-certificate-no-print mt-2 grid grid-cols-1 gap-2 lg:grid-cols-2">
     <%# Left: GC details %>
     <section class="overflow-hidden rounded-lg border border-theme bg-surface" aria-labelledby="gc-details-heading">
       <div class="border-b border-theme bg-surface-alt px-3 py-1.5">

@@ -1,0 +1,59 @@
+<div class="gift-certificate-paper relative overflow-hidden rounded-lg border border-theme bg-white text-gray-900 shadow-sm">
+  <div class="absolute inset-x-0 top-0 h-1.5 bg-accent"></div>
+  <div class="relative p-5 sm:p-6">
+    <div class="flex flex-col gap-3 border-b border-gray-200 pb-4 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500"><%= store.name %></p>
+        <h2 class="mt-1 text-2xl font-bold leading-tight text-gray-950">Gift Certificate</h2>
+      </div>
+      <% if store.logo.attached? %>
+        <%= image_tag store.logo, class: "h-14 w-14 rounded-md object-contain", alt: store.name %>
+      <% end %>
+    </div>
+
+    <div class="py-7 text-center">
+      <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Certificate Value</p>
+      <p class="mt-2 text-5xl font-bold leading-none text-gray-950"><%= number_to_currency(gift_certificate.initial_amount) %></p>
+      <% unless gift_certificate.remaining_balance == gift_certificate.initial_amount %>
+        <p class="mt-2 text-sm font-medium text-gray-600">
+          Current balance: <%= number_to_currency(gift_certificate.remaining_balance) %>
+        </p>
+      <% end %>
+    </div>
+
+    <div class="rounded-md border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-center">
+      <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Redemption Code</p>
+      <p class="mt-1 break-all font-mono text-2xl font-bold tracking-wide text-gray-950"><%= gift_certificate.code %></p>
+    </div>
+
+    <div class="mt-5 grid gap-3 text-sm text-gray-700 sm:grid-cols-2">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Issued To</p>
+        <p class="mt-1 font-medium text-gray-950"><%= gift_certificate.customer&.name.presence || "Bearer" %></p>
+      </div>
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Status</p>
+        <p class="mt-1 font-medium text-gray-950"><%= gift_certificate.status.humanize %></p>
+      </div>
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Issued On</p>
+        <p class="mt-1 font-medium text-gray-950"><%= local_time(gift_certificate.activated_at || gift_certificate.created_at, format: :long) %></p>
+      </div>
+      <% if gift_certificate.sold_on_order %>
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-wider text-gray-500">Order</p>
+          <p class="mt-1 font-medium text-gray-950"><%= gift_certificate.sold_on_order.number %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mt-6 border-t border-gray-200 pt-3 text-xs leading-relaxed text-gray-500">
+      Present this certificate code at checkout. Remaining balance is tracked in store records.
+      <% if store.phone.present? || store.email.present? %>
+        <span class="block mt-1">
+          <%= [ store.phone.presence, store.email.presence ].compact.join(" | ") %>
+        </span>
+      <% end %>
+    </div>
+  </div>
+</div>

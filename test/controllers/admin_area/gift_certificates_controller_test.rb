@@ -25,6 +25,19 @@ module AdminArea
       assert_response :success
     end
 
+    test "GET /admin/gift_certificates/:id includes printable certificate" do
+      gc = gift_certificates(:active_gc)
+      get admin_gift_certificate_path(gc)
+      assert_response :success
+
+      assert_select "button", text: "Print Certificate"
+      assert_select "#gift-certificate-print" do
+        assert_select "h2", text: "Gift Certificate"
+        assert_select "p", text: gc.code
+        assert_select "p", text: "Current balance: $75.00"
+      end
+    end
+
     test "GET /admin/gift_certificates/:id shows redemption history" do
       gc = gift_certificates(:active_gc)
       get admin_gift_certificate_path(gc)

@@ -41,6 +41,7 @@ module AdminArea
 
     def show
       authorize! :read, @gift_certificate
+      @store = Store.current
       @redemptions = OrderPayment.where(gift_certificate: @gift_certificate)
                                  .includes(:order, :received_by)
                                  .order(created_at: :desc)

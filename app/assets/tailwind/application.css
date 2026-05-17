@@ -634,3 +634,73 @@ tbody tr:hover {
 main.pwa-standalone {
   border-top: 1px solid var(--color-border);
 }
+
+/* ── Gift Certificate Print Layout ───────────────────────────────── */
+@media print {
+  @page {
+    size: letter;
+    margin: 0.5in;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #111827 !important;
+    height: auto !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body > .flex {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+
+  body > .flex > header,
+  body > .flex > aside,
+  body > .flex > [data-sidebar-target],
+  #toast_container,
+  #persistent_turbo_stream,
+  .gift-certificate-no-print {
+    display: none !important;
+  }
+
+  body > .flex > main {
+    display: block !important;
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    padding: 0 !important;
+  }
+
+  body > .flex > main > .mx-auto {
+    display: block !important;
+    margin: 0 !important;
+    max-width: none !important;
+    overflow: visible !important;
+    width: 100% !important;
+  }
+
+  body > .flex > main > .mx-auto > :not(#gift-certificate-admin-page),
+  #gift-certificate-admin-page > :not(#gift-certificate-print) {
+    display: none !important;
+  }
+
+  #gift-certificate-admin-page,
+  #gift-certificate-print {
+    display: block !important;
+  }
+
+  #gift-certificate-print {
+    margin: 0 auto !important;
+    width: 7.5in !important;
+  }
+
+  .gift-certificate-paper {
+    border: 1px solid #d1d5db !important;
+    box-shadow: none !important;
+  }
+}
