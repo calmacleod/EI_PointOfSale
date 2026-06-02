@@ -71,7 +71,7 @@ gem "tailwindcss-rails", "~> 4.4"
 gem "cancancan", "~> 3.6"
 
 # Soft delete
-gem "discard", "~> 1.4"
+gem "discard", "~> 2.0"
 
 # PostgreSQL full text search
 gem "pg_search"
