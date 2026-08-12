@@ -61,7 +61,7 @@ class ProductsController < ApplicationController
     if @product.save
       redirect_to products_path, notice: "Product created."
     else
-      render :new, status: :unprocessable_entity
+      render_inertia_page(action: :new, status: :unprocessable_entity)
     end
   end
 
@@ -97,7 +97,7 @@ class ProductsController < ApplicationController
     if @product.update(product_params.except(:images))
       redirect_to product_path(@product), notice: "Product updated."
     else
-      render :edit, status: :unprocessable_entity
+      render_inertia_page(action: :edit, status: :unprocessable_entity)
     end
   end
 

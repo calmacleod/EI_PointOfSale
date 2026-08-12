@@ -11,7 +11,8 @@ class RestocksControllerTest < ActionDispatch::IntegrationTest
     sign_in_as(users(:admin))
     get product_restocks_path(@product)
     assert_response :success
-    assert_includes response.body, "Restock History"
+    assert_equal "Restock History", inertia_props["title"]
+    assert_equal "operations", inertia_props["view"]
   end
 
   test "common user can view restock history" do

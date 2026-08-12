@@ -26,7 +26,8 @@ class RegisterControllerTest < ActionDispatch::IntegrationTest
     order = orders(:draft_order)
     get register_path(order_id: order.id)
     assert_response :success
-    assert_select "h1", text: order.number
+    assert_equal "register", inertia_props["view"]
+    assert_equal order.number, inertia_props.dig("order", "number")
   end
 
   test "GET /register falls back to draft if order_id is invalid" do

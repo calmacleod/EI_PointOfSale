@@ -23,8 +23,9 @@ module AdminArea
       template = receipt_templates(:standard)
       get admin_receipt_template_path(template)
       assert_response :success
-      assert_includes response.body, template.name
-      assert_includes response.body, "Preview"
+      assert_equal template.name, inertia_props["title"]
+      assert_equal "receipt_template_show", inertia_props["view"]
+      assert inertia_props["preview_lines"].any?
     end
 
     # ── New ────────────────────────────────────────────────────────────

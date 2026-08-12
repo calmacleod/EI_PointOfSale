@@ -5,6 +5,9 @@ require "minitest/mock"
 require "minitest/reporters"
 require "minitest/minitest_reporter_plugin"
 require "webmock/minitest"
+require "json"
+
+system("bin/vite build", out: File::NULL, err: File::NULL) || abort("Vite test build failed")
 
 Minitest.register_plugin :minitest_reporter
 Minitest::Reporters.use! [ Minitest::Reporters::DefaultReporter.new(detailed_skip: false) ]
@@ -34,4 +37,20 @@ module ActiveSupport
       "Nl7BcQAAAABJRU5ErkJggg=="
     ).freeze
   end
+end
+
+module InertiaTestHelper
+  def inertia_page
+    node = css_select('script[data-page="app"]').first
+    assert node, "Expected an Inertia page payload"
+    JSON.parse(node.text)
+  end
+
+  def inertia_props
+    inertia_page.fetch("props")
+  end
+end
+
+ActiveSupport.on_load(:action_dispatch_integration_test) do
+  include InertiaTestHelper
 end

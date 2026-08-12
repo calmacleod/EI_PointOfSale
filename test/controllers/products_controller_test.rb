@@ -29,7 +29,8 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     get new_product_path
 
     assert_response :success
-    assert_includes response.body, "New product"
+    assert_equal "New Product", inertia_props["title"]
+    assert_equal "resource_form", inertia_props["view"]
   end
 
   test "create adds product" do

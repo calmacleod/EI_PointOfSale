@@ -49,7 +49,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in "code", with: "NONEXISTENT"
     click_button "Add"
-    assert_selector "#lookup_flash", text: /no match|use search/i, wait: 5
+    assert_selector "#lookup_flash", text: /no .*found|no match|use search/i, wait: 5
   end
 
   # -------------------------------------------------------------------------
@@ -69,8 +69,9 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     fill_in_code_lookup("DS-MAT-RED")
     fill_in_code_lookup("DS-MAT-RED")
     # qty 2, subtotal 29.98, tax 3.90, total 33.88
-    within "#order_line_items" do
-      assert_text "2"
+    line = Order.draft.last.order_lines.first
+    within "#order_line_#{line.id}" do
+      assert_field type: "number", with: "2"
     end
     assert_totals_panel(subtotal: 29.98, tax: 3.90, total: 33.88)
   end
@@ -98,7 +99,9 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
       .joins("JOIN products ON products.id = order_lines.sellable_id AND order_lines.sellable_type = 'Product'")
       .where(products: { code: "NHL-PUCK-001" }).first
 
-    find("form[action*='order_lines/#{puck_line.id}'] button[type='submit']", visible: :all).click
+    within "#order_line_#{puck_line.id}" do
+      find("button[aria-label^='Remove ']").click
+    end
 
     assert_totals_panel(subtotal: 14.99, tax: 1.95, total: 16.94)
   end
@@ -107,10 +110,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    order = Order.draft.last
-    line = order.order_lines.first
-
-    find("form[action*='order_lines/#{line.id}'] button[type='submit']", visible: :all).click
+    find("button[aria-label^='Remove Dragon Shield']").click
 
     assert_no_line_items
     assert_empty_order_totals
@@ -152,32 +152,34 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
   # -------------------------------------------------------------------------
 
   test "assign customer with discount auto-applies it" do
-    Discount.where(name: "10% Off Everything").update_all(active: true)
+    Discount.where(name: "Member 5% Off").update_all(active: true)
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
     assign_customer("Discount Dave")
 
     within "#order_discounts_panel" do
-      assert_text(/10%|10% Off/i, wait: 5)
+      assert_text(/5%|Member 5% Off/i, wait: 5)
     end
     order = Order.draft.last
     assert order.reload.total < 16.94
   end
 
   test "remove customer with discount removes it" do
-    Discount.where(name: "10% Off Everything").update_all(active: false)
+    Discount.where(name: "Member 5% Off").update_all(active: true)
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
     assign_customer("Discount Dave")
 
-    order = Order.draft.last
+    order = Order.find(find("[data-active-order='true']")["data-order-id"])
     discounted_total = order.reload.total
 
     remove_customer
     within "#order_customer_panel" do
       assert_text "No customer", wait: 5
     end
-    assert order.reload.total > discounted_total
+    restored_total = order.reload.total
+    assert_operator restored_total, :>, discounted_total,
+      "expected removing the customer discount to increase total (before: #{discounted_total}, after: #{restored_total})"
     assert_totals_panel(subtotal: 14.99, tax: 1.95, total: 16.94)
   end
 
@@ -235,7 +237,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     discounted_total = order.reload.total
 
     within "#order_discounts_panel" do
-      find("div.flex.items-start.justify-between", text: /Manager 10%/).find("button[type='submit']").click
+      find("button[aria-label='Remove Manager 10%']").click
     end
 
     within "#order_discounts_panel" do
@@ -289,11 +291,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
 
   test "sell gift certificate is tax exempt" do
     visit register_path
-    find("a[data-turbo-frame='gift_cert_modal']").click
-    assert_selector "turbo-frame#gift_cert_modal", wait: 5
-
-    fill_in "gift_certificate[initial_amount]", with: "50"
-    click_button "Add to Order"
+    issue_gift_certificate(50)
 
     assert_selector "#order_line_items", wait: 5
     order = Order.draft.last
@@ -306,10 +304,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    find("a[data-turbo-frame='gift_cert_modal']").click
-    assert_selector "turbo-frame#gift_cert_modal", wait: 5
-    fill_in "gift_certificate[initial_amount]", with: "25"
-    click_button "Add to Order"
+    issue_gift_certificate(25)
 
     order = Order.draft.last
     assert_in_delta 1.95, order.reload.order_lines.sum(:tax_amount), 0.02
@@ -369,17 +364,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    within "#order_payments_panel" do
-      click_button "Add Payment"
-    end
-    within "#payment_modal" do
-      find("button[data-method='gift_certificate']").click
-      assert_selector "button[data-method='gift_certificate'].bg-accent", wait: 5
-      find("[name='order_payment[amount]']").set("16.94")
-      find("[name='order_payment[reference]']").set(gc.code)
-      click_button "Record Payment"
-    end
-    # Wait for the payment row to appear before asserting on the DB
+    fill_in_payment(method: "gift_certificate", amount: 16.94, gc_code: gc.code)
     within "#order_payments_panel", wait: 5 do
       assert_text "GC-PAY-TEST01", wait: 5
       assert_no_text "not found"
@@ -443,7 +428,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
     click_button "Hold"
-    assert_current_path register_path
+    assert_current_path register_path, ignore_query: true
   end
 
   test "resume held order restores draft state" do
@@ -477,8 +462,8 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    find("button[data-action='click->cancel-order#open']", match: :first).click
-    assert_selector "[data-cancel-order-target='modal']:not(.hidden)", wait: 5
+    click_button "Cancel"
+    assert_selector "[role='dialog']", text: /cancel .*\?/i, wait: 5
     find("button", text: "Cancel Order").click
 
     assert_current_path register_path, wait: 5
@@ -488,11 +473,11 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    find("button[data-action='click->cancel-order#open']", match: :first).click
-    assert_selector "[data-cancel-order-target='modal']:not(.hidden)", wait: 5
+    click_button "Cancel"
+    assert_selector "[role='dialog']", text: /cancel .*\?/i, wait: 5
     find("button", text: "Keep Order").click
 
-    assert_no_selector "[data-cancel-order-target='modal']:not(.hidden)", wait: 5
+    assert_no_selector "[role='dialog']", text: /cancel .*\?/i, wait: 5
     within "#order_line_items" do
       assert_text "Dragon Shield"
     end
@@ -506,7 +491,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     initial_count = Order.draft.count
 
-    find("button[type='submit']", text: /\bNew\b/i).click
+    click_button "+ New"
     assert_current_path register_path, wait: 5
 
     assert Order.draft.count > initial_count
@@ -517,7 +502,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     fill_in_code_lookup("DS-MAT-RED")
     first_order = Order.draft.last
 
-    find("button[type='submit']", text: /\bNew\b/i).click
+    click_button "+ New"
     # Wait for new empty order to be active before adding item
     within "#order_line_items" do
       assert_text(/no items/i, wait: 5)
@@ -570,10 +555,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    find("a[data-turbo-frame='gift_cert_modal']").click
-    assert_selector "turbo-frame#gift_cert_modal", wait: 5
-    fill_in "gift_certificate[initial_amount]", with: "25"
-    click_button "Add to Order"
+    issue_gift_certificate(25)
 
     apply_manual_discount(name: "10% Off", type: "Percentage", value: 10)
 

@@ -26,7 +26,7 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     order.reload
     fill_in_payment(method: "cash", amount: order.total, tendered: order.total + 5)
 
-    # Complete the order via the prompt modal
+    # Complete the order via the Svelte confirmation prompt
     assert_selector "#complete_prompt_modal", wait: 5
     within "#complete_prompt_modal" do
       click_button "Complete Order"
@@ -52,7 +52,7 @@ class CheckoutFlowTest < ApplicationSystemTestCase
 
     # Verify totals panel shows non-zero total
     within "#order_totals" do
-      assert_no_text "$0.00"
+      assert_text format_currency(Order.draft.last.reload.total), wait: 5
     end
   end
 
@@ -62,7 +62,7 @@ class CheckoutFlowTest < ApplicationSystemTestCase
 
     # Hold the order
     click_button "Hold"
-    assert_current_path register_path
+    assert_current_path register_path, ignore_query: true
 
     # Visit held orders
     visit held_orders_path
@@ -82,23 +82,6 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    # Open customer search modal via the panel button
-    within "#order_customer_panel" do
-      click_button "Search & assign customer"
-    end
-
-    # Fill in search in the now-visible modal
-    assert_selector "#customer_search_modal:not(.hidden)", wait: 5
-    within "#customer_search_modal" do
-      fill_in placeholder: /search by name/i, with: "Acme"
-    end
-
-    # Click the customer in results
-    assert_text "Acme Corp", wait: 5
-    click_on "Acme Corp"
-
-    within "#order_customer_panel" do
-      assert_text "Acme Corp", wait: 5
-    end
+    assign_customer("Acme Corp")
   end
 end

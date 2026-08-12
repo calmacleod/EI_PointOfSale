@@ -32,7 +32,7 @@ class OrderDiscountsController < ApplicationController
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order })
         ]
       }
-      format.html { redirect_to edit_order_path(@order) }
+      format.html { redirect_to register_path(order_id: @order.id) }
     end
   end
 
@@ -58,7 +58,7 @@ class OrderDiscountsController < ApplicationController
           turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order })
         ]
       }
-      format.html { redirect_to edit_order_path(order) }
+      format.html { redirect_to register_path(order_id: order.id) }
     end
   end
 

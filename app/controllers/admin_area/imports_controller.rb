@@ -27,7 +27,7 @@ module AdminArea
         @preview = importer.preview(csv_content)
         @data_import.total_rows = @preview[:total_rows]
         @data_import.save!
-        render :preview
+        render_inertia_page(action: :preview)
       else
         @data_import.save!
         Importers::StockImportJob.perform_later(@data_import.id)

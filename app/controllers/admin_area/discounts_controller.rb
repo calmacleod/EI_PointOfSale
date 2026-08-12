@@ -55,7 +55,7 @@ module AdminArea
       if @discount.save
         redirect_to admin_discount_path(@discount), notice: "Discount created."
       else
-        render :new, status: :unprocessable_entity
+        render_inertia_page(action: :new, status: :unprocessable_entity)
       end
     end
 
@@ -66,7 +66,7 @@ module AdminArea
       if @discount.update(discount_params)
         redirect_to admin_discount_path(@discount), notice: "Discount updated."
       else
-        render :edit, status: :unprocessable_entity
+        render_inertia_page(action: :edit, status: :unprocessable_entity)
       end
     end
 

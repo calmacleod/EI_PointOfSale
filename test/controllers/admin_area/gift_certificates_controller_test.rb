@@ -30,19 +30,17 @@ module AdminArea
       get admin_gift_certificate_path(gc)
       assert_response :success
 
-      assert_select "button", text: "Print Certificate"
-      assert_select "#gift-certificate-print" do
-        assert_select "h2", text: "Gift Certificate"
-        assert_select "p", text: gc.code
-        assert_select "p", text: "Current balance: $75.00"
-      end
+      assert_equal "gift_certificate_show", inertia_props["view"]
+      assert_equal gc.code, inertia_props.dig("certificate", "code")
+      assert_equal "$75.00", inertia_props.dig("certificate", "remaining_balance")
     end
 
     test "GET /admin/gift_certificates/:id shows redemption history" do
       gc = gift_certificates(:active_gc)
       get admin_gift_certificate_path(gc)
       assert_response :success
-      assert_select "h2", text: "Redemption History"
+      assert_equal "gift_certificate_show", inertia_props["view"]
+      assert_kind_of Array, inertia_props["redemptions"]
     end
 
     test "common user cannot access admin gift certificates index" do

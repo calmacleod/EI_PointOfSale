@@ -77,7 +77,8 @@ module AdminArea
       assert_response :success
       assert_includes response.body, user1.email_address
       assert_not_includes response.body, user2.email_address
-      assert_includes response.body, "users_table"
+      assert_equal "Alice Johnson", inertia_props.dig("query", "q")
+      assert_equal [ user1.id ], inertia_props["rows"].map { |row| row["id"] }
     end
 
     test "admin can update users" do

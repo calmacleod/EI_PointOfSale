@@ -42,7 +42,7 @@ class StoreTasksController < ApplicationController
     if @store_task.save
       redirect_to store_tasks_path, notice: "Task created."
     else
-      render :new, status: :unprocessable_entity
+      render_inertia_page(action: :new, status: :unprocessable_entity)
     end
   end
 
@@ -52,7 +52,7 @@ class StoreTasksController < ApplicationController
     if @store_task.update(store_task_params)
       redirect_to store_task_path(@store_task), notice: "Task updated."
     else
-      render :edit, status: :unprocessable_entity
+      render_inertia_page(action: :edit, status: :unprocessable_entity)
     end
   end
 

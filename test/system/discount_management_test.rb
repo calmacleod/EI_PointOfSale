@@ -17,17 +17,7 @@ class DiscountManagementTest < ApplicationSystemTestCase
     order = Order.draft.last
     original_total = order.reload.total
 
-    # Open discount modal
-    within "#order_discounts_panel" do
-      click_link "Add Discount"
-    end
-
-    # Fill in discount form
-    assert_selector "turbo-frame#discount_modal", wait: 5
-    fill_in "order_discount[name]", with: "Manager 10%"
-    select "Percentage", from: "order_discount[discount_type]"
-    fill_in "order_discount[value]", with: "10"
-    click_button "Apply Discount"
+    apply_manual_discount(name: "Manager 10%", type: "Percentage", value: 10)
 
     # Verify discount appears and totals reduced
     within "#order_discounts_panel" do
@@ -35,9 +25,8 @@ class DiscountManagementTest < ApplicationSystemTestCase
     end
     assert order.reload.total < original_total
 
-    # Remove the discount (delete button is an SVG icon, find it via the discount's row)
     within "#order_discounts_panel" do
-      find("div.flex.items-start.justify-between", text: /Manager 10%/).find("button[type='submit']").click
+      find("button[aria-label='Remove Manager 10%']").click
     end
 
     within "#order_discounts_panel" do

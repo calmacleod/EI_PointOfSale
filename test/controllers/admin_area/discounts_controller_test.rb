@@ -23,7 +23,8 @@ module AdminArea
     test "new renders form" do
       get new_admin_discount_path
       assert_response :success
-      assert_includes response.body, "New discount"
+      assert_equal "New Discount", inertia_props["title"]
+      assert_equal "resource_form", inertia_props["view"]
     end
 
     test "create adds discount" do

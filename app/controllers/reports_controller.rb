@@ -59,7 +59,7 @@ class ReportsController < ApplicationController
       redirect_to report_path(@report), notice: "Report queued for generation."
     else
       @template = template
-      render :new, status: :unprocessable_entity
+      render_inertia_page(action: :new, status: :unprocessable_entity)
     end
   end
 

@@ -10,7 +10,7 @@
 ## Key Commands
 
 ```bash
-bin/dev                          # Start all processes (web, css, jobs, svelte watch)
+bin/dev                          # Start Rails, Vite, and jobs
 bin/rails test                   # Full suite
 bin/rails test path/to/file:42   # Single test
 bin/rails test:system            # System/browser tests
@@ -19,12 +19,14 @@ bin/rubocop -a                   # Auto-fix safe violations
 bin/ci                           # Full CI pipeline
 npm run herb:lint                # ERB lint (@herb-tools/linter)
 npm run tailwind:lint            # Tailwind class lint
+npm run lint:svelte              # Svelte type/component checks
+npm run build                    # Production Vite build
 env RAILS_ENV=test bin/rails db:seed:replant  # Reset test DB
 ```
 
 ## Stack
 
-- **Ruby 4.0.1 / Rails 8.1** — Propshaft, Importmap, Tailwind, Hotwire
+- **Ruby 4.0.1 / Rails 8.1** — Inertia Rails, Vite Ruby, Svelte 5, Tailwind
 - **PostgreSQL** — multi-DB (primary, queue, cable, cache)
 - **Solid Queue / Solid Cache / Solid Cable**
 - **Minitest** (not RSpec), fixtures (not factories)
@@ -58,13 +60,15 @@ env RAILS_ENV=test bin/rails db:seed:replant  # Reset test DB
 - `DUMMY_PNG` constant for chart stubs; tests run in parallel
 - Use `*_path` helpers (not `*_url`)
 
-## Views
-- Tailwind utility classes; conditional: `class: [...].join(" ")`
-- Pagy: include `Pagy::Method` in controller; render `shared/pagy_nav` partial
+## Frontend
+- Inertia page props are assembled by `Ui::PagePresenter`; the shared Svelte entrypoint is `app/javascript/pages/page.svelte`
+- Reusable screen components live under `app/javascript/pages/components/`
+- Tailwind utility classes and shared `ui-*` component classes are defined from the Vite entrypoint
+- Pagy remains server-owned and is serialized into Inertia pagination props
 
 ## Offline Svelte App
 
-Standalone **Svelte 5** SPA at `svelte/` for offline product/service/customer lookup.
+Standalone **Svelte 5** SPA at `svelte/` for offline product/service/customer lookup. It is intentionally separate from the primary Inertia frontend and is not started by `bin/dev`.
 - Builds to `public/offline/` via Vite
 - Syncs from Rails via `GET /api/v1/products/sync?since=<timestamp>` (same-origin cookies)
 - Data stored in browser IndexedDB

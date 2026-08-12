@@ -4,7 +4,7 @@ Use this checklist before giving the POS to an associate for the controlled pilo
 
 ## Preflight
 
-- CI is green: Rails tests, system tests, RuboCop, Herb, Tailwind lint, Bundler audit, Importmap audit, and Brakeman.
+- CI is green: Rails tests, system tests, RuboCop, Herb, Tailwind/Svelte lint, Vite production build, Bundler audit, Importmap audit, and Brakeman.
 - Production secrets are present: `RAILS_MASTER_KEY`, database credentials, Garage credentials, Google Drive backup credentials, and SMTP credentials.
 - Password reset email works from production and uses `APP_URL`.
 - Google Drive backups are connected from Admin > Backups.

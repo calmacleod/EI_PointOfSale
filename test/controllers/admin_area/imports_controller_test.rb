@@ -9,7 +9,8 @@ module AdminArea
 
       get new_admin_import_path
       assert_response :success
-      assert_includes response.body, "Data Import"
+      assert_equal "Data Import", inertia_props["title"]
+      assert_equal "operations", inertia_props["view"]
     end
 
     test "new is not accessible to common users" do
@@ -28,8 +29,8 @@ module AdminArea
       post admin_imports_path, params: { file: file, preview: "1" }
 
       assert_response :success
-      assert_includes response.body, "Import Preview"
-      assert_includes response.body, "Sample rows"
+      assert_equal "Import Preview", inertia_props["title"]
+      assert_includes inertia_props["details"].map { |detail| detail["label"] }, "Sample rows"
     end
 
     test "create without preview starts import" do
@@ -67,8 +68,9 @@ module AdminArea
 
       get admin_import_path(data_import)
       assert_response :success
-      assert_includes response.body, "test.csv"
-      assert_includes response.body, "Completed"
+      details = inertia_props["details"].to_h { |detail| [ detail["label"], detail["value"] ] }
+      assert_equal "test.csv", details["File name"]
+      assert_equal "Completed", details["Status"]
     end
 
     private

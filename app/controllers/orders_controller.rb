@@ -89,7 +89,7 @@ class OrdersController < ApplicationController
       @order.order_lines.includes(:sellable).order(:position)
       @active_orders = Order.active.includes(:order_lines).order(created_at: :desc)
       @customers = Customer.kept.order(:name)
-      render "register/show", status: :unprocessable_entity
+      render_inertia_page(path: "register", action: :show, status: :unprocessable_entity)
     end
   end
 
@@ -206,7 +206,8 @@ class OrdersController < ApplicationController
       redirect_to order_path(@order), notice: "Refund #{result.refund.refund_number} processed."
     else
       flash.now[:alert] = result.errors.join(", ")
-      render :refund_form, status: :unprocessable_entity
+      @refund_errors = result.errors
+      render_inertia_page(action: :refund_form, status: :unprocessable_entity)
     end
   end
 

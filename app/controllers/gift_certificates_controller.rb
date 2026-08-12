@@ -41,7 +41,7 @@ class GiftCertificatesController < ApplicationController
             partial: "gift_certificates/form",
             locals: { order: @order, gift_certificate: @gift_certificate })
         }
-        format.html { render :new, status: :unprocessable_entity }
+        format.html { redirect_to register_path(order_id: @order.id), alert: @gift_certificate.errors.full_messages.to_sentence }
       end
     end
   end

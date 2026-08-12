@@ -31,7 +31,8 @@ module AdminArea
       get new_admin_supplier_path
 
       assert_response :success
-      assert_includes response.body, "New supplier"
+      assert_equal "New Supplier", inertia_props["title"]
+      assert_equal "resource_form", inertia_props["view"]
     end
 
     test "create adds supplier" do

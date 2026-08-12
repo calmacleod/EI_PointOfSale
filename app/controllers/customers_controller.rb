@@ -40,7 +40,7 @@ class CustomersController < ApplicationController
     if @customer.save
       redirect_to customers_path, notice: "Customer created."
     else
-      render :new, status: :unprocessable_entity
+      render_inertia_page(action: :new, status: :unprocessable_entity)
     end
   end
 
@@ -100,7 +100,7 @@ class CustomersController < ApplicationController
     if @customer.update(customer_params)
       redirect_to customers_path, notice: "Customer updated."
     else
-      render :edit, status: :unprocessable_entity
+      render_inertia_page(action: :edit, status: :unprocessable_entity)
     end
   end
 

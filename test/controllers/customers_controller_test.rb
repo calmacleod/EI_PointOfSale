@@ -32,7 +32,8 @@ class CustomersControllerTest < ActionDispatch::IntegrationTest
     get new_customer_path
 
     assert_response :success
-    assert_includes response.body, "New customer"
+    assert_equal "New Customer", inertia_props["title"]
+    assert_equal "resource_form", inertia_props["view"]
   end
 
   test "create adds customer" do

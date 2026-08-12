@@ -29,6 +29,8 @@
 !/tmp/storage/.keep
 
 /public/assets
+/public/vite*
+/node_modules
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key
@@ -59,4 +61,3 @@
 /.claude/*
 # Ignore key files for decrypting credentials and more.
 /config/credentials/*.key
-

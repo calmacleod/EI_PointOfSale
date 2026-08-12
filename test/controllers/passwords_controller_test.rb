@@ -62,6 +62,7 @@ class PasswordsControllerTest < ActionDispatch::IntegrationTest
 
   private
     def assert_notice(text)
-      assert_select "div", /#{text}/
+      message = inertia_props.dig("flash", "notice") || inertia_props.dig("flash", "alert")
+      assert_match text, message
     end
 end

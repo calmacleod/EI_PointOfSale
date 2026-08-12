@@ -14,8 +14,8 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   test "admin: index renders available templates and past reports" do
     get reports_path
     assert_response :success
-    assert_includes response.body, "New customers by date"
-    assert_includes response.body, reports(:completed_report).title
+    assert_includes inertia_props["templates"].map { |template| template["title"] }, "New customers by date"
+    assert_includes inertia_props["rows"].map { |row| row["label"] }, reports(:completed_report).title
   end
 
   # ── New ────────────────────────────────────────────────────────────
@@ -67,23 +67,24 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   test "admin: show renders completed report with chart and table" do
     get report_path(reports(:completed_report))
     assert_response :success
-    assert_includes response.body, "Chart"
-    assert_includes response.body, "Details"
-    assert_includes response.body, "PDF"
-    assert_includes response.body, "Excel"
+    assert_equal "report_show", inertia_props["view"]
+    assert inertia_props.dig("report", "result_data", "chart").present?
+    assert inertia_props.dig("report", "result_data", "table").present?
+    assert inertia_props.dig("actions", "pdf").present?
+    assert inertia_props.dig("actions", "excel").present?
   end
 
   test "admin: show renders pending report with processing indicator" do
     get report_path(reports(:pending_report))
     assert_response :success
-    assert_includes response.body, "queued for generation"
+    assert_equal "pending", inertia_props.dig("report", "status")
   end
 
   test "admin: show renders failed report with error" do
     get report_path(reports(:failed_report))
     assert_response :success
-    assert_includes response.body, "generation failed"
-    assert_includes response.body, "Something went wrong"
+    assert_equal "failed", inertia_props.dig("report", "status")
+    assert_equal "Something went wrong", inertia_props.dig("report", "error_message")
   end
 
   # ── Export PDF ─────────────────────────────────────────────────────

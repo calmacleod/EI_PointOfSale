@@ -6,8 +6,8 @@ A Rails 8 point-of-sale application for managing products, services, customers, 
 
 - **Ruby 4.0**, **Rails 8.1**
 - **PostgreSQL** with PgSearch for full-text search
-- **Tailwind CSS** for styling
-- **Hotwire** (Turbo + Stimulus) for interactivity
+- **Inertia Rails** with a **Svelte 5** frontend
+- **Vite** and **Tailwind CSS** for frontend builds and styling
 - **Solid Queue** for background jobs
 - **CanCanCan** for authorization
 - **Audited** for change tracking
@@ -20,7 +20,7 @@ A Rails 8 point-of-sale application for managing products, services, customers, 
 
 - Ruby 4.0.1
 - PostgreSQL
-- Node.js (for Herb ERB linter)
+- Node.js (for the Svelte/Vite frontend and linters)
 
 ### Setup
 
@@ -50,7 +50,7 @@ bin/rails db:seed
 bin/dev
 ```
 
-This starts the web server, Tailwind CSS watcher, and Solid Queue workers. Open [http://localhost:3000](http://localhost:3000).
+This starts Rails, the Vite frontend server, and Solid Queue workers. Open [http://localhost:3000](http://localhost:3000).
 
 ### Sign in (development)
 
@@ -102,8 +102,13 @@ bin/rails test
 
 # Lint
 bin/rubocop
-npx herb-lint
-bundle exec herb analyze .
+npm run herb:lint
+npm run tailwind:lint
+npm run lint:svelte
+bundle exec herb analyze app
+
+# Production frontend build
+npm run build
 
 # Full CI suite (tests, lint, security)
 bin/ci

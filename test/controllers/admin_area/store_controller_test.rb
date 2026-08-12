@@ -13,21 +13,23 @@ module AdminArea
     test "show renders store details page" do
       get admin_store_path
       assert_response :success
-      assert_includes response.body, "Store details"
+      assert_equal "Store Settings", inertia_props["title"]
+      assert_equal "resource_form", inertia_props["view"]
     end
 
     test "show displays accent colour swatches" do
       get admin_store_path
       assert_response :success
-      Store::ACCENT_COLOR_NAMES.each do |color|
-        assert_includes response.body, "data-color=\"#{color}\""
-      end
+      field = inertia_props.dig("form", "fields").find { |item| item["key"] == "accent_color" }
+      assert_equal Store::ACCENT_COLOR_NAMES, field["options"].map { |option| option["value"] }
     end
 
     test "show displays logo upload field" do
       get admin_store_path
       assert_response :success
-      assert_includes response.body, "Store logo"
+      field = inertia_props.dig("form", "fields").find { |item| item["key"] == "logo" }
+      assert_equal "Store logo", field["label"]
+      assert_equal "file", field["type"]
     end
 
     # ── Update ────────────────────────────────────────────────────────

@@ -10,60 +10,50 @@ module RegisterHelper
   end
 
   def fill_in_payment(method:, amount:, tendered: nil, gc_code: nil)
+    payment_count = all("#order_payments_panel [data-payment-id]").size
     within "#order_payments_panel" do
-      click_button "Add Payment"
+      select method.humanize, from: "Payment method"
+      fill_in "Payment amount", with: amount.to_s
+      fill_in "Amount tendered", with: tendered.to_s if tendered
+      fill_in "Reference", with: gc_code if gc_code
+      click_button "Add payment"
     end
-    within "#payment_modal" do
-      find("button[data-method='#{method}']").click
-      assert_selector "button[data-method='#{method}'].bg-accent", wait: 5
-      find("[name='order_payment[amount]']").set(amount.to_s)
-      find("[name='order_payment[amount_tendered]']").set(tendered.to_s) if tendered
-      find("[name='order_payment[reference]']").set(gc_code) if gc_code
-      click_button "Record Payment"
-    end
-    # Wait for Turbo Stream to re-render the panel (modal closes, Add Payment reappears)
-    within "#order_payments_panel", wait: 5 do
-      assert_selector "button", text: "Add Payment", wait: 5
-    end
+    assert_selector "#order_payments_panel [data-payment-id]", count: payment_count + 1, wait: 5
   end
 
   def assign_customer(search_term)
     within "#order_customer_panel" do
-      click_button "Search & assign customer"
-    end
-    assert_selector "#customer_search_modal:not(.hidden)", wait: 5
-    within "#customer_search_modal" do
-      fill_in placeholder: /search by name/i, with: search_term
+      fill_in "Search customer", with: search_term
     end
     assert_text search_term, wait: 5
     click_on search_term
     within "#order_customer_panel" do
+      assert_no_field "Search customer", wait: 5
       assert_text search_term, wait: 5
     end
   end
 
   def remove_customer
     within "#order_customer_panel" do
-      find("button[type='submit']").click
+      click_button "Remove"
     end
   end
 
   def apply_manual_discount(name:, type:, value:)
     within "#order_discounts_panel" do
-      click_link "Add Discount"
+      find("summary", text: /add discount/i).click
+      fill_in "Discount name", with: name
+      select type, from: "Discount type"
+      fill_in "Discount value", with: value.to_s
+      click_button "Apply discount"
     end
-    assert_selector "turbo-frame#discount_modal", wait: 5
-    fill_in "order_discount[name]", with: name
-    select type, from: "order_discount[discount_type]"
-    fill_in "order_discount[value]", with: value.to_s
-    click_button "Apply Discount"
   end
 
-  def open_payment_modal
-    within "#order_payments_panel" do
-      click_button "Add Payment"
-    end
-    assert_selector "#payment_modal", wait: 5
+  def issue_gift_certificate(amount)
+    find("summary", text: /issue gift certificate/i).click
+    fill_in "Gift certificate amount", with: amount.to_s
+    click_button "Add to order"
+    assert_text "Gift Certificate", wait: 5
   end
 
   # -- Assertions --

@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "checkJs": false,
+    "ignoreDeprecations": "6.0",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "target": "ESNext",
+    "types": ["node"],
+    "paths": {
+      "$lib": ["app/javascript/lib"],
+      "$lib/*": ["app/javascript/lib/*"]
+    }
+  },
+  "include": [
+    "app/javascript/**/*.d.ts",
+    "app/javascript/**/*.js",
+    "app/javascript/**/*.svelte",
+    "app/javascript/**/*.ts",
+    "svelte.config.js",
+    "vite.config.ts"
+  ],
+  "exclude": ["node_modules", "svelte"]
+}

@@ -69,7 +69,7 @@ class OrderDiscountsControllerTest < ActionDispatch::IntegrationTest
     post order_order_discounts_path(@order), params: {
       order_discount: { name: "10% Off", discount_type: "percentage", value: 10 }
     }
-    assert_redirected_to edit_order_path(@order)
+    assert_redirected_to register_path(order_id: @order.id)
   end
 
   test "DELETE /order_discounts/:id removes the discount" do

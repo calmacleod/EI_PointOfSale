@@ -29,7 +29,7 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
-      format.html { redirect_to edit_order_path(order) }
+      format.html { redirect_to register_path(order_id: order.id) }
     end
   end
 
@@ -60,7 +60,7 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
-      format.html { redirect_to edit_order_path(order) }
+      format.html { redirect_to register_path(order_id: order.id) }
     end
   end
 
@@ -93,7 +93,7 @@ class OrderLinesController < ApplicationController
           turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
         ]
       }
-      format.html { redirect_to edit_order_path(order) }
+      format.html { redirect_to register_path(order_id: order.id) }
     end
   end
 

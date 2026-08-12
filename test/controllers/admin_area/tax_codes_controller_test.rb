@@ -29,7 +29,8 @@ module AdminArea
       get new_admin_tax_code_path
 
       assert_response :success
-      assert_includes response.body, "New tax code"
+      assert_equal "New Tax Code", inertia_props["title"]
+      assert_equal "resource_form", inertia_props["view"]
     end
 
     test "create adds tax code and converts percentage input" do

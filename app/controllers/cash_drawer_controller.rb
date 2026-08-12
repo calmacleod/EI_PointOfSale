@@ -46,7 +46,7 @@ class CashDrawerController < ApplicationController
     if @session.save
       redirect_to cash_drawer_path, notice: "Register opened successfully."
     else
-      render :new_open, status: :unprocessable_entity
+      render_inertia_page(action: :new_open, status: :unprocessable_entity)
     end
   end
 
@@ -77,7 +77,7 @@ class CashDrawerController < ApplicationController
     if @session.save
       redirect_to reconcile_cash_drawer_path, notice: "Cash drawer closed. Now reconcile the payment terminal."
     else
-      render :new_close, status: :unprocessable_entity
+      render_inertia_page(action: :new_close, status: :unprocessable_entity)
     end
   end
 
@@ -115,7 +115,7 @@ class CashDrawerController < ApplicationController
     if @reconciliation.save
       redirect_to session_detail_cash_drawer_path(@session), notice: "Terminal reconciled successfully."
     else
-      render :new_reconcile, status: :unprocessable_entity
+      render_inertia_page(action: :new_reconcile, status: :unprocessable_entity)
     end
   end
 

@@ -14,7 +14,8 @@ module AdminArea
       sign_in_as(users(:admin))
       get admin_recurring_tasks_path
       assert_response :success
-      assert_includes response.body, "Recurring Tasks"
+      assert_equal "Recurring Tasks", inertia_props["title"]
+      assert_equal "recurring_tasks", inertia_props["view"]
     end
 
     test "admin can trigger a recurring task" do

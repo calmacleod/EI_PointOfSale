@@ -35,7 +35,7 @@ module AdminArea
       if @supplier.save
         redirect_to admin_suppliers_path, notice: "Supplier created."
       else
-        render :new, status: :unprocessable_entity
+        render_inertia_page(action: :new, status: :unprocessable_entity)
       end
     end
 
@@ -49,7 +49,7 @@ module AdminArea
       if @supplier.update(supplier_params)
         redirect_to admin_suppliers_path, notice: "Supplier updated."
       else
-        render :edit, status: :unprocessable_entity
+        render_inertia_page(action: :edit, status: :unprocessable_entity)
       end
     end
 

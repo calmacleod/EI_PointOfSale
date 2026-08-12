@@ -19,6 +19,10 @@ gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
+# Server-driven Svelte application shell
+gem "inertia_rails", "~> 3.21"
+gem "vite_rails", "~> 3.11"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 gem "bcrypt", "~> 3.1.7"
 

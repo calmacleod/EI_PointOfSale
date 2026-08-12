@@ -38,7 +38,7 @@ module AdminArea
       if @tax_code.save
         redirect_to admin_tax_codes_path, notice: "Tax code created."
       else
-        render :new, status: :unprocessable_entity
+        render_inertia_page(action: :new, status: :unprocessable_entity)
       end
     end
 
@@ -52,7 +52,7 @@ module AdminArea
       if @tax_code.update(tax_code_params)
         redirect_to admin_tax_codes_path, notice: "Tax code updated."
       else
-        render :edit, status: :unprocessable_entity
+        render_inertia_page(action: :edit, status: :unprocessable_entity)
       end
     end
 

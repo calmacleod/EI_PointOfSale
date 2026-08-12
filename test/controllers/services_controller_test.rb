@@ -37,7 +37,8 @@ class ServicesControllerTest < ActionDispatch::IntegrationTest
     get new_service_path
 
     assert_response :success
-    assert_includes response.body, "New service"
+    assert_equal "New Service", inertia_props["title"]
+    assert_equal "resource_form", inertia_props["view"]
   end
 
   test "create adds service and records creator" do

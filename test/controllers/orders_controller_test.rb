@@ -79,7 +79,8 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   test "GET /orders/held shows held orders" do
     get held_orders_path
     assert_response :success
-    assert_select "table"
+    assert_equal "resource_index", inertia_props["view"]
+    assert_equal "Held Orders", inertia_props["title"]
   end
 
   test "GET /orders/held filters by search" do

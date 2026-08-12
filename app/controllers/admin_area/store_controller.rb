@@ -11,7 +11,7 @@ module AdminArea
       if @store.update(store_params)
         redirect_to admin_store_path, notice: "Store settings saved."
       else
-        render :show, status: :unprocessable_entity
+        render_inertia_page(action: :show, status: :unprocessable_entity)
       end
     end
 

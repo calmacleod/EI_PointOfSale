@@ -15,14 +15,18 @@ class CashDrawerControllerTest < ActionDispatch::IntegrationTest
   test "show renders when register is closed" do
     get cash_drawer_path
     assert_response :success
-    assert_includes response.body, "Open Register"
+    assert_equal "cash_drawer", inertia_props["view"]
+    assert_nil inertia_props["session"]
+    assert inertia_props.dig("actions", "open").present?
   end
 
   test "show renders when register is open" do
     open_register!
     get cash_drawer_path
     assert_response :success
-    assert_includes response.body, "Close Register"
+    assert_equal "cash_drawer", inertia_props["view"]
+    assert inertia_props["session"].present?
+    assert inertia_props.dig("actions", "close").present?
   end
 
   # ── Open ───────────────────────────────────────────────────────────

@@ -41,7 +41,7 @@ class OrderPaymentsController < ApplicationController
 
           render turbo_stream: streams
         }
-        format.html { redirect_to edit_order_path(@order) }
+        format.html { redirect_to register_path(order_id: @order.id) }
       end
     else
       render_payment_error(payment.errors.full_messages.to_sentence, @order)
@@ -70,7 +70,7 @@ class OrderPaymentsController < ApplicationController
           turbo_stream.replace("order_action_buttons", partial: "register/action_buttons", locals: { order: order })
         ]
       }
-      format.html { redirect_to edit_order_path(order) }
+      format.html { redirect_to register_path(order_id: order.id) }
     end
   end
 
@@ -97,7 +97,7 @@ class OrderPaymentsController < ApplicationController
             locals: { order: order.reload, payment_error: message }
           )
         }
-        format.html { redirect_to edit_order_path(order), alert: message }
+        format.html { redirect_to register_path(order_id: order.id), alert: message }
       end
     end
 end

@@ -20,7 +20,7 @@ module AdminArea
       end
 
       assert_response :success
-      assert_includes response.body, "Shopify Integration"
+      assert_equal "Shopify Integration", inertia_props["title"]
     end
 
     test "show is not accessible to common users" do
@@ -38,8 +38,9 @@ module AdminArea
       end
 
       assert_response :success
-      assert_includes response.body, "Not configured"
-      assert_includes response.body, "Setup instructions"
+      details = inertia_props["details"].to_h { |detail| [ detail["label"], detail["value"] ] }
+      assert_equal "Not configured", details["Status"]
+      assert details["Setup instructions"].present?
     end
 
     test "show displays sync count" do
@@ -51,7 +52,7 @@ module AdminArea
       end
 
       assert_response :success
-      assert_includes response.body, "Products to sync"
+      assert_includes inertia_props["details"].map { |detail| detail["label"] }, "Products to sync"
     end
   end
 end

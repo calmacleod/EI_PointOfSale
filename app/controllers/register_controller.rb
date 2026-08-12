@@ -10,7 +10,7 @@ class RegisterController < ApplicationController
     base_includes = [
       :customer,
       :created_by,
-      { order_lines: :sellable },
+      { order_lines: [ :sellable, :order_line_discounts ] },
       :order_discounts,
       :order_payments
     ]
@@ -26,7 +26,7 @@ class RegisterController < ApplicationController
     # This prevents showing ALL held orders from the entire system in the tab bar
     draft_orders = Order.draft.includes(
       :customer,
-      { order_lines: :sellable },
+      { order_lines: [ :sellable, :order_line_discounts ] },
       :order_discounts,
       :order_payments
     ).order(created_at: :desc)
@@ -34,7 +34,7 @@ class RegisterController < ApplicationController
     # For held orders, only show the current order (if it's held) to avoid tab bar clutter
     held_orders = Order.held.where(id: @order.id).includes(
       :customer,
-      { order_lines: :sellable },
+      { order_lines: [ :sellable, :order_line_discounts ] },
       :order_discounts,
       :order_payments
     )

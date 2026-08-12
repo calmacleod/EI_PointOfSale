@@ -39,7 +39,7 @@ module AdminArea
         redirect_to admin_receipt_templates_path, notice: "Receipt template created."
       else
         @store = Store.current
-        render :new, status: :unprocessable_entity
+        render_inertia_page(action: :new, status: :unprocessable_entity)
       end
     end
 
@@ -57,7 +57,7 @@ module AdminArea
         redirect_to admin_receipt_template_path(@receipt_template), notice: "Receipt template updated."
       else
         @store = Store.current
-        render :edit, status: :unprocessable_entity
+        render_inertia_page(action: :edit, status: :unprocessable_entity)
       end
     end
 

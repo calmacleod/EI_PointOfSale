@@ -17,8 +17,8 @@ module AdminArea
       end
 
       assert_response :success
-      assert_includes response.body, "Backups"
-      assert_includes response.body, "Not configured"
+      assert_equal "Backups", inertia_props["title"]
+      assert_equal "Not configured", inertia_props["status"]
     end
 
     test "show renders when configured but not connected" do
@@ -29,8 +29,8 @@ module AdminArea
       end
 
       assert_response :success
-      assert_includes response.body, "Not connected"
-      assert_includes response.body, "Connect Google Drive"
+      assert_equal "Not connected", inertia_props["status"]
+      assert_includes inertia_props["actions"].map { |action| action["label"] }, "Connect Google Drive"
     end
 
     test "show renders when connected with backup files" do
@@ -46,10 +46,10 @@ module AdminArea
       end
 
       assert_response :success
-      assert_includes response.body, "Connected"
-      assert_includes response.body, "user@gmail.com"
-      assert_includes response.body, "db_backup_20260215.dump.gz"
-      assert_includes response.body, "Disconnect"
+      assert_equal "Connected", inertia_props["status"]
+      assert_includes inertia_props["details"].map { |detail| detail["value"] }, "user@gmail.com"
+      assert_includes inertia_props.dig("files", 0, "items").map { |file| file["name"] }, "db_backup_20260215.dump.gz"
+      assert_includes inertia_props["actions"].map { |action| action["label"] }, "Disconnect"
     end
 
     test "show handles GoogleDriveService::Error gracefully" do
@@ -58,7 +58,7 @@ module AdminArea
       end
 
       assert_response :success
-      assert_includes response.body, "Something went wrong"
+      assert_equal "Something went wrong", inertia_props.dig("details", 2, "value")
     end
 
     # ── download ──

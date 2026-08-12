@@ -43,7 +43,7 @@ class OrderDiscountOverridesControllerTest < ActionDispatch::IntegrationTest
 
   test "DELETE falls back to redirect when no Turbo headers" do
     delete order_order_discount_override_path(@order, discounts(:percentage_all).id)
-    assert_redirected_to edit_order_path(@order)
+    assert_redirected_to register_path(order_id: @order.id)
   end
 
   test "requires authentication" do

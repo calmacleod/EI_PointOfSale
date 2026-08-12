@@ -20,7 +20,7 @@ class ProfilesController < ApplicationController
         format.html { redirect_to edit_profile_path, notice: "Profile updated." }
       end
     else
-      render :edit, status: :unprocessable_entity
+      render_inertia_page(action: :edit, status: :unprocessable_entity)
     end
   end
 

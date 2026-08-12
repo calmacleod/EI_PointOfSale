@@ -42,7 +42,7 @@ class ServicesController < ApplicationController
     if @service.save
       redirect_to services_path, notice: "Service created."
     else
-      render :new, status: :unprocessable_entity
+      render_inertia_page(action: :new, status: :unprocessable_entity)
     end
   end
 
@@ -70,7 +70,7 @@ class ServicesController < ApplicationController
     if @service.update(service_params)
       redirect_to services_path, notice: "Service updated."
     else
-      render :edit, status: :unprocessable_entity
+      render_inertia_page(action: :edit, status: :unprocessable_entity)
     end
   end
 

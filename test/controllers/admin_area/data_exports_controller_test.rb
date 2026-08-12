@@ -12,12 +12,12 @@ module AdminArea
       get admin_data_export_path
 
       assert_response :success
-      assert_includes response.body, "Data export"
-      assert_includes response.body, "Download Excel export"
+      assert_equal "Data Export", inertia_props["title"]
+      assert_includes inertia_props["actions"].map { |action| action["label"] }, "Download Excel export"
 
       # Verify table list is shown
       DatabaseExportService::EXPORT_TABLES.each do |table|
-        assert_includes response.body, table.titleize
+        assert_includes inertia_props["details"].map { |detail| detail["value"] }, table.titleize
       end
     end
 

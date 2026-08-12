@@ -11,6 +11,8 @@ CI.run do
   step "Security: Gem audit", "bin/bundler-audit"
   step "Security: Importmap vulnerability audit", "bin/importmap audit"
   step "Security: Brakeman code analysis", "bin/brakeman --quiet --no-pager --exit-on-warn --exit-on-error"
+  step "Assets: Vite build", "npm run build"
+  step "Style: Svelte", "npm run lint:svelte"
 
   step "Tests: Rails", "bin/rails test"
   step "Tests: System", "bin/rails test:system"

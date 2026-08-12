@@ -40,7 +40,7 @@ module AdminArea
       if @user.save
         redirect_to admin_user_path(@user), notice: "User created."
       else
-        render :new, status: :unprocessable_entity
+        render_inertia_page(action: :new, status: :unprocessable_entity)
       end
     end
 
@@ -51,7 +51,7 @@ module AdminArea
       if @user.update(user_params)
         redirect_to admin_users_path, notice: "User updated."
       else
-        render :edit, status: :unprocessable_entity
+        render_inertia_page(action: :edit, status: :unprocessable_entity)
       end
     end
 
