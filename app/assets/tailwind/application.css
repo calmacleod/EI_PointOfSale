@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@source "../../../svelte/**/*.svelte";
 
 /* ── Theme: Refined POS ──────────────────────────────────────────── */
 /* Subtle rounding, soft hover states, clean typography hierarchy.    */

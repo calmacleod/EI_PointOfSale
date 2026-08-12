@@ -1,10 +1,12 @@
 # Offline Register Mode — Implementation Plan
 
-> **Status**: Planning (not yet started)
+> **Status**: Native lookup foundation implemented; offline sales remain future work
 > **Created**: 2026-02-17
 > **Goal**: Allow the POS register to continue processing sales when the server is unavailable, then sync completed orders when connectivity is restored.
 
-> **Launch note**: Full offline sales processing is out of scope for the associate pilot. The current `/offline` app is lookup-only. If the server or network is unavailable during the pilot, write down the sale on paper, include item codes, quantities, customer, payment method, and terminal reference, then enter the order in the POS when service returns.
+> **Launch note**: Full offline sales processing is out of scope for the associate pilot. The current native Inertia/Svelte `/offline` screen is lookup-only. It caches products, services, customers, and tax codes in IndexedDB, detects server availability, and reloads through the service worker without a connection. If the server or network is unavailable during the pilot, write down the sale on paper, include item codes, quantities, customer, payment method, and terminal reference, then enter the order in the POS when service returns.
+
+> **Migration note (2026-08-12)**: The implementation is now a Rails/Inertia application with Svelte at the render layer. References below to ERB, Turbo, Stimulus, import maps, and a separate offline UI describe the original proposal and must be redesigned around the shared Svelte frontend before offline order processing begins.
 
 ---
 

@@ -66,10 +66,10 @@ env RAILS_ENV=test bin/rails db:seed:replant  # Reset test DB
 - Tailwind utility classes and shared `ui-*` component classes are defined from the Vite entrypoint
 - Pagy remains server-owned and is serialized into Inertia pagination props
 
-## Offline Svelte App
+## Offline Lookup
 
-Standalone **Svelte 5** SPA at `svelte/` for offline product/service/customer lookup. It is intentionally separate from the primary Inertia frontend and is not started by `bin/dev`.
-- Builds to `public/offline/` via Vite
-- Syncs from Rails via `GET /api/v1/products/sync?since=<timestamp>` (same-origin cookies)
-- Data stored in browser IndexedDB
-- Build: `npm run offline:build` | Watch: `npm run offline:dev`
+The `/offline` screen is part of the primary Inertia/Svelte frontend. It provides read-only product, service, customer, and tax-code lookup from IndexedDB when Rails is unavailable.
+- `app/javascript/lib/offline-catalog.js` owns IndexedDB and delta/full sync
+- Sync endpoints live under `/api/v1/*/sync` and use same-origin authentication
+- The primary Vite entrypoint registers the service worker and warms the page, assets, and catalog while online
+- The service worker falls back to the cached native `/offline` page; no separate offline build is required

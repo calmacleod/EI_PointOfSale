@@ -51,4 +51,16 @@ class Api::V1::TaxCodesControllerTest < ActionDispatch::IntegrationTest
     body = response.parsed_body
     assert_empty body["tax_codes"]
   end
+
+  test "delta sync returns tax codes deleted after the previous sync" do
+    sign_in_as(users(:admin))
+    since = 1.minute.ago
+    @tax_code.update!(discarded_at: Time.current)
+
+    get api_v1_tax_codes_sync_path, params: { since: since.iso8601 }, as: :json
+
+    assert_response :success
+    assert_includes response.parsed_body["deleted_ids"], @tax_code.id
+    assert_not_includes response.parsed_body["tax_codes"].pluck("id"), @tax_code.id
+  end
 end

@@ -30,8 +30,6 @@
     "herb:lint": "herb-lint",
     "herb:lint:fix": "herb-lint --fix",
     "tailwind:lint": "tailwind-lint \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\" \"app/javascript/**/*.svelte\"",
-    "tailwind:lint:fix": "tailwind-lint --fix \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\" \"app/javascript/**/*.svelte\"",
-    "offline:build": "vite build --config svelte/vite.config.mjs",
-    "offline:dev": "vite build --config svelte/vite.config.mjs --watch"
+    "tailwind:lint:fix": "tailwind-lint --fix \"app/views/**/*.erb\" \"app/helpers/**/*.rb\" \"app/javascript/**/*.js\" \"app/javascript/**/*.svelte\""
   }
 }

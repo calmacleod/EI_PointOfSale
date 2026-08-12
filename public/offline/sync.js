@@ -1,1 +1,0 @@
-import"./sync2.js";

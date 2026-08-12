@@ -6,6 +6,7 @@
   import Boxes from "@lucide/svelte/icons/boxes"
   import ClipboardList from "@lucide/svelte/icons/clipboard-list"
   import FileChartColumn from "@lucide/svelte/icons/file-chart-column"
+  import CloudDownload from "@lucide/svelte/icons/cloud-download"
   import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard"
   import Menu from "@lucide/svelte/icons/menu"
   import PackageSearch from "@lucide/svelte/icons/package-search"
@@ -14,6 +15,8 @@
   import ShoppingCart from "@lucide/svelte/icons/shopping-cart"
   import Users from "@lucide/svelte/icons/users"
   import Wrench from "@lucide/svelte/icons/wrench"
+  import WifiOff from "@lucide/svelte/icons/wifi-off"
+  import { connectionAvailable } from "../lib/connection.js"
 
   const page = usePage()
   let auth = page.props.auth || {}
@@ -26,6 +29,9 @@
   let toastTimer
   let cableConsumer
   let cableSubscription
+  let online = typeof navigator === "undefined" ? true : navigator.onLine
+  let connectionTimer
+  let connectionFailures = 0
 
   $: authenticated = Boolean(auth.authenticated)
   $: navItems = [
@@ -42,12 +48,28 @@
 
   onMount(() => {
     const stop = router.on("navigate", (event) => syncPage(event.detail.page))
+    const syncConnection = async () => {
+      const available = await connectionAvailable()
+      connectionFailures = available ? 0 : connectionFailures + 1
+      online = available
+      syncCable()
+      if (connectionFailures >= 2 && currentPath !== paths.offline && !currentPath.startsWith("/offline")) {
+        window.location.assign(paths.offline || "/offline")
+      }
+    }
+    window.addEventListener("online", syncConnection)
+    window.addEventListener("offline", syncConnection)
+    syncConnection()
+    connectionTimer = window.setInterval(syncConnection, 5_000)
     syncCable()
     scheduleDismiss()
     return () => {
       stop()
       if (dismissTimer) window.clearTimeout(dismissTimer)
       if (toastTimer) window.clearTimeout(toastTimer)
+      if (connectionTimer) window.clearInterval(connectionTimer)
+      window.removeEventListener("online", syncConnection)
+      window.removeEventListener("offline", syncConnection)
       disconnectCable()
     }
   })
@@ -63,7 +85,7 @@
   }
 
   function syncCable() {
-    if (!auth.authenticated) {
+    if (!auth.authenticated || !online) {
       disconnectCable()
       return
     }
@@ -110,7 +132,7 @@
     <header class="sticky top-0 z-40 flex h-12 items-center gap-3 border-b px-3 lg:hidden" style="border-color:var(--border);background:var(--surface)">
       <button class="ui-button ui-button-secondary min-h-8! px-2!" aria-label="Open navigation" onclick={() => (mobileOpen = !mobileOpen)}><Menu class="size-4" /></button>
       <span class="flex-1 text-sm font-semibold">EI Point of Sale</span>
-      <Link href={paths.notifications || "/notifications"} class="relative"><Bell class="size-4" />{#if auth.unread_notifications}<span class="absolute -right-2 -top-2 rounded-full bg-red-600 px-1 text-[10px] text-white">{auth.unread_notifications}</span>{/if}</Link>
+      {#if online}<Link href={paths.notifications || "/notifications"} class="relative"><Bell class="size-4" />{#if auth.unread_notifications}<span class="absolute -right-2 -top-2 rounded-full bg-red-600 px-1 text-[10px] text-white">{auth.unread_notifications}</span>{/if}</Link>{:else}<WifiOff class="size-4" />{/if}
     </header>
 
     <aside class="fixed inset-y-0 left-0 z-30 w-60 border-r p-3 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 {mobileOpen ? 'translate-x-0' : '-translate-x-full'}" style="border-color:var(--border);background:var(--surface)">
@@ -120,16 +142,23 @@
       </div>
       <nav class="space-y-1">
         {#each navItems as [label, href, Icon]}
-          <Link href={href} prefetch="hover" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors" style={`background:${active(href) ? "var(--primary)" : "transparent"};color:${active(href) ? "var(--primary-foreground)" : "var(--foreground)"}`}>
-            <svelte:component this={Icon} class="size-4" />{label}
-          </Link>
+          {#if online}
+            <Link href={href} prefetch="hover" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors" style={`background:${active(href) ? "var(--primary)" : "transparent"};color:${active(href) ? "var(--primary-foreground)" : "var(--foreground)"}`}>
+              <svelte:component this={Icon} class="size-4" />{label}
+            </Link>
+          {:else}
+            <span class="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium opacity-40"><svelte:component this={Icon} class="size-4" />{label}</span>
+          {/if}
         {/each}
       </nav>
       <div class="absolute inset-x-3 bottom-3 space-y-1 border-t pt-3" style="border-color:var(--border)">
-        <Link href={paths.notifications || "/notifications"} class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5"><Bell class="size-4" />Notifications{#if auth.unread_notifications}<span class="ui-badge ml-auto">{auth.unread_notifications}</span>{/if}</Link>
-        {#if auth.admin}<Link href={paths.admin_settings} class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5"><Settings class="size-4" />Administration</Link>{/if}
-        <Link href={paths.profile} class="block truncate rounded-lg px-3 py-2 text-sm hover:bg-black/5">{auth.name || auth.email}</Link>
-        <button class="w-full rounded-lg px-3 py-2 text-left text-xs font-medium" style="color:var(--muted)" onclick={() => router.delete(paths.session)}>Sign out</button>
+        <a href={paths.offline || "/offline"} class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5" style={`background:${active(paths.offline) ? "var(--primary)" : "transparent"};color:${active(paths.offline) ? "var(--primary-foreground)" : "var(--foreground)"}`}>
+          {#if online}<CloudDownload class="size-4" />Offline lookup{:else}<WifiOff class="size-4" />Offline mode{/if}
+        </a>
+        {#if online}<Link href={paths.notifications || "/notifications"} class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5"><Bell class="size-4" />Notifications{#if auth.unread_notifications}<span class="ui-badge ml-auto">{auth.unread_notifications}</span>{/if}</Link>{/if}
+        {#if online && auth.admin}<Link href={paths.admin_settings} class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5"><Settings class="size-4" />Administration</Link>{/if}
+        {#if online}<Link href={paths.profile} class="block truncate rounded-lg px-3 py-2 text-sm hover:bg-black/5">{auth.name || auth.email}</Link>{:else}<span class="block truncate rounded-lg px-3 py-2 text-sm opacity-40">{auth.name || auth.email}</span>{/if}
+        <button class="w-full rounded-lg px-3 py-2 text-left text-xs font-medium disabled:opacity-40" style="color:var(--muted)" disabled={!online} onclick={() => router.delete(paths.session)}>Sign out</button>
       </div>
     </aside>
 

@@ -8,13 +8,11 @@ module Api
                            .select(:id, :code, :name, :rate, :exemption_type,
                                    :province_code, :notes, :created_at, :updated_at)
 
-        if params[:since].present?
-          since = Time.zone.parse(params[:since]) rescue nil
-          tax_codes = tax_codes.where("tax_codes.updated_at > ?", since) if since
-        end
+        tax_codes = tax_codes.where("tax_codes.updated_at > ?", sync_since) if sync_since
 
         render json: {
           synced_at: Time.current.iso8601,
+          deleted_ids: deleted_ids_since(TaxCode),
           tax_codes: tax_codes.map { |t|
             {
               id:             t.id,

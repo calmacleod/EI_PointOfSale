@@ -1,97 +1,101 @@
-// Bump CACHE_VERSION whenever bundle.js meaningfully changes — this
-// forces SW activation which clears the old cache and re-precaches assets.
-const CACHE_VERSION = "ei-pos-v3"
-const PRECACHE_URLS = [
-  "/offline",
-  "/offline/bundle.js",
-  "/offline/bundle.css",
-  "/offline/sync.js",
-  "/offline/sync2.js",
-  "/offline/db.js",
-  "/icon.png",
-  "/icon-192.png",
-  "/icon.svg"
-]
+const ASSET_CACHE_NAME = "ei-pos-assets-v4"
+const PAGE_CACHE_NAME = "ei-pos-pages-v1"
+const VITE_PATH_PATTERN = /^\/vite(?:-test)?\//
+const OFFLINE_FALLBACK_PATH = "/offline"
 
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.addAll(PRECACHE_URLS))
-  )
+self.addEventListener("install", () => {
   self.skipWaiting()
 })
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_VERSION).map((k) => caches.delete(k)))
-    )
+    Promise.all([
+      caches.keys().then((keys) =>
+        Promise.all(keys.filter((key) => ![ASSET_CACHE_NAME, PAGE_CACHE_NAME].includes(key)).map((key) => caches.delete(key)))
+      ),
+      self.registration.navigationPreload?.enable()
+    ]).then(() => self.clients.claim())
   )
-  self.clients.claim()
 })
 
 self.addEventListener("fetch", (event) => {
-  const { request } = event
+  const request = event.request
 
   if (request.method !== "GET") return
+  const url = new URL(request.url)
+  if (url.origin !== self.location.origin) return
 
   if (request.mode === "navigate") {
-    const url = new URL(request.url)
-    if (url.pathname === "/offline") {
-      event.respondWith(cacheFirst(request))
-      return
-    }
-    event.respondWith(networkFirstWithOfflineFallback(request))
+    event.respondWith(networkFirstNavigation(request, event.preloadResponse))
     return
   }
 
-  const url = new URL(request.url)
-  const isAsset = /\.(css|js|woff2?|ttf|png|jpg|jpeg|gif|svg|ico|webp)$/i.test(url.pathname)
+  if (acceptsHtml(request) && url.pathname === OFFLINE_FALLBACK_PATH) {
+    event.respondWith(networkFirstPage(request))
+    return
+  }
 
-  if (isAsset) {
-    event.respondWith(staleWhileRevalidate(request))
+  if (VITE_PATH_PATTERN.test(url.pathname) || ["/icon.png", "/icon-192.png", "/icon.svg"].includes(url.pathname)) {
+    event.respondWith(cacheFirstAsset(request))
   }
 })
 
-async function networkFirstWithOfflineFallback(request) {
+async function networkFirstNavigation(request, preloadResponsePromise) {
   try {
-    const response = await fetch(request)
-    if (response.ok) {
-      const cache = await caches.open(CACHE_VERSION)
-      cache.put(request, response.clone())
-    }
+    const preloadResponse = await preloadResponsePromise
+    const response = preloadResponse || await fetch(request)
+    cacheOfflinePage(request, response)
     return response
-  } catch {
-    const cached = await caches.match(request)
-    if (cached) return cached
-    return caches.match("/offline")
+  } catch (_error) {
+    return await caches.match(request) ||
+      await caches.match(OFFLINE_FALLBACK_PATH) ||
+      offlineFallbackResponse()
   }
 }
 
-async function cacheFirst(request) {
-  const cached = await caches.match(request)
-  if (cached) return cached
+async function networkFirstPage(request) {
   try {
     const response = await fetch(request)
-    if (response.ok) {
-      const cache = await caches.open(CACHE_VERSION)
-      cache.put(request, response.clone())
-    }
+    cacheOfflinePage(request, response)
     return response
-  } catch {
-    return new Response("Offline page not cached yet", { status: 503 })
+  } catch (_error) {
+    return await caches.match(request) ||
+      await caches.match(OFFLINE_FALLBACK_PATH) ||
+      offlineFallbackResponse()
   }
 }
 
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(CACHE_VERSION)
-  const cached = await cache.match(request)
+function cacheOfflinePage(request, response) {
+  if (!response?.ok || !acceptsHtml(request)) return
+  if (new URL(request.url).pathname !== OFFLINE_FALLBACK_PATH) return
 
-  const fetchPromise = fetch(request).then((response) => {
-    if (response.ok) cache.put(request, response.clone())
-    return response
-  }).catch(() => cached)
+  const copy = response.clone()
+  caches.open(PAGE_CACHE_NAME).then((cache) => cache.put(request, copy))
+}
 
-  return cached || fetchPromise
+function cacheFirstAsset(request) {
+  return caches.match(request).then((cachedResponse) => {
+    if (cachedResponse) return cachedResponse
+
+    return fetch(request).then((response) => {
+      if (!response.ok) return response
+
+      const copy = response.clone()
+      caches.open(ASSET_CACHE_NAME).then((cache) => cache.put(request, copy))
+      return response
+    })
+  })
+}
+
+function acceptsHtml(request) {
+  return request.headers.get("accept")?.includes("text/html")
+}
+
+function offlineFallbackResponse() {
+  return new Response("EI Point of Sale is offline and no cached lookup is available yet.", {
+    status: 503,
+    headers: { "Content-Type": "text/plain; charset=utf-8" }
+  })
 }
 
 // ── Web Push Notifications ──────────────────────────────────────────

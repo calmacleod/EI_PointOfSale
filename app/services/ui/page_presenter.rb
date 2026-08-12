@@ -132,6 +132,7 @@ module Ui
       return auth_props if controller_path == "sessions" || controller_path == "passwords"
       return dashboard_props if controller_path == "dashboard"
       return register_props if controller_path == "register"
+      return offline_props if controller_path == "offline"
       return reports_props if controller_path == "reports"
       return orders_props if controller_path == "orders"
       return inventory_props if controller_path == "inventory"
@@ -284,6 +285,21 @@ module Ui
             }
           }
         end
+      end
+
+      def offline_props
+        {
+          view: "offline",
+          title: "Offline lookup",
+          allow_fake_offline: Rails.env.development?,
+          home_path: controller.send(:root_path),
+          sync_paths: {
+            products: controller.send(:api_v1_products_sync_path),
+            services: controller.send(:api_v1_services_sync_path),
+            customers: controller.send(:api_v1_customers_sync_path),
+            tax_codes: controller.send(:api_v1_tax_codes_sync_path)
+          }
+        }
       end
 
       def dashboard_props

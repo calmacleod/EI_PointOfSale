@@ -63,4 +63,16 @@ class Api::V1::ProductsControllerTest < ActionDispatch::IntegrationTest
     body = response.parsed_body
     assert body["products"].any?
   end
+
+  test "delta sync returns products deleted after the previous sync" do
+    sign_in_as(users(:admin))
+    since = 1.minute.ago
+    @product.update!(discarded_at: Time.current)
+
+    get api_v1_products_sync_path, params: { since: since.iso8601 }, as: :json
+
+    assert_response :success
+    assert_includes response.parsed_body["deleted_ids"], @product.id
+    assert_not_includes response.parsed_body["products"].pluck("id"), @product.id
+  end
 end

@@ -27,7 +27,7 @@ env RAILS_ENV=test bin/rails db:seed:replant
 
 ## Tech Stack
 
-- **Ruby 4.0 / Rails 8.1** — Propshaft, Importmap, Tailwind, Hotwire (Turbo + Stimulus)
+- **Ruby 4.0 / Rails 8.1** — Inertia Rails, Vite Ruby, Svelte 5, Tailwind
 - **PostgreSQL** — multi-database (primary, queue, cable, cache)
 - **Solid Queue / Solid Cache / Solid Cable**
 - **Minitest** (not RSpec), fixtures (not factories)
@@ -65,49 +65,20 @@ env RAILS_ENV=test bin/rails db:seed:replant
 - Tests run in parallel; `DUMMY_PNG` constant for chart stubs
 - Fixtures: `admin` (Admin), `one`/`two` (Common); tax codes `one` (HST/0.13), `two` (EXEMPT/0)
 
-### Views
-- Tailwind utility classes; conditional: `class: [...].join(" ")`
-- Shared partials in `app/views/shared/`
+### Frontend
+- Inertia page props are assembled by `Ui::PagePresenter`
+- The shared Svelte page is `app/javascript/pages/page.svelte`; reusable screens live under `app/javascript/pages/components/`
+- Tailwind utilities and shared `ui-*` classes are loaded from the Vite entrypoint
 - Use `*_path` helpers (not `*_url`)
-- Pagy: include `Pagy::Method` in controllers; render `shared/pagy_nav` partial in views
+- Pagy remains server-owned and is serialized into Inertia pagination props
 
-## Offline / Svelte App
+## Offline Lookup
 
-A standalone **Svelte 5** SPA that provides an offline-capable product/service/customer lookup tool. It is separate from the main Rails UI and serves as a reference tool for staff when the server is unreachable.
+The native Inertia/Svelte `/offline` screen provides read-only product, service, customer, and tax-code lookup when Rails is unreachable.
 
-### Purpose
-- Staff can look up products, services, tax codes, and customers without a live server connection
-- Data is synced from Rails into the browser's **IndexedDB** (via a service worker pattern)
-- Built and served as static files at `/offline/` on the Rails server
-
-### Structure
-```
-svelte/
-  main.js           # SPA entry point
-  sync-worker.js    # Background sync worker
-  vite.config.mjs   # Builds into public/offline/
-  lib/
-    db.js           # IndexedDB helpers
-    sync.js         # Sync logic (fetches from Rails API)
-  components/
-    App.svelte      # Root layout + navigation state
-    Sidebar.svelte
-    SearchBar.svelte
-    ProductList.svelte / ProductCard.svelte
-    ServiceCard.svelte / ServicesPage.svelte
-    CustomersPage.svelte / CustomerCard.svelte
-    TaxCodesPage.svelte / TaxCodeCard.svelte
-    SyncStatus.svelte
-```
-
-### Rails Integration
-- Sync endpoint: `GET /api/v1/products/sync` — accepts `?since=<timestamp>` for incremental sync
-- Returns `{ products: [...], synced_at: "..." }` JSON
+- IndexedDB and sync logic: `app/javascript/lib/offline-catalog.js`
+- Native screen: `app/javascript/pages/components/OfflinePage.svelte`
+- Sync endpoints: `/api/v1/products/sync`, `/api/v1/services/sync`, `/api/v1/customers/sync`, and `/api/v1/tax_codes/sync`
 - Auth: uses same-origin session cookies (`credentials: "same-origin"`)
-- Built output lands in `public/offline/` (served as static assets by Rails/Propshaft)
-
-### Build Commands
-```bash
-source ~/.zshrc && nvm use && npm run offline:build   # Production build
-source ~/.zshrc && nvm use && npm run offline:dev     # Watch mode
-```
+- The main Vite entrypoint warms the catalog and page while online; the service worker caches the native page and hashed Vite assets
+- There is no separate offline build

@@ -10,13 +10,11 @@ module Api
                                     :postal_code, :country, :notes, :alert,
                                     :discount_id, :tax_code_id, :created_at, :updated_at)
 
-        if params[:since].present?
-          since = Time.zone.parse(params[:since]) rescue nil
-          customers = customers.where("customers.updated_at > ?", since) if since
-        end
+        customers = customers.where("customers.updated_at > ?", sync_since) if sync_since
 
         render json: {
           synced_at: Time.current.iso8601,
+          deleted_ids: deleted_ids_since(Customer),
           customers: customers.map { |c|
             {
               id:            c.id,

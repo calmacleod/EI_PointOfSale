@@ -164,7 +164,7 @@ Rails.application.routes.draw do
 
   # PWA: manifest and service worker for installable app
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker, defaults: { format: :js }
 
   # Defines the root path route ("/")
   # root "posts#index"

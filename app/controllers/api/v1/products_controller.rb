@@ -14,13 +14,11 @@ module Api
                                   :sync_to_shopify, :sales_count,
                                   :last_restocked_at, :created_at, :updated_at)
 
-        if params[:since].present?
-          since = Time.zone.parse(params[:since]) rescue nil
-          products = products.where("products.updated_at > ?", since) if since
-        end
+        products = products.where("products.updated_at > ?", sync_since) if sync_since
 
         render json: {
           synced_at: Time.current.iso8601,
+          deleted_ids: deleted_ids_since(Product),
           products: products.map { |p|
             {
               id:                p.id,

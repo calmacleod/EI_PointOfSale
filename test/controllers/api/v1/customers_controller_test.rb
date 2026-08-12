@@ -61,4 +61,16 @@ class Api::V1::CustomersControllerTest < ActionDispatch::IntegrationTest
     body = response.parsed_body
     assert body["customers"].any?
   end
+
+  test "delta sync returns customers deleted after the previous sync" do
+    sign_in_as(users(:admin))
+    since = 1.minute.ago
+    @customer.update!(discarded_at: Time.current)
+
+    get api_v1_customers_sync_path, params: { since: since.iso8601 }, as: :json
+
+    assert_response :success
+    assert_includes response.parsed_body["deleted_ids"], @customer.id
+    assert_not_includes response.parsed_body["customers"].pluck("id"), @customer.id
+  end
 end

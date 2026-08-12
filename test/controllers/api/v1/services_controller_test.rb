@@ -62,4 +62,16 @@ class Api::V1::ServicesControllerTest < ActionDispatch::IntegrationTest
     body = response.parsed_body
     assert body["services"].any?
   end
+
+  test "delta sync returns services deleted after the previous sync" do
+    sign_in_as(users(:admin))
+    since = 1.minute.ago
+    @service.update!(discarded_at: Time.current)
+
+    get api_v1_services_sync_path, params: { since: since.iso8601 }, as: :json
+
+    assert_response :success
+    assert_includes response.parsed_body["deleted_ids"], @service.id
+    assert_not_includes response.parsed_body["services"].pluck("id"), @service.id
+  end
 end

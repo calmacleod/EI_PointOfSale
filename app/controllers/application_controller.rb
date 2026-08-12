@@ -32,7 +32,7 @@ class ApplicationController < ActionController::Base
   end
 
   def default_render
-    if request.get? && request.format.to_sym == :html && controller_path != "offline"
+    if request.get? && request.format.to_sym == :html
       render inertia: "page", props: Ui::PagePresenter.new(self).call
     else
       super
@@ -56,6 +56,7 @@ class ApplicationController < ActionController::Base
         inventory: inventory_path,
         store_tasks: store_tasks_path,
         reports: reports_path,
+        offline: offline_path,
         cash_drawer: cash_drawer_path,
         notifications: notifications_path,
         profile: edit_profile_path,

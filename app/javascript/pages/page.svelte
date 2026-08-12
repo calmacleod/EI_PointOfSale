@@ -6,6 +6,7 @@
   import ResourceShow from "./components/ResourceShow.svelte"
   import RegisterPage from "./components/RegisterPage.svelte"
   import SpecialPage from "./components/SpecialPage.svelte"
+  import OfflinePage from "./components/OfflinePage.svelte"
 
   export let view = "operations"
   export let title = ""
@@ -52,6 +53,9 @@
   export let recurring_tasks = []
   export let recent_imports = []
   export let flash = {}
+  export let sync_paths = null
+  export let home_path = "/"
+  export let allow_fake_offline = false
 </script>
 
 <svelte:head><title>{title ? `${title} - EI Point of Sale` : "EI Point of Sale"}</title></svelte:head>
@@ -68,6 +72,8 @@
   <ResourceShow {title} {description} {details} {actions} />
 {:else if view === "register"}
   <RegisterPage {order} {active_orders} {held_count} {actions} {flash} />
+{:else if view === "offline"}
+  <OfflinePage {sync_paths} {home_path} {allow_fake_offline} />
 {:else}
   <SpecialPage {view} {title} {description} {details} {actions} {cards} {form} {order} {events} {store} {receipt_lines} {action} {errors} {session} {pending_reconciliation} {recent_sessions} {denominations} {reconciliation} {report} {notifications} {unread_count} {certificate} {redemptions} {preview_lines} {files} {status} {recurring_tasks} {recent_imports} />
 {/if}
