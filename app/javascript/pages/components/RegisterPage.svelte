@@ -24,11 +24,21 @@
   let showCompletePrompt = false
   let previousOrderId = order?.id
   let previousBalance = order?.balance_due_value
+  let codeQueue = []
+  let pendingCodes = []
+  let addingCode = false
+  let pendingCodeSequence = 0
+  let customerSearchTimer
+  let customerRequest
 
   onMount(() => {
     const chooseFromKey = (event) => chooseTender(event.detail)
     window.addEventListener("console:tender", chooseFromKey)
-    return () => window.removeEventListener("console:tender", chooseFromKey)
+    return () => {
+      window.removeEventListener("console:tender", chooseFromKey)
+      if (customerSearchTimer) window.clearTimeout(customerSearchTimer)
+      customerRequest?.abort()
+    }
   })
 
   $: if (order?.id !== previousOrderId) {
@@ -38,6 +48,9 @@
     payment = freshPayment(order)
     customerQuery = ""
     customers = []
+    codeQueue = []
+    pendingCodes = []
+    addingCode = false
     showCancelPrompt = false
     showCompletePrompt = false
   }
@@ -48,7 +61,7 @@
   }
 
   $: canComplete = Boolean(order?.payment_complete && order?.lines?.length && order?.status === "draft")
-  $: lineUnits = (order?.lines || []).reduce((sum, line) => sum + Number(line.quantity || 0), 0)
+  $: lineUnits = (order?.lines || []).reduce((sum, line) => sum + Number(line.quantity || 0), 0) + pendingCodes.length
 
   function freshPayment(currentOrder) {
     return { payment_method: "cash", amount: currentOrder?.balance_due_value || "", amount_tendered: "", reference: "" }
@@ -61,8 +74,33 @@
 
   function addCode(event) {
     event.preventDefault()
-    if (!code.trim() || order.status !== "draft") return
-    router.post(actions.quick_lookup, { order_id: order.id, code: code.trim() }, { preserveScroll: true, onSuccess: () => (code = "") })
+    const value = code.trim()
+    if (!value || order.status !== "draft") return
+
+    const pending = { id: ++pendingCodeSequence, code: value }
+    code = ""
+    codeQueue = [...codeQueue, pending]
+    pendingCodes = [...pendingCodes, pending]
+    submitNextCode()
+  }
+
+  function submitNextCode() {
+    if (addingCode || codeQueue.length === 0) return
+
+    const [pending, ...remaining] = codeQueue
+    codeQueue = remaining
+    addingCode = true
+    router.post(actions.quick_lookup, { order_id: order.id, code: pending.code }, {
+      preserveScroll: true,
+      preserveState: true,
+      showProgress: false,
+      onFinish: () => {
+        pendingCodes = pendingCodes.filter((item) => item.id !== pending.id)
+        addingCode = false
+        window.setTimeout(() => document.getElementById("code")?.focus(), 0)
+        submitNextCode()
+      },
+    })
   }
 
   function updateQuantity(line, quantity) {
@@ -94,21 +132,33 @@
     event.preventDefault()
     router.post(actions.gift_certificate, { gift_certificate: giftCertificate }, { preserveScroll: true, onSuccess: () => (giftCertificate = { initial_amount: "", customer_id: "" }) })
   }
-  async function searchCustomers() {
-    if (customerQuery.trim().length < 2) { customers = []; return }
+  function queueCustomerSearch() {
+    if (customerSearchTimer) window.clearTimeout(customerSearchTimer)
+    customerRequest?.abort()
+    const query = customerQuery.trim()
+    if (query.length < 2) { customers = []; customerLoading = false; return }
+    customerSearchTimer = window.setTimeout(() => searchCustomers(query), 150)
+  }
+  async function searchCustomers(query) {
+    const request = new AbortController()
+    customerRequest = request
     customerLoading = true
     try {
-      const response = await fetch(`${actions.customer_search}?q=${encodeURIComponent(customerQuery)}&format=json`, { headers: { Accept: "application/json" } })
-      customers = (await response.json()).results || []
-    } finally { customerLoading = false }
+      const response = await fetch(`${actions.customer_search}?q=${encodeURIComponent(query)}&format=json`, { headers: { Accept: "application/json" }, signal: request.signal })
+      if (customerQuery.trim() === query) customers = (await response.json()).results || []
+    } catch (error) {
+      if (error.name !== "AbortError") customers = []
+    } finally {
+      if (customerRequest === request) { customerLoading = false; customerRequest = undefined }
+    }
   }
-  function assignCustomer(customer) { router.patch(actions.assign_customer, { customer_id: customer.id }); customers = []; customerQuery = "" }
+  function assignCustomer(customer) { customerRequest?.abort(); router.patch(actions.assign_customer, { customer_id: customer.id }); customers = []; customerQuery = "" }
 </script>
 
 <section class="screen" data-density="roomy">
   <div class="f-bar" style="background:var(--color-surface-alt)">
     <span class="p-title">Orders open</span>
-    {#each active_orders as tab}
+    {#each active_orders as tab (tab.id)}
       <Link href={tab.register_path} class={`k-btn k-btn-sm data ${tab.id === order.id ? "k-btn-primary" : ""}`} aria-pressed={tab.id === order.id} data-order-id={tab.id} data-active-order={tab.id === order.id}>{tab.number} · {tab.line_count}</Link>
     {/each}
     <button class="k-btn k-btn-sm k-btn-quiet" type="button" onclick={() => router.post(actions.new_order)}>New order <kbd>F2</kbd></button>
@@ -117,22 +167,25 @@
 
   <div class="p-split" style="grid-template-columns:minmax(0,1fr) 360px">
     <section class="p-region">
-      <PanelHeader title="Line items" count={`${order.lines.length} lines · ${lineUnits} units`}>
+      <PanelHeader title="Line items" count={`${order.lines.length + pendingCodes.length} lines · ${lineUnits} units`}>
         <StatusTag value={order.status} solid />
         {#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" onclick={() => (showCancelPrompt = true)}>Void order</button>{/if}
       </PanelHeader>
       <div id="order_line_items" class="t-wrap">
-        {#if order.lines.length}
+        {#if order.lines.length || pendingCodes.length}
           <table class="t" style="min-width:720px">
             <thead><tr><th style="min-width:260px">Item</th><th class="c">Qty</th><th class="r">Unit</th><th class="r">Discount</th><th class="r">Line total</th><th></th></tr></thead>
             <tbody>
-              {#each order.lines as line}
+              {#each order.lines as line (line.id)}
                 <tr id={`order_line_${line.id}`} data-state={line.discounts.length ? "ok" : "idle"}>
-                  <td class="wrap"><strong>{line.name}</strong><span class="t-sub data">{line.code || "—"}</span>{#each line.discounts as item}<span class="t-sub" style="color:var(--state-ok)">{item.name} · {item.display_value} · -{item.amount}{#if item.auto_applied && order.status === "draft"} · apply <input class="k-input k-input-xs k-input-data" style="width:45px;text-align:center" type="number" min="0" max={line.quantity} value={item.applied_quantity} aria-label={`Discount quantity for ${line.name}`} onchange={(event) => updateDiscountQuantity(item, event.currentTarget.value)} /> of {line.quantity}{/if}</span>{/each}</td>
+                  <td class="wrap"><strong>{line.name}</strong><span class="t-sub data">{line.code || "—"}</span>{#each line.discounts as item (item.id)}<span class="t-sub" style="color:var(--state-ok)">{item.name} · {item.display_value} · -{item.amount}{#if item.auto_applied && order.status === "draft"} · apply <input class="k-input k-input-xs k-input-data" style="width:45px;text-align:center" type="number" min="0" max={line.quantity} value={item.applied_quantity} aria-label={`Discount quantity for ${line.name}`} onchange={(event) => updateDiscountQuantity(item, event.currentTarget.value)} /> of {line.quantity}{/if}</span>{/each}</td>
                   <td class="c"><input class="k-input k-input-xs k-input-data" style="width:52px;text-align:center" aria-label={`Quantity for ${line.name}`} type="number" min="1" value={line.quantity} disabled={order.status !== "draft"} onchange={(event) => updateQuantity(line, event.currentTarget.value)} /></td>
                   <td class="r data">{line.unit_price}</td><td class="r data" style="color:var(--state-ok)">{line.discount || "—"}</td><td class="r data"><strong>{line.total}</strong></td>
                   <td class="r">{#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" aria-label={`Remove ${line.name}`} onclick={() => removeLine(line)}>×</button>{/if}</td>
                 </tr>
+              {/each}
+              {#each pendingCodes as pending (pending.id)}
+                <tr data-state="live" data-testid="pending-register-code"><td class="wrap"><strong>Adding item…</strong><span class="t-sub data">{pending.code}</span></td><td class="c data">1</td><td class="r faint">—</td><td class="r faint">—</td><td class="r faint">—</td><td></td></tr>
               {/each}
             </tbody>
           </table>
@@ -175,22 +228,22 @@
             </form>
           </div>
         {/if}
-        {#each order.payments as item}<div class="list-row" data-state="ok" data-payment-id={item.id}><span class="grow col"><strong>{item.method}</strong><span class="faint data">{item.reference || (item.tendered ? `Tendered ${item.tendered} · change ${item.change}` : "Recorded")}</span></span><span class="data">{item.amount}</span>{#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" aria-label={`Remove ${item.method} payment`} onclick={() => removePayment(item)}>×</button>{/if}</div>{/each}
+        {#each order.payments as item (item.id)}<div class="list-row" data-state="ok" data-payment-id={item.id}><span class="grow col"><strong>{item.method}</strong><span class="faint data">{item.reference || (item.tendered ? `Tendered ${item.tendered} · change ${item.change}` : "Recorded")}</span></span><span class="data">{item.amount}</span>{#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" aria-label={`Remove ${item.method} payment`} onclick={() => removePayment(item)}>×</button>{/if}</div>{/each}
         </section>
 
         <section id="order_customer_panel">
         <PanelHeader title="Customer" count={order.customer ? "Assigned" : "Quick sale"}>{#if order.customer && order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" onclick={() => router.delete(actions.remove_customer)}>Remove</button>{/if}</PanelHeader>
         <div class="p-body" style="overflow:visible">
           {#if order.customer}<strong>{order.customer.name}</strong>{#if order.customer.alert}<div class="n-bar n-warn" style="margin:var(--space-2) calc(var(--space-3) * -1) calc(var(--space-3) * -1)">{order.customer.alert}</div>{/if}
-          {:else if order.status === "draft"}<div class="k-field"><label class="k-label" for="customer-search">Find customer</label><input id="customer-search" class="k-input" placeholder="Name, email, or phone…" bind:value={customerQuery} oninput={searchCustomers} /></div>{#if customerLoading}<p class="k-hint">Searching live customers…</p>{/if}{#each customers as customer}<button class="list-row" style="width:100%" type="button" onclick={() => assignCustomer(customer)}><strong>{customer.name}</strong><span class="faint push">{customer.phone || customer.email}</span></button>{/each}
+          {:else if order.status === "draft"}<div class="k-field"><label class="k-label" for="customer-search">Find customer</label><input id="customer-search" class="k-input" placeholder="Name, email, or phone…" bind:value={customerQuery} oninput={queueCustomerSearch} /></div>{#if customerLoading}<p class="k-hint">Searching live customers…</p>{/if}{#each customers as customer (customer.id)}<button class="list-row" style="width:100%" type="button" onclick={() => assignCustomer(customer)}><strong>{customer.name}</strong><span class="faint push">{customer.phone || customer.email}</span></button>{/each}
           {:else}<span class="faint">Quick sale</span>{/if}
         </div>
         </section>
 
         <section id="order_discounts_panel">
         <PanelHeader title="Discounts" count={order.discounts.length + order.line_discounts.length} />
-        {#each order.discounts as item}<div class="list-row" data-state="ok"><span class="grow col"><strong>{item.name}</strong><span class="faint">{item.display_value} on all items</span></span><span class="data" style="color:var(--state-ok)">-{item.amount}</span>{#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" aria-label={`Remove ${item.name}`} onclick={() => removeDiscount(item)}>×</button>{/if}</div>{/each}
-        {#each order.line_discounts as item}<div class="list-row" data-state="ok"><span class="grow col"><strong>{item.name}</strong><span class="faint">{item.applied_quantity} of {item.total_quantity} units</span></span><span class="data" style="color:var(--state-ok)">-{item.amount}</span></div>{/each}
+        {#each order.discounts as item (item.id)}<div class="list-row" data-state="ok"><span class="grow col"><strong>{item.name}</strong><span class="faint">{item.display_value} on all items</span></span><span class="data" style="color:var(--state-ok)">-{item.amount}</span>{#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" aria-label={`Remove ${item.name}`} onclick={() => removeDiscount(item)}>×</button>{/if}</div>{/each}
+        {#each order.line_discounts as item (item.name)}<div class="list-row" data-state="ok"><span class="grow col"><strong>{item.name}</strong><span class="faint">{item.applied_quantity} of {item.total_quantity} units</span></span><span class="data" style="color:var(--state-ok)">-{item.amount}</span></div>{/each}
         {#if order.status === "draft"}<details class="p-body"><summary class="k-btn k-btn-sm">Add discount</summary><form class="form-grid form-grid-2" style="padding:var(--space-2) 0 0" onsubmit={addDiscount}><div class="k-field field-wide"><label class="k-label" for="discount-name">Discount name</label><input id="discount-name" class="k-input" required bind:value={discount.name} /></div><div class="k-field"><label class="k-label" for="discount-type">Type</label><select id="discount-type" class="k-input" bind:value={discount.discount_type}><option value="percentage">Percentage</option><option value="fixed_amount">Fixed total</option><option value="fixed_per_item">Fixed per item</option></select></div><div class="k-field"><label class="k-label" for="discount-value">Value</label><input id="discount-value" class="k-input k-input-data" type="number" min="0.01" step="0.01" required bind:value={discount.value} /></div><button class="k-btn field-wide" type="submit">Apply discount</button></form></details>{/if}
         </section>
 

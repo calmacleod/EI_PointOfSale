@@ -1022,14 +1022,23 @@ module Ui
 
       def order_props(order)
         return nil unless order
+        amount_paid = order.amount_paid
+        amount_remaining = [ order.total - amount_paid, 0 ].max
+        amount_remaining = 0 if amount_remaining < 0.03
+        line_discounts = if order.order_lines.loaded?
+          order.order_lines.flat_map { |line| line.order_line_discounts.to_a }
+        else
+          order.order_line_discounts.to_a
+        end
+
         {
           id: order.id, number: order.number, status: order.status, customer: order.customer && { id: order.customer.id, name: order.customer.name, alert: order.customer.alert },
           created_by: human_label(order.created_by), notes: order.notes, tax_exempt: order.tax_exempt,
           subtotal: h.number_to_currency(order.subtotal), discount_total: h.number_to_currency(order.discount_total),
           tax_total: h.number_to_currency(order.tax_total), total: h.number_to_currency(order.total),
-          amount_paid: h.number_to_currency(order.amount_paid),
-          balance_due: h.number_to_currency(order.amount_remaining), balance_due_value: order.amount_remaining.to_f,
-          payment_complete: order.payment_complete?, completed_at: format_time(order.completed_at),
+          amount_paid: h.number_to_currency(amount_paid),
+          balance_due: h.number_to_currency(amount_remaining), balance_due_value: amount_remaining.to_f,
+          payment_complete: amount_remaining.zero?, completed_at: format_time(order.completed_at),
           lines: order.order_lines.sort_by(&:position).map { |line| order_line_props(line) },
           discounts: order.order_discounts.map do |discount|
             {
@@ -1038,7 +1047,7 @@ module Ui
               path: controller.send(:order_discount_path, discount)
             }
           end,
-          line_discounts: order.order_line_discounts.group_by(&:name).map do |name, discounts|
+          line_discounts: line_discounts.group_by(&:name).map do |name, discounts|
             {
               name: name, display_value: discounts.first.display_value,
               applied_quantity: discounts.sum(&:applied_quantity),
@@ -1059,9 +1068,15 @@ module Ui
       end
 
       def order_line_props(line)
+        refunded_quantity = if line.refund_lines.loaded?
+          line.refund_lines.sum(&:quantity)
+        else
+          line.refund_lines.sum(:quantity)
+        end
+
         {
           id: line.id, code: line.code, name: line.name, quantity: line.quantity, sellable_type: line.sellable_type,
-          refundable_quantity: [ line.quantity - line.refund_lines.sum(:quantity), 0 ].max,
+          refundable_quantity: [ line.quantity - refunded_quantity, 0 ].max,
           unit_price: h.number_to_currency(line.unit_price), discount: h.number_to_currency(line.discount_amount),
           tax: h.number_to_currency(line.tax_amount), total: h.number_to_currency(line.line_total),
           discounts: line.order_line_discounts.map do |discount|

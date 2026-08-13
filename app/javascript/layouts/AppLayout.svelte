@@ -39,6 +39,7 @@
   let connectionTimer
   let connectionFailures = 0
   let searchOpen = false
+  const railPrefetchTimers = new Map()
 
   $: authenticated = Boolean(auth.authenticated)
   $: pageTitle = pageProps.title || "Workspace"
@@ -83,6 +84,7 @@
       if (dismissTimer) window.clearTimeout(dismissTimer)
       if (toastTimer) window.clearTimeout(toastTimer)
       if (connectionTimer) window.clearInterval(connectionTimer)
+      railPrefetchTimers.forEach((timer) => window.clearTimeout(timer))
       window.removeEventListener("online", syncConnection)
       window.removeEventListener("offline", syncConnection)
       disconnectCable()
@@ -157,6 +159,28 @@
     event.preventDefault()
     if (fullPage) window.location.assign(href)
     else router.visit(href)
+  }
+
+  function scheduleRailPrefetch(href, fullPage = false) {
+    if (!href || !online || active(href) || railPrefetchTimers.has(href)) return
+
+    const timer = window.setTimeout(() => {
+      railPrefetchTimers.delete(href)
+      if (fullPage) {
+        fetch(href, { credentials: "same-origin", headers: { Accept: "text/html" } }).catch(() => {})
+      } else {
+        router.prefetch(href, { showProgress: false }, { cacheFor: "30s" })
+      }
+    }, 75)
+    railPrefetchTimers.set(href, timer)
+  }
+
+  function cancelRailPrefetch(href) {
+    const timer = railPrefetchTimers.get(href)
+    if (!timer) return
+
+    window.clearTimeout(timer)
+    railPrefetchTimers.delete(href)
   }
 
   function finishRailNavigation(event, href) {
@@ -247,10 +271,10 @@
 {#if authenticated}
   <div class="app" data-cable-connected={cableConnected}>
     <nav class="c-rail" aria-label="Application sections">
-      <a class="c-mark" href={paths.root || "/"} aria-label="EI Point of Sale" onmousedown={(event) => startRailNavigation(event, paths.root || "/")} onclick={(event) => finishRailNavigation(event, paths.root || "/")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.root || "/")}>EI</a>
+      <a class="c-mark" href={paths.root || "/"} aria-label="EI Point of Sale" onmouseenter={() => scheduleRailPrefetch(paths.root || "/")} onmouseleave={() => cancelRailPrefetch(paths.root || "/")} onfocus={() => scheduleRailPrefetch(paths.root || "/")} onmousedown={(event) => startRailNavigation(event, paths.root || "/")} onclick={(event) => finishRailNavigation(event, paths.root || "/")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.root || "/")}>EI</a>
       {#each navItems as item}
         {#if online}
-          <a href={item.href} class="c-railitem" data-label={item.label} aria-label={item.label} aria-current={active(item.href) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, item.href)} onclick={(event) => finishRailNavigation(event, item.href)} onkeydown={(event) => startRailKeyboardNavigation(event, item.href)}>
+          <a href={item.href} class="c-railitem" data-label={item.label} aria-label={item.label} aria-current={active(item.href) ? "page" : undefined} onmouseenter={() => scheduleRailPrefetch(item.href)} onmouseleave={() => cancelRailPrefetch(item.href)} onfocus={() => scheduleRailPrefetch(item.href)} onmousedown={(event) => startRailNavigation(event, item.href)} onclick={(event) => finishRailNavigation(event, item.href)} onkeydown={(event) => startRailKeyboardNavigation(event, item.href)}>
             <svelte:component this={item.icon} />
           </a>
         {:else}
@@ -259,11 +283,11 @@
       {/each}
       <span class="c-railspacer"></span>
       <span class="c-railrule"></span>
-      <a href={paths.admin_gift_certificates} class="c-railitem" data-label="Gift certificates" aria-label="Gift certificates" aria-current={active(paths.admin_gift_certificates) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.admin_gift_certificates)} onclick={(event) => finishRailNavigation(event, paths.admin_gift_certificates)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.admin_gift_certificates)}><Gift /></a>
-      <a href={paths.offline || "/offline"} class="c-railitem" data-label={online ? "Offline lookup" : "Offline mode"} aria-label={online ? "Offline lookup" : "Offline mode"} aria-current={active(paths.offline) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.offline || "/offline", true)} onclick={(event) => finishRailNavigation(event, paths.offline || "/offline")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.offline || "/offline", true)}>{#if online}<CloudDownload />{:else}<WifiOff />{/if}</a>
-      {#if online && auth.admin}<a href={paths.admin_settings} class="c-railitem" data-label="Administration" aria-label="Administration" aria-current={active(paths.admin_settings) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.admin_settings)} onclick={(event) => finishRailNavigation(event, paths.admin_settings)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.admin_settings)}><Settings /></a>{/if}
-      {#if online}<a href={paths.notifications || "/notifications"} class="c-railitem" data-label="Notifications" data-count={auth.unread_notifications || undefined} data-count-tone="bad" aria-label="Notifications" aria-current={active(paths.notifications) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.notifications || "/notifications")} onclick={(event) => finishRailNavigation(event, paths.notifications || "/notifications")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.notifications || "/notifications")}><Bell /></a>{/if}
-      {#if online}<a href={paths.profile} class="c-railitem" data-label={auth.name || auth.email || "Profile"} aria-label="Profile" aria-current={active(paths.profile) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.profile)} onclick={(event) => finishRailNavigation(event, paths.profile)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.profile)}><UserRound /></a>{/if}
+      <a href={paths.admin_gift_certificates} class="c-railitem" data-label="Gift certificates" aria-label="Gift certificates" aria-current={active(paths.admin_gift_certificates) ? "page" : undefined} onmouseenter={() => scheduleRailPrefetch(paths.admin_gift_certificates)} onmouseleave={() => cancelRailPrefetch(paths.admin_gift_certificates)} onfocus={() => scheduleRailPrefetch(paths.admin_gift_certificates)} onmousedown={(event) => startRailNavigation(event, paths.admin_gift_certificates)} onclick={(event) => finishRailNavigation(event, paths.admin_gift_certificates)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.admin_gift_certificates)}><Gift /></a>
+      <a href={paths.offline || "/offline"} class="c-railitem" data-label={online ? "Offline lookup" : "Offline mode"} aria-label={online ? "Offline lookup" : "Offline mode"} aria-current={active(paths.offline) ? "page" : undefined} onmouseenter={() => scheduleRailPrefetch(paths.offline || "/offline", true)} onmouseleave={() => cancelRailPrefetch(paths.offline || "/offline")} onfocus={() => scheduleRailPrefetch(paths.offline || "/offline", true)} onmousedown={(event) => startRailNavigation(event, paths.offline || "/offline", true)} onclick={(event) => finishRailNavigation(event, paths.offline || "/offline")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.offline || "/offline", true)}>{#if online}<CloudDownload />{:else}<WifiOff />{/if}</a>
+      {#if online && auth.admin}<a href={paths.admin_settings} class="c-railitem" data-label="Administration" aria-label="Administration" aria-current={active(paths.admin_settings) ? "page" : undefined} onmouseenter={() => scheduleRailPrefetch(paths.admin_settings)} onmouseleave={() => cancelRailPrefetch(paths.admin_settings)} onfocus={() => scheduleRailPrefetch(paths.admin_settings)} onmousedown={(event) => startRailNavigation(event, paths.admin_settings)} onclick={(event) => finishRailNavigation(event, paths.admin_settings)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.admin_settings)}><Settings /></a>{/if}
+      {#if online}<a href={paths.notifications || "/notifications"} class="c-railitem" data-label="Notifications" data-count={auth.unread_notifications || undefined} data-count-tone="bad" aria-label="Notifications" aria-current={active(paths.notifications) ? "page" : undefined} onmouseenter={() => scheduleRailPrefetch(paths.notifications || "/notifications")} onmouseleave={() => cancelRailPrefetch(paths.notifications || "/notifications")} onfocus={() => scheduleRailPrefetch(paths.notifications || "/notifications")} onmousedown={(event) => startRailNavigation(event, paths.notifications || "/notifications")} onclick={(event) => finishRailNavigation(event, paths.notifications || "/notifications")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.notifications || "/notifications")}><Bell /></a>{/if}
+      {#if online}<a href={paths.profile} class="c-railitem" data-label={auth.name || auth.email || "Profile"} aria-label="Profile" aria-current={active(paths.profile) ? "page" : undefined} onmouseenter={() => scheduleRailPrefetch(paths.profile)} onmouseleave={() => cancelRailPrefetch(paths.profile)} onfocus={() => scheduleRailPrefetch(paths.profile)} onmousedown={(event) => startRailNavigation(event, paths.profile)} onclick={(event) => finishRailNavigation(event, paths.profile)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.profile)}><UserRound /></a>{/if}
       <button class="c-railitem" data-label="Sign out" aria-label="Sign out" disabled={!online} onclick={() => router.delete(paths.session)}><LogOut /></button>
     </nav>
 

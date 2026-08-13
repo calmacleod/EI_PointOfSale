@@ -19,10 +19,12 @@ WebMock.disable_net_connect!(allow_localhost: true)
 
 require_relative "test_helpers/session_test_helper"
 require_relative "test_helpers/shopify_test_helper"
+require_relative "test_helpers/query_count_test_helper"
 
 module ActiveSupport
   class TestCase
     include ShopifyTestHelper
+    include QueryCountTestHelper
 
     # Run tests in parallel (single worker in CI for JUnit report)
     parallelize(workers: :number_of_processors)

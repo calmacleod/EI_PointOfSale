@@ -3,47 +3,32 @@
 # The Register is the cashier's primary workspace — the POS screen.
 # GET /register shows the active order form, switching between orders via ?order_id=.
 class RegisterController < ApplicationController
+  REGISTER_INCLUDES = [
+    :customer,
+    :created_by,
+    { order_lines: [ :sellable, :order_line_discounts, :refund_lines ] },
+    :order_discounts,
+    :order_payments
+  ].freeze
+
   def show
     authorize! :show, :register
 
-    # Eager load all associations needed by the register view in a single query
-    base_includes = [
-      :customer,
-      :created_by,
-      { order_lines: [ :sellable, :order_line_discounts ] },
-      :order_discounts,
-      :order_payments
-    ]
-
-    @order = if params[:order_id].present?
-      Order.active.includes(base_includes).find_by(id: params[:order_id]) || find_or_create_draft
+    selected_order = if params[:order_id].present?
+      Order.active.find_by(id: params[:order_id]) || find_or_create_draft
     else
       find_or_create_draft
     end
+    @order = Order.active.includes(*REGISTER_INCLUDES).find(selected_order.id)
 
-    # Eager load all needed associations for the tab bar (active orders)
-    # Limit to: all draft orders + held orders that are currently open in tabs
-    # This prevents showing ALL held orders from the entire system in the tab bar
-    draft_orders = Order.draft.includes(
-      :customer,
-      { order_lines: [ :sellable, :order_line_discounts ] },
-      :order_discounts,
-      :order_payments
-    ).order(created_at: :desc)
-
-    # For held orders, only show the current order (if it's held) to avoid tab bar clutter
-    held_orders = Order.held.where(id: @order.id).includes(
-      :customer,
-      { order_lines: [ :sellable, :order_line_discounts ] },
-      :order_discounts,
-      :order_payments
-    )
-
-    @active_orders = (draft_orders.to_a + held_orders.to_a).sort_by(&:created_at)
+    # Tabs need only their customer and line count. Keep unrelated order detail
+    # associations out of this frequently rendered collection.
+    @active_orders = Order
+      .where(status: :draft)
+      .or(Order.where(id: @order.id, status: :held))
+      .includes(:customer, :order_lines)
+      .order(created_at: :desc)
     @held_count = Order.held.count
-
-    # NOTE: We do NOT load all customers here - the customer search uses AJAX via search_customers_path
-    # This prevents loading thousands of customers into memory on every register page load
   end
 
   def new_order

@@ -7,6 +7,7 @@ module RegisterHelper
     fill_in "code", with: code
     click_button "Add"
     assert_field "code", with: "", wait: 5
+    assert_no_selector "[data-testid='pending-register-code']", wait: 5
   end
 
   def fill_in_payment(method:, amount:, tendered: nil, gc_code: nil)

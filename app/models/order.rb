@@ -50,7 +50,11 @@ class Order < ApplicationRecord
   # ── Money helpers ───────────────────────────────────────────────────
 
   def amount_paid
-    order_payments.sum(:amount)
+    if order_payments.loaded?
+      order_payments.sum(&:amount)
+    else
+      order_payments.sum(:amount)
+    end
   end
 
   def amount_remaining
