@@ -1,6 +1,8 @@
 require "test_helper"
 
 class SearchTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   test "Product.search finds products by name" do
     product = Product.create!(code: "SRCH-WIDG-001", name: "Unique Searchable Widget")
     assert_includes Product.search("Widget"), product
@@ -127,13 +129,16 @@ class SearchTest < ActiveSupport::TestCase
   end
 
   test "PgSearch.multisearch finds records across models" do
-    product = Product.create!(code: "MULTI-001", name: "Multisearch Widget")
-    user = User.create!(
-      name: "Multisearch User",
-      email_address: "multisearch@example.com",
-      password: "password123!"
-    )
-    category = Category.create!(name: "Multisearch Category")
+    product = user = category = nil
+    perform_enqueued_jobs(only: PgSearchUpdateJob) do
+      product = Product.create!(code: "MULTI-001", name: "Multisearch Widget")
+      user = User.create!(
+        name: "Multisearch User",
+        email_address: "multisearch@example.com",
+        password: "password123!"
+      )
+      category = Category.create!(name: "Multisearch Category")
+    end
 
     results = PgSearch.multisearch("Multisearch")
     searchables = results.map(&:searchable)
@@ -144,7 +149,10 @@ class SearchTest < ActiveSupport::TestCase
   end
 
   test "PgSearch.multisearch returns PgSearch::Document with searchable association" do
-    product = Product.create!(code: "DOC-TEST-001", name: "Document Test Product")
+    product = nil
+    perform_enqueued_jobs(only: PgSearchUpdateJob) do
+      product = Product.create!(code: "DOC-TEST-001", name: "Document Test Product")
+    end
     results = PgSearch.multisearch("Document Test")
     assert results.any?
     doc = results.first
@@ -153,10 +161,13 @@ class SearchTest < ActiveSupport::TestCase
   end
 
   test "PgSearch.multisearch excludes discarded records from Discard models" do
-    product = Product.create!(code: "MULTI-DISC-001", name: "Multisearch Discardable")
+    product = nil
+    perform_enqueued_jobs(only: PgSearchUpdateJob) do
+      product = Product.create!(code: "MULTI-DISC-001", name: "Multisearch Discardable")
+    end
     assert PgSearch.multisearch("Discardable").any? { |d| d.searchable == product }
 
-    product.discard
+    perform_enqueued_jobs(only: PgSearchUpdateJob) { product.discard }
     assert_empty PgSearch.multisearch("Discardable").select { |d| d.searchable == product }
   end
 end

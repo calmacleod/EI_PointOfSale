@@ -5,6 +5,8 @@ module Discounts
   # order-level and line-level discounts. Line-level discounts can be
   # excluded on a per-line basis using OrderLineDiscount.excluded_at.
   class AutoApply
+    Result = Data.define(:lines, :order_discounts, :line_discounts)
+
     ORDER_DISCOUNT_TYPE_MAP = {
       "percentage"    => "percentage",
       "fixed_total"   => "fixed_amount",
@@ -22,29 +24,36 @@ module Discounts
     def call
       return if @order.finalized?
 
-      # Load current state in minimal queries
-      current_lines = load_order_lines
-      existing_order_discounts = load_existing_order_discounts
-      existing_line_discounts = load_existing_line_discounts
+      load_current_state
+      automatic_order_discounts = @order_discounts.select { |discount| discount.discount_id.present? }
+      automatic_line_discounts = @line_discounts.select(&:auto_applied?)
 
       # Sync customer automatic discount (handles both order-level and per-item)
-      sync_customer_discount(current_lines, existing_order_discounts, existing_line_discounts)
+      sync_customer_discount(@lines, automatic_order_discounts, automatic_line_discounts)
 
       # Sync order-level discounts (applies_to_all, excluding customer discounts already handled)
-      sync_order_level_discounts(existing_order_discounts)
+      sync_order_level_discounts(automatic_order_discounts)
 
       # Sync line-level discounts (specific items, including fixed_total with specific items)
-      sync_line_level_discounts(current_lines, existing_line_discounts)
+      sync_line_level_discounts(@lines, automatic_line_discounts)
+
+      Result.new(
+        lines: @lines.reject(&:destroyed?),
+        order_discounts: @order_discounts.reject(&:destroyed?),
+        line_discounts: @line_discounts.reject(&:destroyed?)
+      )
     end
 
     private
 
-      def load_order_lines
-        @order.order_lines.to_a
-      end
-
-      def load_existing_order_discounts
-        @order.order_discounts.where.not(discount_id: nil).to_a
+      def load_current_state
+        @lines = @order.order_lines.includes(
+          :tax_code,
+          :sellable,
+          order_line_discounts: { source_discount: :customers }
+        ).to_a
+        @order_discounts = @order.order_discounts.includes(discount: :customers).to_a
+        @line_discounts = @lines.flat_map { |line| line.order_line_discounts.to_a }
       end
 
       def sync_customer_discount(lines, existing_order_discounts, existing_line_discounts)
@@ -93,9 +102,9 @@ module Discounts
       def sync_customer_per_item_discount(discount, lines, existing_line_discounts)
         # Check deny-list for each line and create discounts for allowed lines
         # Gift certificates are never eligible for discounts
-        allowed_lines = lines.reject do |line|
-          line.sellable_type == "GiftCertificate" || discount.denies?(line.sellable)
-        end
+        discount.discount_items.load
+        denied_set = build_discountable_set(discount.discount_items.select(&:denied?))
+        allowed_lines = lines.reject { |line| line_denied?(line, denied_set) }
 
         allowed_lines.each do |line|
           next unless line.persisted?
@@ -105,7 +114,7 @@ module Discounts
           if existing
             restore_if_excluded(existing)
           else
-            line.order_line_discounts.create!(
+            created = line.order_line_discounts.create!(
               source_discount: discount,
               name: discount.name,
               discount_type: ORDER_DISCOUNT_TYPE_MAP[discount.discount_type],
@@ -113,6 +122,7 @@ module Discounts
               calculated_amount: 0,
               auto_applied: true
             )
+            @line_discounts << created
           end
         end
 
@@ -126,7 +136,7 @@ module Discounts
       end
 
       def create_customer_order_discount(discount)
-        @order.order_discounts.create!(
+        created = @order.order_discounts.create!(
           name: discount.name,
           discount_type: ORDER_DISCOUNT_TYPE_MAP[discount.discount_type],
           value: discount.value,
@@ -134,10 +144,8 @@ module Discounts
           discount_id: discount.id,
           applied_by: nil
         )
-      end
-
-      def load_existing_line_discounts
-        @order.order_line_discounts.where(auto_applied: true).to_a
+        @order_discounts << created
+        created
       end
 
       def sync_order_level_discounts(existing_discounts)
@@ -229,7 +237,7 @@ module Discounts
           # All discounts with specific allow lists (applies_to_all: false)
           Discount.currently_active
             .where(applies_to_all: false)
-            .includes(discount_items: :discountable)
+            .preload(:discount_items)
             .find_each do |discount|
               matching_lines = find_matching_lines(discount, lines)
               applicable[discount] = matching_lines unless matching_lines.empty?
@@ -238,35 +246,33 @@ module Discounts
       end
 
       def find_matching_lines(discount, lines)
-        allowed_set = build_discountable_set(discount.allowed_items)
-        denied_set = build_discountable_set(discount.denied_items)
+        allowed_set = build_discountable_set(discount.discount_items.select(&:allowed?))
+        denied_set = build_discountable_set(discount.discount_items.select(&:denied?))
 
         lines.select do |line|
-          sellable = line.sellable
-          sellable_type = line.sellable_type
-          sellable_id = sellable.id
-
-          # Gift certificates are never eligible for discounts
-          next false if sellable_type == "GiftCertificate"
-
-          # Check deny-list first (takes precedence)
-          next false if denied_set.include?([ sellable_type, sellable_id ])
-
-          # Check ProductGroup deny-list for Products
-          if sellable.respond_to?(:product_group) && sellable.product_group.present?
-            next false if denied_set.include?([ "ProductGroup", sellable.product_group_id ])
-          end
+          next false if line_denied?(line, denied_set)
 
           # Check allow-list directly
-          next true if allowed_set.include?([ sellable_type, sellable_id ])
+          next true if allowed_set.include?([ line.sellable_type, line.sellable_id ])
 
           # Check ProductGroup allow-list for Products
-          if sellable.respond_to?(:product_group) && sellable.product_group.present?
-            next true if allowed_set.include?([ "ProductGroup", sellable.product_group_id ])
-          end
+          product_group_id = line_product_group_id(line)
+          next true if product_group_id && allowed_set.include?([ "ProductGroup", product_group_id ])
 
           false
         end
+      end
+
+      def line_denied?(line, denied_set)
+        return true if line.sellable_type == "GiftCertificate"
+        return true if denied_set.include?([ line.sellable_type, line.sellable_id ])
+
+        product_group_id = line_product_group_id(line)
+        product_group_id && denied_set.include?([ "ProductGroup", product_group_id ])
+      end
+
+      def line_product_group_id(line)
+        line.sellable.product_group_id if line.sellable_type == "Product"
       end
 
       def build_discountable_set(discount_items)
@@ -276,7 +282,7 @@ module Discounts
       end
 
       def create_order_level_discount(discount)
-        @order.order_discounts.create!(
+        created = @order.order_discounts.create!(
           name: discount.name,
           discount_type: ORDER_DISCOUNT_TYPE_MAP[discount.discount_type],
           value: discount.value,
@@ -284,10 +290,12 @@ module Discounts
           discount_id: discount.id,
           applied_by: nil
         )
+        @order_discounts << created
+        created
       end
 
       def create_line_level_discount(discount, line)
-        line.order_line_discounts.create!(
+        created = line.order_line_discounts.create!(
           source_discount: discount,
           name: discount.name,
           discount_type: ORDER_DISCOUNT_TYPE_MAP[discount.discount_type],
@@ -295,6 +303,8 @@ module Discounts
           calculated_amount: 0, # Will be calculated by CalculateTotals
           auto_applied: true
         )
+        @line_discounts << created
+        created
       end
 
       def restore_if_excluded(line_discount)

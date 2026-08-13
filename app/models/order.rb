@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Order < ApplicationRecord
-  audited
+  audited async: true
 
   include Discard::Model
   include PgSearch::Model

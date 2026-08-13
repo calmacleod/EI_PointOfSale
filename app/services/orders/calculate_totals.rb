@@ -5,12 +5,15 @@ module Orders
   # line-level discounts. Line-level discounts are stored per-line with
   # granular exclusion capability.
   class CalculateTotals
-    def self.call(order)
-      new(order).call
+    def self.call(order, state: nil)
+      new(order, state:).call
     end
 
-    def initialize(order)
+    def initialize(order, state: nil)
       @order = order
+      @lines = state&.lines
+      @order_discounts = state&.order_discounts
+      @line_discounts = state&.line_discounts
     end
 
     def call
@@ -31,14 +34,16 @@ module Orders
     private
 
       def load_order_lines
-        @order.order_lines.includes(:tax_code, :sellable).to_a
+        @lines || @order.order_lines.includes(:tax_code, :sellable, :order_line_discounts).to_a
       end
 
       def load_order_discounts
-        @order.order_discounts.to_a
+        Array(@order_discounts || @order.order_discounts.to_a).reject(&:destroyed?)
       end
 
       def load_line_discounts(lines)
+        return @line_discounts.reject(&:destroyed?).group_by(&:order_line_id) if @line_discounts
+
         line_ids = lines.map(&:id)
         OrderLineDiscount.where(order_line_id: line_ids).to_a.group_by(&:order_line_id)
       end
@@ -113,7 +118,7 @@ module Orders
           end
 
           # Update the line's total discount amount
-          active_discounts = all_discounts.select(&:active?)
+          active_discounts = all_discounts.select { |discount| discount.excluded_quantity < line.quantity }
           line.discount_amount = active_discounts.any? ? active_discounts.sum(&:calculated_amount) : 0
         end
 
@@ -150,7 +155,11 @@ module Orders
         @order.subtotal = lines.sum(&:subtotal_before_discount).round(2)
 
         order_discount_total = order_discounts.sum(&:calculated_amount)
-        line_discount_total = line_discounts_by_line.values.flatten.select(&:active?).sum(&:calculated_amount)
+        lines_by_id = lines.index_by(&:id)
+        line_discount_total = line_discounts_by_line.sum do |line_id, discounts|
+          line = lines_by_id.fetch(line_id)
+          discounts.select { |discount| discount.excluded_quantity < line.quantity }.sum(&:calculated_amount)
+        end
 
         @order.discount_total = (order_discount_total + line_discount_total).round(2)
         @order.tax_total = lines.sum(&:tax_amount).round(2)

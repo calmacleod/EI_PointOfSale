@@ -46,7 +46,15 @@ class OrderLine < ApplicationRecord
   end
 
   def total_discount_amount
-    active_discounts.sum(:calculated_amount)
+    return 0 if new_record?
+
+    if order_line_discounts.loaded?
+      order_line_discounts
+        .select { |discount| discount.excluded_quantity < quantity }
+        .sum(&:calculated_amount)
+    else
+      active_discounts.sum(:calculated_amount)
+    end
   end
 
   private

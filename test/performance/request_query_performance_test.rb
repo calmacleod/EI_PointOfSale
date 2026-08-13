@@ -22,6 +22,24 @@ class RequestQueryPerformanceTest < ActionDispatch::IntegrationTest
       "refund quantities should be preloaded in one query"
   end
 
+  test "quick lookup query count does not grow with order size" do
+    product = products(:dragon_shield_red)
+    small_order = prepared_order(product, line_count: 1)
+    large_order = prepared_order(product, line_count: 12)
+
+    small_queries = capture_sql_queries do
+      post quick_lookup_orders_path, params: { order_id: small_order.id, code: product.code }
+    end
+    assert_redirected_to register_path(order_id: small_order.id)
+
+    large_queries = assert_queries_at_most(25, label: "Quick lookup with 12 lines") do
+      post quick_lookup_orders_path, params: { order_id: large_order.id, code: product.code }
+    end
+    assert_redirected_to register_path(order_id: large_order.id)
+    assert_operator large_queries.length, :<=, small_queries.length + 2,
+      "Quick lookup reads should stay bounded as line count grows"
+  end
+
   test "product index query count stays bounded with a full page of products" do
     20.times do |index|
       Product.create!(
@@ -57,5 +75,13 @@ class RequestQueryPerformanceTest < ActionDispatch::IntegrationTest
       line = order.order_lines.build(quantity: 1, position: position)
       line.snapshot_from_sellable!(product)
       line.save!
+    end
+
+    def prepared_order(product, line_count:)
+      order = Order.create!(created_by: @admin)
+      line_count.times { |index| add_order_line(order, product, index + 1) }
+      state = Discounts::AutoApply.call(order)
+      Orders::CalculateTotals.call(order, state:)
+      order
     end
 end

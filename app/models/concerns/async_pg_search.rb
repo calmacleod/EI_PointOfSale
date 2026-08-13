@@ -20,10 +20,17 @@ module AsyncPgSearch
     after_commit :destroy_pg_search_document, on: :destroy
   end
 
+  class_methods do
+    def multisearchable(...)
+      super.tap do
+        skip_callback :save, :after, :update_pg_search_document
+      end
+    end
+  end
+
   private
 
     def enqueue_pg_search_update
-      return unless pg_search_multisearchable_enabled?
       return unless searchable_columns_changed?
 
       PgSearchUpdateJob.perform_later(self.class.name, id)
@@ -49,17 +56,20 @@ module AsyncPgSearch
 
       options = self.class.pg_search_multisearchable_options
       against = Array(options[:against])
+      changed_columns = saved_changes.keys
 
       # Check if any direct columns changed
-      return true if (changed & against.map(&:to_s)).any?
+      return true if (changed_columns & against.map(&:to_s)).any?
 
       # Check associated columns (e.g., customer.name)
       associated = options[:associated_against] || {}
       associated.each do |association, columns|
         association_id = "#{association}_id"
-        return true if changed.include?(association_id)
+        return true if changed_columns.include?(association_id)
       end
 
-      false
+      # These columns drive the conditional `if:` clauses used by the
+      # multisearchable models in this application.
+      (changed_columns & %w[discarded_at status]).any?
     end
 end

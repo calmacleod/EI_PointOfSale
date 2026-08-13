@@ -3,6 +3,8 @@
 require "test_helper"
 
 class OrderTest < ActiveSupport::TestCase
+  include ActiveJob::TestHelper
+
   test "generates order number on create" do
     order = Order.create!(created_by: users(:admin))
     assert_match(/\AORD-\d{6}\z/, order.number)
@@ -64,6 +66,26 @@ class OrderTest < ActiveSupport::TestCase
     order.update_column(:status, Order.statuses[:cancelled])
     assert_raises(ActiveRecord::ReadOnlyRecord) do
       order.update!(notes: "trying to edit a cancelled order")
+    end
+  end
+
+  test "audits updates outside the request through a background job" do
+    order = orders(:draft_order)
+
+    assert_enqueued_with(job: AuditCreationJob) do
+      order.update!(notes: "Audit this asynchronously")
+    end
+  end
+
+  test "only enqueues search indexing when searchable order fields change" do
+    order = orders(:draft_order)
+
+    assert_no_enqueued_jobs only: PgSearchUpdateJob do
+      order.update!(total: order.total + 1)
+    end
+
+    assert_enqueued_with(job: PgSearchUpdateJob) do
+      order.update!(notes: "Searchable note")
     end
   end
 end

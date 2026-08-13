@@ -22,18 +22,22 @@ module OrderLines
       return error_result("Sellable is required") unless @sellable
       return error_result("Order cannot be modified") if @order.finalized?
 
-      line, action = find_or_create_line
-      apply_discounts_and_totals
-      record_event(line, action)
-      enqueue_committed_sync(line)
+      result = nil
+      Order.transaction do
+        line, action = find_or_create_line
+        apply_discounts_and_totals
+        record_event(line, action)
+        enqueue_committed_sync(line)
 
-      Result.new(success?: true, line:, action:)
+        result = Result.new(success?: true, line:, action:)
+      end
+      result
     end
 
     private
 
       def find_or_create_line
-        existing_line = @order.order_lines.find_by(sellable: @sellable)
+        existing_line = @order.order_lines.includes(:order_line_discounts).find_by(sellable: @sellable)
 
         if existing_line && @increment_if_exists
           existing_line.update!(quantity: existing_line.quantity + @quantity)
@@ -53,8 +57,8 @@ module OrderLines
       end
 
       def apply_discounts_and_totals
-        Discounts::AutoApply.call(@order)
-        Orders::CalculateTotals.call(@order)
+        state = Discounts::AutoApply.call(@order)
+        Orders::CalculateTotals.call(@order, state:)
       end
 
       def record_event(line, action)
@@ -76,9 +80,9 @@ module OrderLines
       end
 
       def enqueue_committed_sync(line)
-        return unless line.sellable.is_a?(Product) && line.sellable.sync_to_shopify?
+        return unless @sellable.is_a?(Product) && @sellable.sync_to_shopify?
 
-        ShopifySync::SyncCommittedJob.perform_later(line.sellable_id, @quantity)
+        ShopifySync::SyncCommittedJob.perform_later(@sellable.id, @quantity)
       end
 
       def error_result(message)
