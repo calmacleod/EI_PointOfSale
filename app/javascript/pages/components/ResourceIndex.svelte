@@ -1,6 +1,7 @@
 <script>
   import { Link, router } from "@inertiajs/svelte"
   import EmptyState from "./EmptyState.svelte"
+  import Pagination from "./Pagination.svelte"
   import PanelHeader from "./PanelHeader.svelte"
   import StatusTag from "./StatusTag.svelte"
   import { displayValue, machineField, numericField, rowTone } from "../../lib/design-system.js"
@@ -16,26 +17,24 @@
   export let templates = []
 
   let values = { ...query }
+  let previousQuery = query
   let showFilters = false
+  $: if (query !== previousQuery) {
+    previousQuery = query
+    values = { ...query }
+  }
   $: activeFilters = Object.entries(values).filter(([key, value]) => !["q", "sort", "dir", "page"].includes(key) && value !== "" && value !== null && value !== undefined && (!Array.isArray(value) || value.length))
 
   function updateValue(key, value) { values = { ...values, [key]: value } }
-  function submit(event) { event.preventDefault(); router.get(actions.index, values, { preserveState: true, replace: true }) }
+  function withoutPage(params) { const { page, ...rest } = params; return rest }
+  function submit(event) { event.preventDefault(); values = withoutPage(values); router.get(actions.index, values, { preserveState: true, replace: true }) }
   function clearFilters() { values = {}; router.get(actions.index, {}, { replace: true }) }
-  function removeFilter(key) { const next = { ...values }; delete next[key]; values = next; router.get(actions.index, next, { preserveState: true, replace: true }) }
+  function removeFilter(key) { const next = withoutPage({ ...values }); delete next[key]; values = next; router.get(actions.index, next, { preserveState: true, replace: true }) }
   function sort(column) {
     if (!column.sortable) return
     const direction = values.sort === column.key && values.dir === "asc" ? "desc" : "asc"
-    values = { ...values, sort: column.key, dir: direction }
+    values = withoutPage({ ...values, sort: column.key, dir: direction })
     router.get(actions.index, values, { preserveState: true, replace: true })
-  }
-  function pageHref(page) {
-    const params = new URLSearchParams()
-    for (const [key, value] of Object.entries({ ...values, page })) {
-      if (Array.isArray(value)) value.forEach((item) => params.append(`${key}[]`, item))
-      else if (value !== null && value !== undefined && value !== "") params.set(key, value)
-    }
-    return `${actions.index}?${params.toString()}`
   }
   function statusColumn(column) { return /(status|state|active)/i.test(`${column.key} ${column.label}`) }
 </script>
@@ -105,8 +104,6 @@
         </tbody>
       </table>
     </div>
-    {#if pagination}
-      <footer class="p-foot"><span>Rows <strong>{rows.length}</strong> of <strong>{pagination.count}</strong> · page {pagination.page} of {pagination.pages}</span><div class="push row">{#if pagination.previous}<Link href={pageHref(pagination.previous)} class="k-btn k-btn-xs">Previous</Link>{/if}{#if pagination.next}<Link href={pageHref(pagination.next)} class="k-btn k-btn-xs">Next</Link>{/if}</div></footer>
-    {/if}
+    <Pagination path={actions.index} query={values} {pagination} />
   </section>
 </section>

@@ -18,6 +18,7 @@
   export let filters = []
   export let query = {}
   export let pagination = null
+  export let pagination_path = null
   export let actions = {}
   export let can_create = false
   export let empty_message = "No records found."
@@ -75,5 +76,5 @@
 {:else if view === "offline"}
   <OfflinePage {sync_paths} {home_path} {allow_fake_offline} />
 {:else}
-  <SpecialPage {view} {title} {description} {details} {actions} {cards} {form} {order} {events} {store} {receipt_lines} {action} {errors} {session} {pending_reconciliation} {recent_sessions} {denominations} {reconciliation} {report} {notifications} {unread_count} {certificate} {redemptions} {preview_lines} {files} {status} {recurring_tasks} {recent_imports} />
+  <SpecialPage {view} {title} {description} {details} {actions} {cards} {form} {order} {events} {store} {receipt_lines} {action} {errors} {session} {pending_reconciliation} {recent_sessions} {denominations} {reconciliation} {report} {notifications} {unread_count} {certificate} {redemptions} {preview_lines} {files} {status} {recurring_tasks} {recent_imports} {query} {pagination} {pagination_path} />
 {/if}

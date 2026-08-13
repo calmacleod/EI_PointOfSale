@@ -2,6 +2,7 @@
   import { Link, router } from "@inertiajs/svelte"
   import ConfirmModal from "./ConfirmModal.svelte"
   import EmptyState from "./EmptyState.svelte"
+  import Pagination from "./Pagination.svelte"
   import PanelHeader from "./PanelHeader.svelte"
   import StatusTag from "./StatusTag.svelte"
   import { displayValue, machineField, stateTone } from "../../lib/design-system.js"
@@ -34,6 +35,9 @@
   export let status = null
   export let recurring_tasks = []
   export let recent_imports = []
+  export let query = {}
+  export let pagination = null
+  export let pagination_path = null
 
   let reportValues = Object.fromEntries((form?.parameters || []).map((parameter) => [parameter.key, ""]))
   let inventoryCode = ""
@@ -221,7 +225,7 @@
     <div class="f-bar">{#each actions as item}{#if !item.upload}<button class="k-btn k-btn-sm" type="button" onclick={() => perform(item)}>{item.label}</button>{/if}{/each}</div>
     {#if actions[0]?.upload}<form class="f-bar" onsubmit={submitOperationalUpload}><label class="k-label" for="operation-file">CSV file</label><input id="operation-file" class="k-input k-input-sm" style="width:min(420px,60vw)" type="file" accept=".csv" onchange={(event) => (uploadFile = event.currentTarget.files?.[0])} /><button class="k-btn k-btn-sm k-btn-primary">Preview import</button></form>{/if}
     <div class="p-split" style="grid-template-columns:minmax(0,1fr) minmax(280px,0.5fr)">
-      <section class="p-region"><PanelHeader title="Operational details" count={details.length} /><dl class="d-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">{#each details as detail}<div class="d-row"><dt>{detail.label}</dt><dd class:data={machineField(detail.label, detail.label)}>{displayValue(detail.value)}</dd></div>{:else}<EmptyState title="No additional details" body="Status information will appear here when it is available." />{/each}</dl></section>
+      <section class="p-region"><PanelHeader title="Operational details" count={pagination ? pagination.count : details.length} /><dl class="d-grid" style="grid-template-columns:repeat(2,minmax(0,1fr))">{#each details as detail}<div class="d-row"><dt>{detail.label}</dt><dd class:data={machineField(detail.label, detail.label)}>{displayValue(detail.value)}</dd></div>{:else}<EmptyState title="No additional details" body="Status information will appear here when it is available." />{/each}</dl>{#if pagination && pagination_path}<Pagination path={pagination_path} {query} {pagination} />{/if}</section>
       <section class="p-region"><PanelHeader title="Recent imports" count={recent_imports.length} /><div class="p-body-flush">{#each recent_imports as item}<Link href={item.path} class="list-row" data-state={stateTone(item.status)}><span class="grow col"><strong>{item.file_name}</strong><span class="data faint">{item.created_at}</span></span><StatusTag value={item.status} /></Link>{:else}<EmptyState title="No recent imports" body="Uploaded imports will appear here." />{/each}</div></section>
     </div>
   </section>

@@ -735,6 +735,9 @@ module Ui
               value: "#{restock.quantity} units by #{human_label(restock.user)}#{restock.notes.present? ? " — #{restock.notes}" : ""}"
             }
           end,
+          query: safe_query_params,
+          pagination: pagination_props(assigns[:pagy]),
+          pagination_path: controller.send(:product_restocks_path, assigns[:product]),
           actions: []
         }
       end
@@ -987,11 +990,10 @@ module Ui
       def pagination_props(pagy)
         return nil unless pagy
         {
-          page: pagy.page, pages: pagy.last, count: pagy.count,
-          previous: pagy.prev, next: pagy.next, limit: pagy.limit
+          page: pagy.page, pages: pagy.pages, count: pagy.count,
+          previous: pagy.previous, next: pagy.next, limit: pagy.limit,
+          from: pagy.from, to: pagy.to
         }
-      rescue NoMethodError
-        nil
       end
 
       def safe_query_params
