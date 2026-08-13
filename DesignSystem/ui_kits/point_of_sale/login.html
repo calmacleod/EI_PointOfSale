@@ -1,0 +1,99 @@
+<!-- @dsCard group="Point of Sale" viewport="1200x700" name="Sign in" subtitle="Dark chrome split, terminal identity, offline escape hatch" -->
+<!-- @startingPoint section="Point of Sale" subtitle="Authentication" viewport="1200x700" -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in · EI Point of Sale</title>
+<link rel="icon" href="../../assets/icon.svg">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { height:100vh; overflow:hidden; }
+  .auth { display:grid; grid-template-columns:minmax(0,1fr) 400px; height:100vh; }
+  .auth-brand { background:var(--chrome-bg); color:var(--chrome-text); padding:28px 32px; display:flex; flex-direction:column; }
+  .auth-form { background:var(--color-surface); border-left:1px solid var(--color-border); display:flex; flex-direction:column; }
+</style>
+</head>
+<body>
+<div class="auth">
+  <section class="auth-brand">
+    <div class="row" style="gap:10px">
+      <span class="c-mark" style="margin:0;width:32px;height:32px;font-size:11px">EI</span>
+      <div>
+        <p style="color:var(--chrome-text-bright);font-size:var(--text-ui);font-weight:var(--weight-semibold)">EI Point of Sale</p>
+        <p class="data" style="font-size:var(--text-meta);color:var(--chrome-text-faint)">Terminal 1 · Main counter</p>
+      </div>
+    </div>
+
+    <div style="margin-top:auto;max-width:44ch">
+      <p style="font-size:var(--text-label);font-weight:var(--weight-semibold);text-transform:uppercase;letter-spacing:var(--tracking-label);color:var(--chrome-text-faint)">Shift handover</p>
+      <dl style="margin-top:10px;display:flex;flex-direction:column;gap:0">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--chrome-border)">
+          <dt style="font-size:var(--text-data);color:var(--chrome-text)">Last session closed</dt>
+          <dd class="data" style="font-size:var(--text-data);color:var(--state-ok)">Aug 11, 9:12pm</dd>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--chrome-border)">
+          <dt style="font-size:var(--text-data);color:var(--chrome-text)">Closing count</dt>
+          <dd class="data" style="font-size:var(--text-data);color:var(--state-idle)">$1,884.20</dd>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--chrome-border)">
+          <dt style="font-size:var(--text-data);color:var(--chrome-text)">Variance</dt>
+          <dd class="data" style="font-size:var(--text-data);color:var(--state-warn)">-$2.40</dd>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--chrome-border)">
+          <dt style="font-size:var(--text-data);color:var(--chrome-text)">Terminal reconciliation</dt>
+          <dd class="data" style="font-size:var(--text-data);color:var(--state-warn)">Pending — debit</dd>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;padding:7px 0;border-bottom:1px solid var(--chrome-border)">
+          <dt style="font-size:var(--text-data);color:var(--chrome-text)">Catalogue synced</dt>
+          <dd class="data" style="font-size:var(--text-data);color:var(--state-ok)">Aug 12, 2:44pm</dd>
+        </div>
+      </dl>
+      <p style="margin-top:14px;font-size:var(--text-meta);color:var(--chrome-text-faint)">Debit terminal reconciliation is outstanding. Whoever opens the drawer next will be prompted to complete it before the first sale.</p>
+    </div>
+  </section>
+
+  <section class="auth-form">
+    <div class="n-bar n-bad" style="border-left-width:var(--state-stripe)">
+      <span><strong>Sign in failed.</strong> Email or password is incorrect. 2 attempts remain.</span>
+    </div>
+    <div style="padding:24px;display:flex;flex-direction:column;gap:14px">
+      <div>
+        <h1 style="font-size:var(--text-strong);font-weight:var(--weight-semibold)">Sign in</h1>
+        <p class="muted" style="font-size:var(--text-data);margin-top:2px">Use your staff account. Sessions end at midnight.</p>
+      </div>
+      <div class="k-field">
+        <label class="k-label" for="e">Email</label>
+        <input id="e" class="k-input" value="cmacleod@example.com" autocomplete="username">
+      </div>
+      <div class="k-field">
+        <label class="k-label" for="p">Password</label>
+        <div style="position:relative">
+          <input id="p" class="k-input" type="password" value="••••••••••" style="padding-right:60px" autocomplete="current-password">
+          <button class="k-btn k-btn-xs k-btn-quiet" style="position:absolute;right:3px;top:50%;transform:translateY(-50%)">Show</button>
+        </div>
+        <p class="k-hint"><a href="#">Reset password</a></p>
+      </div>
+      <button class="k-btn k-btn-primary k-btn-block" style="height:var(--control-key)">Sign in <kbd>↵</kbd></button>
+
+      <div class="row" style="gap:8px;margin-top:2px">
+        <span class="p-rule grow"></span><span class="k-label">or</span><span class="p-rule grow"></span>
+      </div>
+
+      <button class="k-btn k-btn-block" style="height:var(--control-key);justify-content:space-between;padding:0 12px">
+        <span class="col" style="align-items:flex-start;gap:0">
+          <span style="font-size:var(--text-ui);font-weight:var(--weight-semibold)">Offline lookup</span>
+          <span class="faint" style="font-size:var(--text-meta);font-weight:var(--weight-regular)">Read-only catalogue · no sign-in</span>
+        </span>
+        <kbd>F1</kbd>
+      </button>
+    </div>
+    <footer style="margin-top:auto;padding:12px 24px;border-top:1px solid var(--color-border);display:flex;justify-content:space-between">
+      <span class="faint" style="font-size:var(--text-meta)">v4.2.1 · build 8f21c0</span>
+      <span class="row" style="gap:5px;font-size:var(--text-meta);color:var(--color-text-faint)"><span class="c-dot c-dot-ok"></span>Server reachable</span>
+    </footer>
+  </section>
+</div>
+</body>
+</html>

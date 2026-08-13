@@ -1,0 +1,54 @@
+<!-- @dsCard group="Components" viewport="700x280" name="Feedback — notice bars, toast, modal, empty" subtitle="Notices are full-bleed bars with a state stripe, not floating alerts" -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><title>Feedback</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+</style></head><body>
+<p class="cap">Notice bars — full width, stripe carries the state</p>
+<div style="margin-top:5px;border:1px solid var(--color-border)">
+  <div class="n-bar n-ok"><span>Order <strong>ORD-000014</strong> completed · $16.94 · change $3.06.</span><span class="n-bar-actions"><button class="k-btn k-btn-xs">Print receipt</button></span></div>
+  <div class="n-bar n-warn"><span><strong>1 held order</strong> is still open — held orders block the drawer close.</span><span class="n-bar-actions"><button class="k-btn k-btn-xs">Resume</button><button class="k-btn k-btn-xs k-btn-quiet">Dismiss</button></span></div>
+  <div class="n-bar n-bad"><span><strong>1 field needs attention</strong> — reorder level must be zero or greater.</span><span class="n-bar-actions"><button class="k-btn k-btn-xs">Jump to field</button></span></div>
+  <div class="n-bar n-live" style="border-bottom:0"><span>Catalogue sync running — <strong>4,102 of 52,817</strong> products checked.</span></div>
+</div>
+
+<div class="rw" style="margin-top:12px;gap:14px;align-items:flex-start">
+  <div style="flex:1;min-width:230px">
+    <p class="cap">Confirm — consequential actions only</p>
+    <div class="modal" style="margin-top:5px;max-width:none">
+      <div class="modal-body">
+        <p class="modal-title">Void ORD-000015?</p>
+        <p class="modal-text">4 line items, 1 payment of $100.00, and the staff discount will be reversed. The drawer will be adjusted. This cannot be undone.</p>
+      </div>
+      <div class="modal-foot">
+        <button class="k-btn k-btn-sm">Keep order <kbd>Esc</kbd></button>
+        <button class="k-btn k-btn-sm k-btn-danger-solid">Void order</button>
+      </div>
+    </div>
+  </div>
+  <div style="flex:1;min-width:230px">
+    <p class="cap">Toast — chrome-toned, bottom right</p>
+    <div class="toast" style="margin-top:5px;width:auto">
+      <div>
+        <p class="toast-title">Low stock — 02-09 Balrog</p>
+        <p style="margin-top:2px">Dropped to 0 units after ORD-000015.</p>
+        <a href="#" style="display:inline-block;margin-top:4px;font-size:var(--text-meta);font-weight:600">Open product</a>
+      </div>
+    </div>
+    <p class="cap" style="margin-top:12px">Empty state</p>
+    <div style="border:1px solid var(--color-border);margin-top:5px;height:76px;display:flex">
+      <div class="n-empty" style="padding:12px">
+        <p class="n-empty-title">No items yet</p>
+        <p class="n-empty-body">Scan a barcode or type a code to begin.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="note" style="margin-top:10px">Confirm before: completing or voiding an order, refunding, deleting a record, closing the drawer. Never confirm reversible work. The safe option is always first and always the one <span class="mono">Esc</span> triggers.</p>
+</body></html>

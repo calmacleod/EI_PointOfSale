@@ -1,0 +1,55 @@
+<!-- @dsCard group="Components" viewport="700x270" name="Chrome — rail, command bar, status bar" subtitle="The three fixed frame elements. Dark in every theme." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><title>Chrome</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+</style></head><body>
+<p class="cap">Command bar · 34px</p>
+<div class="c-cmdbar" style="margin-top:5px;border:1px solid var(--chrome-border)">
+  <div class="c-path"><a href="#">Products</a><span class="c-path-sep">/</span><span class="c-path-current">02-07 Ringwraiths</span><span class="c-path-meta">5011921914777</span></div>
+  <button class="c-search" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Search…</span><kbd>⌘K</kbd></button>
+  <div class="c-actions">
+    <span class="c-live"><span class="c-dot c-dot-ok"></span>Drawer <strong>#1 open</strong></span>
+    <button class="c-btn c-btn-quiet">Discard</button>
+    <button class="c-btn c-btn-primary">Save <kbd>⌘S</kbd></button>
+  </div>
+</div>
+
+<p class="cap" style="margin-top:12px">Status bar · 26px</p>
+<div class="c-statusbar" style="margin-top:5px;height:26px;border:1px solid var(--chrome-border)">
+  <span class="c-status-group"><span class="c-dot c-dot-ok"></span>Online · synced 14s</span>
+  <span class="c-status-group">Drawer #1 · float <strong>$200.00</strong></span>
+  <span class="c-status-group">Callum MacLeod · Admin</span>
+  <div class="c-keys"><span class="c-key"><kbd>F2</kbd>New</span><span class="c-key"><kbd>F9</kbd>Products</span><span class="c-key"><kbd>⌘K</kbd>Search</span></div>
+</div>
+
+<div class="rw" style="margin-top:12px;gap:20px;align-items:flex-start">
+  <div>
+    <p class="cap">Rail · 44px</p>
+    <nav class="c-rail" style="margin-top:5px;height:150px;border:1px solid var(--chrome-border)">
+      <span class="c-mark">EI</span>
+      <a class="c-railitem" href="#" aria-label="Dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
+      <a class="c-railitem" href="#" aria-current="page" data-count="2" aria-label="Register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h2l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L22 6H5"/></svg></a>
+      <a class="c-railitem" href="#" aria-label="Products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10"/></svg></a>
+      <a class="c-railitem" href="#" data-count="3" data-count-tone="warn" aria-label="Tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 14l2 2 4-4"/></svg></a>
+    </nav>
+  </div>
+  <div style="flex:1;min-width:240px">
+    <p class="cap">Rules</p>
+    <ul style="margin-top:5px;font-size:11px;color:var(--color-text-muted);line-height:1.75">
+      <li>The active item is a <strong>2px teal bar on the rail edge</strong> — teal never fills a nav item.</li>
+      <li>Labels arrive as a hover tooltip. That is what buys back 180px of width.</li>
+      <li>Counts ride the icon: <span class="mono">data-count</span>, toned <span class="mono">warn</span> or <span class="mono">bad</span>.</li>
+      <li>The command bar replaces the per-page title block entirely — breadcrumb, live state, search, one primary action.</li>
+      <li>The status bar is always present and always shows the contextual key hints.</li>
+      <li>Use <span class="mono">.c-btn</span> on dark bars and <span class="mono">.k-btn</span> on light data surfaces. They are not interchangeable.</li>
+    </ul>
+  </div>
+</div>
+</body></html>

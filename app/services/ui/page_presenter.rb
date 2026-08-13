@@ -841,7 +841,7 @@ module Ui
         when :discount_types then Discount.discount_types.keys.map { |value| { value: value, label: value.humanize } }
         when :user_types then %w[Common Admin].map { |value| { value: value, label: value } }
         when :themes then %w[light dark dim].map { |value| { value: value, label: value.humanize } }
-        when :font_sizes then %w[compact default large].map { |value| { value: value, label: value.humanize } }
+        when :font_sizes then %w[default large xlarge].map { |value| { value: value, label: value.humanize } }
         when :accent_colors then Store::ACCENT_COLOR_NAMES.map { |value| { value: value, label: value.to_s.titleize } }
         when :paper_widths then ReceiptTemplate::PAPER_WIDTHS.map { |value, data| { value: value.to_s, label: data[:label] } }
         else []

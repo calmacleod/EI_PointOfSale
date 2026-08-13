@@ -1,0 +1,56 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Controls — buttons, keys, segments, fields" subtitle="Flat, hairline, 2px radius. Tender keys are 44px." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><title>Controls</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+</style></head><body>
+<p class="cap">Buttons — one primary per screen</p>
+<div class="rw" style="margin-top:5px">
+  <button class="k-btn k-btn-primary">Primary</button>
+  <button class="k-btn">Default</button>
+  <button class="k-btn k-btn-quiet">Quiet</button>
+  <button class="k-btn k-btn-danger">Delete</button>
+  <button class="k-btn k-btn-danger-solid">Void order</button>
+  <button class="k-btn" disabled>Disabled</button>
+  <button class="k-btn k-btn-sm">Small 26</button>
+  <button class="k-btn k-btn-xs">XS 22</button>
+</div>
+
+<p class="cap" style="margin-top:12px">Tender keys — 44px, tapped during a sale</p>
+<div class="k-keypad" style="grid-template-columns:repeat(6,1fr);margin-top:5px;max-width:420px">
+  <button class="k-key">Cash<span class="k-key-sub">F4</span></button>
+  <button class="k-key">Debit<span class="k-key-sub">F5</span></button>
+  <button class="k-key">Credit<span class="k-key-sub">F6</span></button>
+  <button class="k-key">Gift<span class="k-key-sub">F7</span></button>
+  <button class="k-key k-key-primary">Complete<span class="k-key-sub">F12</span></button>
+  <button class="k-key" disabled>Locked</button>
+</div>
+
+<div class="rw" style="margin-top:12px;gap:20px;align-items:flex-start">
+  <div>
+    <p class="cap">Segmented — replaces most selects</p>
+    <div class="rw" style="margin-top:5px;flex-direction:column;align-items:flex-start">
+      <div class="k-seg"><button aria-pressed="true">All</button><button>Open</button><button>Completed</button><button>Refunded</button></div>
+      <div class="k-seg"><button>25</button><button aria-pressed="true">50</button><button>100</button><button>250</button></div>
+    </div>
+    <p class="cap" style="margin-top:10px">Filter chips</p>
+    <div class="rw" style="margin-top:5px">
+      <span class="f-chip"><span class="f-chip-key">supplier</span> Games Workshop <button class="f-chip-x">×</button></span>
+      <span class="f-chip"><span class="f-chip-key">stock ≤</span> reorder <button class="f-chip-x">×</button></span>
+    </div>
+  </div>
+  <div style="flex:1;min-width:230px;display:grid;grid-template-columns:1fr 1fr;gap:8px 10px">
+    <div class="k-field"><label class="k-label">SKU / code <span class="k-req">*</span></label><input class="k-input k-input-data" value="5011921914777"><p class="k-hint">Must be unique.</p></div>
+    <div class="k-field"><label class="k-label">Reorder level</label><input class="k-input k-input-data k-input-invalid" value="-4"><p class="k-err">Must be zero or greater.</p></div>
+    <div class="k-field"><label class="k-label">Tax code</label><select class="k-input"><option>HST — 13%</option></select></div>
+    <div class="k-field"><label class="k-label">On hand</label><input class="k-input k-input-data" value="0" disabled><p class="k-hint">Adjust via Inventory.</p></div>
+  </div>
+</div>
+<p class="note" style="margin-top:10px">Labels are 10px uppercase and always visible. Placeholders are examples, never labels. Focus is a 1px accent border plus a 1px accent ring — no glow, no offset.</p>
+</body></html>

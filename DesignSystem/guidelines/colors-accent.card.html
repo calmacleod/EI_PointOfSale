@@ -1,0 +1,46 @@
+<!-- @dsCard group="Colors" viewport="700x150" name="Accent — teal, action only" subtitle="Primary action, active rail marker, focus, sort, selected row. Nothing else." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Accent</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+
+</style>
+</head>
+<body>
+<div class="rw" style="gap:8px">
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#0d9488;color:#fff;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#0d9488</div>
+  <p class="mono" style="margin-top:3px">--color-accent</p>
+  <p style="font-size:11px;color:var(--color-text)">Accent</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#0f766e;color:#fff;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#0f766e</div>
+  <p class="mono" style="margin-top:3px">--color-accent-hover</p>
+  <p style="font-size:11px;color:var(--color-text)">Accent hover</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#e6f4f2;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#e6f4f2</div>
+  <p class="mono" style="margin-top:3px">--color-accent-quiet</p>
+  <p style="font-size:11px;color:var(--color-text)">Accent quiet</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#ffffff;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#ffffff</div>
+  <p class="mono" style="margin-top:3px">--color-accent-on</p>
+  <p style="font-size:11px;color:var(--color-text)">On accent</p>
+</div>
+</div>
+<div class="rw" style="margin-top:10px;gap:8px">
+  <button class="k-btn k-btn-primary k-btn-sm">Primary action</button>
+  <button class="k-btn k-btn-sm">Everything else</button>
+  <span class="f-chip"><span class="f-chip-key">filter</span> active <button class="f-chip-x">×</button></span>
+  <span class="note">Teal never fills a nav item, a chip, or a status.</span>
+</div>
+</body></html>

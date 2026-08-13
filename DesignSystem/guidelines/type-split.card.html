@@ -1,0 +1,41 @@
+<!-- @dsCard group="Type" viewport="700x200" name="Inter vs mono — the split" subtitle="Language in Inter, machine data in monospace. Not a style choice." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Split</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+
+</style>
+</head>
+<body>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+  <div>
+    <p class="cap">Inter — language</p>
+    <div style="margin-top:5px;font-size:13px;line-height:1.5">
+      <p>Payment is complete. This will finalize the order and update inventory.</p>
+      <p style="margin-top:5px;color:var(--color-text-muted)">Labels, prose, buttons, descriptions, staff names, supplier names.</p>
+    </div>
+  </div>
+  <div>
+    <p class="cap">Mono — machine data</p>
+    <div style="margin-top:5px">
+      <table class="t" style="min-width:0;width:100%">
+        <tbody>
+          <tr><td class="data">5011921914777</td><td class="r data">$70.00</td><td class="r data">0</td></tr>
+          <tr><td class="data">100042</td><td class="r data">$3.49</td><td class="r data">218</td></tr>
+          <tr><td class="data">ORD-000015</td><td class="r data">$122.22</td><td class="r data neg">-267</td></tr>
+        </tbody>
+      </table>
+      <p class="note" style="margin-top:5px">Barcodes, SKUs, order numbers, quantities, money, timestamps, variance.</p>
+    </div>
+  </div>
+</div>
+<p class="note" style="margin-top:10px">Why it matters: a cashier reading <span class="mono">5011921914760</span> against <span class="mono">5011921914777</span> in proportional type has to count digits. In tabular mono the difference is positional and instant. Everything a scanner produced or a till calculated goes in mono.</p>
+</body></html>

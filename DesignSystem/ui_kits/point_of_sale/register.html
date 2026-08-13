@@ -1,0 +1,171 @@
+<!-- @dsCard group="Point of Sale" viewport="1440x820" name="Register" subtitle="Till-style checkout: line items, large balance readout, tender keypad, F-key actions" -->
+<!-- @startingPoint section="Point of Sale" subtitle="Checkout workspace" viewport="1440x820" -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Register · EI Point of Sale</title>
+<link rel="icon" href="../../assets/icon.svg">
+<link rel="stylesheet" href="../../styles.css">
+</head>
+<body>
+<div class="app">
+<nav class="c-rail" aria-label="Sections">
+  <a class="c-mark" href="dashboard.html" aria-label="EI Point of Sale">EI</a>
+  <a class="c-railitem" href="dashboard.html" data-label="Dashboard" aria-label="Dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></a>
+  <a class="c-railitem" href="register.html" data-label="Register" aria-current="page" data-count="2" aria-label="Register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2 2h2l2.7 12.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L22 6H5"/></svg></a>
+  <a class="c-railitem" href="products.html" data-label="Products" aria-label="Products"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7 12 3 4 7m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Services" aria-label="Services"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 1 0 5 5L21 21H3l7.7-7.7a4 4 0 0 1 4-7z"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Customers" aria-label="Customers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Inventory" aria-label="Inventory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 7v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7M4 7l2-3h12l2 3M10 11h4"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Cash drawer" aria-label="Cash drawer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="20" height="11" rx="1"/><path d="M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M9 14h6"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Order history" aria-label="Order history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2z"/><path d="M9 7h6M9 11h6"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Store tasks" data-count="3" data-count-tone="warn" aria-label="Store tasks"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg></a>
+  <a class="c-railitem" href="reports.html" data-label="Reports" aria-label="Reports"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg></a>
+  <span class="c-railspacer"></span>
+  <span class="c-railrule"></span>
+  <a class="c-railitem" href="#" data-label="Gift certificates" aria-label="Gift certificates"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Administration" aria-label="Administration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V10a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Notifications" data-count="3" data-count-tone="bad" aria-label="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></a>
+  <a class="c-railitem" href="#" data-label="Callum MacLeod — profile" aria-label="Profile"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M5 21a7 7 0 0 1 14 0"/></svg></a>
+</nav>
+<header class="c-cmdbar">
+  <div class="c-path"><a href="dashboard.html">Register</a><span class="c-path-sep">/</span><span class="c-path-current data">ORD-000015</span><span class="s-tag s-tag-solid s-live" style="margin-left:2px">Draft</span><span class="c-path-meta">2:41pm · C. MacLeod</span></div>
+  <button class="c-search" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><span>Search products, orders, customers…</span><kbd>⌘K</kbd></button>
+  <div class="c-actions"><span class="c-live"><span class="c-dot c-dot-ok"></span>Drawer <strong>#1 open</strong></span><button class="c-btn">Held <kbd>F3</kbd></button><button class="c-btn c-btn-quiet">Void order</button></div>
+</header>
+<div class="app-content">
+<div class="f-bar" style="background:var(--color-surface-alt)">
+  <span class="p-title">Orders open</span>
+  <button class="k-btn k-btn-sm k-btn-primary data" aria-pressed="true">ORD-000015 · 4</button>
+  <button class="k-btn k-btn-sm data">ORD-000016 · 1</button>
+  <button class="k-btn k-btn-sm k-btn-quiet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>New order <kbd>F2</kbd></button>
+  <span class="push row"><span class="s-tag s-warn">1 held</span></span>
+</div>
+
+<div class="p-split" style="grid-template-columns:minmax(0,1fr) 360px">
+  <section class="p-region">
+    <div class="p-head">
+      <h2 class="p-title">Line items</h2><span class="p-count">4 lines · 10 units</span>
+      <div class="p-head-actions">
+        <button class="k-btn k-btn-xs k-btn-quiet">Apply discount <kbd>F5</kbd></button>
+        <button class="k-btn k-btn-xs k-btn-quiet">Tax exempt</button>
+      </div>
+    </div>
+    <div class="t-wrap">
+      <table class="t">
+        <thead><tr>
+          <th style="min-width:230px">Item</th><th class="c" style="width:76px">Qty</th>
+          <th class="r" style="width:88px">Unit</th><th class="r" style="width:88px">Disc</th>
+          <th class="r" style="width:96px">Line total</th><th style="width:40px"></th>
+        </tr></thead>
+        <tbody>
+          <tr data-state="idle">
+            <td class="wrap"><span style="font-weight:var(--weight-medium)">02-07 Ringwraiths</span><span class="t-sub data">5011921914777</span></td>
+            <td class="c"><input class="k-input k-input-xs k-input-data" style="width:52px;text-align:center" value="1" aria-label="Quantity for 02-07 Ringwraiths"></td>
+            <td class="r data">$70.00</td>
+            <td class="r data faint" >—</td>
+            <td class="r data" style="font-weight:var(--weight-semibold)">$70.00</td>
+            <td class="r"><button class="k-btn k-btn-xs k-btn-danger" aria-label="Remove 02-07 Ringwraiths">×</button></td>
+          </tr>
+          <tr data-state="ok">
+            <td class="wrap"><span style="font-weight:var(--weight-medium)">05-06 Fleer Ultra</span><span class="t-sub data">053334477574 · <span style="color:var(--state-ok)">Staff 10% · 4 of 4 units</span></span></td>
+            <td class="c"><input class="k-input k-input-xs k-input-data" style="width:52px;text-align:center" value="4" aria-label="Quantity for 05-06 Fleer Ultra"></td>
+            <td class="r data">$2.99</td>
+            <td class="r data " style="color:var(--state-ok)">-$1.20</td>
+            <td class="r data" style="font-weight:var(--weight-semibold)">$10.76</td>
+            <td class="r"><button class="k-btn k-btn-xs k-btn-danger" aria-label="Remove 05-06 Fleer Ultra">×</button></td>
+          </tr>
+          <tr data-state="idle">
+            <td class="wrap"><span style="font-weight:var(--weight-medium)">Deck Box — Matte Red</span><span class="t-sub data">100043</span></td>
+            <td class="c"><input class="k-input k-input-xs k-input-data" style="width:52px;text-align:center" value="2" aria-label="Quantity for Deck Box — Matte Red"></td>
+            <td class="r data">$8.99</td>
+            <td class="r data faint" >—</td>
+            <td class="r data" style="font-weight:var(--weight-semibold)">$17.98</td>
+            <td class="r"><button class="k-btn k-btn-xs k-btn-danger" aria-label="Remove Deck Box — Matte Red">×</button></td>
+          </tr>
+          <tr aria-selected="true" data-state="ok">
+            <td class="wrap"><span style="font-weight:var(--weight-medium)">Bulk Card Sleeves (100ct)</span><span class="t-sub data">100042 · <span style="color:var(--state-ok)">Staff 10% · 3 of 3 units</span></span></td>
+            <td class="c"><input class="k-input k-input-xs k-input-data" style="width:52px;text-align:center" value="3" aria-label="Quantity for Bulk Card Sleeves (100ct)"></td>
+            <td class="r data">$3.49</td>
+            <td class="r data " style="color:var(--state-ok)">-$1.05</td>
+            <td class="r data" style="font-weight:var(--weight-semibold)">$9.42</td>
+            <td class="r"><button class="k-btn k-btn-xs k-btn-danger" aria-label="Remove Bulk Card Sleeves (100ct)">×</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="n-bar n-ok" style="border-bottom:0;border-top:1px solid var(--color-border)">
+      <span>Added <strong>1 × Bulk Card Sleeves (100ct)</strong> — staff discount applied automatically.</span>
+    </div>
+    <div class="k-scan">
+      <input class="k-input" placeholder="Scan or type code…" value="" aria-label="Scan barcode or enter code" autofocus>
+      <button class="k-btn k-btn-primary" style="height:36px">Add <kbd>↵</kbd></button>
+      <button class="k-btn" style="height:36px">Look up <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+    </div>
+  </section>
+
+  <aside class="p-region">
+    <div class="r-out r-out-due">
+      <p class="r-out-label">Balance due</p>
+      <p class="r-out-value">$22.22</p>
+    </div>
+    <div class="grow p-region-scroll" style="min-height:0;display:flex;flex-direction:column">
+    <dl class="r-lines" style="padding:6px 0 8px">
+      <div class="r-line"><dt>Subtotal</dt><dd>$110.41</dd></div>
+      <div class="r-line r-line-credit"><dt>Discounts</dt><dd>-$2.25</dd></div>
+      <div class="r-line"><dt>Tax · HST 13%</dt><dd>$14.06</dd></div>
+      <div class="r-line r-line-total"><dt>Total</dt><dd>$122.22</dd></div>
+      <div class="r-line"><dt>Tendered</dt><dd>$100.00</dd></div>
+    </dl>
+
+    <div class="p-head" style="border-top:1px solid var(--color-border)">
+      <h2 class="p-title">Tender</h2>
+      <div class="p-head-actions"><span class="p-count">cash · debit · credit · GC</span></div>
+    </div>
+    <div class="p-body" style="padding:10px;overflow:visible;flex-shrink:0">
+      <div class="k-keypad" style="grid-template-columns:repeat(4,1fr)">
+        <button class="k-key">Cash<span class="k-key-sub">F4</span></button>
+        <button class="k-key">Debit<span class="k-key-sub">F5</span></button>
+        <button class="k-key">Credit<span class="k-key-sub">F6</span></button>
+        <button class="k-key">Gift<span class="k-key-sub">F7</span></button>
+      </div>
+      <div class="k-keypad" style="grid-template-columns:repeat(4,1fr);margin-top:6px">
+        <button class="k-key" style="height:34px">$25<span class="k-key-sub"></span></button>
+        <button class="k-key" style="height:34px">$50</button>
+        <button class="k-key" style="height:34px">$100</button>
+        <button class="k-key" style="height:34px">Exact</button>
+      </div>
+      <div class="row" style="margin-top:8px;gap:6px">
+        <input class="k-input k-input-data" value="22.22" aria-label="Amount" style="text-align:right">
+        <button class="k-btn k-btn-primary" style="flex-shrink:0">Take payment</button>
+      </div>
+    </div>
+
+    <div class="p-head" style="border-top:1px solid var(--color-border)"><h2 class="p-title">Customer</h2>
+      <div class="p-head-actions"><button class="k-btn k-btn-xs k-btn-quiet">Change</button></div></div>
+    <div class="p-body" style="padding:8px 12px;overflow:visible;flex-shrink:0">
+      <p style="font-size:var(--text-ui);font-weight:var(--weight-semibold)">Jordan Whitfield</p>
+      <p class="faint data" style="font-size:var(--text-meta);margin-top:1px">(416) 555-0142 · 14 orders · $1,902 lifetime</p>
+    </div>
+    <div class="n-bar n-warn"><span>Unpaid special order from <strong>Jul 28</strong>.</span></div>
+    </div>
+
+    <div style="flex-shrink:0;padding:10px;border-top:1px solid var(--color-border);background:var(--color-surface);display:grid;grid-template-columns:1fr 1fr;gap:6px">
+      <button class="k-key">Hold<span class="k-key-sub">F8</span></button>
+      <button class="k-key k-key-primary" disabled>Complete<span class="k-key-sub">F12</span></button>
+      <p class="faint" style="grid-column:span 2;font-size:var(--text-meta);text-align:center">Complete unlocks at $0.00 due.</p>
+    </div>
+  </aside>
+</div>
+</div>
+<footer class="c-statusbar">
+  <span class="c-status-group"><span class="c-dot c-dot-ok"></span>Scanner ready</span>
+  <span class="c-status-group">Drawer #1 · <strong>ORD-000015</strong></span>
+  <span class="c-status-group">Callum MacLeod</span>
+  <div class="c-keys"><span class="c-key"><kbd>F4</kbd>Cash</span><span class="c-key"><kbd>F8</kbd>Hold</span><span class="c-key"><kbd>F12</kbd>Complete</span><span class="c-key"><kbd>Esc</kbd>Void</span></div>
+</footer>
+</div>
+</body>
+</html>

@@ -4,26 +4,31 @@
   import { onMount } from "svelte"
   import Bell from "@lucide/svelte/icons/bell"
   import Boxes from "@lucide/svelte/icons/boxes"
+  import CircleDollarSign from "@lucide/svelte/icons/circle-dollar-sign"
   import ClipboardList from "@lucide/svelte/icons/clipboard-list"
-  import FileChartColumn from "@lucide/svelte/icons/file-chart-column"
   import CloudDownload from "@lucide/svelte/icons/cloud-download"
+  import FileChartColumn from "@lucide/svelte/icons/file-chart-column"
+  import Gift from "@lucide/svelte/icons/gift"
   import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard"
-  import Menu from "@lucide/svelte/icons/menu"
+  import LogOut from "@lucide/svelte/icons/log-out"
   import PackageSearch from "@lucide/svelte/icons/package-search"
   import ReceiptText from "@lucide/svelte/icons/receipt-text"
+  import Search from "@lucide/svelte/icons/search"
   import Settings from "@lucide/svelte/icons/settings"
   import ShoppingCart from "@lucide/svelte/icons/shopping-cart"
+  import UserRound from "@lucide/svelte/icons/user-round"
   import Users from "@lucide/svelte/icons/users"
   import Wrench from "@lucide/svelte/icons/wrench"
   import WifiOff from "@lucide/svelte/icons/wifi-off"
+  import CommandPalette from "../pages/components/CommandPalette.svelte"
   import { connectionAvailable } from "../lib/connection.js"
 
   const page = usePage()
-  let auth = page.props.auth || {}
-  let paths = page.props.paths || {}
-  let flash = page.props.flash || {}
+  let pageProps = page.props || {}
+  let auth = pageProps.auth || {}
+  let paths = pageProps.paths || {}
+  let flash = pageProps.flash || {}
   let currentPath = page.url || "/"
-  let mobileOpen = false
   let dismissTimer
   let toast = null
   let toastTimer
@@ -32,19 +37,26 @@
   let online = typeof navigator === "undefined" ? true : navigator.onLine
   let connectionTimer
   let connectionFailures = 0
+  let searchOpen = false
 
   $: authenticated = Boolean(auth.authenticated)
+  $: pageTitle = pageProps.title || "Workspace"
+  $: pageDescription = pageProps.description || ""
+  $: commandMeta = pageProps.metrics_last_updated ? `updated ${pageProps.metrics_last_updated}` : pageDescription
+  $: commandAction = buildCommandAction(pageProps)
+  $: keys = contextualKeys(pageProps.view)
   $: navItems = [
-    ["Dashboard", paths.root, LayoutDashboard],
-    ["Register", paths.register, ShoppingCart],
-    ["Orders", paths.orders, ReceiptText],
-    ["Products", paths.products, Boxes],
-    ["Services", paths.services, Wrench],
-    ["Customers", paths.customers, Users],
-    ["Inventory", paths.inventory, PackageSearch],
-    ["Tasks", paths.store_tasks, ClipboardList],
-    ["Reports", paths.reports, FileChartColumn],
-  ].filter((item) => item[1])
+    { label: "Dashboard", href: paths.root, icon: LayoutDashboard },
+    { label: "Register", href: paths.register, icon: ShoppingCart },
+    { label: "Orders", href: paths.orders, icon: ReceiptText },
+    { label: "Products", href: paths.products, icon: Boxes },
+    { label: "Services", href: paths.services, icon: Wrench },
+    { label: "Customers", href: paths.customers, icon: Users },
+    { label: "Inventory", href: paths.inventory, icon: PackageSearch },
+    { label: "Cash drawer", href: paths.cash_drawer, icon: CircleDollarSign },
+    { label: "Store tasks", href: paths.store_tasks, icon: ClipboardList },
+    { label: "Reports", href: paths.reports, icon: FileChartColumn },
+  ].filter((item) => item.href)
 
   onMount(() => {
     const stop = router.on("navigate", (event) => syncPage(event.detail.page))
@@ -57,12 +69,14 @@
         window.location.assign(paths.offline || "/offline")
       }
     }
+
     window.addEventListener("online", syncConnection)
     window.addEventListener("offline", syncConnection)
     syncConnection()
     connectionTimer = window.setInterval(syncConnection, 5_000)
     syncCable()
     scheduleDismiss()
+
     return () => {
       stop()
       if (dismissTimer) window.clearTimeout(dismissTimer)
@@ -75,11 +89,12 @@
   })
 
   function syncPage(nextPage) {
-    auth = nextPage.props.auth || {}
-    paths = nextPage.props.paths || {}
-    flash = nextPage.props.flash || {}
+    pageProps = { ...(nextPage.props || {}) }
+    auth = pageProps.auth || {}
+    paths = pageProps.paths || {}
+    flash = pageProps.flash || {}
     currentPath = nextPage.url || "/"
-    mobileOpen = false
+    searchOpen = false
     syncCable()
     scheduleDismiss()
   }
@@ -125,68 +140,167 @@
     if (href === "/") return currentPath === "/" || currentPath.startsWith("/?")
     return currentPath === href || currentPath.startsWith(`${href}/`) || currentPath.startsWith(`${href}?`)
   }
+
+  function unmodifiedLeftClick(event) {
+    return event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey
+  }
+
+  function startRailNavigation(event, href, fullPage = false) {
+    if (!href || !unmodifiedLeftClick(event)) return
+
+    event.preventDefault()
+    if (fullPage) window.location.assign(href)
+    else router.visit(href)
+  }
+
+  function finishRailNavigation(event, href, fullPage = false) {
+    if (!href || !unmodifiedLeftClick(event)) return
+
+    event.preventDefault()
+    // Mouse navigation already began on mousedown. Keyboard activation still
+    // arrives as a click with detail 0 and must retain normal link behaviour.
+    if (event.detail === 0) {
+      if (fullPage) window.location.assign(href)
+      else router.visit(href)
+    }
+  }
+
+  function buildCommandAction(props) {
+    if (!props?.view) return null
+    if (props.view === "dashboard" && props.actions?.register) return { label: "New sale", href: props.actions.register, key: "F2" }
+    if (props.view === "resource_index" && props.can_create && props.actions?.new) {
+      return { label: `New ${String(props.title || "record").toLowerCase().replace(/s$/, "")}`, href: props.actions.new }
+    }
+    if (props.view === "resource_form") return { label: props.form?.submit_label || "Save changes", form: "resource-form", key: "⌘S" }
+    if (props.view === "resource_show" && props.actions?.edit) return { label: "Edit record", href: props.actions.edit }
+    if (props.view === "report_form") return { label: "Generate report", form: "report-form" }
+    if (props.view === "report_show" && props.actions?.excel) return { label: "Export Excel", href: props.actions.excel }
+    if (props.view === "receipt") return { label: "Print receipt", print: true }
+    if (props.view === "gift_certificate_show") return { label: "Print certificate", print: true }
+    if (props.view === "refund") return { label: "Process refund", form: "refund-form" }
+    if (props.view === "drawer_count") return { label: "Save drawer count", form: "drawer-count-form" }
+    if (props.view === "reconcile") return { label: "Save reconciliation", form: "reconcile-form" }
+    if (props.view === "inventory") return { label: "Commit restock", form: "inventory-form" }
+    return null
+  }
+
+  function contextualKeys(view) {
+    if (view === "register") return [["F4", "Cash"], ["F8", "Hold"], ["F12", "Complete"], ["Esc", "Void"]]
+    if (view === "resource_form") return [["⌘S", "Save"], ["Esc", "Cancel"], ["⌘K", "Search"]]
+    if (view === "resource_index") return [["/", "Filter"], ["⌘K", "Search"], ["F2", "New sale"]]
+    if (view === "dashboard") return [["F2", "New sale"], ["F3", "Held"], ["⌘K", "Search"]]
+    return [["F2", "New sale"], ["⌘K", "Search"]]
+  }
+
+  function keyboard(event) {
+    const modifier = event.metaKey || event.ctrlKey
+    if (modifier && event.key.toLowerCase() === "k") {
+      event.preventDefault()
+      searchOpen = true
+      return
+    }
+    if (modifier && event.key.toLowerCase() === "s" && pageProps.view === "resource_form") {
+      event.preventDefault()
+      document.getElementById("resource-form")?.requestSubmit()
+      return
+    }
+    if (event.key === "/" && pageProps.view === "resource_index" && !["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName)) {
+      event.preventDefault()
+      document.getElementById("resource-search")?.focus()
+      return
+    }
+    if (event.key === "F2") {
+      event.preventDefault()
+      if (pageProps.view === "register" && pageProps.actions?.new_order) router.post(pageProps.actions.new_order)
+      else if (paths.register) router.visit(paths.register)
+    }
+    if (event.key === "F3" && pageProps.actions?.held) {
+      event.preventDefault()
+      router.visit(pageProps.actions.held)
+    }
+    if (pageProps.view === "register" && ["F4", "F5", "F6", "F7"].includes(event.key)) {
+      event.preventDefault()
+      const methods = { F4: "cash", F5: "debit", F6: "credit", F7: "gift_certificate" }
+      window.dispatchEvent(new CustomEvent("console:tender", { detail: methods[event.key] }))
+    }
+    if (pageProps.view === "register" && event.key === "F8") {
+      event.preventDefault()
+      if (pageProps.actions?.hold) router.post(pageProps.actions.hold)
+    }
+    if (pageProps.view === "register" && event.key === "F12") {
+      event.preventDefault()
+      document.getElementById("complete_btn")?.click()
+    }
+  }
 </script>
 
+<svelte:window onkeydown={keyboard} />
+
 {#if authenticated}
-  <div class="min-h-screen lg:grid lg:grid-cols-[15rem_minmax(0,1fr)]">
-    <header class="sticky top-0 z-40 flex h-12 items-center gap-3 border-b px-3 lg:hidden" style="border-color:var(--border);background:var(--surface)">
-      <button class="ui-button ui-button-secondary min-h-8! px-2!" aria-label="Open navigation" onclick={() => (mobileOpen = !mobileOpen)}><Menu class="size-4" /></button>
-      <span class="flex-1 text-sm font-semibold">EI Point of Sale</span>
-      {#if online}<Link href={paths.notifications || "/notifications"} class="relative"><Bell class="size-4" />{#if auth.unread_notifications}<span class="absolute -right-2 -top-2 rounded-full bg-red-600 px-1 text-[10px] text-white">{auth.unread_notifications}</span>{/if}</Link>{:else}<WifiOff class="size-4" />{/if}
+  <div class="app">
+    <nav class="c-rail" aria-label="Application sections">
+      <a class="c-mark" href={paths.root || "/"} aria-label="EI Point of Sale" onmousedown={(event) => startRailNavigation(event, paths.root || "/")} onclick={(event) => finishRailNavigation(event, paths.root || "/")}>EI</a>
+      {#each navItems as item}
+        {#if online}
+          <a href={item.href} class="c-railitem" data-label={item.label} aria-label={item.label} aria-current={active(item.href) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, item.href)} onclick={(event) => finishRailNavigation(event, item.href)}>
+            <svelte:component this={item.icon} />
+          </a>
+        {:else}
+          <button class="c-railitem" data-label={item.label} aria-label={`${item.label} unavailable offline`} disabled><svelte:component this={item.icon} /></button>
+        {/if}
+      {/each}
+      <span class="c-railspacer"></span>
+      <span class="c-railrule"></span>
+      <a href={paths.admin_gift_certificates} class="c-railitem" data-label="Gift certificates" aria-label="Gift certificates" aria-current={active(paths.admin_gift_certificates) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.admin_gift_certificates)} onclick={(event) => finishRailNavigation(event, paths.admin_gift_certificates)}><Gift /></a>
+      <a href={paths.offline || "/offline"} class="c-railitem" data-label={online ? "Offline lookup" : "Offline mode"} aria-label={online ? "Offline lookup" : "Offline mode"} aria-current={active(paths.offline) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.offline || "/offline", true)} onclick={(event) => finishRailNavigation(event, paths.offline || "/offline", true)}>{#if online}<CloudDownload />{:else}<WifiOff />{/if}</a>
+      {#if online && auth.admin}<a href={paths.admin_settings} class="c-railitem" data-label="Administration" aria-label="Administration" aria-current={active(paths.admin_settings) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.admin_settings)} onclick={(event) => finishRailNavigation(event, paths.admin_settings)}><Settings /></a>{/if}
+      {#if online}<a href={paths.notifications || "/notifications"} class="c-railitem" data-label="Notifications" data-count={auth.unread_notifications || undefined} data-count-tone="bad" aria-label="Notifications" aria-current={active(paths.notifications) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.notifications || "/notifications")} onclick={(event) => finishRailNavigation(event, paths.notifications || "/notifications")}><Bell /></a>{/if}
+      {#if online}<a href={paths.profile} class="c-railitem" data-label={auth.name || auth.email || "Profile"} aria-label="Profile" aria-current={active(paths.profile) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.profile)} onclick={(event) => finishRailNavigation(event, paths.profile)}><UserRound /></a>{/if}
+      <button class="c-railitem" data-label="Sign out" aria-label="Sign out" disabled={!online} onclick={() => router.delete(paths.session)}><LogOut /></button>
+    </nav>
+
+    <header class="c-cmdbar">
+      <div class="c-path">
+        <span class="c-path-current">{pageTitle}</span>
+        {#if commandMeta}<span class="c-path-sep">·</span><span class="c-path-meta">{commandMeta}</span>{/if}
+      </div>
+      <button class="c-search" type="button" onclick={() => (searchOpen = true)}>
+        <Search /><span>Search products, orders, customers…</span><kbd>⌘K</kbd>
+      </button>
+      <div class="c-actions">
+        <span class="c-live"><span class={`c-dot ${online ? "c-dot-ok" : "c-dot-bad"}`}></span>{online ? "Online" : "Offline"} · <strong>{auth.store_name || "Store"}</strong></span>
+        {#if commandAction?.href}<Link href={commandAction.href} class="c-btn c-btn-primary">{commandAction.label}{#if commandAction.key}<kbd>{commandAction.key}</kbd>{/if}</Link>
+        {:else if commandAction?.form}<button form={commandAction.form} class="c-btn c-btn-primary" type="submit">{commandAction.label}{#if commandAction.key}<kbd>{commandAction.key}</kbd>{/if}</button>
+        {:else if commandAction?.print}<button class="c-btn c-btn-primary" type="button" onclick={() => window.print()}>{commandAction.label}</button>{/if}
+      </div>
     </header>
 
-    <aside class="fixed inset-y-0 left-0 z-30 w-60 border-r p-3 transition-transform lg:sticky lg:top-0 lg:h-screen lg:translate-x-0 {mobileOpen ? 'translate-x-0' : '-translate-x-full'}" style="border-color:var(--border);background:var(--surface)">
-      <div class="mb-5 flex items-center gap-3 px-2 py-1">
-        <span class="flex size-9 items-center justify-center rounded-lg text-sm font-bold" style="background:var(--primary);color:var(--primary-foreground)">EI</span>
-        <div><p class="text-sm font-semibold">Point of Sale</p><p class="text-xs" style="color:var(--muted)">{auth.store_name || "Store workspace"}</p></div>
-      </div>
-      <nav class="space-y-1">
-        {#each navItems as [label, href, Icon]}
-          {#if online}
-            <Link href={href} prefetch="hover" class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors" style={`background:${active(href) ? "var(--primary)" : "transparent"};color:${active(href) ? "var(--primary-foreground)" : "var(--foreground)"}`}>
-              <svelte:component this={Icon} class="size-4" />{label}
-            </Link>
-          {:else}
-            <span class="flex cursor-not-allowed items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium opacity-40"><svelte:component this={Icon} class="size-4" />{label}</span>
-          {/if}
-        {/each}
-      </nav>
-      <div class="absolute inset-x-3 bottom-3 space-y-1 border-t pt-3" style="border-color:var(--border)">
-        <a href={paths.offline || "/offline"} class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5" style={`background:${active(paths.offline) ? "var(--primary)" : "transparent"};color:${active(paths.offline) ? "var(--primary-foreground)" : "var(--foreground)"}`}>
-          {#if online}<CloudDownload class="size-4" />Offline lookup{:else}<WifiOff class="size-4" />Offline mode{/if}
-        </a>
-        {#if online}<Link href={paths.notifications || "/notifications"} class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5"><Bell class="size-4" />Notifications{#if auth.unread_notifications}<span class="ui-badge ml-auto">{auth.unread_notifications}</span>{/if}</Link>{/if}
-        {#if online && auth.admin}<Link href={paths.admin_settings} class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-black/5"><Settings class="size-4" />Administration</Link>{/if}
-        {#if online}<Link href={paths.profile} class="block truncate rounded-lg px-3 py-2 text-sm hover:bg-black/5">{auth.name || auth.email}</Link>{:else}<span class="block truncate rounded-lg px-3 py-2 text-sm opacity-40">{auth.name || auth.email}</span>{/if}
-        <button class="w-full rounded-lg px-3 py-2 text-left text-xs font-medium disabled:opacity-40" style="color:var(--muted)" disabled={!online} onclick={() => router.delete(paths.session)}>Sign out</button>
-      </div>
-    </aside>
-
-    {#if mobileOpen}<button class="fixed inset-0 z-20 bg-black/45 lg:hidden" aria-label="Close navigation" onclick={() => (mobileOpen = false)}></button>{/if}
-
-    <main class="min-w-0 px-3 py-4 sm:px-5 lg:px-7 lg:py-6">
-      <div class="mx-auto max-w-7xl">
-        {#if flash.notice}<div class="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{flash.notice}</div>{/if}
-        {#if flash.alert}<div class="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">{flash.alert}</div>{/if}
-        <slot />
-      </div>
+    <main class="app-content">
+      {#if flash.notice}<div class="n-bar n-ok"><span>{flash.notice}</span><button class="k-btn k-btn-xs k-btn-quiet push" onclick={() => (flash = {})}>Dismiss</button></div>{/if}
+      {#if flash.alert}<div class="n-bar n-bad"><span>{flash.alert}</span><button class="k-btn k-btn-xs k-btn-quiet push" onclick={() => (flash = {})}>Dismiss</button></div>{/if}
+      <slot />
     </main>
+
+    <footer class="c-statusbar">
+      <span class="c-status-group"><span class={`c-dot ${online ? "c-dot-ok" : "c-dot-bad"}`}></span>{online ? "Online · live data" : "Offline · cached lookup"}</span>
+      <span class="c-status-group">{auth.store_name || "Store workspace"}</span>
+      <span class="c-status-group">{auth.name || auth.email} · <strong>{auth.admin ? "Admin" : "Staff"}</strong></span>
+      <div class="c-keys">{#each keys as [key, label]}<span class="c-key"><kbd>{key}</kbd>{label}</span>{/each}</div>
+    </footer>
   </div>
 {:else}
-  <main class="min-h-screen px-4 py-8">
-    <div class="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md items-center">
-      <div class="w-full">
-        {#if flash.notice}<div class="mb-4 rounded-lg border border-emerald-300 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">{flash.notice}</div>{/if}
-        {#if flash.alert}<div class="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-900">{flash.alert}</div>{/if}
-        <slot />
-      </div>
-    </div>
+  <main>
+    {#if flash.notice}<div class="n-bar n-ok">{flash.notice}</div>{/if}
+    {#if flash.alert}<div class="n-bar n-bad">{flash.alert}</div>{/if}
+    <slot />
   </main>
 {/if}
 
+<CommandPalette open={searchOpen} onclose={() => (searchOpen = false)} />
+
 {#if toast}
-  <div class="ui-card fixed bottom-4 right-4 z-50 w-[min(24rem,calc(100vw-2rem))] p-4 shadow-xl" role="status">
-    <div class="flex items-start justify-between gap-3"><div><p class="text-sm font-semibold">{toast.title}</p>{#if toast.body}<p class="mt-1 text-sm" style="color:var(--muted)">{toast.body}</p>{/if}</div><button type="button" aria-label="Dismiss notification" style="color:var(--muted)" onclick={() => (toast = null)}>×</button></div>
-    {#if toast.url}<Link href={toast.url} class="mt-2 inline-block text-xs font-semibold" style="color:var(--primary)" onclick={() => (toast = null)}>Open</Link>{/if}
+  <div class="toast" style="position:fixed;right:var(--space-4);bottom:calc(var(--statusbar-height) + var(--space-4));z-index:70" role="status">
+    <div class="grow"><p class="toast-title">{toast.title}</p>{#if toast.body}<p>{toast.body}</p>{/if}{#if toast.url}<Link href={toast.url} onclick={() => (toast = null)}>Open</Link>{/if}</div>
+    <button class="c-btn c-btn-quiet" type="button" aria-label="Dismiss notification" onclick={() => (toast = null)}>×</button>
   </div>
 {/if}

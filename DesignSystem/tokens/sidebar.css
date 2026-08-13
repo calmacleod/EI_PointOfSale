@@ -1,0 +1,13 @@
+/* Retained for compatibility with anything still reading the old sidebar
+   variables. The rail now uses the --chrome-* tokens in tokens/colors.css;
+   these alias onto them so nothing breaks mid-migration. */
+:root {
+  --sidebar-bg: var(--chrome-bg);
+  --sidebar-border: var(--chrome-border);
+  --sidebar-text: var(--chrome-text);
+  --sidebar-text-muted: var(--chrome-text-faint);
+  --sidebar-text-bright: var(--chrome-text-bright);
+  --sidebar-hover: var(--chrome-hover);
+  --sidebar-active: var(--chrome-active);
+  --sidebar-accent: var(--color-accent);
+}

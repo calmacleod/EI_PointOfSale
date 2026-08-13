@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-theme="<%= Current.user&.theme || 'light' %>" data-font-size="<%= Current.user&.font_size || 'default' %>">
+<html data-theme="<%= Current.user&.theme || 'light' %>" data-font-size="<%= Current.user&.font_size || 'default' %>" data-accent="<%= Store.current.accent_color %>">
   <head>
     <title><%= content_for(:title) || "Ei Point Of Sale" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -7,30 +7,25 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="application-name" content="EI Point of Sale">
     <meta name="mobile-web-app-capable" content="yes">
-    <% theme_colors = { "light" => "#f5f5f7", "dark" => "#1a1a22", "dim" => "#202028" } %>
-    <meta name="theme-color" content="<%= theme_colors[Current.user&.theme] || '#f0f0f0' %>">
+    <meta name="theme-color" content="#17181b">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= yield :head %>
 
     <%= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%= accent_color_style_tag %>
     <%= vite_client_tag %>
     <%= vite_javascript_tag "inertia" %>
+    <%= accent_color_style_tag %>
     <%= inertia_ssr_head %>
     <%== Sentry.get_trace_propagation_meta %>
   </head>
 
-  <body class="antialiased">
+  <body>
     <%= yield %>
   </body>
 </html>

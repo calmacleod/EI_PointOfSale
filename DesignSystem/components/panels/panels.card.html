@@ -1,0 +1,46 @@
+<!-- @dsCard group="Components" viewport="700x290" name="Panels, metric strip, readout, detail rows" subtitle="The card replacement. No radius, no shadow, no gap." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><title>Panels</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+</style></head><body>
+<div style="border:1px solid var(--color-border);display:grid;grid-template-columns:minmax(0,1fr) 220px;height:150px">
+  <section class="p-region">
+    <div class="p-head"><h2 class="p-title">Line items</h2><span class="p-count">4 lines · 10 units</span>
+      <div class="p-head-actions"><button class="k-btn k-btn-xs k-btn-quiet">Discount <kbd>F5</kbd></button></div></div>
+    <div class="p-body" style="font-size:12px">A panel fills its grid region. Neighbours are separated by a single rule via <span class="mono">.p-region + .p-region</span>. If you want a card, you want a panel.</div>
+    <div class="p-foot"><span>Rows <strong>1–18</strong> of <strong>52,817</strong></span><span class="push">Page 1 / 1,057</span></div>
+  </section>
+  <aside class="p-region">
+    <div class="r-out r-out-due"><p class="r-out-label">Balance due</p><p class="r-out-value" style="font-size:24px">$22.22</p></div>
+    <dl class="r-lines" style="padding:4px 0">
+      <div class="r-line"><dt>Subtotal</dt><dd>$110.41</dd></div>
+      <div class="r-line r-line-credit"><dt>Discounts</dt><dd>-$2.25</dd></div>
+      <div class="r-line r-line-total"><dt>Total</dt><dd>$122.22</dd></div>
+    </dl>
+  </aside>
+</div>
+
+<p class="cap" style="margin-top:12px">Metric strip — a row of figures, not a grid of cards</p>
+<div class="m-strip" style="grid-template-columns:repeat(5,1fr);margin-top:5px;border:1px solid var(--color-border)">
+  <div class="m-cell"><p class="m-label">Sales today</p><p class="m-value" style="font-size:16px">$1,284.05</p><p class="m-note">18 orders</p></div>
+  <div class="m-cell"><p class="m-label">Avg ticket</p><p class="m-value" style="font-size:16px">$71.34</p><p class="m-note">per order</p></div>
+  <div class="m-cell"><p class="m-label">Cash expected</p><p class="m-value" style="font-size:16px">$1,102.55</p><p class="m-note">drawer #1</p></div>
+  <div class="m-cell"><p class="m-label">Open orders</p><p class="m-value" style="font-size:16px">2</p><p class="m-note">1 held</p></div>
+  <div class="m-cell m-cell-alert"><p class="m-label">Low stock</p><p class="m-value" style="font-size:16px">321</p><p class="m-note">below reorder</p></div>
+</div>
+
+<p class="cap" style="margin-top:12px">Detail rows — 40/60 split, uppercase term</p>
+<dl class="d-grid" style="grid-template-columns:1fr 1fr;margin-top:5px;border:1px solid var(--color-border);border-bottom:0">
+  <div class="d-row"><dt>Last sold</dt><dd class="data">Aug 9, 2026</dd></div>
+  <div class="d-row"><dt>Created</dt><dd class="data">Jan 11, 2007</dd></div>
+  <div class="d-row"><dt>Supplier</dt><dd class="data">Games Workshop</dd></div>
+  <div class="d-row"><dt>Variants</dt><dd class="data">None</dd></div>
+</dl>
+</body></html>

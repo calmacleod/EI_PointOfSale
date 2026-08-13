@@ -1,0 +1,53 @@
+<!-- @dsCard group="Structure" viewport="700x280" name="Row density" subtitle="26px compact is the default. The old UI was 49px." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Density</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+
+</style>
+</head>
+<body>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+  <div>
+    <p class="cap">Compact — 26px · default</p>
+    <div style="border:1px solid var(--color-border);margin-top:5px">
+      <table class="t" style="min-width:0;width:100%">
+        <thead><tr><th>Code</th><th>Product</th><th class="r">Price</th></tr></thead>
+        <tbody>
+          <tr data-state="bad"><td class="data">100001</td><td>$5 Grab Bag</td><td class="r data">$5.00</td></tr>
+          <tr data-state="warn"><td class="data">5011921914777</td><td>02-07 Ringwraiths</td><td class="r data">$70.00</td></tr>
+          <tr data-state="ok"><td class="data">082585203823</td><td>02 Vanguard NHL</td><td class="r data">$1.75</td></tr>
+          <tr data-state="ok"><td class="data">053334477574</td><td>05-06 Fleer Ultra</td><td class="r data">$2.99</td></tr>
+          <tr data-state="ok"><td class="data">100042</td><td>Bulk Card Sleeves</td><td class="r data">$3.49</td></tr>
+          <tr data-state="ok"><td class="data">100043</td><td>Deck Box — Red</td><td class="r data">$8.99</td></tr>
+          <tr data-state="ok"><td class="data">100044</td><td>Deck Box — Black</td><td class="r data">$8.99</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div data-density="roomy">
+    <p class="cap">Roomy — 32px · opt-in</p>
+    <div style="border:1px solid var(--color-border);margin-top:5px">
+      <table class="t" style="min-width:0;width:100%">
+        <thead><tr><th>Code</th><th>Product</th><th class="r">Price</th></tr></thead>
+        <tbody>
+          <tr data-state="bad"><td class="data">100001</td><td>$5 Grab Bag</td><td class="r data">$5.00</td></tr>
+          <tr data-state="warn"><td class="data">5011921914777</td><td>02-07 Ringwraiths</td><td class="r data">$70.00</td></tr>
+          <tr data-state="ok"><td class="data">082585203823</td><td>02 Vanguard NHL</td><td class="r data">$1.75</td></tr>
+          <tr data-state="ok"><td class="data">053334477574</td><td>05-06 Fleer Ultra</td><td class="r data">$2.99</td></tr>
+          <tr data-state="ok"><td class="data">100042</td><td>Bulk Card Sleeves</td><td class="r data">$3.49</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<p class="note" style="margin-top:8px">Set <span class="mono">data-density="roomy"</span> on any ancestor for touch-heavy terminals. Cells never wrap — a column that must wrap opts in with <span class="mono">class="wrap"</span>. State lives on the row's left edge, so no column is spent on it.</p>
+</body></html>

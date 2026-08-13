@@ -1,0 +1,46 @@
+<!-- @dsCard group="Colors" viewport="700x210" name="State colour" subtitle="Five states. A text colour, a wash, and a stripe — never a bubble." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>State</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+
+</style>
+</head>
+<body>
+<div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--color-border)">
+  <div class="rw" style="gap:10px;padding:6px 10px;border-bottom:1px solid var(--color-border);border-left:var(--state-stripe) solid var(--state-ok);background:var(--state-ok-wash)">
+    <span class="s-tag s-ok" style="min-width:92px">Completed</span>
+    <span class="mono" style="min-width:150px">--state-ok / -wash</span>
+    <span style="font-size:11px;color:var(--color-text-muted)">Settled orders, saved records, positive variance</span>
+  </div>
+  <div class="rw" style="gap:10px;padding:6px 10px;border-bottom:1px solid var(--color-border);border-left:var(--state-stripe) solid var(--state-warn);background:var(--state-warn-wash)">
+    <span class="s-tag s-warn" style="min-width:92px">Held</span>
+    <span class="mono" style="min-width:150px">--state-warn / -wash</span>
+    <span style="font-size:11px;color:var(--color-text-muted)">Held orders, low stock, overdue tasks, outstanding balance</span>
+  </div>
+  <div class="rw" style="gap:10px;padding:6px 10px;border-bottom:1px solid var(--color-border);border-left:var(--state-stripe) solid var(--state-bad);background:var(--state-bad-wash)">
+    <span class="s-tag s-bad" style="min-width:92px">Voided</span>
+    <span class="mono" style="min-width:150px">--state-bad / -wash</span>
+    <span style="font-size:11px;color:var(--color-text-muted)">Voided orders, validation failures, negative stock</span>
+  </div>
+  <div class="rw" style="gap:10px;padding:6px 10px;border-bottom:1px solid var(--color-border);border-left:var(--state-stripe) solid var(--state-live);background:var(--state-live-wash)">
+    <span class="s-tag s-live" style="min-width:92px">Draft</span>
+    <span class="mono" style="min-width:150px">--state-live / -wash</span>
+    <span style="font-size:11px;color:var(--color-text-muted)">Active order, running report, in-progress task</span>
+  </div>
+  <div class="rw" style="gap:10px;padding:6px 10px;border-bottom:1px solid var(--color-border);border-left:var(--state-stripe) solid var(--state-idle);background:var(--state-idle-wash)">
+    <span class="s-tag s-idle" style="min-width:92px">Refunded</span>
+    <span class="mono" style="min-width:150px">--state-idle / -wash</span>
+    <span style="font-size:11px;color:var(--color-text-muted)">Refunded, archived, discontinued, no state</span>
+  </div>
+</div>
+<p class="note" style="margin-top:8px">Three carriers, one meaning: the <strong>stripe</strong> on a row edge, the <strong>tag</strong> where a label is needed, and the <strong>wash</strong> on a notice bar. Bordered pills are gone — they cost 20px of row height and read as decoration.</p>
+</body></html>

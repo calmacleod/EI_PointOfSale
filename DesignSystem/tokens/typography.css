@@ -1,0 +1,43 @@
+/* EI Point of Sale — typography
+
+   Inter for language, a monospace for machine data. That split is deliberate and
+   load-bearing: anything a scanner produced or a till calculated is set in mono
+   with tabular figures, so codes and money are impossible to misread and always
+   align. Prose is Inter. */
+
+@font-face { font-family:"Inter"; src:url("../assets/fonts/Inter-Regular.ttf") format("truetype"); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:"Inter"; src:url("../assets/fonts/Inter-Italic.ttf") format("truetype"); font-weight:400; font-style:italic; font-display:swap; }
+@font-face { font-family:"Inter"; src:url("../assets/fonts/Inter-Bold.ttf") format("truetype"); font-weight:700; font-style:normal; font-display:swap; }
+@font-face { font-family:"Inter"; src:url("../assets/fonts/Inter-BoldItalic.ttf") format("truetype"); font-weight:700; font-style:italic; font-display:swap; }
+
+:root {
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --font-feature-ui: "cv02", "cv03", "cv04", "cv11";
+
+  --font-size-root: 16px;
+  --font-size-root-large: 17px;
+  --font-size-root-xlarge: 18px;
+
+  /* Scale. Nothing between 15 and 22 exists, because nothing needs it: the
+     interface has data type and one readout type, and no editorial middle. */
+  --text-label: 10px;   /* column headers, state labels, key hints — uppercase */
+  --text-meta: 11px;    /* units, secondary line in a cell, status bar */
+  --text-data: 12px;    /* table cells, chrome nav, dense controls */
+  --text-ui: 13px;      /* buttons, inputs, form labels, body */
+  --text-strong: 15px;  /* panel figures, section leads */
+  --text-readout: 22px; /* metric values */
+  --text-total: 34px;   /* the register balance — the largest thing in the app */
+
+  --leading-flat: 1;
+  --leading-tight: 1.25;
+  --leading-normal: 1.45;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --tracking-label: 0.07em;  /* the uppercase micro-labels */
+  --tracking-tight: -0.01em;
+}

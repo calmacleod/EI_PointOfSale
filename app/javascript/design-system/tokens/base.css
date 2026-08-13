@@ -1,0 +1,46 @@
+/* EI Point of Sale — base defaults */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: var(--font-size-root);
+  font-family: var(--font-sans);
+  font-feature-settings: var(--font-feature-ui);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+[data-font-size="large"]  { font-size: var(--font-size-root-large); }
+[data-font-size="xlarge"] { font-size: var(--font-size-root-xlarge); }
+
+body {
+  margin: 0;
+  background-color: var(--color-page);
+  color: var(--color-text);
+  font-size: var(--text-ui);
+  line-height: var(--leading-normal);
+}
+
+h1, h2, h3, h4 { margin: 0; font-size: inherit; font-weight: inherit; }
+p, dl, dd, ul, ol { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+table { border-collapse: collapse; border-spacing: 0; }
+
+a { color: var(--color-accent); text-decoration: none; }
+a:hover { color: var(--color-accent-hover); text-decoration: underline; }
+
+:focus-visible { outline: var(--focus-ring); outline-offset: 1px; }
+
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+button, [role="button"] { touch-action: manipulation; }
+button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+
+/* Machine data: codes, quantities, money. Tabular, never wrapped. */
+.data {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "zero";
+  white-space: nowrap;
+}
+.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.neg { color: var(--state-bad); }

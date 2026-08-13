@@ -91,14 +91,17 @@ module ApplicationHelper
       :root, [data-theme="light"] {
         --color-accent: #{palette[:light]};
         --color-accent-hover: #{palette[:light_hover]};
+        --color-accent-quiet: color-mix(in srgb, #{palette[:light]} 12%, var(--color-surface));
       }
       [data-theme="dark"] {
         --color-accent: #{palette[:dark]};
         --color-accent-hover: #{palette[:dark_hover]};
+        --color-accent-quiet: color-mix(in srgb, #{palette[:dark]} 20%, var(--color-surface));
       }
       [data-theme="dim"] {
         --color-accent: #{palette[:dark]};
         --color-accent-hover: #{palette[:dark_hover]};
+        --color-accent-quiet: color-mix(in srgb, #{palette[:dark]} 20%, var(--color-surface));
       }
     CSS
   end

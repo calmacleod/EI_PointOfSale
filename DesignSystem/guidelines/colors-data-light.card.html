@@ -1,0 +1,61 @@
+<!-- @dsCard group="Colors" viewport="700x160" name="Data surfaces — light" subtitle="White paper, two greys, two hairlines" -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Data light</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+
+</style>
+</head>
+<body>
+<div class="rw" style="gap:8px">
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#ffffff;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#ffffff</div>
+  <p class="mono" style="margin-top:3px">--color-surface</p>
+  <p style="font-size:11px;color:var(--color-text)">Surface</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#f4f4f5;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#f4f4f5</div>
+  <p class="mono" style="margin-top:3px">--color-surface-alt</p>
+  <p style="font-size:11px;color:var(--color-text)">Surface alt</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#ebebed;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#ebebed</div>
+  <p class="mono" style="margin-top:3px">--color-surface-sunken</p>
+  <p style="font-size:11px;color:var(--color-text)">Sunken</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#dcdcde;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#dcdcde</div>
+  <p class="mono" style="margin-top:3px">--color-border</p>
+  <p style="font-size:11px;color:var(--color-text)">Border</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#b8b8bc;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#b8b8bc</div>
+  <p class="mono" style="margin-top:3px">--color-border-strong</p>
+  <p style="font-size:11px;color:var(--color-text)">Border strong</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#16171a;color:#fff;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#16171a</div>
+  <p class="mono" style="margin-top:3px">--color-text</p>
+  <p style="font-size:11px;color:var(--color-text)">Text</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#6a6b70;color:#fff;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#6a6b70</div>
+  <p class="mono" style="margin-top:3px">--color-text-muted</p>
+  <p style="font-size:11px;color:var(--color-text)">Muted</p>
+</div>
+  <div style="flex:1;min-width:88px">
+  <div style="height:34px;border:1px solid var(--color-border);background:#9a9ba0;color:#fff;display:flex;align-items:flex-end;padding:3px 5px;font-size:9px;font-weight:600;font-family:var(--font-mono)">#9a9ba0</div>
+  <p class="mono" style="margin-top:3px">--color-text-faint</p>
+  <p style="font-size:11px;color:var(--color-text)">Faint</p>
+</div>
+</div>
+<p class="note" style="margin-top:8px">Two border weights, not one: <span class="mono">--color-border</span> for row rules and panel edges, <span class="mono">--color-border-strong</span> for column heads and control outlines. That difference is what gives a dense table readable structure without any shading.</p>
+</body></html>

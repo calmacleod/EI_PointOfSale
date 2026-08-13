@@ -1,0 +1,55 @@
+<!-- @dsCard group="Type" viewport="700x240" name="Type scale" subtitle="Six steps and two readouts. Nothing between 15 and 22 exists." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Type</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+
+</style>
+</head>
+<body>
+<div style="display:flex;flex-direction:column;gap:6px">
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span class="mono" style="width:24px;text-align:right">10</span>
+    <span class="mono" style="width:112px">--text-label</span>
+    <span style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em">Column header · state label · key hint</span>
+  </div>
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span class="mono" style="width:24px;text-align:right">11</span>
+    <span class="mono" style="width:112px">--text-meta</span>
+    <span style="font-size:11px;color:var(--color-text-muted)">Secondary cell line · status bar · hints</span>
+  </div>
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span class="mono" style="width:24px;text-align:right">12</span>
+    <span class="mono" style="width:112px">--text-data</span>
+    <span style="font-size:12px">Table cells · rail tooltips · dense controls</span>
+  </div>
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span class="mono" style="width:24px;text-align:right">13</span>
+    <span class="mono" style="width:112px">--text-ui</span>
+    <span style="font-size:13px">Buttons · inputs · body</span>
+  </div>
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span class="mono" style="width:24px;text-align:right">15</span>
+    <span class="mono" style="width:112px">--text-strong</span>
+    <span style="font-size:15px;font-weight:600">Panel figures · modal titles</span>
+  </div>
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span class="mono" style="width:24px;text-align:right">22</span>
+    <span class="mono" style="width:112px">--text-readout</span>
+    <span style="font-family:var(--font-mono);font-size:22px;font-variant-numeric:tabular-nums">Metric values (mono)</span>
+  </div>
+  <div style="display:flex;align-items:baseline;gap:12px">
+    <span class="mono" style="width:24px;text-align:right">34</span>
+    <span class="mono" style="width:112px">--text-total</span>
+    <span style="font-family:var(--font-mono);font-size:34px;font-variant-numeric:tabular-nums;line-height:1.05">Register balance (mono) — the largest thing in the app</span>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,95 @@
+<!-- @dsCard group="Components" viewport="700x300" name="Tables" subtitle="26px rows, sticky header, state stripe on the row edge, mono data" -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head><meta charset="utf-8"><title>Tables</title>
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+</style></head><body>
+<div style="border:1px solid var(--color-border)">
+  <table class="t" style="min-width:0;width:100%">
+    <thead><tr>
+      <th style="width:130px"><button class="t-sort">Code</button></th>
+      <th><button class="t-sort" aria-sort="ascending">Product ↑</button></th>
+      <th style="width:92px">State</th>
+      <th class="r" style="width:76px">Price</th>
+      <th class="r" style="width:64px">Stock</th>
+      <th class="r" style="width:50px"></th>
+    </tr></thead>
+    <tbody>
+      <tr data-state="bad">
+        <td><a class="data" href="#">100001</a></td>
+        <td class="wrap">$5 Grab Bag</td>
+        <td><span class="s-tag s-bad">Negative</span></td>
+        <td class="r data">$5.00</td>
+        <td class="r data neg">-267</td>
+        <td class="r"><a class="k-btn k-btn-xs k-btn-quiet" href="#">Edit</a></td>
+      </tr>
+      <tr data-state="warn">
+        <td><a class="data" href="#">5011921914777</a></td>
+        <td class="wrap">02-07 Ringwraiths</td>
+        <td><span class="s-tag s-warn">Low</span></td>
+        <td class="r data">$70.00</td>
+        <td class="r data">0</td>
+        <td class="r"><a class="k-btn k-btn-xs k-btn-quiet" href="#">Edit</a></td>
+      </tr>
+      <tr data-state="warn">
+        <td><a class="data" href="#">5011921914760</a></td>
+        <td class="wrap">02-09 Balrog</td>
+        <td><span class="s-tag s-warn">Low</span></td>
+        <td class="r data">$55.00</td>
+        <td class="r data">2</td>
+        <td class="r"><a class="k-btn k-btn-xs k-btn-quiet" href="#">Edit</a></td>
+      </tr>
+      <tr data-state="ok" aria-selected="true">
+        <td><a class="data" href="#">082585203823</a></td>
+        <td class="wrap">02 Vanguard NHL Cards</td>
+        <td><span class="s-tag s-ok">Stocked</span></td>
+        <td class="r data">$1.75</td>
+        <td class="r data">48</td>
+        <td class="r"><a class="k-btn k-btn-xs k-btn-quiet" href="#">Edit</a></td>
+      </tr>
+      <tr data-state="ok">
+        <td><a class="data" href="#">053334477574</a></td>
+        <td class="wrap">05-06 Fleer Ultra</td>
+        <td><span class="s-tag s-ok">Stocked</span></td>
+        <td class="r data">$2.99</td>
+        <td class="r data">12</td>
+        <td class="r"><a class="k-btn k-btn-xs k-btn-quiet" href="#">Edit</a></td>
+      </tr>
+      <tr data-state="idle">
+        <td><a class="data" href="#">100051</a></td>
+        <td class="wrap">Playmat — discontinued</td>
+        <td><span class="s-tag s-idle">Retired</span></td>
+        <td class="r data">$24.99</td>
+        <td class="r data">0</td>
+        <td class="r"><a class="k-btn k-btn-xs k-btn-quiet" href="#">Edit</a></td>
+      </tr>
+      <tr data-state="live">
+        <td><a class="data" href="#">100061</a></td>
+        <td class="wrap">Preorder — Q4 set</td>
+        <td><span class="s-tag s-live">Inbound</span></td>
+        <td class="r data">$59.99</td>
+        <td class="r data">—</td>
+        <td class="r"><a class="k-btn k-btn-xs k-btn-quiet" href="#">Edit</a></td>
+      </tr>
+    </tbody>
+    <tfoot><tr><td colspan="3">7 of 52,817</td><td class="r data">$220.20</td><td class="r data neg">-205</td><td></td></tr></tfoot>
+  </table>
+</div>
+<div class="rw" style="margin-top:10px;gap:20px;align-items:flex-start">
+  <ul style="flex:1;min-width:250px;font-size:11px;color:var(--color-text-muted);line-height:1.75">
+    <li>Row height <strong>26px</strong>; header <strong>24px</strong>, sticky, on <span class="mono">--color-border-strong</span>.</li>
+    <li>State is a <strong>3px stripe</strong> on the first cell — no column spent on status.</li>
+    <li>Cells are <span class="mono">nowrap</span>; the one column allowed to break gets <span class="mono">class="wrap"</span>.</li>
+    <li>Numbers and codes take <span class="mono">.data</span>; right-align with <span class="mono">.r</span>.</li>
+    <li>Selection is <span class="mono">aria-selected="true"</span> → accent-quiet wash.</li>
+    <li>A second line inside a cell uses <span class="mono">.t-sub</span>.</li>
+    <li>Wrap in <span class="mono">.t-wrap</span>; give the table a real <span class="mono">min-width</span> so overflow engages.</li>
+  </ul>
+</div>
+</body></html>

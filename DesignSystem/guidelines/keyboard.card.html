@@ -1,0 +1,41 @@
+<!-- @dsCard group="Structure" viewport="700x190" name="Keyboard model" subtitle="A till is driven by keys. The UI says so out loud." -->
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Keyboard</title>
+<link rel="stylesheet" href="../styles.css">
+<style>
+  body { padding:12px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
+  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
+
+</style>
+</head>
+<body>
+<div style="display:flex;flex-direction:column;gap:8px">
+  <div>
+    <p class="cap">Key caps appear on the action itself</p>
+    <div class="rw" style="margin-top:5px;gap:6px">
+      <button class="k-btn k-btn-sm k-btn-primary">New sale <kbd>F2</kbd></button>
+      <button class="k-btn k-btn-sm">Held <kbd>F3</kbd></button>
+      <button class="k-btn k-btn-sm">Save <kbd>⌘S</kbd></button>
+      <button class="k-key" style="width:88px">Complete<span class="k-key-sub">F12</span></button>
+      <button class="k-key" style="width:88px">Cash<span class="k-key-sub">F4</span></button>
+    </div>
+  </div>
+  <div>
+    <p class="cap">And again in the status bar, contextually</p>
+    <div class="c-statusbar" style="margin-top:5px;height:26px;border:1px solid var(--chrome-border)">
+      <span class="c-status-group"><span class="c-dot c-dot-ok"></span>Scanner ready</span>
+      <span class="c-status-group">Drawer #1 · <strong>ORD-000015</strong></span>
+      <div class="c-keys">
+        <span class="c-key"><kbd>F4</kbd>Cash</span><span class="c-key"><kbd>F8</kbd>Hold</span><span class="c-key"><kbd>F12</kbd>Complete</span><span class="c-key"><kbd>Esc</kbd>Void</span>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="note" style="margin-top:8px">Reserved: <strong>F2</strong> new sale · <strong>F3</strong> held · <strong>F4–F7</strong> tender methods · <strong>F8</strong> hold · <strong>F12</strong> complete · <strong>Esc</strong> cancel · <strong>⌘K</strong> search · <strong>/</strong> filter. A screen may add keys but never reassign these.</p>
+</body></html>

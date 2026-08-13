@@ -1,0 +1,136 @@
+/* EI Point of Sale — colour tokens
+   Two ideas drive this palette:
+
+   1. CHROME IS DARK, DATA IS LIGHT. The rail, command bar, and status bar are
+      near-black in every theme. They are the machine; the content area is the
+      paper. This is what makes the product read as an instrument rather than a
+      website, and it removes any question of "which grey is this region".
+   2. COLOUR MEANS STATE. Teal is the only brand colour and appears only on the
+      primary action, the active nav marker, focus, and sort direction. Every
+      other colour in the interface is reporting a fact about a record. */
+
+:root,
+[data-theme="light"] {
+  /* Data surfaces — white paper, hairline rules */
+  --color-page: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f4f4f5;   /* panel headers, table headers, zebra */
+  --color-surface-sunken: #ebebed; /* wells, inactive keypad, empty states */
+  --color-border: #dcdcde;        /* hairline — the primary structural device */
+  --color-border-strong: #b8b8bc; /* column dividers, focus-adjacent edges */
+
+  --color-text: #16171a;
+  --color-text-muted: #6a6b70;
+  --color-text-faint: #9a9ba0;    /* units, placeholder metadata */
+
+  /* Chrome — identical in light and dark */
+  --chrome-bg: #17181b;
+  --chrome-bg-alt: #1f2024;
+  --chrome-border: #2c2d32;
+  --chrome-text: #b8b9bf;
+  --chrome-text-bright: #f2f2f4;
+  --chrome-text-faint: #6e6f77;
+  --chrome-hover: rgba(255, 255, 255, 0.06);
+  --chrome-active: rgba(255, 255, 255, 0.10);
+
+  /* Brand */
+  --color-accent: #0d9488;
+  --color-accent-hover: #0f766e;
+  --color-accent-quiet: #e6f4f2;  /* selected row, active filter */
+  --color-accent-on: #ffffff;     /* text on accent fill */
+
+  /* State — each is a text colour plus a quiet wash. No borders needed:
+     state is shown as a coloured label and a row stripe, not a bubble. */
+  --state-ok: #0f7a4a;
+  --state-ok-wash: #e8f6ee;
+  --state-warn: #a15c00;
+  --state-warn-wash: #fdf3e2;
+  --state-bad: #b3261e;
+  --state-bad-wash: #fdecea;
+  --state-live: #1d5fd0;
+  --state-live-wash: #eaf1fd;
+  --state-idle: #5a5b61;
+  --state-idle-wash: #f0f0f2;
+}
+
+[data-theme="dark"] {
+  --color-page: #101114;
+  --color-surface: #16171a;
+  --color-surface-alt: #1d1e22;
+  --color-surface-sunken: #0b0c0e;
+  --color-border: #2a2b30;
+  --color-border-strong: #3c3d44;
+
+  --color-text: #ececed;
+  --color-text-muted: #9a9ba1;
+  --color-text-faint: #6a6b71;
+
+  --chrome-bg: #0b0c0e;
+  --chrome-bg-alt: #141518;
+  --chrome-border: #24252a;
+  --chrome-text: #a8a9af;
+  --chrome-text-bright: #f2f2f4;
+  --chrome-text-faint: #62636a;
+  --chrome-hover: rgba(255, 255, 255, 0.06);
+  --chrome-active: rgba(255, 255, 255, 0.10);
+
+  --color-accent: #2dd4bf;
+  --color-accent-hover: #5eead4;
+  --color-accent-quiet: #10302d;
+  --color-accent-on: #06231f;
+
+  --state-ok: #4ade80;
+  --state-ok-wash: #10281a;
+  --state-warn: #fbbf24;
+  --state-warn-wash: #2a1f06;
+  --state-bad: #f87171;
+  --state-bad-wash: #2b1211;
+  --state-live: #7aa7f5;
+  --state-live-wash: #111c2f;
+  --state-idle: #9a9ba1;
+  --state-idle-wash: #1d1e22;
+}
+
+/* Dim — dark with the data surface lifted, for bright counters. */
+[data-theme="dim"] {
+  --color-page: #1c1d21;
+  --color-surface: #222327;
+  --color-surface-alt: #292a2f;
+  --color-surface-sunken: #17181b;
+  --color-border: #35363c;
+  --color-border-strong: #474851;
+  --color-text: #e2e2e4;
+  --color-text-muted: #9c9da3;
+  --color-text-faint: #6d6e75;
+  --chrome-bg: #131418;
+  --chrome-bg-alt: #1b1c20;
+  --chrome-border: #2b2c32;
+  --chrome-text: #a8a9af;
+  --chrome-text-bright: #f2f2f4;
+  --chrome-text-faint: #62636a;
+  --chrome-hover: rgba(255, 255, 255, 0.06);
+  --chrome-active: rgba(255, 255, 255, 0.10);
+  --color-accent: #2dd4bf;
+  --color-accent-hover: #5eead4;
+  --color-accent-quiet: #16352f;
+  --color-accent-on: #06231f;
+  --state-ok: #4ade80;
+  --state-ok-wash: #17301f;
+  --state-warn: #fbbf24;
+  --state-warn-wash: #2f2409;
+  --state-bad: #f87171;
+  --state-bad-wash: #301715;
+  --state-live: #7aa7f5;
+  --state-live-wash: #172236;
+  --state-idle: #9c9da3;
+  --state-idle-wash: #292a2f;
+}
+
+/* Store-configurable accent. Only the accent pair changes — nothing else in the
+   interface may reference teal directly. */
+[data-accent="blue"]   { --color-accent: #1d5fd0; --color-accent-hover: #1a4fae; --color-accent-quiet: #eaf1fd; }
+[data-accent="indigo"] { --color-accent: #4f46e5; --color-accent-hover: #4338ca; --color-accent-quiet: #eeedfd; }
+[data-accent="amber"]  { --color-accent: #a15c00; --color-accent-hover: #874c00; --color-accent-quiet: #fdf3e2; }
+[data-theme="dark"][data-accent="blue"],  [data-theme="dim"][data-accent="blue"]  { --color-accent: #7aa7f5; --color-accent-hover: #a5c3f9; --color-accent-quiet: #14203a; --color-accent-on: #08152b; }
+[data-theme="dark"][data-accent="indigo"],[data-theme="dim"][data-accent="indigo"]{ --color-accent: #a5b4fc; --color-accent-hover: #c7d0fe; --color-accent-quiet: #1c1c3d; --color-accent-on: #10102b; }
+[data-theme="dark"][data-accent="amber"], [data-theme="dim"][data-accent="amber"] { --color-accent: #fbbf24; --color-accent-hover: #fcd34d; --color-accent-quiet: #2f2409; --color-accent-on: #241a02; }
