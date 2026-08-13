@@ -44,6 +44,7 @@ class ProductsController < ApplicationController
                        Arel.sql("to_char(updated_at AT TIME ZONE 'UTC', 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS updated_at_s"))
                .includes(:tax_code, :supplier, :product_group),
       config: @filter_config,
+      count: cached_product_count,
       ttl: 10.minutes
     )
   end
@@ -111,6 +112,14 @@ class ProductsController < ApplicationController
   end
 
   private
+
+    def cached_product_count
+      filter_active = @filter_config.all_filter_param_keys.any? do |key|
+        Array(params[key]).any?(&:present?)
+      end
+
+      Product.kept_count unless filter_active
+    end
 
     def product_params
       params.require(:product).permit(

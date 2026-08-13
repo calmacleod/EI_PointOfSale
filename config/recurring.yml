@@ -20,6 +20,11 @@ development:
     schedule: every 15 minutes
     queue: low
 
+  refresh_product_count:
+    class: RefreshProductCountJob
+    schedule: every 15 minutes
+    queue: low
+
   overdue_store_tasks_notification:
     class: OverdueStoreTasksNotificationJob
     schedule: at 8am every day
@@ -33,6 +38,11 @@ production:
 
   refresh_dashboard_metrics:
     class: RefreshDashboardMetricsJob
+    schedule: every 15 minutes
+    queue: low
+
+  refresh_product_count:
+    class: RefreshProductCountJob
     schedule: every 15 minutes
     queue: low
 

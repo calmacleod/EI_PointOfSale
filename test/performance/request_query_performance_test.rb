@@ -54,6 +54,31 @@ class RequestQueryPerformanceTest < ActionDispatch::IntegrationTest
     assert_operator inertia_props.fetch("rows").length, :>=, 20
   end
 
+  test "unfiltered product index reuses the cached exact total" do
+    cache = ActiveSupport::Cache::MemoryStore.new
+
+    Rails.stub(:cache, cache) do
+      get products_path
+      queries = capture_sql_queries { get products_path }
+
+      assert_response :success
+      assert queries.none? { |sql| sql.match?(/SELECT COUNT\(\*\) FROM "products"/) }, queries.join("\n")
+    end
+  end
+
+  test "filtered product index counts the filtered relation" do
+    cache = ActiveSupport::Cache::MemoryStore.new
+
+    queries = Rails.stub(:cache, cache) do
+      capture_sql_queries do
+        get products_path, params: { supplier_id: suppliers(:diamond_comics).id }
+      end
+    end
+
+    assert_response :success
+    assert queries.any? { |sql| sql.match?(/SELECT COUNT\(DISTINCT "products"\."id"\)|SELECT COUNT\(\*\) FROM "products"/) }, queries.join("\n")
+  end
+
   test "customer search query count stays bounded across many matches" do
     20.times do |index|
       Customer.create!(

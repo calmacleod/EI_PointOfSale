@@ -52,6 +52,7 @@ module Filterable
 
       pagy_opts = items ? { limit: items } : {}
       pagy_opts[:ttl] = ttl
+      pagy_opts[:count] = count unless count.nil?
       pagy, records = pagy(:countish, scope, **pagy_opts)
       records.load
       [ pagy, records ]

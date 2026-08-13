@@ -61,6 +61,29 @@ class ProductTest < ActiveSupport::TestCase
     assert_equal product, Product.find_by_exact_code("  DS-MAT-RED  ")
   end
 
+  test "kept_count reuses the cached exact count" do
+    cache = ActiveSupport::Cache::MemoryStore.new
+    expected_count = Product.kept.count
+
+    queries = Rails.stub(:cache, cache) do
+      capture_sql_queries do
+        2.times { assert_equal expected_count, Product.kept_count }
+      end
+    end
+
+    product_counts = queries.grep(/SELECT COUNT\(\*\) FROM "products"/)
+    assert_equal 1, product_counts.length
+  end
+
+  test "changing kept status invalidates the cached count" do
+    cache = ActiveSupport::Cache::MemoryStore.new
+    cache.write(Product::KEPT_COUNT_CACHE_KEY, Product.kept.count)
+
+    Rails.stub(:cache, cache) { products(:nhl_puck).discard! }
+
+    assert_nil cache.read(Product::KEPT_COUNT_CACHE_KEY)
+  end
+
   test "sets last_restocked_at when stock_level increases" do
     product = products(:dragon_shield_red)
     product.update!(last_restocked_at: nil)

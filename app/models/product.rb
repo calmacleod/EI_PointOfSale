@@ -1,4 +1,7 @@
 class Product < ApplicationRecord
+  KEPT_COUNT_CACHE_KEY = "products/kept_count"
+  KEPT_COUNT_CACHE_TTL = 1.day
+
   audited
 
   include Discard::Model
@@ -37,6 +40,20 @@ class Product < ApplicationRecord
     kept.where("LOWER(code) = LOWER(?)", code.to_s.strip).first
   end
 
+  def self.kept_count
+    Rails.cache.fetch(
+      KEPT_COUNT_CACHE_KEY,
+      expires_in: KEPT_COUNT_CACHE_TTL,
+      race_condition_ttl: 10.seconds
+    ) { kept.count }
+  end
+
+  def self.refresh_kept_count!
+    kept.count.tap do |count|
+      Rails.cache.write(KEPT_COUNT_CACHE_KEY, count, expires_in: KEPT_COUNT_CACHE_TTL)
+    end
+  end
+
   def sellable_price
     selling_price || 0
   end
@@ -44,7 +61,7 @@ class Product < ApplicationRecord
   private
 
     def invalidate_kept_count
-      Rails.cache.delete("products/kept_count")
+      Rails.cache.delete(KEPT_COUNT_CACHE_KEY)
     end
 
     def enqueue_shopify_push
