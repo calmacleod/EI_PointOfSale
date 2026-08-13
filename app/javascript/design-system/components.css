@@ -27,15 +27,8 @@
   background: var(--chrome-bg);
   border-right: 1px solid var(--chrome-border);
 }
-.c-mark {
-  width: 28px; height: 28px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 6px;
-  border-radius: var(--radius-sm);
-  background: var(--color-accent);
-  color: var(--color-accent-on);
-  font-size: 10px; font-weight: var(--weight-bold); letter-spacing: 0.02em;
-}
+.c-rail > .b-mark,
+.c-rail > a > .b-mark { margin-bottom: 6px; }
 .c-railitem {
   position: relative;
   width: 34px; height: 32px;

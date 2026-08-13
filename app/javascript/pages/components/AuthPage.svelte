@@ -1,5 +1,6 @@
 <script>
   import { Link, router, usePage } from "@inertiajs/svelte"
+  import BrandLockup from "./BrandLockup.svelte"
 
   export let title
   export let description
@@ -20,13 +21,7 @@
 
 <div class="auth-shell">
   <section class="auth-brand">
-    <div class="row" style="gap:var(--space-2)">
-      <span class="c-mark" style="margin:0;width:32px;height:32px;font-size:11px">EI</span>
-      <div>
-        <p style="color:var(--chrome-text-bright);font-size:var(--text-ui);font-weight:var(--weight-semibold)">EI Point of Sale</p>
-        <p class="data" style="color:var(--chrome-text-faint);font-size:var(--text-meta)">Retail operations console</p>
-      </div>
-    </div>
+    <BrandLockup variant="stacked" size={32} chrome={true} />
     <div style="margin-top:auto;max-width:46ch">
       <p class="k-label" style="color:var(--chrome-text-faint)">Operator workspace</p>
       <p style="margin-top:var(--space-2);color:var(--chrome-text);font-size:var(--text-data);line-height:var(--leading-normal)">Sales, inventory, customers, drawer reconciliation, and reports stay in one keyboard-driven workspace.</p>

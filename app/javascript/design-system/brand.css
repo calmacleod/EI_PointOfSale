@@ -1,0 +1,53 @@
+/* EI Retail brand mark and lockups. The artwork is fixed to the 32-unit master. */
+.b-mark {
+  --brand-accent: #0d9488;
+  --b-mark: 26px;
+  width: var(--b-mark);
+  height: var(--b-mark);
+  display: inline-flex;
+  flex: 0 0 var(--b-mark);
+  color: var(--color-text);
+}
+
+.b-mark svg { width: 100%; height: 100%; display: block; }
+.b-mark--chrome { color: var(--chrome-text-bright); }
+.b-mark--mono .b-i { fill: currentColor; }
+
+.b-lockup {
+  --b-mark: 26px;
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--b-mark) / 4);
+  color: var(--color-text);
+}
+
+.b-lockup--chrome { color: var(--chrome-text-bright); }
+.b-lockup--chrome .b-mark { color: var(--chrome-text-bright); }
+
+.b-lockup--stack {
+  gap: calc(var(--b-mark) / 3);
+}
+
+.b-lockup--stack .b-text {
+  display: grid;
+  gap: 2px;
+  padding-left: calc(var(--b-mark) / 3);
+  border-left: 1px solid var(--chrome-border);
+  line-height: var(--leading-flat);
+}
+
+.b-name {
+  color: inherit;
+  font-size: var(--text-ui);
+  font-weight: var(--weight-semibold);
+}
+
+.b-sub {
+  color: var(--color-text-muted);
+  font-size: var(--text-meta);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.b-lockup--chrome .b-sub { color: var(--chrome-text-faint); }

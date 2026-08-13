@@ -1,23 +1,78 @@
-<!-- @dsCard group="Brand" viewport="700x140" name="Brand mark" subtitle="A teal tile with EI set bold. No logo artwork exists in the source." -->
+<!-- @dsCard group="Brand" viewport="900x420" name="Brand mark" subtitle="EI drawn as row rules and a state stripe. Package in assets/brand/." -->
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
-<title>Brand</title>
+<title>Brand mark</title>
 <link rel="stylesheet" href="../styles.css">
 <style>
-  body { padding:12px; background:var(--color-page); }
-  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); }
-  .rw { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
-  .note { font-size:var(--text-meta); color:var(--color-text-faint); }
+  body { padding:14px; background:var(--color-page); }
+  .cap { font-size:var(--text-label); font-weight:var(--weight-semibold); text-transform:uppercase; letter-spacing:var(--tracking-label); color:var(--color-text-muted); margin-bottom:8px; }
+  .grid { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:22px 26px; }
+  .rw { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .note { font-size:var(--text-meta); color:var(--color-text-faint); max-width:36ch; }
+  .swatch { display:flex; align-items:center; justify-content:center; width:64px; height:64px; border:1px solid var(--color-border); }
   .mono { font-family:var(--font-mono); font-size:10px; color:var(--color-text-faint); }
-
+  ul { margin:0; padding-left:14px; font-size:var(--text-meta); color:var(--color-text-muted); display:grid; gap:3px; }
 </style>
 </head>
 <body>
-<div class="rw" style="gap:24px">
-  <div class="rw" style="gap:8px"><span class="c-mark" style="margin:0">EI</span><span class="note">28px · rail</span></div>
-  <div class="rw" style="gap:8px"><span class="c-mark" style="margin:0;width:32px;height:32px;font-size:11px">EI</span><span class="note">32px · sign-in</span></div>
-  <p class="note" style="max-width:34ch">The repository ships only a favicon. Nothing has been invented in its place — wherever a mark is needed the product sets "EI" in Inter Bold on the accent. Supply real artwork and it drops straight in.</p>
+<div class="grid">
+  <div>
+    <p class="cap">The mark</p>
+    <div class="rw">
+      <span class="b-mark" style="--b-mark:64px"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span>
+      <p class="note">The E is three bars on a spine — a table's row rules. The I is the 3px state stripe. 32-unit grid, 4-unit weight, 5-unit gaps.</p>
+    </div>
+  </div>
+  <div>
+    <p class="cap">Sizes in use</p>
+    <div class="rw" style="gap:16px">
+      <span class="b-mark" style="--b-mark:16px"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span>
+      <span class="b-mark" style="--b-mark:26px"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span>
+      <span class="b-mark" style="--b-mark:32px"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span>
+    </div>
+    <p class="note" style="margin-top:8px">16px minimum · 26px rail · 32px sign-in. Clear space equals the stripe width at that size (mark ÷ 8).</p>
+  </div>
+  <div>
+    <p class="cap">Backgrounds</p>
+    <div class="rw" style="gap:8px">
+      <span class="swatch" style="background:#fff"><span class="b-mark" style="--b-mark:34px"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span></span>
+      <span class="swatch" style="background:var(--chrome-bg);border-color:var(--chrome-border)"><span class="b-mark b-mark--chrome" style="--b-mark:34px"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span></span>
+      <span class="swatch" style="background:var(--color-accent);border-color:var(--color-accent)"><span class="b-mark b-mark--mono" style="--b-mark:34px;color:var(--color-accent-on)"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span></span>
+      <span class="swatch" style="background:#000;border-color:#000"><span class="b-mark b-mark--mono" style="--b-mark:34px;color:#fff"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span></span>
+    </div>
+    <p class="note" style="margin-top:8px">Two-colour on white and chrome. One-colour on the accent and in print — the stripe takes the ink.</p>
+  </div>
+  <div>
+    <p class="cap">Lockup · horizontal</p>
+    <span class="b-lockup">
+      <span class="b-mark" style="--b-mark:26px"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span>
+      <span class="b-sub">Point of Sale</span>
+    </span>
+    <p class="note" style="margin-top:10px">The mark already reads EI — the lockup never repeats it beside itself.</p>
+  </div>
+  <div>
+    <p class="cap">Lockup · stacked, on chrome</p>
+    <span style="display:inline-flex;background:var(--chrome-bg);padding:10px 14px">
+      <span class="b-lockup b-lockup--stack b-lockup--chrome">
+        <span class="b-mark b-mark--chrome" style="--b-mark:32px"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="b-e" d="M3 5H21V9H7V14H18V18H7V23H21V27H3Z" fill="currentColor"/><path class="b-i" d="M25 5H29V27H25Z" fill="var(--color-accent)"/></svg></span>
+        <span class="b-text"><span class="b-name">EI Retail</span><span class="b-sub">Point of Sale</span></span>
+      </span>
+    </span>
+    <p class="note" style="margin-top:10px">Hairline divider, never a colour block. Sign-in and splash only.</p>
+  </div>
+  <div>
+    <p class="cap">Don't</p>
+    <ul>
+      <li>No rounded or circular container.</li>
+      <li>No state colour in the stripe — teal only.</li>
+      <li>No shadow, gradient, or outline.</li>
+      <li>No stretching; the viewBox fixes the ratio.</li>
+      <li>No redrawing or re-spacing — scale the file.</li>
+    </ul>
+    <p class="mono" style="margin-top:8px">assets/brand/ · brand.css</p>
+  </div>
 </div>
-</body></html>
+</body>
+</html>

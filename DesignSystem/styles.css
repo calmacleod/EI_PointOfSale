@@ -3,4 +3,5 @@
 @import "./tokens/layout.css";
 @import "./tokens/sidebar.css";
 @import "./tokens/base.css";
+@import "./brand.css";
 @import "./components.css";

@@ -11,6 +11,7 @@
   import Gift from "@lucide/svelte/icons/gift"
   import LayoutDashboard from "@lucide/svelte/icons/layout-dashboard"
   import LogOut from "@lucide/svelte/icons/log-out"
+  import BrandLockup from "../pages/components/BrandLockup.svelte"
   import PackageSearch from "@lucide/svelte/icons/package-search"
   import ReceiptText from "@lucide/svelte/icons/receipt-text"
   import Search from "@lucide/svelte/icons/search"
@@ -293,7 +294,7 @@
 {#if authenticated}
   <div class="app" data-cable-connected={cableConnected}>
     <nav class="c-rail" aria-label="Application sections">
-      <a class="c-mark" href={paths.root || "/"} aria-label="EI Point of Sale" onmouseenter={() => scheduleRailPrefetch(paths.root || "/")} onmouseleave={() => cancelRailPrefetch(paths.root || "/")} onmousedown={(event) => startRailNavigation(event, paths.root || "/")} onclick={(event) => finishRailNavigation(event, paths.root || "/")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.root || "/")}>EI</a>
+      <a href={paths.root || "/"} aria-label="EI Point of Sale" onmouseenter={() => scheduleRailPrefetch(paths.root || "/")} onmouseleave={() => cancelRailPrefetch(paths.root || "/")} onmousedown={(event) => startRailNavigation(event, paths.root || "/")} onclick={(event) => finishRailNavigation(event, paths.root || "/")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.root || "/")}><BrandLockup size={26} chrome={true} /></a>
       {#each navItems as item}
         {#if online}
           <a href={item.href} class="c-railitem" data-label={item.label} aria-label={item.label} aria-current={active(item.href) ? "page" : undefined} onmouseenter={() => scheduleRailPrefetch(item.href)} onmouseleave={() => cancelRailPrefetch(item.href)} onmousedown={(event) => startRailNavigation(event, item.href)} onclick={(event) => finishRailNavigation(event, item.href)} onkeydown={(event) => startRailKeyboardNavigation(event, item.href)}>
