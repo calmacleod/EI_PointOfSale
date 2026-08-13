@@ -10,6 +10,7 @@ class PasswordsMailerTest < ActionMailer::TestCase
     mail = PasswordsMailer.reset(users(:admin))
 
     assert_includes mail.body.encoded, "https://pos.callummacleod.ca/passwords/"
+    assert_includes mail.body.encoded, "https://pos.callummacleod.ca/assets/brand/ei-mark-"
   ensure
     ActionMailer::Base.default_url_options = original_options
   end
