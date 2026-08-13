@@ -64,6 +64,8 @@ class ReportsController < ApplicationController
 
   def show
     @template = @report.template
+    report_id = @report.id
+    @report_result_loader = -> { Report.where(id: report_id).pick(:result_data) }
   end
 
   def export_pdf
@@ -102,7 +104,9 @@ class ReportsController < ApplicationController
   private
 
     def set_report
-      @report = Report.find(params[:id])
+      scope = Report.all
+      scope = scope.select(*Report.column_names.excluding("result_data")) if action_name == "show"
+      @report = scope.find(params[:id])
     end
 
     def report_params

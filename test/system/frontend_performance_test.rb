@@ -37,4 +37,16 @@ class FrontendPerformanceTest < ApplicationSystemTestCase
     assert_text products(:dragon_shield_red).name, wait: 5
     assert_no_selector "#nprogress"
   end
+
+  test "hydrates deferred product filters after the product table renders" do
+    visit products_path
+
+    assert_text products(:dragon_shield_red).name
+    assert_button "Add filter", wait: 5
+
+    click_button "Add filter"
+
+    assert_text(/Supplier/i)
+    assert_text(/Categories/i)
+  end
 end

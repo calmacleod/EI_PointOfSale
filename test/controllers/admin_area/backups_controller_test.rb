@@ -14,11 +14,14 @@ module AdminArea
     test "show renders when credentials are not configured" do
       GoogleDriveService.stub(:check_credentials, { configured: false, connected: false, error: "OAuth client credentials not set" }) do
         get admin_backups_path
+        assert_response :success
+        assert_inertia_deferred_props :status, :details, :files, :actions, group: :backup_overview
+        assert_no_inertia_prop :status
+
+        inertia_load_deferred_props(:backup_overview)
       end
 
-      assert_response :success
-      assert_equal "Backups", inertia_props["title"]
-      assert_equal "Not configured", inertia_props["status"]
+      assert_equal "Not configured", inertia.props[:status]
     end
 
     test "show renders when configured but not connected" do
@@ -26,11 +29,12 @@ module AdminArea
 
       GoogleDriveService.stub(:check_credentials, creds) do
         get admin_backups_path
+        assert_response :success
+        inertia_load_deferred_props(:backup_overview)
       end
 
-      assert_response :success
-      assert_equal "Not connected", inertia_props["status"]
-      assert_includes inertia_props["actions"].map { |action| action["label"] }, "Connect Google Drive"
+      assert_equal "Not connected", inertia.props[:status]
+      assert_includes inertia.props[:actions].map { |action| action[:label] }, "Connect Google Drive"
     end
 
     test "show renders when connected with backup files" do
@@ -42,23 +46,25 @@ module AdminArea
           opts[:prefix]&.start_with?("db_backup_") ? [ fake_file ] : []
         }) do
           get admin_backups_path
+          assert_response :success
+          inertia_load_deferred_props(:backup_overview)
         end
       end
 
-      assert_response :success
-      assert_equal "Connected", inertia_props["status"]
-      assert_includes inertia_props["details"].map { |detail| detail["value"] }, "user@gmail.com"
-      assert_includes inertia_props.dig("files", 0, "items").map { |file| file["name"] }, "db_backup_20260215.dump.gz"
-      assert_includes inertia_props["actions"].map { |action| action["label"] }, "Disconnect"
+      assert_equal "Connected", inertia.props[:status]
+      assert_includes inertia.props[:details].map { |detail| detail[:value] }, "user@gmail.com"
+      assert_includes inertia.props.dig(:files, 0, :items).map { |file| file[:name] }, "db_backup_20260215.dump.gz"
+      assert_includes inertia.props[:actions].map { |action| action[:label] }, "Disconnect"
     end
 
     test "show handles GoogleDriveService::Error gracefully" do
       GoogleDriveService.stub(:check_credentials, -> { raise GoogleDriveService::Error, "Something went wrong" }) do
         get admin_backups_path
+        assert_response :success
+        inertia_load_deferred_props(:backup_overview)
       end
 
-      assert_response :success
-      assert_equal "Something went wrong", inertia_props.dig("details", 2, "value")
+      assert_equal "Something went wrong", inertia.props.dig(:details, 2, :value)
     end
 
     # ── download ──

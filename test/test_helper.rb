@@ -1,6 +1,7 @@
 ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
+require "inertia_rails/minitest"
 require "minitest/mock"
 require "minitest/reporters"
 require "minitest/minitest_reporter_plugin"

@@ -15,6 +15,12 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, @product.name
+    assert_inertia_deferred_props :filters, group: :filters
+    assert_no_inertia_prop :filters
+
+    inertia_load_deferred_props(:filters)
+
+    assert_includes inertia.props.fetch(:filters).map { |filter| filter[:label] }, "Supplier"
   end
 
   test "show displays product" do

@@ -23,6 +23,12 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   test "GET /orders/:id shows a completed order" do
     get order_path(orders(:completed_order))
     assert_response :success
+    assert_inertia_deferred_props :events, group: :order_activity
+    assert_no_inertia_prop :events
+
+    inertia_load_deferred_props(:order_activity)
+
+    assert_kind_of Array, inertia.props.fetch(:events)
   end
 
   test "GET /orders/:id/edit redirects to register" do

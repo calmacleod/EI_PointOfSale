@@ -122,6 +122,33 @@ body {
   line-height: var(--leading-normal);
 }
 
+.deferred-lines {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.deferred-line {
+  width: 100%;
+  height: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, var(--color-border), var(--color-surface-alt), var(--color-border));
+  background-size: 200% 100%;
+  animation: deferred-pulse 1.4s ease-in-out infinite;
+}
+
+.deferred-line-short {
+  width: 64%;
+}
+
+@keyframes deferred-pulse {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deferred-line { animation: none; }
+}
+
 .chart-bars {
   display: flex;
   align-items: flex-end;

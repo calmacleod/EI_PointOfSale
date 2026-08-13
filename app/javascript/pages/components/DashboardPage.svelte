@@ -1,5 +1,6 @@
 <script>
-  import { Link } from "@inertiajs/svelte"
+  import { Deferred, Link } from "@inertiajs/svelte"
+  import DeferredPanel from "./DeferredPanel.svelte"
   import EmptyState from "./EmptyState.svelte"
   import PanelHeader from "./PanelHeader.svelte"
   import StatusTag from "./StatusTag.svelte"
@@ -33,8 +34,21 @@
     <span class="n-bar-actions"><Link class="k-btn k-btn-xs" href={drawer ? actions.close_drawer : actions.open_drawer}>{drawer ? "Close drawer" : "Open drawer"}</Link></span>
   </div>
 
-  <div class="p-split" style="grid-template-columns:minmax(0,1fr) 320px">
-    <section class="p-region">
+  <Deferred data={["recent_orders", "tasks"]}>
+    {#snippet fallback()}
+      <div class="p-split" style="grid-template-columns:minmax(0,1fr) 320px">
+        <DeferredPanel title="Recent orders" message="Loading the latest orders…" />
+        <DeferredPanel title="Needs attention" message="Loading your assigned tasks…" />
+      </div>
+    {/snippet}
+    {#snippet rescue()}
+      <div class="p-split" style="grid-template-columns:minmax(0,1fr) 320px">
+        <section class="p-region"><EmptyState title="Activity unavailable" body="The dashboard is ready, but its activity feed could not be loaded." /></section>
+        <section class="p-region"><EmptyState title="Tasks unavailable" body="Open Store Tasks to retry." /></section>
+      </div>
+    {/snippet}
+    <div class="p-split" style="grid-template-columns:minmax(0,1fr) 320px">
+      <section class="p-region">
       <PanelHeader title="Recent orders" count={`${recent_orders.length} shown${metrics_last_updated ? ` · metrics ${metrics_last_updated}` : ""}`}><Link href={actions.orders} class="k-btn k-btn-xs k-btn-quiet">Order history</Link></PanelHeader>
       <div class="t-wrap">
         {#if recent_orders.length}
@@ -55,9 +69,9 @@
           </table>
         {:else}<EmptyState title="No orders yet" body="Start a new sale from the command bar." />{/if}
       </div>
-    </section>
+      </section>
 
-    <aside class="p-region">
+      <aside class="p-region">
       <PanelHeader title="Needs attention" count={tasks.length}><Link href={actions.tasks} class="k-btn k-btn-xs k-btn-quiet">All tasks</Link></PanelHeader>
       <div class="p-body-flush">
         {#each tasks as task}
@@ -74,6 +88,7 @@
         <Link class="k-key" href={actions.cash_drawer}>Drawer<span class="k-key-sub">Count</span></Link>
         <Link class="k-key" href={actions.tasks}>Tasks<span class="k-key-sub">Assigned</span></Link>
       </div>
-    </aside>
-  </div>
+      </aside>
+    </div>
+  </Deferred>
 </section>

@@ -1,5 +1,5 @@
 <script>
-  import { Link, router } from "@inertiajs/svelte"
+  import { Deferred, Link, router } from "@inertiajs/svelte"
   import EmptyState from "./EmptyState.svelte"
   import Pagination from "./Pagination.svelte"
   import PanelHeader from "./PanelHeader.svelte"
@@ -55,7 +55,11 @@
       <div style="position:relative;flex:1;min-width:200px;max-width:340px">
         <input id="resource-search" class="k-input k-input-sm" style="width:100%" type="search" placeholder="Filter this list…" value={values.q || ""} oninput={(event) => updateValue("q", event.currentTarget.value)} />
       </div>
-      {#if filters.length}<button class="k-btn k-btn-sm k-btn-quiet" type="button" aria-expanded={showFilters} onclick={() => showFilters = !showFilters}>{showFilters ? "Hide filters" : "Add filter"}</button>{/if}
+      <Deferred data="filters">
+        {#snippet fallback()}<button class="k-btn k-btn-sm k-btn-quiet" type="button" disabled>Loading filters…</button>{/snippet}
+        {#snippet rescue()}<span class="faint">Filters unavailable</span>{/snippet}
+        {#if filters.length}<button class="k-btn k-btn-sm k-btn-quiet" type="button" aria-expanded={showFilters} onclick={() => showFilters = !showFilters}>{showFilters ? "Hide filters" : "Add filter"}</button>{/if}
+      </Deferred>
       {#each activeFilters as [key, value]}<span class="f-chip"><span class="f-chip-key">{key.replaceAll("_", " ")}</span>{Array.isArray(value) ? value.join(", ") : value}<button class="f-chip-x" type="button" aria-label={`Remove ${key} filter`} onclick={() => removeFilter(key)}>×</button></span>{/each}
       <span class="push row">
         {#if activeFilters.length || values.q}<button class="k-btn k-btn-xs k-btn-quiet" type="button" onclick={clearFilters}>Clear all</button>{/if}

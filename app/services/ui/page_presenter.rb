@@ -199,7 +199,7 @@ module Ui
           resource_key: filter_config&.resource_name || config[:collection].to_s,
           columns: columns,
           rows: records.map { |record| index_row(record, columns, config) },
-          filters: filter_config ? JSON.parse(filter_config.filters_json, symbolize_names: true) : [],
+          filters: index_filters_prop(filter_config),
           query: safe_query_params,
           pagination: pagination_props(assigns[:pagy]),
           actions: {
@@ -307,6 +307,10 @@ module Ui
           value = metric[:format].to_s == "currency" ? h.number_to_currency(metric[:value].to_d) : h.number_with_delimiter(metric[:value].to_i)
           { key: metric[:key], label: metric[:label], description: metric[:description], value: value, path: safe_public_path(metric[:link_path]) }
         end
+        recent_orders = assigns[:recent_orders]
+        my_tasks = assigns[:my_tasks]
+        serialize_order = method(:order_summary)
+        serialize_task = method(:task_summary)
 
         {
           view: "dashboard",
@@ -315,8 +319,12 @@ module Ui
           metrics: metrics,
           metrics_last_updated: format_time(assigns[:metrics_last_updated]),
           drawer: drawer_props(CashDrawerSession.current),
-          recent_orders: Array(assigns[:recent_orders]).map { |order| order_summary(order) },
-          tasks: Array(assigns[:my_tasks]).map { |task| task_summary(task) },
+          recent_orders: InertiaRails.defer(group: "dashboard_activity", rescue: true) do
+            Array(recent_orders).map { |order| serialize_order.call(order) }
+          end,
+          tasks: InertiaRails.defer(group: "dashboard_activity", rescue: true) do
+            Array(my_tasks).map { |task| serialize_task.call(task) }
+          end,
           actions: {
             register: controller.send(:register_path), orders: controller.send(:orders_path),
             tasks: controller.send(:store_tasks_path), cash_drawer: controller.send(:cash_drawer_path),
@@ -381,7 +389,7 @@ module Ui
             view: "report_show", title: report.title, description: report.template&.description,
             report: {
               id: report.id, status: report.status, report_type: report.report_type,
-              parameters: report.parameters, result_data: report.result_data, error_message: report.error_message,
+              parameters: report.parameters, result_data: report_result_data_prop(report), error_message: report.error_message,
               generated_by: human_label(report.generated_by), created_at: format_time(report.created_at), completed_at: format_time(report.completed_at),
               table_columns: Array(report.template&.table_columns).map { |column| { key: column[:key].to_s, label: column[:label].to_s } },
               chart_type: report.template&.chart_type
@@ -410,10 +418,16 @@ module Ui
       end
 
       def order_show_props(order)
+        serialize_event_actor = method(:human_label)
+        serialize_event_time = method(:format_time)
         {
           view: "order_show", title: "Order #{order.number}", description: "#{order.status.humanize} order details.",
           order: order_props(order),
-          events: order.order_events.order(created_at: :desc).limit(30).map { |event| { type: event.event_type.humanize, actor: human_label(event.actor), at: format_time(event.created_at), data: event.data } },
+          events: InertiaRails.defer(group: "order_activity", rescue: true) do
+            order.order_events.includes(:actor).order(created_at: :desc).limit(30).map do |event|
+              { type: event.event_type.humanize, actor: serialize_event_actor.call(event.actor), at: serialize_event_time.call(event.created_at), data: event.data }
+            end
+          end,
           actions: {
             index: controller.send(:orders_path), receipt: controller.send(:receipt_order_path, order),
             refund: controller.send(:refund_form_order_path, order), register: controller.send(:register_path, order_id: order.id)
@@ -663,44 +677,61 @@ module Ui
       end
 
       def backups_props
-        credentials = assigns[:credentials] || {}
-        status = if assigns[:credentials_error].present?
-          "Error"
-        elsif !credentials[:configured]
-          "Not configured"
-        elsif !credentials[:connected]
-          "Not connected"
-        else
-          "Connected"
-        end
-        actions = []
-        if credentials[:connected]
-          actions << { label: "Disconnect", path: controller.send(:disconnect_admin_backups_path), method: "delete" }
-        elsif credentials[:configured]
-          actions << { label: "Connect Google Drive", path: controller.send(:authorize_admin_backups_path), method: "get", full_reload: true }
-        end
-        files = [ [ "Database backups", assigns[:db_backups] ], [ "Garage bucket backups", assigns[:garage_backups] ] ].map do |label, records|
-          {
-            label: label,
-            items: Array(records).map do |file|
-              {
-                name: file.name, created_at: format_time(file.created_time),
-                size: file.size ? h.number_to_human_size(file.size.to_i) : "—",
-                path: controller.send(:download_admin_backups_path, file_id: file.id, file_name: file.name)
-              }
-            end
-          }
-        end
         {
           view: "backups", title: "Backups", description: "Google Drive integration status and nightly backup files.",
-          status: status,
-          details: [
-            { label: "Account", value: credentials[:display_name] || credentials[:email] || "—" },
-            { label: "Email", value: credentials[:email] || "—" },
-            { label: "Message", value: assigns[:credentials_error] || credentials[:error] || "Ready" }
-          ],
-          files: files, actions: actions
+          status: deferred_backup_prop(:status),
+          details: deferred_backup_prop(:details),
+          files: deferred_backup_prop(:files),
+          actions: deferred_backup_prop(:actions)
         }
+      end
+
+      def backup_overview_props
+        @backup_overview_props ||= begin
+          overview = assigns.fetch(:backup_overview_loader).call
+          credentials = overview[:credentials] || {}
+          status = if overview[:credentials_error].present?
+            "Error"
+          elsif !credentials[:configured]
+            "Not configured"
+          elsif !credentials[:connected]
+            "Not connected"
+          else
+            "Connected"
+          end
+          actions = []
+          if credentials[:connected]
+            actions << { label: "Disconnect", path: controller.send(:disconnect_admin_backups_path), method: "delete" }
+          elsif credentials[:configured]
+            actions << { label: "Connect Google Drive", path: controller.send(:authorize_admin_backups_path), method: "get", full_reload: true }
+          end
+          files = [ [ "Database backups", overview[:db_backups] ], [ "Garage bucket backups", overview[:garage_backups] ] ].map do |label, records|
+            {
+              label: label,
+              items: Array(records).map do |file|
+                {
+                  name: file.name, created_at: format_time(file.created_time),
+                  size: file.size ? h.number_to_human_size(file.size.to_i) : "—",
+                  path: controller.send(:download_admin_backups_path, file_id: file.id, file_name: file.name)
+                }
+              end
+            }
+          end
+          {
+            status: status,
+            details: [
+              { label: "Account", value: credentials[:display_name] || credentials[:email] || "—" },
+              { label: "Email", value: credentials[:email] || "—" },
+              { label: "Message", value: overview[:credentials_error] || credentials[:error] || "Ready" }
+            ],
+            files: files, actions: actions
+          }
+        end
+      end
+
+      def deferred_backup_prop(key)
+        loader = method(:backup_overview_props)
+        InertiaRails.defer(group: "backup_overview", rescue: true) { loader.call.fetch(key) }
       end
 
       def recurring_tasks_props
@@ -830,6 +861,29 @@ module Ui
           value: value, options: select_options(options[:source]),
           step: options[:step], min: options[:min], multiple: options[:multiple], accept: options[:accept]
         }.compact
+      end
+
+      def index_filters_prop(filter_config)
+        return [] unless filter_config
+
+        loader = -> { JSON.parse(filter_config.filters_json, symbolize_names: true) }
+        return loader.call unless filter_config.filters.any? { |filter| %i[association multi_select].include?(filter.type) }
+
+        InertiaRails.defer(
+          group: "filters",
+          rescue: true,
+          once: true,
+          key: "filters/#{filter_config.resource_name}/v1",
+          expires_in: 5.minutes,
+          &loader
+        )
+      end
+
+      def report_result_data_prop(report)
+        return nil unless report.completed?
+
+        loader = assigns.fetch(:report_result_loader)
+        InertiaRails.defer(group: "report_data", rescue: true) { loader.call }
       end
 
       def select_options(source)

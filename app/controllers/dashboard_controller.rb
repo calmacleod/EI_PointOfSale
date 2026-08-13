@@ -19,7 +19,7 @@ class DashboardController < ApplicationController
 
     @metrics_last_updated = @visible_metrics.map { |m| m[:computed_at] }.compact.max
 
-    @recent_orders = Order.kept.recent.includes(:customer).limit(5)
+    @recent_orders = Order.kept.recent.includes(:customer, :order_lines).limit(5)
 
     if Current.user
       @my_tasks = StoreTask.where.not(status: :done)

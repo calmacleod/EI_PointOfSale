@@ -47,8 +47,13 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
 
     get root_path
     assert_response :success
+    assert_inertia_deferred_props :recent_orders, :tasks, group: :dashboard_activity
+    assert_no_inertia_prop :recent_orders
+    assert_no_inertia_prop :tasks
 
-    # The page should show "Recent orders" section
-    assert_includes response.body, "Recent orders"
+    inertia_load_deferred_props(:dashboard_activity)
+
+    assert_equal 5, inertia.props.fetch(:recent_orders).length
+    assert_kind_of Array, inertia.props.fetch(:tasks)
   end
 end

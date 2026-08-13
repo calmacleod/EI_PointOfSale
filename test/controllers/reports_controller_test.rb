@@ -68,10 +68,15 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
     get report_path(reports(:completed_report))
     assert_response :success
     assert_equal "report_show", inertia_props["view"]
-    assert inertia_props.dig("report", "result_data", "chart").present?
-    assert inertia_props.dig("report", "result_data", "table").present?
+    assert_inertia_deferred_props "report.result_data", group: :report_data
+    refute inertia_props.dig("report").key?("result_data")
     assert inertia_props.dig("actions", "pdf").present?
     assert inertia_props.dig("actions", "excel").present?
+
+    inertia_load_deferred_props(:report_data)
+
+    assert inertia.props.dig(:report, :result_data, :chart).present?
+    assert inertia.props.dig(:report, :result_data, :table).present?
   end
 
   test "admin: show renders pending report with processing indicator" do

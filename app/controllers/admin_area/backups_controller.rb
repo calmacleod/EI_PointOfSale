@@ -3,15 +3,7 @@
 module AdminArea
   class BackupsController < BaseController
     def show
-      @credentials = GoogleDriveService.check_credentials
-      @db_backups = fetch_backups("db_backup_")
-      @garage_backups = fetch_backups("garage_backup_")
-      @last_db_backup = @db_backups.first
-      @last_garage_backup = @garage_backups.first
-    rescue GoogleDriveService::Error => e
-      @credentials_error = e.message
-      @db_backups = []
-      @garage_backups = []
+      @backup_overview_loader = method(:load_backup_overview)
     end
 
     def download
@@ -60,8 +52,19 @@ module AdminArea
 
     private
 
-      def fetch_backups(prefix)
-        return [] unless @credentials[:connected]
+      def load_backup_overview
+        credentials = GoogleDriveService.check_credentials
+        {
+          credentials: credentials,
+          db_backups: fetch_backups(credentials, "db_backup_"),
+          garage_backups: fetch_backups(credentials, "garage_backup_")
+        }
+      rescue GoogleDriveService::Error => e
+        { credentials: {}, credentials_error: e.message, db_backups: [], garage_backups: [] }
+      end
+
+      def fetch_backups(credentials, prefix)
+        return [] unless credentials[:connected]
 
         GoogleDriveService.list_files(prefix: prefix)
       rescue StandardError => e

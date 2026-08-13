@@ -1,6 +1,7 @@
 <script>
-  import { Link, router } from "@inertiajs/svelte"
+  import { Deferred, Link, router } from "@inertiajs/svelte"
   import ConfirmModal from "./ConfirmModal.svelte"
+  import DeferredPanel from "./DeferredPanel.svelte"
   import EmptyState from "./EmptyState.svelte"
   import Pagination from "./Pagination.svelte"
   import PanelHeader from "./PanelHeader.svelte"
@@ -129,19 +130,31 @@
     {#if ["pending", "processing"].includes(report.status)}<div class="n-bar n-live"><strong>{report.status === "pending" ? "Report queued." : "Report running."}</strong> Results will appear when processing finishes.</div>
     {:else if report.status === "failed"}<div class="n-bar n-bad"><strong>Report generation failed.</strong> {report.error_message}</div>{/if}
 
-    {#if report.status === "completed" && report.result_data?.summary}
-      <div class="m-strip" style={`grid-template-columns:repeat(${Math.min(Object.keys(report.result_data.summary).length,6)},minmax(0,1fr))`}>{#each Object.entries(report.result_data.summary) as [key, value]}<div class="m-cell"><p class="m-label">{key.replaceAll("_", " ")}</p><p class="m-value">{value}</p></div>{/each}</div>
+    {#if report.status === "completed"}
+      <Deferred data="report.result_data">
+        {#snippet fallback()}<div class="m-strip" style="grid-template-columns:minmax(0,1fr)"><div class="m-cell" aria-busy="true"><p class="m-label">Report results</p><p class="m-note">Loading the generated dataset…</p></div></div>{/snippet}
+        {#snippet rescue()}<div class="n-bar n-bad"><strong>Report results unavailable.</strong> Reload this page to retry.</div>{/snippet}
+        {#if report.result_data?.summary}<div class="m-strip" style={`grid-template-columns:repeat(${Math.min(Object.keys(report.result_data.summary).length,6)},minmax(0,1fr))`}>{#each Object.entries(report.result_data.summary) as [key, value]}<div class="m-cell"><p class="m-label">{key.replaceAll("_", " ")}</p><p class="m-value">{value}</p></div>{/each}</div>{/if}
+      </Deferred>
     {/if}
 
     <div class="p-split" style="grid-template-columns:minmax(0,1fr) 280px">
-      <section class="p-region">
-        {#if report.status === "completed" && report.result_data?.chart}
-          <PanelHeader title="Chart" count={`${report.result_data.chart.labels?.length || 0} points`} />
-          <div class="p-body" style="overflow:visible"><div class="chart-bars">{#each report.result_data.chart.labels || [] as label, index}<div class="chart-bar"><span class="chart-bar-value">{report.result_data.chart.datasets?.[0]?.data?.[index] ?? 0}</span><div class="chart-bar-fill" style={`height:${chartHeight(report.result_data.chart.datasets?.[0]?.data?.[index], report.result_data.chart.datasets?.[0]?.data || [])}`}></div><span class="chart-bar-label">{label}</span></div>{/each}</div></div>
-        {/if}
-        <PanelHeader title="Report detail" count={`${report.result_data?.table?.length || 0} records`} />
-        {#if report.result_data?.table?.length}<div class="t-wrap"><table class="t" style="min-width:780px"><thead><tr>{#each report.table_columns as column}<th>{column.label}</th>{/each}</tr></thead><tbody>{#each report.result_data.table as row}<tr data-state="idle">{#each report.table_columns as column}<td class:data={machineField(column.key, column.label)}>{displayValue(row[column.key])}</td>{/each}</tr>{/each}</tbody></table></div>{:else}<EmptyState title="No detail rows" body="This report completed without tabular results." />{/if}
-      </section>
+      {#if report.status === "completed"}
+        <Deferred data="report.result_data">
+          {#snippet fallback()}<DeferredPanel title="Report detail" message="Loading chart and table data…" />{/snippet}
+          {#snippet rescue()}<section class="p-region"><EmptyState title="Results unavailable" body="Reload this page to retry the report data request." /></section>{/snippet}
+          <section class="p-region">
+            {#if report.result_data?.chart}
+              <PanelHeader title="Chart" count={`${report.result_data.chart.labels?.length || 0} points`} />
+              <div class="p-body" style="overflow:visible"><div class="chart-bars">{#each report.result_data.chart.labels || [] as label, index}<div class="chart-bar"><span class="chart-bar-value">{report.result_data.chart.datasets?.[0]?.data?.[index] ?? 0}</span><div class="chart-bar-fill" style={`height:${chartHeight(report.result_data.chart.datasets?.[0]?.data?.[index], report.result_data.chart.datasets?.[0]?.data || [])}`}></div><span class="chart-bar-label">{label}</span></div>{/each}</div></div>
+            {/if}
+            <PanelHeader title="Report detail" count={`${report.result_data?.table?.length || 0} records`} />
+            {#if report.result_data?.table?.length}<div class="t-wrap"><table class="t" style="min-width:780px"><thead><tr>{#each report.table_columns as column}<th>{column.label}</th>{/each}</tr></thead><tbody>{#each report.result_data.table as row}<tr data-state="idle">{#each report.table_columns as column}<td class:data={machineField(column.key, column.label)}>{displayValue(row[column.key])}</td>{/each}</tr>{/each}</tbody></table></div>{:else}<EmptyState title="No detail rows" body="This report completed without tabular results." />{/if}
+          </section>
+        </Deferred>
+      {:else}
+        <section class="p-region"><EmptyState title="Results not ready" body="Generated report data will appear here." /></section>
+      {/if}
       <aside class="p-region">
         <PanelHeader title="Parameters" />
         <dl class="d-grid">{#each Object.entries(report.parameters || {}) as [key, value]}<div class="d-row"><dt>{key.replaceAll("_", " ")}</dt><dd class:data={machineField(key, key)}>{displayValue(value)}</dd></div>{/each}</dl>
@@ -176,8 +189,12 @@
 
 {:else if view === "backups"}
   <section class="screen">
-    <div class={`n-bar n-${stateTone(status)}`}><StatusTag value={status} />{#each details as detail}<span><strong>{detail.label}</strong> {detail.value}</span>{/each}<span class="n-bar-actions">{#each actions as item}<button class="k-btn k-btn-xs" type="button" onclick={() => perform(item)}>{item.label}</button>{/each}</span></div>
-    <div class="p-split" style={`grid-template-columns:repeat(${Math.max(files.length,1)},minmax(0,1fr))`}>{#each files as group}<section class="p-region"><PanelHeader title={group.label} count={group.items.length} /><div class="t-wrap"><table class="t" style="min-width:520px"><thead><tr><th>File</th><th>Date</th><th class="r">Size</th><th></th></tr></thead><tbody>{#each group.items as item}<tr data-state="ok"><td class="data">{item.name}</td><td class="data">{item.created_at}</td><td class="r data">{item.size}</td><td class="r"><a href={item.path} class="k-btn k-btn-xs k-btn-quiet">Download</a></td></tr>{:else}<tr><td colspan="4"><EmptyState title="No backups" body="Connected backup files will appear here." /></td></tr>{/each}</tbody></table></div></section>{/each}</div>
+    <Deferred data={["status", "details", "files", "actions"]}>
+      {#snippet fallback()}<div class="p-split" style="grid-template-columns:repeat(2,minmax(0,1fr))"><DeferredPanel title="Database backups" message="Connecting to Google Drive…" /><DeferredPanel title="Garage bucket backups" message="Loading available files…" /></div>{/snippet}
+      {#snippet rescue()}<section class="p-region"><EmptyState title="Backups unavailable" body="Google Drive could not be reached. Reload this page to retry." /></section>{/snippet}
+      <div class={`n-bar n-${stateTone(status)}`}><StatusTag value={status} />{#each details as detail}<span><strong>{detail.label}</strong> {detail.value}</span>{/each}<span class="n-bar-actions">{#each actions as item}<button class="k-btn k-btn-xs" type="button" onclick={() => perform(item)}>{item.label}</button>{/each}</span></div>
+      <div class="p-split" style={`grid-template-columns:repeat(${Math.max(files.length,1)},minmax(0,1fr))`}>{#each files as group}<section class="p-region"><PanelHeader title={group.label} count={group.items.length} /><div class="t-wrap"><table class="t" style="min-width:520px"><thead><tr><th>File</th><th>Date</th><th class="r">Size</th><th></th></tr></thead><tbody>{#each group.items as item}<tr data-state="ok"><td class="data">{item.name}</td><td class="data">{item.created_at}</td><td class="r data">{item.size}</td><td class="r"><a href={item.path} class="k-btn k-btn-xs k-btn-quiet">Download</a></td></tr>{:else}<tr><td colspan="4"><EmptyState title="No backups" body="Connected backup files will appear here." /></td></tr>{/each}</tbody></table></div></section>{/each}</div>
+    </Deferred>
   </section>
 
 {:else if view === "recurring_tasks"}
@@ -188,7 +205,7 @@
     <div class={`n-bar n-${stateTone(order.status)}`}><StatusTag value={order.status} solid /><span>{order.customer?.name || "Quick sale"} · {order.total}</span><span class="n-bar-actions"><Link href={actions.index} class="k-btn k-btn-xs k-btn-quiet">Order history</Link>{#if ["draft", "held"].includes(order.status)}<Link href={actions.register} class="k-btn k-btn-xs">Open in register</Link>{/if}<Link href={actions.receipt} class="k-btn k-btn-xs">Receipt</Link>{#if ["completed", "partially_refunded"].includes(order.status)}<Link href={actions.refund} class="k-btn k-btn-xs k-btn-danger">Refund</Link>{/if}</span></div>
     <div class="p-split" style="grid-template-columns:minmax(0,1fr) 300px">
       <section class="p-region"><PanelHeader title="Line items" count={`${order.lines.length} lines`} /><div class="t-wrap"><table class="t" style="min-width:680px"><thead><tr><th>Item</th><th class="r">Qty</th><th class="r">Price</th><th class="r">Tax</th><th class="r">Total</th></tr></thead><tbody>{#each order.lines as line}<tr data-state="idle"><td class="wrap"><strong>{line.name}</strong><span class="t-sub data">{line.code || "—"}</span></td><td class="r data">{line.quantity}</td><td class="r data">{line.unit_price}</td><td class="r data">{line.tax}</td><td class="r data"><strong>{line.total}</strong></td></tr>{/each}</tbody></table></div></section>
-      <aside class="p-region"><div class="r-out"><p class="r-out-label">Order total</p><p class="r-out-value">{order.total}</p></div><dl class="r-lines"><div class="r-line"><dt>Customer</dt><dd>{order.customer?.name || "Quick sale"}</dd></div><div class="r-line"><dt>Subtotal</dt><dd>{order.subtotal}</dd></div><div class="r-line"><dt>Tax</dt><dd>{order.tax_total}</dd></div><div class="r-line r-line-total"><dt>Total</dt><dd>{order.total}</dd></div></dl><PanelHeader title="Activity" count={events.length} /><div class="p-body-flush">{#each events as event}<div class="list-row" data-state={stateTone(event.type)}><span class="grow col"><strong>{event.type}</strong><span class="faint">{event.actor}</span></span><span class="data faint">{event.at}</span></div>{/each}</div></aside>
+      <aside class="p-region"><div class="r-out"><p class="r-out-label">Order total</p><p class="r-out-value">{order.total}</p></div><dl class="r-lines"><div class="r-line"><dt>Customer</dt><dd>{order.customer?.name || "Quick sale"}</dd></div><div class="r-line"><dt>Subtotal</dt><dd>{order.subtotal}</dd></div><div class="r-line"><dt>Tax</dt><dd>{order.tax_total}</dd></div><div class="r-line r-line-total"><dt>Total</dt><dd>{order.total}</dd></div></dl><Deferred data="events">{#snippet fallback()}<PanelHeader title="Activity" count="Loading…" /><div class="p-body faint" aria-busy="true">Loading order activity…</div>{/snippet}{#snippet rescue()}<PanelHeader title="Activity unavailable" /><div class="p-body faint">Reload to retry.</div>{/snippet}<PanelHeader title="Activity" count={events.length} /><div class="p-body-flush">{#each events as event}<div class="list-row" data-state={stateTone(event.type)}><span class="grow col"><strong>{event.type}</strong><span class="faint">{event.actor}</span></span><span class="data faint">{event.at}</span></div>{/each}</div></Deferred></aside>
     </div>
   </section>
 
