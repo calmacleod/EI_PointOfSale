@@ -153,16 +153,18 @@
     else router.visit(href)
   }
 
-  function finishRailNavigation(event, href, fullPage = false) {
+  function finishRailNavigation(event, href) {
     if (!href || !unmodifiedLeftClick(event)) return
 
     event.preventDefault()
-    // Mouse navigation already began on mousedown. Keyboard activation still
-    // arrives as a click with detail 0 and must retain normal link behaviour.
-    if (event.detail === 0) {
-      if (fullPage) window.location.assign(href)
-      else router.visit(href)
-    }
+  }
+
+  function startRailKeyboardNavigation(event, href, fullPage = false) {
+    if (!href || event.key !== "Enter") return
+
+    event.preventDefault()
+    if (fullPage) window.location.assign(href)
+    else router.visit(href)
   }
 
   function buildCommandAction(props) {
@@ -239,10 +241,10 @@
 {#if authenticated}
   <div class="app">
     <nav class="c-rail" aria-label="Application sections">
-      <a class="c-mark" href={paths.root || "/"} aria-label="EI Point of Sale" onmousedown={(event) => startRailNavigation(event, paths.root || "/")} onclick={(event) => finishRailNavigation(event, paths.root || "/")}>EI</a>
+      <a class="c-mark" href={paths.root || "/"} aria-label="EI Point of Sale" onmousedown={(event) => startRailNavigation(event, paths.root || "/")} onclick={(event) => finishRailNavigation(event, paths.root || "/")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.root || "/")}>EI</a>
       {#each navItems as item}
         {#if online}
-          <a href={item.href} class="c-railitem" data-label={item.label} aria-label={item.label} aria-current={active(item.href) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, item.href)} onclick={(event) => finishRailNavigation(event, item.href)}>
+          <a href={item.href} class="c-railitem" data-label={item.label} aria-label={item.label} aria-current={active(item.href) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, item.href)} onclick={(event) => finishRailNavigation(event, item.href)} onkeydown={(event) => startRailKeyboardNavigation(event, item.href)}>
             <svelte:component this={item.icon} />
           </a>
         {:else}
@@ -251,11 +253,11 @@
       {/each}
       <span class="c-railspacer"></span>
       <span class="c-railrule"></span>
-      <a href={paths.admin_gift_certificates} class="c-railitem" data-label="Gift certificates" aria-label="Gift certificates" aria-current={active(paths.admin_gift_certificates) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.admin_gift_certificates)} onclick={(event) => finishRailNavigation(event, paths.admin_gift_certificates)}><Gift /></a>
-      <a href={paths.offline || "/offline"} class="c-railitem" data-label={online ? "Offline lookup" : "Offline mode"} aria-label={online ? "Offline lookup" : "Offline mode"} aria-current={active(paths.offline) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.offline || "/offline", true)} onclick={(event) => finishRailNavigation(event, paths.offline || "/offline", true)}>{#if online}<CloudDownload />{:else}<WifiOff />{/if}</a>
-      {#if online && auth.admin}<a href={paths.admin_settings} class="c-railitem" data-label="Administration" aria-label="Administration" aria-current={active(paths.admin_settings) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.admin_settings)} onclick={(event) => finishRailNavigation(event, paths.admin_settings)}><Settings /></a>{/if}
-      {#if online}<a href={paths.notifications || "/notifications"} class="c-railitem" data-label="Notifications" data-count={auth.unread_notifications || undefined} data-count-tone="bad" aria-label="Notifications" aria-current={active(paths.notifications) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.notifications || "/notifications")} onclick={(event) => finishRailNavigation(event, paths.notifications || "/notifications")}><Bell /></a>{/if}
-      {#if online}<a href={paths.profile} class="c-railitem" data-label={auth.name || auth.email || "Profile"} aria-label="Profile" aria-current={active(paths.profile) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.profile)} onclick={(event) => finishRailNavigation(event, paths.profile)}><UserRound /></a>{/if}
+      <a href={paths.admin_gift_certificates} class="c-railitem" data-label="Gift certificates" aria-label="Gift certificates" aria-current={active(paths.admin_gift_certificates) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.admin_gift_certificates)} onclick={(event) => finishRailNavigation(event, paths.admin_gift_certificates)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.admin_gift_certificates)}><Gift /></a>
+      <a href={paths.offline || "/offline"} class="c-railitem" data-label={online ? "Offline lookup" : "Offline mode"} aria-label={online ? "Offline lookup" : "Offline mode"} aria-current={active(paths.offline) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.offline || "/offline", true)} onclick={(event) => finishRailNavigation(event, paths.offline || "/offline")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.offline || "/offline", true)}>{#if online}<CloudDownload />{:else}<WifiOff />{/if}</a>
+      {#if online && auth.admin}<a href={paths.admin_settings} class="c-railitem" data-label="Administration" aria-label="Administration" aria-current={active(paths.admin_settings) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.admin_settings)} onclick={(event) => finishRailNavigation(event, paths.admin_settings)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.admin_settings)}><Settings /></a>{/if}
+      {#if online}<a href={paths.notifications || "/notifications"} class="c-railitem" data-label="Notifications" data-count={auth.unread_notifications || undefined} data-count-tone="bad" aria-label="Notifications" aria-current={active(paths.notifications) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.notifications || "/notifications")} onclick={(event) => finishRailNavigation(event, paths.notifications || "/notifications")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.notifications || "/notifications")}><Bell /></a>{/if}
+      {#if online}<a href={paths.profile} class="c-railitem" data-label={auth.name || auth.email || "Profile"} aria-label="Profile" aria-current={active(paths.profile) ? "page" : undefined} onmousedown={(event) => startRailNavigation(event, paths.profile)} onclick={(event) => finishRailNavigation(event, paths.profile)} onkeydown={(event) => startRailKeyboardNavigation(event, paths.profile)}><UserRound /></a>{/if}
       <button class="c-railitem" data-label="Sign out" aria-label="Sign out" disabled={!online} onclick={() => router.delete(paths.session)}><LogOut /></button>
     </nav>
 
