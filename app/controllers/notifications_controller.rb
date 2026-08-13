@@ -4,8 +4,6 @@ class NotificationsController < ApplicationController
   def index
     @notifications = current_user.notifications.persistent.recent
     @unread_count = current_user.unread_notifications_count
-
-    render layout: false if request.headers["Turbo-Frame"]
   end
 
   def mark_read

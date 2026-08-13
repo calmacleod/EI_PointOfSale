@@ -34,8 +34,6 @@ class ProductsController < ApplicationController
       f.column :created_at,      label: "Created",  default: true,  sortable: true,  width: "8.5rem"
       f.column :updated_at,      label: "Updated",  default: false, sortable: true,  width: "8.5rem"
     end
-    @filter_config.filters_json
-    @saved_queries = current_user.saved_queries.for_resource("products").load
     @pagy, @products = filter_and_paginate(
       @products.kept
                .select(:id, :code, :name, :selling_price, :purchase_price,
@@ -110,17 +108,6 @@ class ProductsController < ApplicationController
     image = @product.images.find(params[:image_id])
     image.purge
     redirect_to edit_product_path(@product), notice: "Image removed."
-  end
-
-  def preview
-    authorize! :read, @product
-    @product = @product.includes(:categories, :supplier, :tax_code) if @product.respond_to?(:includes)
-
-    if stale?(@product, public: false)
-      respond_to do |format|
-        format.html { render partial: "products/search_preview", locals: { product: @product } }
-      end
-    end
   end
 
   private

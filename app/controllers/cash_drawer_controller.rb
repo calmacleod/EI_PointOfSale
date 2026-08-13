@@ -133,7 +133,6 @@ class CashDrawerController < ApplicationController
       f.column :closing_total_cents,  label: "Closing",    default: true, sortable: true
       f.column :diff,                 label: "Diff",       default: true
     end
-    @saved_queries = current_user.saved_queries.for_resource("cash_drawer_history")
 
     @pagy, @sessions = filter_and_paginate(
       CashDrawerSession.select(:id, :opened_at, :opened_by_id, :closed_at, :closed_by_id, :opening_total_cents, :closing_total_cents)

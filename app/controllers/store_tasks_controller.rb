@@ -22,7 +22,6 @@ class StoreTasksController < ApplicationController
       f.column :due_date,       label: "Due Date",    default: true, sortable: true
       f.column :created_at,     label: "Created",     default: false, sortable: true
     end
-    @saved_queries = current_user.saved_queries.for_resource("store_tasks")
 
     @pagy, @store_tasks = filter_and_paginate(
       StoreTask.select(:id, :title, :status, :assigned_to_id, :due_date, :created_at)

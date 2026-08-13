@@ -13,9 +13,9 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "OrderPayment.count", 1 do
       post order_order_payments_path(@order), params: {
         order_payment: { payment_method: "cash", amount: 20.00, amount_tendered: 25.00 }
-      }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      }
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
   end
 
   test "POST creates partial payment with exact amount submitted" do
@@ -25,10 +25,10 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "OrderPayment.count", 1 do
       post order_order_payments_path(held), params: {
         order_payment: { payment_method: "cash", amount: 10.00, amount_tendered: 10.00 }
-      }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      }
     end
 
-    assert_response :success
+    assert_redirected_to register_path(order_id: held.id)
     payment = OrderPayment.last
     assert_equal 10.00, payment.amount
     assert_equal "cash", payment.payment_method
@@ -40,10 +40,9 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
     )
 
     assert_difference "OrderPayment.count", -1 do
-      delete order_payment_path(payment),
-             headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      delete order_payment_path(payment)
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
   end
 
   test "POST rejects cash payment when tendered is less than amount" do
@@ -52,20 +51,20 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "OrderPayment.count" do
       post order_order_payments_path(held), params: {
         order_payment: { payment_method: "cash", amount: 15.00, amount_tendered: 10.00 }
-      }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      }
     end
 
-    assert_response :success
-    assert_match /must be at least/, response.body
+    assert_redirected_to register_path(order_id: held.id)
+    assert_match /must be at least/, flash[:alert]
   end
 
   test "POST creates a debit payment" do
     assert_difference "OrderPayment.count", 1 do
       post order_order_payments_path(@order), params: {
         order_payment: { payment_method: "debit", amount: 20.00 }
-      }, headers: TURBO_HEADERS
+      }
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
     assert_equal "debit", OrderPayment.last.payment_method
   end
 
@@ -73,27 +72,10 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "OrderPayment.count", 1 do
       post order_order_payments_path(@order), params: {
         order_payment: { payment_method: "credit", amount: 20.00 }
-      }, headers: TURBO_HEADERS
+      }
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
     assert_equal "credit", OrderPayment.last.payment_method
-  end
-
-  test "POST replaces payment panel Turbo targets on success" do
-    post order_order_payments_path(@order), params: {
-      order_payment: { payment_method: "debit", amount: 15.00 }
-    }, headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces(*PAYMENT_PANELS)
-  end
-
-  test "DELETE replaces payment panel Turbo targets" do
-    payment = @order.order_payments.create!(
-      payment_method: :debit, amount: 10.00, received_by: @admin
-    )
-    delete order_payment_path(payment), headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces(*PAYMENT_PANELS)
   end
 
   test "POST gift_certificate payment decrements GC balance" do
@@ -107,9 +89,9 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
           amount: 20.00,
           reference: gc.code
         }
-      }, headers: TURBO_HEADERS
+      }
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
     assert_equal initial_balance - 20.00, gc.reload.remaining_balance
   end
 
@@ -123,10 +105,10 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
           amount: 10.00,
           reference: gc.code
         }
-      }, headers: TURBO_HEADERS
+      }
     end
-    assert_response :success
-    assert_match /not found or not active/, response.body
+    assert_redirected_to register_path(order_id: @order.id)
+    assert_match /not found or not active/, flash[:alert]
   end
 
   test "POST gift_certificate payment fails for unknown code" do
@@ -137,10 +119,10 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
           amount: 10.00,
           reference: "GC-DOESNOTEXIST"
         }
-      }, headers: TURBO_HEADERS
+      }
     end
-    assert_response :success
-    assert_match /not found or not active/, response.body
+    assert_redirected_to register_path(order_id: @order.id)
+    assert_match /not found or not active/, flash[:alert]
   end
 
   test "DELETE gift_certificate payment restores GC balance" do
@@ -154,7 +136,7 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
     gc.update!(remaining_balance: gc.remaining_balance - 20.00)
     balance_after_payment = gc.remaining_balance
 
-    delete order_payment_path(payment), headers: TURBO_HEADERS
+    delete order_payment_path(payment)
 
     assert gc.reload.remaining_balance > balance_after_payment
   end
@@ -163,11 +145,11 @@ class OrderPaymentsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "OrderPayment.count", 2 do
       post order_order_payments_path(@order), params: {
         order_payment: { payment_method: "cash", amount: 10.00, amount_tendered: 10.00 }
-      }, headers: TURBO_HEADERS
+      }
 
       post order_order_payments_path(@order), params: {
         order_payment: { payment_method: "debit", amount: 10.00 }
-      }, headers: TURBO_HEADERS
+      }
     end
     assert_equal 2, @order.order_payments.reload.count
   end

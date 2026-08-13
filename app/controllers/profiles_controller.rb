@@ -9,16 +9,7 @@ class ProfilesController < ApplicationController
     authorize! :update, @user
 
     if @user.update(profile_params)
-      respond_to do |format|
-        format.turbo_stream do
-          render turbo_stream: [
-            turbo_stream.update("flash_container", partial: "shared/flash", locals: { flash: { notice: "Profile updated." } }),
-            turbo_stream.update("profile_form", partial: "profiles/form", locals: { user: @user }),
-            turbo_stream.append_all("body") { "<script>document.documentElement.setAttribute('data-theme','#{ERB::Util.json_escape(@user.theme)}');document.documentElement.setAttribute('data-font-size','#{ERB::Util.json_escape(@user.font_size)}');</script>".html_safe }
-          ], status: :ok
-        end
-        format.html { redirect_to edit_profile_path, notice: "Profile updated." }
-      end
+      redirect_to edit_profile_path, notice: "Profile updated."
     else
       render_inertia_page(action: :edit, status: :unprocessable_entity)
     end

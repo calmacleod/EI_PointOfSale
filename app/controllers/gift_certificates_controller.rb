@@ -1,12 +1,7 @@
 # frozen_string_literal: true
 
 class GiftCertificatesController < ApplicationController
-  before_action :set_order, only: %i[new create]
-
-  def new
-    authorize! :new, GiftCertificate
-    @gift_certificate = GiftCertificate.new
-  end
+  before_action :set_order, only: :create
 
   def create
     authorize! :create, GiftCertificate
@@ -22,27 +17,9 @@ class GiftCertificatesController < ApplicationController
 
       Orders::CalculateTotals.call(@order)
 
-      respond_to do |format|
-        format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order.reload }),
-            turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order }),
-            turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-            turbo_stream.replace("order_action_buttons", partial: "register/action_buttons", locals: { order: @order }),
-            turbo_stream.replace("gift_cert_modal", partial: "gift_certificates/modal_closed")
-          ]
-        }
-        format.html { redirect_to register_path(order_id: @order.id) }
-      end
+      redirect_to register_path(order_id: @order.id)
     else
-      respond_to do |format|
-        format.turbo_stream {
-          render turbo_stream: turbo_stream.replace("gift_cert_modal",
-            partial: "gift_certificates/form",
-            locals: { order: @order, gift_certificate: @gift_certificate })
-        }
-        format.html { redirect_to register_path(order_id: @order.id), alert: @gift_certificate.errors.full_messages.to_sentence }
-      end
+      redirect_to register_path(order_id: @order.id), alert: @gift_certificate.errors.full_messages.to_sentence
     end
   end
 

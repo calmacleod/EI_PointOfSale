@@ -179,7 +179,7 @@ class FilterConfig
     resolver&.call
   end
 
-  # --- JSON for Stimulus ---
+  # --- Frontend serialization ---
 
   def filters_json
     Rails.cache.fetch(filters_json_cache_key, expires_in: 5.minutes) do

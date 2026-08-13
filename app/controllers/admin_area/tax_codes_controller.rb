@@ -21,7 +21,6 @@ module AdminArea
         f.column :created_at,      label: "Created",   default: true,  sortable: true
         f.column :updated_at,      label: "Updated",   default: false, sortable: true
       end
-      @saved_queries = current_user.saved_queries.for_resource("tax_codes")
 
       @pagy, @tax_codes = filter_and_paginate(
         TaxCode.kept.select(:id, :code, :name, :rate, :exemption_type, :province_code, :created_at, :updated_at),

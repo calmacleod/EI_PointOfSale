@@ -18,7 +18,6 @@ module AdminArea
         f.column :created_at, label: "Created", default: true, sortable: true
         f.column :updated_at, label: "Updated", default: false, sortable: true
       end
-      @saved_queries = current_user.saved_queries.for_resource("suppliers")
 
       @pagy, @suppliers = filter_and_paginate(
         Supplier.kept.select(:id, :name, :phone, :created_at, :updated_at),

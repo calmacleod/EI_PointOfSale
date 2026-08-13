@@ -90,13 +90,6 @@ class ServicesControllerTest < ActionDispatch::IntegrationTest
     assert @service.reload.discarded?
   end
 
-  test "preview renders partial for authorized readers" do
-    get preview_service_path(@service)
-
-    assert_response :success
-    assert_includes response.body, @service.name
-  end
-
   test "common user can view services" do
     sign_in_as(users(:one))
 

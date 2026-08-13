@@ -35,7 +35,6 @@ npm install
 
 # Copy environment template and configure
 cp env.template .env
-# Edit .env and set MAPBOX_ACCESS_TOKEN if you want address autocomplete
 
 # Create and migrate the database
 bin/rails db:create db:migrate
@@ -84,16 +83,6 @@ When running Solid Queue locally (`bin/dev` or `bin/jobs`), set `PGGSSENCMODE=di
 PGGSSENCMODE=disable
 ```
 
-### Address autocomplete (Mapbox)
-
-Admin settings use Mapbox Address Autofill for the store address. Add your token to `.env`:
-
-```
-MAPBOX_ACCESS_TOKEN=pk.your_mapbox_public_token
-```
-
-Get a free token at [account.mapbox.com](https://account.mapbox.com/). Without it, the address field works as a normal text input.
-
 ### CI and linting
 
 ```bash
@@ -123,7 +112,6 @@ bin/ci
 | `RAILS_ENV` | Rails environment (development, test, production) |
 | `APP_URL` | Canonical app URL used for production links and password reset emails |
 | `PGGSSENCMODE` | Set to `disable` for local PostgreSQL with Solid Queue |
-| `MAPBOX_ACCESS_TOKEN` | Mapbox public token for address autofill |
 | `GARAGE_ACCESS_KEY` | Garage/S3 access key for object storage |
 | `GARAGE_SECRET_KEY` | Garage/S3 secret key for object storage |
 | `GARAGE_ENDPOINT` | Garage/S3 endpoint |

@@ -16,8 +16,6 @@
 #         f.date_range  :created_at,  label: "Created"
 #         f.column :name, label: "Product", default: true, sortable: true
 #       end
-#       @saved_queries = current_user.saved_queries.for_resource("products")
-#
 #       @pagy, @products = filter_and_paginate(
 #         Product.kept.includes(:supplier),
 #         config: @filter_config

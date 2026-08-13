@@ -1,7 +1,0 @@
-<% if results.empty? %>
-  <p class="px-4 py-8 text-center text-sm text-muted">Type to search products, services, users, and more…</p>
-<% else %>
-  <% results.each do |result| %>
-    <%= render "search/result", result: result %>
-  <% end %>
-<% end %>

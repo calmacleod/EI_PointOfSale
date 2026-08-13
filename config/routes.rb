@@ -10,8 +10,6 @@ Rails.application.routes.draw do
   end
 
   get "search", to: "search#index", as: :search
-  get "search/product_results", to: "search#product_results", as: :product_results_search
-  get "filters/chip", to: "filters#chip", as: :filter_chip
 
   resource :session
   resources :passwords, param: :token
@@ -44,16 +42,12 @@ Rails.application.routes.draw do
     resources :receipt_templates do
       member do
         patch :activate
-        get :preview
       end
     end
     resources :discounts do
       member do
         patch :toggle_active
-        get :search_items
-        post :bulk_add_items
       end
-      resources :discount_items, only: %i[create destroy], shallow: true
     end
     resources :gift_certificates, only: %i[index show]
     resources :recurring_tasks, only: %i[index] do
@@ -69,8 +63,6 @@ Rails.application.routes.draw do
     member { patch :mark_read }
   end
   resources :push_subscriptions, only: [ :create, :destroy ]
-  resources :saved_queries, only: %i[create destroy]
-
   resource :register, only: [ :show ], controller: "register" do
     post :new_order, on: :member
   end
@@ -95,10 +87,10 @@ Rails.application.routes.draw do
   get "gift_certificates/lookup", to: "gift_certificates#lookup", as: :gift_certificate_lookup
 
   resources :orders do
-    resources :gift_certificates, only: %i[new create]
+    resources :gift_certificates, only: :create
     resources :order_lines, only: %i[create update destroy], shallow: true
     resources :order_payments, only: %i[create destroy], shallow: true
-    resources :order_discounts, only: %i[new create destroy], shallow: true
+    resources :order_discounts, only: %i[create destroy], shallow: true
     resources :order_discount_overrides, only: %i[destroy]
     resources :order_line_discounts, only: %i[create update destroy], shallow: true
     member do
@@ -128,14 +120,9 @@ Rails.application.routes.draw do
     resources :restocks, only: [ :index ]
     member do
       delete :purge_image
-      get :preview
     end
   end
-  resources :services do
-    member do
-      get :preview
-    end
-  end
+  resources :services
   resources :customers do
     collection do
       get :search

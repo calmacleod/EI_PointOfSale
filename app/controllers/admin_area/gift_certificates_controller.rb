@@ -30,7 +30,6 @@ module AdminArea
         f.column :sold_on_order,     label: "Order",     default: false
         f.column :created_at,        label: "Issued",    default: true,  sortable: true
       end
-      @saved_queries = current_user.saved_queries.for_resource("gift_certificates")
 
       @pagy, @gift_certificates = filter_and_paginate(
         GiftCertificate.select(:id, :code, :status, :initial_amount, :remaining_balance, :customer_id, :sold_on_order_id, :created_at)

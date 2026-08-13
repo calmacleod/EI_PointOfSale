@@ -18,7 +18,6 @@ Minitest::Reporters.use! [ Minitest::Reporters::DefaultReporter.new(detailed_ski
 WebMock.disable_net_connect!(allow_localhost: true)
 
 require_relative "test_helpers/session_test_helper"
-require_relative "test_helpers/turbo_stream_test_helper"
 require_relative "test_helpers/shopify_test_helper"
 
 module ActiveSupport

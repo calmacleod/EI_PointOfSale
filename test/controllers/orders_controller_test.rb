@@ -112,29 +112,18 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
 
   test "POST /orders/quick_lookup adds item via code" do
     order = orders(:draft_order)
-    post quick_lookup_orders_path, params: { order_id: order.id, code: "DS-MAT-RED" },
-         headers: { "Accept" => "text/vnd.turbo-stream.html" }
-    assert_response :success
+    post quick_lookup_orders_path, params: { order_id: order.id, code: "DS-MAT-RED" }
+    assert_redirected_to register_path(order_id: order.id)
     assert order.order_lines.reload.any?
   end
 
   test "POST /orders/quick_lookup applies discounts to the order" do
     order = orders(:draft_order)
     # dragon_shield_red is in discount_items fixtures, so discounts should apply
-    post quick_lookup_orders_path, params: { order_id: order.id, code: "DS-MAT-RED" },
-         headers: { "Accept" => "text/vnd.turbo-stream.html" }
-    assert_response :success
+    post quick_lookup_orders_path, params: { order_id: order.id, code: "DS-MAT-RED" }
+    assert_redirected_to register_path(order_id: order.id)
     assert order.order_discounts.reload.any?, "Expected discounts to be applied via quick_lookup"
     assert_includes order.order_discounts.pluck(:discount_id), discounts(:percentage_all).id
-  end
-
-  test "POST /orders/quick_lookup renders discounts panel" do
-    order = orders(:draft_order)
-    post quick_lookup_orders_path, params: { order_id: order.id, code: "DS-MAT-RED" },
-         headers: { "Accept" => "text/vnd.turbo-stream.html" }
-    assert_response :success
-    # Verify the turbo stream includes the discounts panel
-    assert_select "turbo-stream[action=\"replace\"][target=\"order_discounts_panel\"]"
   end
 
   test "GET /orders/:id/receipt shows receipt for completed order" do
@@ -150,21 +139,18 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
   test "PATCH /orders/:id/assign_customer assigns a customer" do
     order = orders(:draft_order)
     customer = customers(:acme_corp)
-    patch assign_customer_order_path(order), params: { customer_id: customer.id },
-          headers: { "Accept" => "text/vnd.turbo-stream.html" }
-    assert_response :success
+    patch assign_customer_order_path(order), params: { customer_id: customer.id }
+    assert_redirected_to register_path(order_id: order.id)
     assert_equal customer, order.reload.customer
   end
 
   test "DELETE /orders/:id/remove_customer removes the customer" do
-    order = orders(:completed_order)
     # Use a draft order with customer
     draft = orders(:draft_order)
     draft.update_column(:customer_id, customers(:acme_corp).id)
 
-    delete remove_customer_order_path(draft),
-           headers: { "Accept" => "text/vnd.turbo-stream.html" }
-    assert_response :success
+    delete remove_customer_order_path(draft)
+    assert_redirected_to register_path(order_id: draft.id)
     assert_nil draft.reload.customer
   end
 
@@ -238,46 +224,11 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
   end
 
-  # --- quick_lookup comprehensive Turbo assertions ---
-
-  test "POST quick_lookup replaces all 6 turbo stream targets on success" do
+  test "POST quick_lookup with unknown code redirects with a warning" do
     order = orders(:draft_order)
-    post quick_lookup_orders_path, params: { order_id: order.id, code: "DS-MAT-RED" },
-         headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces("order_line_items", "order_discounts_panel", "order_totals",
-                                 "order_payments_panel", "code_lookup_input_wrapper")
-    # lookup_flash uses replace action on success
-    assert_select "turbo-stream[target='lookup_flash']"
-  end
-
-  test "POST quick_lookup with unknown code renders warning in lookup_flash" do
-    order = orders(:draft_order)
-    post quick_lookup_orders_path, params: { order_id: order.id, code: "DOESNOTEXIST" },
-         headers: TURBO_HEADERS
-    assert_response :success
-    # No items should be added
+    post quick_lookup_orders_path, params: { order_id: order.id, code: "DOESNOTEXIST" }
+    assert_redirected_to register_path(order_id: order.id)
     assert_equal 0, order.order_lines.reload.count
-    assert_turbo_stream_updates("lookup_flash")
-  end
-
-  # --- assign_customer / remove_customer Turbo assertions ---
-
-  test "PATCH assign_customer replaces all 4 customer-related Turbo targets" do
-    order = orders(:draft_order)
-    patch assign_customer_order_path(order), params: { customer_id: customers(:acme_corp).id },
-          headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces("order_customer_panel", "order_discounts_panel",
-                                 "order_line_items", "order_totals")
-  end
-
-  test "DELETE remove_customer replaces all 4 customer-related Turbo targets" do
-    draft = orders(:draft_order)
-    draft.update_column(:customer_id, customers(:acme_corp).id)
-    delete remove_customer_order_path(draft), headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces("order_customer_panel", "order_discounts_panel",
-                                 "order_line_items", "order_totals")
+    assert_match /No product or service found/, flash[:alert]
   end
 end

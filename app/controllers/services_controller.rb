@@ -25,8 +25,6 @@ class ServicesController < ApplicationController
       f.column :created_at,  label: "Created",     default: true,  sortable: true
       f.column :updated_at,  label: "Updated",     default: false, sortable: true
     end
-    @saved_queries = current_user.saved_queries.for_resource("services")
-
     @pagy, @services = filter_and_paginate(
       @services.kept.select(:id, :name, :code, :price, :description, :tax_code_id, :created_at, :updated_at)
                     .includes(:tax_code),
@@ -77,16 +75,6 @@ class ServicesController < ApplicationController
   def destroy
     @service.discard
     redirect_to services_path, notice: "Service removed."
-  end
-
-  def preview
-    authorize! :read, @service
-
-    if stale?(@service, public: false)
-      respond_to do |format|
-        format.html { render partial: "services/search_preview", locals: { service: @service } }
-      end
-    end
   end
 
   private

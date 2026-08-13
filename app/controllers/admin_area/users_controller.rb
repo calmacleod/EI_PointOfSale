@@ -22,7 +22,6 @@ module AdminArea
         f.column :created_at,    label: "Created", default: true,  sortable: true
         f.column :updated_at,    label: "Updated", default: false, sortable: true
       end
-      @saved_queries = current_user.saved_queries.for_resource("users")
 
       @pagy, @users = filter_and_paginate(
         @users.select(:id, :name, :email_address, :type, :phone, :active, :created_at, :updated_at),

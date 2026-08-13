@@ -3,12 +3,8 @@
 # Controller for managing order-level discounts.
 # Note: Line-level discounts are managed via OrderLineDiscountsController.
 class OrderDiscountsController < ApplicationController
-  before_action :set_order, only: %i[new create]
+  before_action :set_order, only: :create
   before_action :set_discount, only: :destroy
-
-  def new
-    authorize! :update, @order
-  end
 
   def create
     authorize! :update, @order
@@ -24,16 +20,7 @@ class OrderDiscountsController < ApplicationController
       data: { name: discount.name, type: discount.discount_type, value: discount.value.to_s, scope: discount.scope }
     )
 
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order.reload }),
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: @order.id) }
-    end
+    redirect_to register_path(order_id: @order.id)
   end
 
   def destroy
@@ -50,16 +37,7 @@ class OrderDiscountsController < ApplicationController
       data: { name: name }
     )
 
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order.reload }),
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: order.id) }
-    end
+    redirect_to register_path(order_id: order.id)
   end
 
   private

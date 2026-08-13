@@ -1,8 +1,0 @@
-<% content_for :title, "Edit #{@service.name}" %>
-<div class="w-full">
-  <%= render "shared/page_header", title: "Edit #{@service.name}", description: "Update service details." %>
-
-  <div class="ui-card form-card mt-2">
-    <%= render "form", service: @service %>
-  </div>
-</div>

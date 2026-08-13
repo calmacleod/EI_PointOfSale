@@ -32,19 +32,17 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
   test "POST creates line discount for specified line" do
     assert_difference "OrderLineDiscount.count", 1 do
       post order_order_line_discounts_path(@order),
-           params: line_discount_params(@line.id, 3),
-           headers: TURBO_HEADERS
+           params: line_discount_params(@line.id, 3)
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
   end
 
   test "POST skips lines with zero applied_count" do
     assert_no_difference "OrderLineDiscount.count" do
       post order_order_line_discounts_path(@order),
-           params: line_discount_params(@line.id, 0),
-           headers: TURBO_HEADERS
+           params: line_discount_params(@line.id, 0)
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
   end
 
   test "POST clamps applied_count to line quantity" do
@@ -56,7 +54,7 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
              value: 10,
              line_quantities: { @line.id.to_s => "99" }
            }
-         }, headers: TURBO_HEADERS
+         }
 
     created = OrderLineDiscount.last
     # excluded_quantity = line.quantity - min(applied, quantity) = 3 - 3 = 0
@@ -83,33 +81,23 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
                value: 10,
                line_quantities: { gc_line.id.to_s => "1" }
              }
-           }, headers: TURBO_HEADERS
+           }
     end
   end
 
   test "POST recalculates order totals" do
     original_total = @order.total
     post order_order_line_discounts_path(@order),
-         params: line_discount_params(@line.id, 3),
-         headers: TURBO_HEADERS
+         params: line_discount_params(@line.id, 3)
     assert @order.reload.total < original_total
   end
 
   test "POST records a discount_applied event" do
     assert_difference "OrderEvent.count", 1 do
       post order_order_line_discounts_path(@order),
-           params: line_discount_params(@line.id, 3),
-           headers: TURBO_HEADERS
+           params: line_discount_params(@line.id, 3)
     end
     assert_equal "discount_applied", @order.order_events.last.event_type
-  end
-
-  test "POST returns turbo stream replacing order panels" do
-    post order_order_line_discounts_path(@order),
-         params: line_discount_params(@line.id, 3),
-         headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces(*ORDER_PANELS)
   end
 
   # DELETE destroy
@@ -120,9 +108,9 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
     )
 
     assert_difference "OrderLineDiscount.count", -1 do
-      delete order_line_discount_path(discount), headers: TURBO_HEADERS
+      delete order_line_discount_path(discount)
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
   end
 
   test "DELETE recalculates totals after removing discount" do
@@ -134,7 +122,7 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
     @order.reload
     discounted_total = @order.total
 
-    delete order_line_discount_path(discount), headers: TURBO_HEADERS
+    delete order_line_discount_path(discount)
 
     assert @order.reload.total > discounted_total
   end
@@ -146,19 +134,9 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
     )
 
     assert_difference "OrderEvent.count", 1 do
-      delete order_line_discount_path(discount), headers: TURBO_HEADERS
+      delete order_line_discount_path(discount)
     end
     assert_equal "discount_removed", @order.order_events.last.event_type
-  end
-
-  test "DELETE returns turbo stream replacing order panels" do
-    discount = @line.order_line_discounts.create!(
-      name: "Manual", discount_type: :percentage, value: 10,
-      calculated_amount: 4.50, excluded_quantity: 0, auto_applied: false
-    )
-    delete order_line_discount_path(discount), headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces(*ORDER_PANELS)
   end
 
   # PATCH update
@@ -169,9 +147,8 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
     )
 
     patch order_line_discount_path(discount),
-          params: { order_line_discount: { applied_quantity: 1 } },
-          headers: TURBO_HEADERS
-    assert_response :success
+          params: { order_line_discount: { applied_quantity: 1 } }
+    assert_redirected_to register_path(order_id: @order.id)
     assert_equal 1, discount.reload.applied_quantity
     assert_equal 2, discount.excluded_quantity
   end
@@ -183,22 +160,8 @@ class OrderLineDiscountsControllerTest < ActionDispatch::IntegrationTest
     )
 
     patch order_line_discount_path(discount),
-          params: { order_line_discount: { applied_quantity: 99 } },
-          headers: TURBO_HEADERS
-    assert_response :success
+          params: { order_line_discount: { applied_quantity: 99 } }
+    assert_redirected_to register_path(order_id: @order.id)
     assert_equal @line.quantity, discount.reload.applied_quantity
-  end
-
-  test "PATCH update returns turbo stream replacing line and panels" do
-    discount = @line.order_line_discounts.create!(
-      name: "Auto", discount_type: :percentage, value: 10,
-      calculated_amount: 4.50, excluded_quantity: 0, auto_applied: true
-    )
-
-    patch order_line_discount_path(discount),
-          params: { order_line_discount: { applied_quantity: 2 } },
-          headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces("order_line_#{@line.id}", "order_discounts_panel", "order_totals")
   end
 end

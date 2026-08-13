@@ -9,18 +9,13 @@ class GiftCertificatesControllerTest < ActionDispatch::IntegrationTest
     @order = orders(:draft_order)
   end
 
-  test "GET /orders/:id/gift_certificates/new renders form" do
-    get new_order_gift_certificate_path(@order)
-    assert_response :success
-  end
-
   test "POST /orders/:id/gift_certificates creates gc and adds order line" do
     assert_difference [ "GiftCertificate.count", "OrderLine.count" ], 1 do
       post order_gift_certificates_path(@order), params: {
         gift_certificate: { initial_amount: "50.00" }
-      }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      }
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
 
     gc = GiftCertificate.last
     assert gc.pending?
@@ -37,9 +32,10 @@ class GiftCertificatesControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "GiftCertificate.count" do
       post order_gift_certificates_path(@order), params: {
         gift_certificate: { initial_amount: "0" }
-      }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+      }
     end
-    assert_response :success
+    assert_redirected_to register_path(order_id: @order.id)
+    assert flash[:alert].present?
   end
 
   test "GET /gift_certificates/lookup returns found for active gc" do
@@ -76,7 +72,7 @@ class GiftCertificatesControllerTest < ActionDispatch::IntegrationTest
 
     post order_gift_certificates_path(@order), params: {
       gift_certificate: { initial_amount: "100.00" }
-    }, headers: { "Accept" => "text/vnd.turbo-stream.html" }
+    }
 
     line = OrderLine.where(order: @order, sellable_type: "GiftCertificate").last
     assert_not_nil line
@@ -85,7 +81,7 @@ class GiftCertificatesControllerTest < ActionDispatch::IntegrationTest
 
   test "requires authentication" do
     delete session_path
-    get new_order_gift_certificate_path(@order)
+    post order_gift_certificates_path(@order), params: { gift_certificate: { initial_amount: "50.00" } }
     assert_redirected_to new_session_path
   end
 end

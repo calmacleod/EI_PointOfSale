@@ -4,7 +4,7 @@ module AdminArea
   class ReceiptTemplatesController < BaseController
     include Filterable
 
-    before_action :set_receipt_template, only: %i[show edit update destroy activate preview]
+    before_action :set_receipt_template, only: %i[show edit update destroy activate]
 
     def index
       @filter_config = FilterConfig.new(:receipt_templates, admin_receipt_templates_path,
@@ -20,8 +20,6 @@ module AdminArea
         f.column :active,         label: "Active",     default: true, sortable: true
         f.column :created_at,     label: "Created",    default: true, sortable: true
       end
-      @saved_queries = current_user.saved_queries.for_resource("receipt_templates")
-
       @pagy, @receipt_templates = filter_and_paginate(
         ReceiptTemplate.select(:id, :name, :paper_width_mm, :chars_per_line, :active, :created_at),
         config: @filter_config
@@ -69,12 +67,6 @@ module AdminArea
     def activate
       @receipt_template.activate!
       redirect_to admin_receipt_templates_path, notice: "\"#{@receipt_template.name}\" is now the active template."
-    end
-
-    def preview
-      @store = Store.current
-      @preview_lines = @receipt_template.formatted_preview(store: @store)
-      render partial: "receipt_preview", locals: { lines: @preview_lines, receipt_template: @receipt_template }
     end
 
     private

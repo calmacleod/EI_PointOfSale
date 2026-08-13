@@ -16,21 +16,7 @@ class OrderLinesController < ApplicationController
       quantity: params[:quantity] || 1
     )
 
-    # Re-load with eager loading to avoid N+1 queries in views
-    order = reload_order_with_associations(@order.id)
-
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order }),
-          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: order.id) }
-    end
+    redirect_to register_path(order_id: @order.id)
   end
 
   def update
@@ -47,21 +33,7 @@ class OrderLinesController < ApplicationController
       data: { name: @order_line.name, old_quantity: old_qty, new_quantity: @order_line.quantity }
     )
 
-    # Re-load with eager loading to avoid N+1 queries in views
-    order = reload_order_with_associations(@order_line.order_id)
-
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order }),
-          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: order.id) }
-    end
+    redirect_to register_path(order_id: @order_line.order_id)
   end
 
   def destroy
@@ -80,21 +52,7 @@ class OrderLinesController < ApplicationController
       data: { name: name }
     )
 
-    # Re-load with eager loading to avoid N+1 queries in views
-    order = reload_order_with_associations(order_id)
-
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order }),
-          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: order.id) }
-    end
+    redirect_to register_path(order_id: order_id)
   end
 
   private
@@ -121,16 +79,5 @@ class OrderLinesController < ApplicationController
       when "Service" then Service.kept.find(id)
       else raise ArgumentError, "Unknown sellable type: #{type}"
       end
-    end
-
-    # Reload order with all associations eagerly loaded to prevent N+1 queries
-    # when rendering the turbo stream response.
-    def reload_order_with_associations(order_id)
-      Order.includes(
-        :customer,
-        { order_lines: [ :sellable, :order_line_discounts ] },
-        :order_discounts,
-        :order_payments
-      ).find(order_id)
     end
 end

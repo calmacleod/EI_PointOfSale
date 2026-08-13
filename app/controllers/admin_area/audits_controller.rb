@@ -35,7 +35,6 @@ module AdminArea
         f.column :user,           label: "User",    default: true
         f.column :details,        label: "Details", default: true
       end
-      @saved_queries = current_user.saved_queries.for_resource("audits")
 
       @pagy, @audits = filter_and_paginate(
         Audited::Audit.includes(:user),

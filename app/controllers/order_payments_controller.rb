@@ -25,24 +25,7 @@ class OrderPaymentsController < ApplicationController
         data: { method: payment.display_method, amount: payment.amount.to_s, reference: payment.reference }
       )
 
-      respond_to do |format|
-        format.turbo_stream {
-          @order.reload
-          streams = [
-            turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: @order }),
-            turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: @order }),
-            turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-            turbo_stream.replace("order_action_buttons", partial: "register/action_buttons", locals: { order: @order })
-          ]
-
-          if @order.payment_complete?
-            streams << turbo_stream.append("order_form_container", partial: "orders/complete_prompt", locals: { order: @order })
-          end
-
-          render turbo_stream: streams
-        }
-        format.html { redirect_to register_path(order_id: @order.id) }
-      end
+      redirect_to register_path(order_id: @order.id)
     else
       render_payment_error(payment.errors.full_messages.to_sentence, @order)
     end
@@ -61,17 +44,7 @@ class OrderPaymentsController < ApplicationController
       data: { method: method_name, amount: amount.to_s }
     )
 
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order.reload }),
-          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
-          turbo_stream.replace("order_action_buttons", partial: "register/action_buttons", locals: { order: order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: order.id) }
-    end
+    redirect_to register_path(order_id: order.id)
   end
 
   private
@@ -89,15 +62,6 @@ class OrderPaymentsController < ApplicationController
     end
 
     def render_payment_error(message, order)
-      respond_to do |format|
-        format.turbo_stream {
-          render turbo_stream: turbo_stream.replace(
-            "order_payments_panel",
-            partial: "orders/payments_panel",
-            locals: { order: order.reload, payment_error: message }
-          )
-        }
-        format.html { redirect_to register_path(order_id: order.id), alert: message }
-      end
+      redirect_to register_path(order_id: order.id), alert: message
     end
 end

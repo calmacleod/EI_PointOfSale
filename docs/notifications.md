@@ -92,11 +92,13 @@ development:
 
 ### Client-side
 
-The `notifications` Stimulus controller (`app/javascript/controllers/notifications_controller.js`) connects to the channel on page load using `@rails/actioncable` and:
+`AppLayout.svelte` connects to the channel on mount using `@rails/actioncable` and:
 
-- Renders toast notifications in the top-right corner (auto-dismiss after 5 seconds)
-- Increments the unread badge on the notification bell
-- Manages the notification dropdown popover (mark read, dismiss, clear all)
+- Renders toast notifications in the application shell
+- Increments the unread count on the notification rail item
+- Disconnects and reconnects with authentication and network availability
+
+The Inertia notifications screen handles persistent notification actions.
 
 ---
 
@@ -124,11 +126,7 @@ The `VAPID_CONTACT` should be a `mailto:` URI that push services can use to cont
 
 ### 3. User opt-in
 
-Users enable push notifications from **Profile > Push Notifications**. This:
-
-1. Prompts the browser for notification permission
-2. Subscribes the browser via `PushManager.subscribe()` with the VAPID public key
-3. Sends the subscription endpoint to `POST /push_subscriptions`
+Existing browser subscriptions remain supported, but the Svelte profile screen does not currently expose an enrollment control. A future control should request notification permission, subscribe through `PushManager.subscribe()` with the VAPID public key, and send the result to `POST /push_subscriptions`.
 
 Subscriptions are stored in the `push_subscriptions` table, scoped per-user and per-browser. A user can have multiple subscriptions (e.g. desktop + phone).
 
@@ -144,28 +142,27 @@ The service worker (`app/views/pwa/service-worker.js`) handles `push` events by 
 
 ## UI Components
 
-### Notification bell
+### Notification rail item
 
-- **Desktop:** In the sidebar bottom section, shows a bell icon with an unread count badge. Click opens a popover with recent persistent notifications.
-- **Mobile:** In the top header bar, same behaviour.
+The application rail shows a bell icon with the unread count. It opens the persistent notifications screen.
 
 ### Toast notifications
 
-Fixed to the top-right of the viewport (below the mobile header on small screens). Each toast:
+Displayed by the shared Svelte layout. Each toast:
 
 - Slides in with a 300ms animation
 - Shows the notification title, body, and a bell icon
 - Clicking navigates to the notification's `url` (if set)
-- Auto-dismisses after 5 seconds
+- Auto-dismisses after 6 seconds
 - Can be manually dismissed via the close button
 
-### Notification popover
+### Notification screen
 
-The dropdown shows up to 20 recent persistent notifications with:
+The screen shows recent persistent notifications with:
 
 - Unread highlighting (accent background tint)
-- Timestamps via `local_time`
-- Per-notification dismiss button (appears on hover)
+- Server-formatted timestamps
+- Per-notification delete button
 - "Mark all read" button (clears unread state)
 - "Clear all" button (deletes all notifications)
 

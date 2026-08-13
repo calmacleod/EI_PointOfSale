@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class DevToolsController < ApplicationController
-  layout "dev"
-
   before_action :require_development
   before_action :set_dev_theme
 

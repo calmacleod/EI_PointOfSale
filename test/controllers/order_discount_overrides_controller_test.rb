@@ -25,30 +25,24 @@ class OrderDiscountOverridesControllerTest < ActionDispatch::IntegrationTest
       source_discount: source, excluded_at: 1.hour.ago
     )
 
-    delete order_order_discount_override_path(@order, source.id), headers: TURBO_HEADERS
-    assert_response :success
+    delete order_order_discount_override_path(@order, source.id)
+    assert_redirected_to register_path(order_id: @order.id)
     assert_nil discount.reload.excluded_at
   end
 
   test "DELETE recalculates totals" do
-    delete order_order_discount_override_path(@order, discounts(:percentage_all).id), headers: TURBO_HEADERS
-    assert_response :success
+    delete order_order_discount_override_path(@order, discounts(:percentage_all).id)
+    assert_redirected_to register_path(order_id: @order.id)
   end
 
-  test "DELETE returns turbo stream replacing order panels" do
-    delete order_order_discount_override_path(@order, discounts(:percentage_all).id), headers: TURBO_HEADERS
-    assert_response :success
-    assert_turbo_stream_replaces(*ORDER_PANELS)
-  end
-
-  test "DELETE falls back to redirect when no Turbo headers" do
+  test "DELETE redirects to the register" do
     delete order_order_discount_override_path(@order, discounts(:percentage_all).id)
     assert_redirected_to register_path(order_id: @order.id)
   end
 
   test "requires authentication" do
     delete session_path
-    delete order_order_discount_override_path(@order, discounts(:percentage_all).id), headers: TURBO_HEADERS
+    delete order_order_discount_override_path(@order, discounts(:percentage_all).id)
     assert_redirected_to new_session_path
   end
 end

@@ -10,12 +10,6 @@ gem "propshaft"
 gem "pg", "~> 1.1"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
-# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
-gem "importmap-rails"
-# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
-gem "turbo-rails"
-# Hotwire's modest JavaScript framework [https://stimulus.hotwired.dev]
-gem "stimulus-rails"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
@@ -69,8 +63,6 @@ gem "web-push"
 
 gem "dotenv", groups: [ :development, :test ]
 
-gem "tailwindcss-rails", "~> 4.4"
-
 # Authorization
 gem "cancancan", "~> 3.6"
 
@@ -86,8 +78,6 @@ gem "pagy", "~> 43.2"
 # Audit trail for model changes
 gem "audited"
 
-# Client-side local time display
-gem "local_time"
 gem "shopify_api", "~> 16.1"
 gem "newrelic_rpm", "~> 10.2"
 gem "sentry-ruby"

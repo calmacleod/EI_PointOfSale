@@ -151,14 +151,6 @@ module AdminArea
       assert_not standard.reload.active?
     end
 
-    # ── Preview ────────────────────────────────────────────────────────
-
-    test "preview returns partial" do
-      template = receipt_templates(:standard)
-      get preview_admin_receipt_template_path(template)
-      assert_response :success
-    end
-
     # ── Non-admin access ─────────────────────────────────────────────
 
     test "non-admin cannot access receipt templates" do

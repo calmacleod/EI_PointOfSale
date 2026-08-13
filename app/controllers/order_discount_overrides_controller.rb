@@ -28,16 +28,7 @@ class OrderDiscountOverridesController < ApplicationController
 
     Orders::CalculateTotals.call(@order)
 
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order.reload }),
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: @order.id) }
-    end
+    redirect_to register_path(order_id: @order.id)
   end
 
   private

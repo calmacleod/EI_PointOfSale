@@ -25,8 +25,6 @@ class OrdersController < ApplicationController
       f.column :created_at,   label: "Created",    default: true, sortable: true, width: "10rem"
       f.column :completed_at, label: "Completed",  default: false, sortable: true, width: "10rem"
     end
-    @saved_queries = current_user.saved_queries.for_resource("orders")
-
     @pagy, @orders = filter_and_paginate(
       Order.kept.where.not(status: :draft).includes(:customer, :created_by, :order_lines),
       config: @filter_config
@@ -53,8 +51,6 @@ class OrdersController < ApplicationController
       f.column :created_by,   label: "Cashier",    default: true,                 width: "10rem"
       f.column :total,        label: "Total",      default: true, sortable: true,  width: "7rem"
     end
-    @saved_queries = current_user&.saved_queries&.for_resource("held_orders")
-
     @pagy, @held_orders = filter_and_paginate(
       Order.held.includes(:customer, :created_by, order_lines: :sellable),
       config: @filter_config
@@ -134,22 +130,7 @@ class OrdersController < ApplicationController
       data: { customer_name: customer.name, customer_id: customer.id }
     )
 
-    # Reload order with associations to ensure fresh data for views
-    @order = reload_order_with_associations(@order.id)
-
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_customer_panel", partial: "orders/customer_panel", locals: { order: @order }),
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order }),
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: @order }),
-          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: @order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: @order.id) }
-    end
+    redirect_to register_path(order_id: @order.id)
   end
 
   def remove_customer
@@ -160,22 +141,7 @@ class OrdersController < ApplicationController
       order: @order, event_type: "customer_removed", actor: current_user
     )
 
-    # Reload order with associations to ensure fresh data for views
-    @order = reload_order_with_associations(@order.id)
-
-    respond_to do |format|
-      format.turbo_stream {
-        render turbo_stream: [
-          turbo_stream.replace("order_customer_panel", partial: "orders/customer_panel", locals: { order: @order }),
-          turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: @order }),
-          turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: @order }),
-          turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: @order }),
-          turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: @order }),
-          turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: @order })
-        ]
-      }
-      format.html { redirect_to register_path(order_id: @order.id) }
-    end
+    redirect_to register_path(order_id: @order.id)
   end
 
   def receipt
@@ -227,32 +193,9 @@ class OrdersController < ApplicationController
         increment_if_exists: true
       )
 
-      # Re-load with eager loading to avoid N+1 queries in views
-      order = reload_order_with_associations(order_id)
-
-      respond_to do |format|
-        format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.replace("order_line_items", partial: "orders/line_items", locals: { order: order }),
-            turbo_stream.replace("order_discounts_panel", partial: "orders/discounts_panel", locals: { order: order }),
-            turbo_stream.replace("order_totals", partial: "orders/totals_panel", locals: { order: order }),
-            turbo_stream.replace("order_payments_panel", partial: "orders/payments_panel", locals: { order: order }),
-            turbo_stream.replace("payment_modal", partial: "orders/payment_modal", locals: { order: order }),
-            turbo_stream.replace("code_lookup_input_wrapper", partial: "orders/code_lookup_input", locals: { order: order }),
-            turbo_stream.replace("lookup_flash", partial: "orders/lookup_flash", locals: { message: "Added #{sellable.sellable_name}", type: :success })
-          ]
-        }
-        format.html { redirect_to register_path(order_id: order.id) }
-      end
+      redirect_to register_path(order_id: order.id)
     else
-      respond_to do |format|
-        format.turbo_stream {
-          render turbo_stream: [
-            turbo_stream.update("lookup_flash", partial: "orders/lookup_flash", locals: { message: "No match for \"#{code}\" — use search", type: :warning })
-          ]
-        }
-        format.html { redirect_to register_path(order_id: order_id), alert: "No product or service found with code: #{code}" }
-      end
+      redirect_to register_path(order_id: order_id), alert: "No product or service found with code: #{code}"
     end
   end
 
@@ -264,16 +207,5 @@ class OrdersController < ApplicationController
 
     def order_params
       params.require(:order).permit(:notes, :tax_exempt, :tax_exempt_number)
-    end
-
-    # Reload order with all associations eagerly loaded to prevent N+1 queries
-    # when rendering the turbo stream response.
-    def reload_order_with_associations(order_id)
-      Order.includes(
-        :customer,
-        { order_lines: [ :sellable, :order_line_discounts ] },
-        :order_discounts,
-        :order_payments
-      ).find(order_id)
     end
 end

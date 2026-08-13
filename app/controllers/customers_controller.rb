@@ -23,8 +23,6 @@ class CustomersController < ApplicationController
       f.column :created_at,    label: "Created",    default: true,  sortable: true
       f.column :updated_at,    label: "Updated",    default: false, sortable: true
     end
-    @saved_queries = current_user.saved_queries.for_resource("customers")
-
     @pagy, @customers = filter_and_paginate(
       @customers.kept.select(:id, :name, :member_number, :phone, :email, :city, :province, :active, :created_at, :updated_at, :added_by_id)
                      .includes(:added_by),
@@ -77,20 +75,15 @@ class CustomersController < ApplicationController
       @customers = @customers.includes(:tax_code).limit(15)
     end
 
-    respond_to do |format|
-      format.turbo_stream
-      format.json do
-        results = (@customers || []).map do |c|
-          {
-            id: c.id, name: c.name, member_number: c.member_number,
-            phone: c.phone, email: c.email, active: c.active?,
-            has_tax_code: c.tax_code.present?, tax_code_name: c.tax_code&.name,
-            has_alert: c.alert.present?
-          }
-        end
-        render json: { results: results }
-      end
+    results = (@customers || []).map do |customer|
+      {
+        id: customer.id, name: customer.name, member_number: customer.member_number,
+        phone: customer.phone, email: customer.email, active: customer.active?,
+        has_tax_code: customer.tax_code.present?, tax_code_name: customer.tax_code&.name,
+        has_alert: customer.alert.present?
+      }
     end
+    render json: { results: results }
   end
 
   def edit

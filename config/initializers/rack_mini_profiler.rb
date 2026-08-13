@@ -21,8 +21,6 @@ if Rails.env.development?
   # Storage - use memory for single-process dev server
   Rack::MiniProfiler.config.storage = Rack::MiniProfiler::MemoryStore
 
-  # Support Turbo navigation (prevents badge from disappearing on page transitions)
-  Rack::MiniProfiler.config.enable_hotwire_turbo_drive_support = true
 
   # Customize the badge position
   Rack::MiniProfiler.config.position = "top-left"
