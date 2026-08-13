@@ -29,7 +29,7 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     # Complete the order via the Svelte confirmation prompt
     assert_selector "#complete_prompt_modal", wait: 5
     within "#complete_prompt_modal" do
-      click_button "Complete Order"
+      click_button "Complete order"
     end
 
     # Verify redirect to this order's show page
@@ -72,7 +72,7 @@ class CheckoutFlowTest < ApplicationSystemTestCase
     order = Order.held.last
     visit register_path(order_id: order.id)
 
-    click_button "Resume Order"
+    click_button "Resume order"
     # Wait for navigation to complete — after resume the action buttons change to Hold/Complete
     assert_selector "button", text: "Hold", wait: 5
     assert order.reload.draft?

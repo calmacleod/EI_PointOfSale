@@ -12,10 +12,8 @@
 #     # ...
 #   end
 #
-# In the view, use the `sort_link` helper to render clickable column headers:
-#
-#   <th><%= sort_link "Customer", :name %></th>
-#   <th><%= sort_link "Created", :created_at %></th>
+# The page presenter serializes the active sort and sortable columns for the
+# Svelte index screen, which sends `sort` and `dir` back as query parameters.
 #
 module Sortable
   extend ActiveSupport::Concern

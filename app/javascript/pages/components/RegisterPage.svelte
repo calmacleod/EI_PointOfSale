@@ -121,7 +121,7 @@
         <StatusTag value={order.status} solid />
         {#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" onclick={() => (showCancelPrompt = true)}>Void order</button>{/if}
       </PanelHeader>
-      <div class="t-wrap">
+      <div id="order_line_items" class="t-wrap">
         {#if order.lines.length}
           <table class="t" style="min-width:720px">
             <thead><tr><th style="min-width:260px">Item</th><th class="c">Qty</th><th class="r">Unit</th><th class="r">Discount</th><th class="r">Line total</th><th></th></tr></thead>
@@ -149,7 +149,7 @@
     <aside class="p-region">
       <div class={`r-out ${order.payment_complete ? "r-out-settled" : "r-out-due"}`}><p class="r-out-label">{order.payment_complete ? "Payment settled" : "Balance due"}</p><p class="r-out-value">{order.balance_due}</p></div>
       <div class="grow p-region-scroll">
-        <dl class="r-lines" style="padding:var(--space-1-5) 0">
+        <dl id="order_totals" class="r-lines" style="padding:var(--space-1-5) 0">
           <div class="r-line"><dt>Subtotal</dt><dd>{order.subtotal}</dd></div>
           <div class="r-line r-line-credit"><dt>Discounts</dt><dd>-{order.discount_total}</dd></div>
           <div class="r-line"><dt>Tax</dt><dd>{order.tax_total}</dd></div>
@@ -157,6 +157,7 @@
           <div class="r-line"><dt>Paid</dt><dd>{order.amount_paid}</dd></div>
         </dl>
 
+        <section id="order_payments_panel">
         <PanelHeader title="Tender" count={`${order.payments.length} payments`} />
         {#if order.status === "draft"}
           <div class="p-body" style="overflow:visible">
@@ -175,18 +176,23 @@
           </div>
         {/if}
         {#each order.payments as item}<div class="list-row" data-state="ok" data-payment-id={item.id}><span class="grow col"><strong>{item.method}</strong><span class="faint data">{item.reference || (item.tendered ? `Tendered ${item.tendered} · change ${item.change}` : "Recorded")}</span></span><span class="data">{item.amount}</span>{#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" aria-label={`Remove ${item.method} payment`} onclick={() => removePayment(item)}>×</button>{/if}</div>{/each}
+        </section>
 
+        <section id="order_customer_panel">
         <PanelHeader title="Customer" count={order.customer ? "Assigned" : "Quick sale"}>{#if order.customer && order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" onclick={() => router.delete(actions.remove_customer)}>Remove</button>{/if}</PanelHeader>
         <div class="p-body" style="overflow:visible">
           {#if order.customer}<strong>{order.customer.name}</strong>{#if order.customer.alert}<div class="n-bar n-warn" style="margin:var(--space-2) calc(var(--space-3) * -1) calc(var(--space-3) * -1)">{order.customer.alert}</div>{/if}
           {:else if order.status === "draft"}<div class="k-field"><label class="k-label" for="customer-search">Find customer</label><input id="customer-search" class="k-input" placeholder="Name, email, or phone…" bind:value={customerQuery} oninput={searchCustomers} /></div>{#if customerLoading}<p class="k-hint">Searching live customers…</p>{/if}{#each customers as customer}<button class="list-row" style="width:100%" type="button" onclick={() => assignCustomer(customer)}><strong>{customer.name}</strong><span class="faint push">{customer.phone || customer.email}</span></button>{/each}
           {:else}<span class="faint">Quick sale</span>{/if}
         </div>
+        </section>
 
+        <section id="order_discounts_panel">
         <PanelHeader title="Discounts" count={order.discounts.length + order.line_discounts.length} />
         {#each order.discounts as item}<div class="list-row" data-state="ok"><span class="grow col"><strong>{item.name}</strong><span class="faint">{item.display_value} on all items</span></span><span class="data" style="color:var(--state-ok)">-{item.amount}</span>{#if order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" aria-label={`Remove ${item.name}`} onclick={() => removeDiscount(item)}>×</button>{/if}</div>{/each}
         {#each order.line_discounts as item}<div class="list-row" data-state="ok"><span class="grow col"><strong>{item.name}</strong><span class="faint">{item.applied_quantity} of {item.total_quantity} units</span></span><span class="data" style="color:var(--state-ok)">-{item.amount}</span></div>{/each}
         {#if order.status === "draft"}<details class="p-body"><summary class="k-btn k-btn-sm">Add discount</summary><form class="form-grid form-grid-2" style="padding:var(--space-2) 0 0" onsubmit={addDiscount}><div class="k-field field-wide"><label class="k-label" for="discount-name">Discount name</label><input id="discount-name" class="k-input" required bind:value={discount.name} /></div><div class="k-field"><label class="k-label" for="discount-type">Type</label><select id="discount-type" class="k-input" bind:value={discount.discount_type}><option value="percentage">Percentage</option><option value="fixed_amount">Fixed total</option><option value="fixed_per_item">Fixed per item</option></select></div><div class="k-field"><label class="k-label" for="discount-value">Value</label><input id="discount-value" class="k-input k-input-data" type="number" min="0.01" step="0.01" required bind:value={discount.value} /></div><button class="k-btn field-wide" type="submit">Apply discount</button></form></details>{/if}
+        </section>
 
         <PanelHeader title="Order options" />
         <div class="p-body col" style="gap:var(--space-2)">
@@ -205,5 +211,5 @@
   </div>
 </section>
 
-{#if showCompletePrompt}<ConfirmModal title={`Complete ${order.number}?`} message={`Payment is complete. ${order.lines.length} line items will be finalized and inventory will be updated.`} confirmLabel="Complete order" oncancel={() => (showCompletePrompt = false)} onconfirm={completeOrder} />{/if}
-{#if showCancelPrompt}<ConfirmModal title={`Void ${order.number}?`} message={`${order.lines.length} line items, ${order.payments.length} payments, and ${order.discounts.length + order.line_discounts.length} discounts will be reversed. This cannot be undone.`} confirmLabel="Void order" danger oncancel={() => (showCancelPrompt = false)} onconfirm={cancelOrder} />{/if}
+{#if showCompletePrompt}<ConfirmModal id="complete_prompt_modal" title={`Complete ${order.number}?`} message={`Payment is complete. ${order.lines.length} line items will be finalized and inventory will be updated.`} confirmLabel="Complete order" oncancel={() => (showCompletePrompt = false)} onconfirm={completeOrder} />{/if}
+{#if showCancelPrompt}<ConfirmModal id="void_prompt_modal" title={`Void ${order.number}?`} message={`${order.lines.length} line items, ${order.payments.length} payments, and ${order.discounts.length + order.line_discounts.length} discounts will be reversed. This cannot be undone.`} confirmLabel="Void order" danger oncancel={() => (showCancelPrompt = false)} onconfirm={cancelOrder} />{/if}

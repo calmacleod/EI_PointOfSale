@@ -78,6 +78,9 @@ jobs:
       - name: Lint Tailwind CSS classes
         run: npm run tailwind:lint
 
+      - name: Check Svelte components
+        run: npm run lint:svelte
+
   test:
     runs-on: ubuntu-latest
 

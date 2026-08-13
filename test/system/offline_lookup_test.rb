@@ -10,30 +10,30 @@ class OfflineLookupTest < ApplicationSystemTestCase
   end
 
   test "syncs and searches every supported offline collection" do
-    assert_link "Offline lookup", wait: 10
+    assert_selector "a[aria-label='Offline lookup']", wait: 10
     wait_for_service_worker
     visit offline_path
 
-    assert_text "Cached lookup"
+    assert_text "CACHED PRODUCTS"
     assert_selector '[data-testid="offline-catalog"][data-ready="true"]', wait: 10
-    assert_text "#{Product.kept.count} products saved", wait: 10
+    assert_text "#{Product.kept.count} shown · #{Product.kept.count} saved", wait: 10
     set_offline_search(products(:dragon_shield_red).code)
     assert_equal products(:dragon_shield_red).code, find('[data-testid="offline-catalog"]')["data-query"]
-    assert_field "Search cached products", with: products(:dragon_shield_red).code
+    assert_selector '[data-testid="offline-search"]', wait: 5
     assert_text products(:dragon_shield_red).name
 
     click_offline_tab("services")
-    assert_field "Search cached services", wait: 5
+    assert_selector '[data-testid="offline-search"][placeholder="Search cached services…"]', wait: 5
     set_offline_search(services(:printer_refill).name)
     assert_text services(:printer_refill).name
 
     click_offline_tab("customers")
-    assert_field "Search cached customers", wait: 5
+    assert_selector '[data-testid="offline-search"][placeholder="Search cached customers…"]', wait: 5
     set_offline_search(customers(:jane_doe).member_number)
     assert_text customers(:jane_doe).name
 
     click_offline_tab("tax_codes")
-    assert_field "Search cached tax codes", wait: 5
+    assert_selector '[data-testid="offline-search"][placeholder="Search cached tax codes…"]', wait: 5
     set_offline_search(tax_codes(:one).code)
     assert_text tax_codes(:one).name
   end
@@ -42,13 +42,13 @@ class OfflineLookupTest < ApplicationSystemTestCase
     wait_for_service_worker
     visit offline_path
     assert_selector '[data-testid="offline-catalog"][data-ready="true"]', wait: 10
-    assert_text "#{Product.kept.count} products saved", wait: 10
+    assert_text "#{Product.kept.count} shown · #{Product.kept.count} saved", wait: 10
 
     emulate_network(offline: true)
     page.driver.browser.navigate.refresh
 
-    assert_text "Cached lookup", wait: 10
-    assert_selector '[data-testid="offline-connection-badge"]', text: "Offline", wait: 10
+    assert_text "CACHED PRODUCTS", wait: 10
+    assert_selector '[data-testid="offline-connection-badge"]', text: "OFFLINE", wait: 10
     assert_no_selector '[data-testid="exit-offline-mode"]'
     set_offline_search(products(:dragon_shield_red).code)
     assert_text products(:dragon_shield_red).name

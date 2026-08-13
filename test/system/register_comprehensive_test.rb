@@ -142,7 +142,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
 
     remove_customer
     within "#order_customer_panel" do
-      assert_text "No customer", wait: 5
+      assert_text "Quick sale", wait: 5
     end
     assert_totals_panel(subtotal: 14.99, tax: 1.95, total: 16.94)
   end
@@ -175,7 +175,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
 
     remove_customer
     within "#order_customer_panel" do
-      assert_text "No customer", wait: 5
+      assert_text "Quick sale", wait: 5
     end
     restored_total = order.reload.total
     assert_operator restored_total, :>, discounted_total,
@@ -378,7 +378,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     fill_in_code_lookup("DS-MAT-RED")
     fill_in_payment(method: "cash", amount: 10.00, tendered: 10.00)
 
-    within "#order_totals" do
+    within ".r-out" do
       assert_text "$6.94", wait: 5
     end
   end
@@ -405,7 +405,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
 
     assert_selector "#complete_prompt_modal", wait: 5
     within "#complete_prompt_modal" do
-      click_button "Complete Order"
+      click_button "Complete order"
     end
 
     assert_current_path order_path(order), wait: 5
@@ -438,7 +438,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
 
     order = Order.held.last
     visit register_path(order_id: order.id)
-    click_button "Resume Order"
+    click_button "Resume order"
     assert_selector "button", text: "Hold", wait: 5
     assert order.reload.draft?
   end
@@ -450,7 +450,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
 
     order = Order.held.last
     visit register_path(order_id: order.id)
-    assert_selector "button", text: "Resume Order", wait: 5
+    assert_selector "button", text: "Resume order", wait: 5
     assert_no_selector "button", text: "Hold"
   end
 
@@ -462,9 +462,11 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    click_button "Cancel"
-    assert_selector "[role='dialog']", text: /cancel .*\?/i, wait: 5
-    find("button", text: "Cancel Order").click
+    click_button "Void order"
+    assert_selector "[role='dialog']", text: /void .*\?/i, wait: 5
+    within "[role='dialog']" do
+      click_button "Void order"
+    end
 
     assert_current_path register_path, wait: 5
   end
@@ -473,11 +475,11 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     fill_in_code_lookup("DS-MAT-RED")
 
-    click_button "Cancel"
-    assert_selector "[role='dialog']", text: /cancel .*\?/i, wait: 5
-    find("button", text: "Keep Order").click
+    click_button "Void order"
+    assert_selector "[role='dialog']", text: /void .*\?/i, wait: 5
+    find("button", text: "Keep editing").click
 
-    assert_no_selector "[role='dialog']", text: /cancel .*\?/i, wait: 5
+    assert_no_selector "[role='dialog']", text: /void .*\?/i, wait: 5
     within "#order_line_items" do
       assert_text "Dragon Shield"
     end
@@ -491,7 +493,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     visit register_path
     initial_count = Order.draft.count
 
-    click_button "+ New"
+    click_button "New order"
     assert_current_path register_path, wait: 5
 
     assert Order.draft.count > initial_count
@@ -502,7 +504,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     fill_in_code_lookup("DS-MAT-RED")
     first_order = Order.draft.last
 
-    click_button "+ New"
+    click_button "New order"
     # Wait for new empty order to be active before adding item
     within "#order_line_items" do
       assert_text(/no items/i, wait: 5)
@@ -510,7 +512,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     fill_in_code_lookup("NHL-PUCK-001")
 
     # Switch back to first order's tab by clicking its link
-    find("div[data-order-id='#{first_order.id}']", wait: 5).find("a").click
+    find("a[data-order-id='#{first_order.id}']", wait: 5).click
 
     within "#order_line_items" do
       assert_text "Dragon Shield", wait: 5
@@ -544,7 +546,7 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
 
     assert_selector "#complete_prompt_modal", wait: 5
     within "#complete_prompt_modal" do
-      click_button "Complete Order"
+      click_button "Complete order"
     end
 
     assert_current_path order_path(order), wait: 5

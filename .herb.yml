@@ -17,6 +17,7 @@ files:
   # Patterns to exclude (vendor gems, node modules, etc.)
   exclude:
     - 'vendor/**/*'
+    - 'DesignSystem/**/*'
     - 'node_modules/**/*'
     - 'tmp/**/*'
     - 'public/**/*'

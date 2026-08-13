@@ -34,6 +34,7 @@
   let toastTimer
   let cableConsumer
   let cableSubscription
+  let cableConnected = false
   let online = typeof navigator === "undefined" ? true : navigator.onLine
   let connectionTimer
   let connectionFailures = 0
@@ -109,7 +110,11 @@
     cableConsumer = createConsumer()
     cableSubscription = cableConsumer.subscriptions.create(
       { channel: "NotificationChannel" },
-      { received: showNotification },
+      {
+        connected: () => (cableConnected = true),
+        disconnected: () => (cableConnected = false),
+        received: showNotification,
+      },
     )
   }
 
@@ -118,6 +123,7 @@
     cableConsumer?.disconnect()
     cableSubscription = undefined
     cableConsumer = undefined
+    cableConnected = false
   }
 
   function showNotification(notification) {
@@ -239,7 +245,7 @@
 <svelte:window onkeydown={keyboard} />
 
 {#if authenticated}
-  <div class="app">
+  <div class="app" data-cable-connected={cableConnected}>
     <nav class="c-rail" aria-label="Application sections">
       <a class="c-mark" href={paths.root || "/"} aria-label="EI Point of Sale" onmousedown={(event) => startRailNavigation(event, paths.root || "/")} onclick={(event) => finishRailNavigation(event, paths.root || "/")} onkeydown={(event) => startRailKeyboardNavigation(event, paths.root || "/")}>EI</a>
       {#each navItems as item}

@@ -10,25 +10,25 @@ module RegisterHelper
   end
 
   def fill_in_payment(method:, amount:, tendered: nil, gc_code: nil)
+    button = method == "gift_certificate" ? "Gift" : method.humanize
     payment_count = all("#order_payments_panel [data-payment-id]").size
     within "#order_payments_panel" do
-      select method.humanize, from: "Payment method"
-      fill_in "Payment amount", with: amount.to_s
-      fill_in "Amount tendered", with: tendered.to_s if tendered
+      click_button button
+      fill_in "Amount", with: amount.to_s
+      fill_in "Tendered", with: tendered.to_s if tendered
       fill_in "Reference", with: gc_code if gc_code
-      click_button "Add payment"
+      click_button "Take payment"
     end
     assert_selector "#order_payments_panel [data-payment-id]", count: payment_count + 1, wait: 5
   end
 
   def assign_customer(search_term)
     within "#order_customer_panel" do
-      fill_in "Search customer", with: search_term
+      fill_in "Find customer", with: search_term
     end
-    assert_text search_term, wait: 5
-    click_on search_term
     within "#order_customer_panel" do
-      assert_no_field "Search customer", wait: 5
+      click_button search_term, wait: 5
+      assert_no_field "Find customer", wait: 5
       assert_text search_term, wait: 5
     end
   end
@@ -40,19 +40,24 @@ module RegisterHelper
   end
 
   def apply_manual_discount(name:, type:, value:)
+    option = { "Fixed Total" => "Fixed total", "Fixed Per Item" => "Fixed per item" }.fetch(type, type)
+
     within "#order_discounts_panel" do
       find("summary", text: /add discount/i).click
       fill_in "Discount name", with: name
-      select type, from: "Discount type"
-      fill_in "Discount value", with: value.to_s
+      select option, from: "Type"
+      fill_in "Value", with: value.to_s
       click_button "Apply discount"
     end
   end
 
   def issue_gift_certificate(amount)
-    find("summary", text: /issue gift certificate/i).click
-    fill_in "Gift certificate amount", with: amount.to_s
-    click_button "Add to order"
+    details = find("details", text: /issue gift certificate/i)
+    details.find("summary").click
+    within details do
+      fill_in "Amount", with: amount.to_s
+      click_button "Add certificate to order"
+    end
     assert_text "Gift Certificate", wait: 5
   end
 
@@ -64,9 +69,9 @@ module RegisterHelper
       assert_text format_currency(tax)
       assert_text format_currency(total)
       assert_text format_currency(discount) if discount
-      assert_text format_currency(remaining) if remaining
       assert_text format_currency(paid) if paid
     end
+    assert_selector ".r-out", text: format_currency(remaining), wait: 5 if remaining
   end
 
   def assert_line_item(code:, name: nil, qty: nil, total: nil)

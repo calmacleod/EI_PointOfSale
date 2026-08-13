@@ -54,11 +54,11 @@ class DiscountManagementTest < ApplicationSystemTestCase
 
     # Reduce the auto-applied quantity from 2 to 1, excluding one unit.
     within "#order_line_#{line.id}" do
-      input = all("input[data-discount-quantity-target='input']").first
+      input = all("input[aria-label^='Discount quantity']").first
       input.set("1")
-      input.send_keys(:enter)
-      assert_text "Partial", wait: 5
+      input.send_keys(:tab)
     end
+    assert_selector "#order_discounts_panel", text: "1 of 2 units", wait: 5
 
     # Excluded quantity should be 1
     excluded_quantities = line.order_line_discounts.reload.map(&:excluded_quantity)

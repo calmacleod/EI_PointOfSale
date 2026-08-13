@@ -10,6 +10,7 @@ class RealtimeNotificationsTest < ApplicationSystemTestCase
 
   test "shows live notification toast and increments unread badge" do
     visit root_path
+    assert_selector ".app[data-cable-connected='true']", wait: 5
     initial_count = @admin.reload.unread_notifications_count
 
     NotifyService.call(
@@ -21,6 +22,6 @@ class RealtimeNotificationsTest < ApplicationSystemTestCase
     )
 
     assert_selector "[role='status']", text: "Inventory report ready", wait: 5
-    assert_selector "a", text: /Notifications\s*#{initial_count + 1}/, wait: 5
+    assert_selector "a[aria-label='Notifications'][data-count='#{initial_count + 1}']", wait: 5
   end
 end
