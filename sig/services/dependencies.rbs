@@ -1,0 +1,164 @@
+# Signatures for application and external APIs used by checked services but
+# defined outside the service-layer Steep target.
+
+module InertiaRails
+  def self.defer: (?group: String, ?rescue: bool, ?once: bool, ?key: String, ?expires_in: untyped) { () -> untyped } -> untyped
+end
+
+class NotificationChannel
+  def self.broadcast_to: (User, Hash[Symbol, untyped]) -> untyped
+end
+
+class DatabaseBackupJob
+  BACKUP_PREFIX: String
+
+  def self.perform_later: () -> untyped
+end
+
+module Google
+  module Apis
+    class AuthorizationError < StandardError
+    end
+
+    module DriveV3
+      File: untyped
+      DriveService: untyped
+    end
+  end
+end
+
+module Signet
+  module OAuth2
+    Client: untyped
+  end
+end
+
+module ShopifyAPI
+  module Auth
+    Session: untyped
+  end
+
+  module Context
+    def self.activate_session: (untyped) -> untyped
+    def self.deactivate_session: () -> untyped
+  end
+
+  module Clients
+    module Graphql
+      Admin: untyped
+    end
+  end
+end
+
+module Axlsx
+  class Workbook
+    def styles: () -> untyped
+  end
+end
+
+module Prawn
+  Document: untyped
+end
+
+module Ferrum
+  Browser: untyped
+end
+
+class Customer
+  def self.kept: () -> Customer::ActiveRecord_Relation
+
+  class ActiveRecord_Relation
+    def kept: () -> Customer::ActiveRecord_Relation
+  end
+end
+
+class Order
+  def self.kept: () -> Order::ActiveRecord_Relation
+
+  class ActiveRecord_Relation
+    def kept: () -> Order::ActiveRecord_Relation
+  end
+
+  def finalized?: () -> bool
+  def tax_exempt?: () -> bool
+end
+
+class ActiveStorage::Attachment
+  def url: () -> String
+end
+
+class ReportTemplate
+  def key: () -> String
+  def title: () -> String
+  def description: () -> String
+  def chart_type: () -> String
+  def table_columns: () -> Array[Hash[Symbol, untyped]]
+end
+
+class Report
+  def template: () -> ReportTemplate
+end
+
+class OrderLine
+  def snapshot_from_sellable!: (untyped, customer_tax_code: TaxCode?) -> untyped
+  def subtotal_before_discount: () -> BigDecimal
+end
+
+class OrderLineDiscount
+  def applied_quantity: () -> Integer
+  def excluded?: () -> bool
+  def fully_excluded?: () -> bool
+end
+
+class Discount
+  def per_item_discount?: () -> bool
+end
+
+class DiscountItem
+  def allowed?: () -> bool
+  def denied?: () -> bool
+end
+
+class Product
+  def self.kept: () -> Product::ActiveRecord_Relation
+
+  class ActiveRecord_Relation
+    def kept: () -> Product::ActiveRecord_Relation
+  end
+end
+
+class TaxCode
+  def self.kept: () -> TaxCode::ActiveRecord_Relation
+end
+
+class Supplier
+  def self.kept: () -> Supplier::ActiveRecord_Relation
+end
+
+class Category
+  def self.kept: () -> Category::ActiveRecord_Relation
+end
+
+class Discount
+  def self.kept: () -> Discount::ActiveRecord_Relation
+end
+
+class ReceiptTemplate
+  PAPER_WIDTHS: Hash[Integer, { label: String, chars: Integer }]
+  SECTIONS: Array[String]
+
+  def self.current: () -> ReceiptTemplate?
+  def ordered_sections: () -> Array[String]
+end
+
+class Store
+  ACCENT_COLOR_NAMES: Array[String]
+
+  def self.current: () -> Store
+  def receipt_address_lines: () -> Array[String]
+end
+
+class CashDrawerSession
+  COIN_ROLLS: Hash[String, { value: Float, count: Integer, coin: String, label: String }]
+  DENOMINATIONS: Hash[String, Float]
+end

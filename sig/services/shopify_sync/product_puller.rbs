@@ -1,0 +1,10 @@
+module ShopifySync
+  class ProductPuller < Base
+    def call: () -> untyped
+
+    private
+
+    def sync_product: (Hash[String, untyped] shopify_product) -> Product?
+    def products_query: () -> String
+  end
+end

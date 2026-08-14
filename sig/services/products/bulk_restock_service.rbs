@@ -1,0 +1,21 @@
+module Products
+  class BulkRestockService
+    type item = Hash[Symbol, untyped]
+    type failure = { product_id: untyped, errors: Array[String] }
+
+    class Result
+      attr_reader success?: bool
+      attr_reader successes: Array[Restock]
+      attr_reader failures: Array[failure]
+
+      def initialize: (success?: bool, successes: Array[Restock], failures: Array[failure]) -> void
+    end
+
+    @items: Array[item]
+    @user: User
+
+    def self.call: (items: Array[item], user: User) -> Result
+    def initialize: (items: Array[item], user: User) -> void
+    def call: () -> Result
+  end
+end

@@ -22,12 +22,12 @@ module Orders
       validate!
       return failure if @errors.any?
 
-      refund = nil
-      @order.transaction do
-        refund = create_refund
-        process_restock(refund)
-        update_order_status(refund)
-        record_event(refund)
+      refund = @order.transaction do
+        created_refund = create_refund
+        process_restock(created_refund)
+        update_order_status(created_refund)
+        record_event(created_refund)
+        created_refund
       end
 
       Result.new(success?: true, refund: refund, errors: [])
@@ -82,7 +82,8 @@ module Orders
           sellable = rl.order_line.sellable
           next unless sellable.is_a?(Product)
 
-          sellable.update_column(:stock_level, sellable.stock_level + rl.quantity)
+          stock_level = sellable.stock_level or raise "Product stock level is missing"
+          sellable.update_column(:stock_level, stock_level + rl.quantity)
         end
       end
 
@@ -128,9 +129,18 @@ module Orders
       end
 
       def requested_quantities_by_line_id
-        @requested_quantities_by_line_id ||= @line_params.each_with_object(Hash.new(0)) do |line_param, quantities|
-          quantities[line_param[:order_line_id].to_i] += line_param[:quantity].to_i
+        cached_quantities = @requested_quantities_by_line_id
+        return cached_quantities if cached_quantities
+
+        # @type var quantities: Hash[Integer, Integer]
+        quantities = {}
+        @line_params.each do |line_param|
+          order_line_id = line_param[:order_line_id].to_i
+          # @type var quantity: Integer
+          quantity = line_param[:quantity].to_i
+          quantities[order_line_id] = quantities.fetch(order_line_id, 0) + quantity
         end
+        @requested_quantities_by_line_id = quantities
       end
 
       def remaining_refundable_quantity(order_line)

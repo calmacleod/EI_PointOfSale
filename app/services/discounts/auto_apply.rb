@@ -102,8 +102,8 @@ module Discounts
       def sync_customer_per_item_discount(discount, lines, existing_line_discounts)
         # Check deny-list for each line and create discounts for allowed lines
         # Gift certificates are never eligible for discounts
-        discount.discount_items.load
-        denied_set = build_discountable_set(discount.discount_items.select(&:denied?))
+        discount_items = discount.discount_items.to_a
+        denied_set = build_discountable_set(discount_items.select { |item| item.denied? })
         allowed_lines = lines.reject { |line| line_denied?(line, denied_set) }
 
         allowed_lines.each do |line|
@@ -246,8 +246,9 @@ module Discounts
       end
 
       def find_matching_lines(discount, lines)
-        allowed_set = build_discountable_set(discount.discount_items.select(&:allowed?))
-        denied_set = build_discountable_set(discount.discount_items.select(&:denied?))
+        discount_items = discount.discount_items.to_a
+        allowed_set = build_discountable_set(discount_items.select { |item| item.allowed? })
+        denied_set = build_discountable_set(discount_items.select { |item| item.denied? })
 
         lines.select do |line|
           next false if line_denied?(line, denied_set)
@@ -268,7 +269,7 @@ module Discounts
         return true if denied_set.include?([ line.sellable_type, line.sellable_id ])
 
         product_group_id = line_product_group_id(line)
-        product_group_id && denied_set.include?([ "ProductGroup", product_group_id ])
+        !!(product_group_id && denied_set.include?([ "ProductGroup", product_group_id ]))
       end
 
       def line_product_group_id(line)

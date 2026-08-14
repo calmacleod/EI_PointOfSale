@@ -24,7 +24,8 @@ module Products
 
       @product.transaction do
         @product.lock!
-        new_stock = @product.stock_level + @quantity
+        stock_level = @product.stock_level or raise "Product stock level is missing"
+        new_stock = stock_level + @quantity
         @product.update!(stock_level: new_stock)
 
         restock = @product.restocks.create!(

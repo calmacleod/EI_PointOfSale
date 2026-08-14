@@ -1,0 +1,18 @@
+module ShopifySync
+  class ProductPusher < Base
+    def call: (Product product) -> untyped
+
+    private
+
+    def push_standalone_product: (Product product) -> untyped
+    def push_grouped_product: (Product product) -> untyped
+    def product_set_input: (Product product) -> Hash[Symbol, untyped]
+    def variant_input: (Product product, ?option_name: String?) -> Hash[Symbol, untyped]
+    def set_source_metafield: (String shopify_product_id, Integer source_id) -> untyped
+    def sync_inventory: (Product product) -> untyped?
+    def sync_image: (String shopify_product_id, Product product) -> untyped?
+    def metafields_set_mutation: () -> String
+    def product_create_media_mutation: () -> String
+    def product_set_mutation: () -> String
+  end
+end

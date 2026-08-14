@@ -1,0 +1,40 @@
+module Orders
+  class ProcessRefund
+    type line_param = Hash[Symbol, untyped]
+    type quantities = Hash[Integer, Integer]
+
+    class Result
+      attr_reader success?: bool
+      attr_reader refund: Refund?
+      attr_reader errors: Array[String]
+
+      def initialize: (success?: bool, refund: Refund?, errors: Array[String]) -> void
+    end
+
+    @order: Order
+    @actor: User
+    @line_params: Array[line_param]
+    @reason: String?
+    @errors: Array[String]
+    @requested_quantities_by_line_id: quantities?
+    @refunded_quantities_by_line_id: quantities?
+
+    def self.call: (order: Order, actor: User, line_params: Array[line_param], ?reason: String?) -> Result
+    def initialize: (order: Order, actor: User, line_params: Array[line_param], ?reason: String?) -> void
+    def call: () -> Result
+
+    private
+
+    def validate!: () -> void
+    def failure: () -> Result
+    def create_refund: () -> Refund
+    def process_restock: (Refund) -> untyped
+    def update_order_status: (Refund) -> untyped
+    def record_event: (Refund) -> OrderEvent
+    def validate_refund_quantities: () -> untyped
+    def requested_quantities_by_line_id: () -> quantities
+    def remaining_refundable_quantity: (OrderLine) -> Integer
+    def refunded_quantities_by_line_id: () -> quantities
+    def fully_refunded_after?: (quantities) -> bool
+  end
+end

@@ -35,7 +35,8 @@ class ReportExcelExporter
         add_data_sheet(workbook, template, result[:table], header_style: header_style, body_style: body_style)
       end
 
-      package.to_stream.read
+      stream = package.to_stream or raise "Could not serialize report export"
+      stream.read or raise "Could not read report export"
     end
 
     private

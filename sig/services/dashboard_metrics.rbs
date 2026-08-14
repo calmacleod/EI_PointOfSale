@@ -1,0 +1,25 @@
+class DashboardMetrics
+  type key = Symbol | String
+  type value = Numeric?
+  type metric = { value: value, computed_at: ActiveSupport::TimeWithZone? }
+
+  METRIC_DEFINITIONS: Hash[Symbol, ^() -> value]
+  METRIC_LABELS: Hash[Symbol, String]
+  METRIC_DESCRIPTIONS: Hash[Symbol, String]
+  METRIC_ICONS: Hash[Symbol, String]
+  METRIC_LINKS: Hash[Symbol, Symbol]
+
+  def self.available_keys: () -> Array[String]
+  def self.label_for: (key) -> String
+  def self.description_for: (key) -> String
+  def self.icon_path_for: (key) -> String?
+  def self.link_path_for: (key) -> Symbol?
+  def self.refresh!: () -> Hash[Symbol, ^() -> value]
+  def self.[]: (key) -> value
+  def self.computed_at: (key) -> ActiveSupport::TimeWithZone?
+  def self.fetch_all: (Array[key]) -> Hash[Symbol, metric]
+
+  private
+
+  def self.compute_fallback: (Symbol) -> value
+end

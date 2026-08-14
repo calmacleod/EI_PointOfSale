@@ -1,0 +1,163 @@
+module Ui
+  class PagePresenter
+    @controller: untyped
+
+    @assigns: untyped
+
+    @params: untyped
+
+    @action_override: untyped
+
+    @path_override: untyped
+
+    @backup_overview_props: untyped
+
+    RESOURCE_CONFIGS: { "products" => { title: "Products", singular: "Product", collection: :products, record: :product, description: "Manage sellable inventory, pricing, suppliers, and Shopify settings.", fields: ::Array[::Array[:code | "SKU / Code" | :text | true] | ::Array[:name | "Name" | :text | true] | ::Array[:selling_price | "Selling price" | :number | true | { step: "0.01", min: 0 }] | ::Array[:purchase_price | "Purchase price" | :number | false | { step: "0.01", min: 0 }] | ::Array[:stock_level | "Stock level" | :number | false | { step: 1, min: 0 }] | ::Array[:reorder_level | "Reorder level" | :number | false | { step: 1, min: 0 }] | ::Array[:tax_code_id | "Tax code" | :select | false | { source: :tax_codes }] | ::Array[:supplier_id | "Supplier" | :select | false | { source: :suppliers }] | ::Array[:product_group_id | "Product group" | :select | false | { source: :product_groups }] | ::Array[:supplier_reference | "Supplier reference" | :text | false] | ::Array[:unit_cost | "Unit cost" | :number | false | { step: "0.01", min: 0 }] | ::Array[:items_per_unit | "Items per unit" | :number | false | { step: 1, min: 1 }] | ::Array[:order_quantity | "Order quantity" | :number | false | { step: 1, min: 0 }] | ::Array[:product_url | "Product URL" | :url | false] | ::Array[:notes | "Notes" | :textarea | false] | ::Array[:sync_to_shopify | "Sync to Shopify" | :checkbox | false] | ::Array[:images | "Images" | :file | false | { multiple: true, accept: "image/*" }]], show: ::Array[:code | :name | :selling_price | :purchase_price | :stock_level | :reorder_level | :supplier | :tax_code | :product_group | :categories | :supplier_reference | :product_url | :notes | :sync_to_shopify | :created_at | :updated_at] }, "services" => { title: "Services", singular: "Service", collection: :services, record: :service, description: "Manage services, pricing, tax treatment, and categories.", fields: ::Array[::Array[:name | "Name" | :text | true] | ::Array[:code | "Code" | :text | false] | ::Array[:description | "Description" | :textarea | false] | ::Array[:price | "Price" | :number | true | { step: "0.01", min: 0 }] | ::Array[:tax_code_id | "Tax code" | :select | false | { source: :tax_codes }]], show: ::Array[:name | :code | :description | :price | :tax_code | :categories | :sales_count | :created_at | :updated_at] }, "customers" => { title: "Customers", singular: "Customer", collection: :customers, record: :customer, description: "Manage customer contact, membership, tax, and discount details.", fields: ::Array[::Array[:name | "Name" | :text | true] | ::Array[:member_number | "Member number" | :text | false] | ::Array[:email | "Email" | false] | ::Array[:phone | "Phone" | :tel | false] | ::Array[:date_of_birth | "Date of birth" | :date | false] | ::Array[:active | "Active" | :checkbox | false] | ::Array[:account_status | "Account status" | :number | false | { min: 0 }] | ::Array[:discount_id | "Discount" | :select | false | { source: :discounts }] | ::Array[:address_line1 | "Address line 1" | :text | false] | ::Array[:address_line2 | "Address line 2" | :text | false] | ::Array[:city | "City" | :text | false] | ::Array[:province | "Province" | :text | false] | ::Array[:postal_code | "Postal code" | :text | false] | ::Array[:country | "Country" | :text | false] | ::Array[:status_card_number | "Status card number" | :text | false] | ::Array[:alert | "Register alert" | :textarea | false] | ::Array[:notes | "Notes" | :textarea | false]], show: ::Array[:name | :member_number | :account_status | :active | :email | :phone | :date_of_birth | :address | :tax_code | :discount | :status_card_number | :alert | :notes | :joining_date | :created_at | :updated_at] }, "store_tasks" => { title: "Store Tasks", singular: "Task", collection: :store_tasks, record: :store_task, description: "Track work that needs to be completed around the store.", fields: ::Array[::Array[:title | "Title" | :text | true] | ::Array[:body | "Description" | :textarea | false] | ::Array[:status | "Status" | :select | true | { source: :store_task_statuses }] | ::Array[:assigned_to_id | "Assign to" | :select | false | { source: :users }] | ::Array[:due_date | "Due date" | :date | false]], show: ::Array[:title | :body | :status | :assigned_to | :due_date | :created_at | :updated_at] }, "admin_area/users" => { title: "Users", singular: "User", collection: :users, record: :user, admin: true, description: "Manage staff accounts, roles, and access.", fields: ::Array[::Array[:name | "Name" | :text | true] | ::Array[:email_address | "Email" | :email | true] | ::Array[:phone | "Phone" | :tel | false] | ::Array[:type | "Role" | :select | true | { source: :user_types }] | ::Array[:active | "Active" | :checkbox | false] | ::Array[:notes | "Notes" | :textarea | false] | ::Array[:password | "Password" | false] | ::Array[:password_confirmation | "Confirm password" | :password | false]], show: ::Array[:name | :email_address | :phone | :type | :active | :notes | :created_at | :updated_at] }, "admin_area/tax_codes" => { title: "Tax Codes", singular: "Tax code", collection: :tax_codes, record: :tax_code, admin: true, description: "Configure tax rates and exemption categories.", fields: ::Array[::Array[:code | "Code" | :text | true] | ::Array[:name | "Name" | :text | true] | ::Array[:rate | "Rate" | :number | true | { step: "0.0001", min: 0 }] | ::Array[:province_code | "Province code" | :text | false] | ::Array[:exemption_type | "Exemption type" | :text | false] | ::Array[:notes | "Notes" | :textarea | false]], show: ::Array[:code | :name | :rate | :province_code | :exemption_type | :notes | :created_at | :updated_at] }, "admin_area/suppliers" => { title: "Suppliers", singular: "Supplier", collection: :suppliers, record: :supplier, admin: true, description: "Manage product suppliers and contact details.", fields: ::Array[::Array[:name | "Name" | :text | true] | ::Array[:phone | "Phone" | :tel | false]], show: ::Array[:name | :phone | :created_at | :updated_at] }, "admin_area/discounts" => { title: "Discounts", singular: "Discount", collection: :discounts, record: :discount, admin: true, description: "Configure order and item discounts.", fields: ::Array[::Array[:name | "Name" | :text | true] | ::Array[:description | "Description" | :textarea | false] | ::Array[:discount_type | "Type" | :select | true | { source: :discount_types }] | ::Array[:value | "Value" | :number | true | { step: "0.01", min: 0 }] | ::Array[:active | "Active" | :checkbox | false] | ::Array[:applies_to_all | "Applies to all" | :checkbox | false] | ::Array[:starts_at | "Starts at" | :datetime_local | false] | ::Array[:ends_at | "Ends at" | :datetime_local | false]], show: ::Array[:name | :description | :discount_type | :value | :active | :applies_to_all | :starts_at | :ends_at | :created_at | :updated_at] }, "admin_area/receipt_templates" => { title: "Receipt Templates", singular: "Receipt template", collection: :receipt_templates, record: :receipt_template, admin: true, description: "Control printed receipt content and formatting.", fields: ::Array[::Array[:name | "Name" | :text | true] | ::Array[:paper_width_mm | "Paper width" | :select | true | { source: :paper_widths }] | ::Array[:header_text | "Header text" | :textarea | false] | ::Array[:footer_text | "Footer text" | :textarea | false] | ::Array[:show_logo | "Show logo" | :checkbox | false] | ::Array[:trim_logo | "Trim logo whitespace" | :checkbox | false] | ::Array[:show_store_name | "Show store name" | :checkbox | false] | ::Array[:show_store_address | "Show store address" | :checkbox | false] | ::Array[:show_store_phone | "Show store phone" | :checkbox | false] | ::Array[:show_store_email | "Show store email" | :checkbox | false] | ::Array[:show_cashier_name | "Show cashier" | :checkbox | false] | ::Array[:show_date_time | "Show date and time" | :checkbox | false]], show: ::Array[:name | :active | :paper_width_mm | :chars_per_line | :header_text | :footer_text | :show_logo | :show_store_name | :show_store_address | :show_store_phone | :show_store_email | :show_cashier_name | :show_date_time | :created_at | :updated_at] } }
+
+    def initialize: (untyped controller, ?action_name: String?, ?controller_path: String?) -> void
+
+    def call: () -> Hash[Symbol, untyped]
+
+    private
+
+    attr_reader controller: untyped
+
+    attr_reader assigns: untyped
+
+    attr_reader params: untyped
+
+    def controller_path: () -> untyped
+
+    def action_name: () -> untyped
+
+    def h: () -> untyped
+
+    def resource_props: (untyped config) -> untyped
+
+    def resource_index_props: (untyped config, ?extra: ::Hash[untyped, untyped]) -> untyped
+
+    def resource_form_props: (untyped config, ?record: untyped?, ?action: untyped?, ?root: untyped?, ?cancel: untyped?) -> { view: "resource_form", title: untyped, description: untyped, form: { root: untyped, method: untyped, action: untyped, cancel: untyped, submit_label: untyped, delete_path: untyped, fields: untyped, errors: untyped } }
+
+    def resource_show_props: (untyped config, ?record: untyped?) -> { view: "resource_show", title: untyped, description: untyped, details: untyped, actions: { index: untyped, edit: untyped, delete: untyped } }
+
+    def auth_props: () -> ({ view: "auth", title: "Sign in", description: "Use your staff account to open the point of sale.", form: { action: untyped, method: "post", root: nil, submit_label: "Sign in", fields: ::Array[{ key: "email_address", label: "Email address", type: "email", value: untyped, required: true, autocomplete: "username" } | { key: "password", label: "Password", type: "password", value: "", required: true, autocomplete: "current-password" }] }, secondary: { label: "Forgot your password?", path: untyped } } | { view: "auth", title: "Reset password", description: "We will send reset instructions if the account exists.", form: { action: untyped, method: "post", root: nil, submit_label: "Email reset instructions", fields: ::Array[{ key: "email_address", label: "Email address", type: "email", value: "", required: true, autocomplete: "username" }] }, secondary: { label: "Back to sign in", path: untyped } } | { view: "auth", title: "Choose a new password", description: "Enter and confirm the new password for this account.", form: { action: untyped, method: "put", root: nil, submit_label: "Save password", fields: ::Array[{ key: "password", label: "New password", type: "password", value: "", required: true, autocomplete: "new-password" } | { key: "password_confirmation", label: "Confirm password", type: "password", value: "", required: true, autocomplete: "new-password" }] } })
+
+    def offline_props: () -> { view: "offline", title: "Offline lookup", allow_fake_offline: untyped, home_path: untyped, sync_paths: { products: untyped, services: untyped, customers: untyped, tax_codes: untyped } }
+
+    def dashboard_props: () -> { view: "dashboard", title: "Dashboard", description: untyped, metrics: untyped, metrics_last_updated: untyped, drawer: untyped, recent_orders: untyped, tasks: untyped, actions: { register: untyped, orders: untyped, tasks: untyped, cash_drawer: untyped, open_drawer: untyped, close_drawer: untyped }, section_titles: ::Array["Recent orders" | "Your tasks"] }
+
+    def register_props: () -> { view: "register", title: "Register", order: untyped, active_orders: untyped, held_count: untyped, actions: { register: untyped, new_order: untyped, held: untyped, quick_lookup: untyped, hold: untyped, resume: untyped, complete: untyped, cancel: untyped, update: untyped, assign_customer: untyped, remove_customer: untyped, customer_search: untyped, payment: untyped, discount: untyped, gift_certificate: untyped } }
+
+    def reports_props: () -> untyped
+
+    def orders_props: () -> untyped
+
+    def order_show_props: (untyped order) -> { view: "order_show", title: ::String, description: ::String, order: untyped, events: untyped, actions: { index: untyped, receipt: untyped, refund: untyped, register: untyped } }
+
+    def receipt_props: (untyped order) -> { view: "receipt", title: ::String, store: untyped, order: untyped, receipt_lines: untyped, actions: { order: untyped, index: untyped } }
+
+    def refund_props: (untyped order) -> { view: "refund", title: ::String, description: "Choose returned quantities and whether stock should be restored.", order: untyped, action: untyped, errors: untyped }
+
+    def inventory_props: () -> { view: "inventory", title: "Inventory Restock", description: "Find products, enter quantities, and commit the stock movement together.", actions: { lookup: untyped, restock: untyped, import: untyped } }
+
+    def cash_drawer_props: () -> untyped
+
+    def drawer_count_props: (untyped title, untyped action, untyped session) -> { view: "drawer_count", title: untyped, description: "Count each denomination before continuing.", action: untyped, denominations: untyped, errors: untyped }
+
+    def profile_props: () -> untyped
+
+    def admin_store_props: () -> untyped
+
+    def admin_settings_props: () -> { view: "cards", title: "Admin Settings", description: "Configuration, integrations, security, and operations.", cards: untyped }
+
+    def notifications_props: () -> { view: "notifications", title: "Notifications", notifications: untyped, unread_count: untyped, actions: { mark_all: untyped, clear_all: untyped } }
+
+    def gift_certificate_props: () -> (untyped | { view: "gift_certificate_show", title: untyped, description: "Gift certificate details and redemption history.", certificate: { code: untyped, status: untyped, initial_amount: untyped, remaining_balance: untyped, customer: untyped, sold_on_order: untyped, issued_by: untyped, activated_at: untyped, voided_at: untyped, created_at: untyped, updated_at: untyped }, store: untyped, redemptions: untyped, actions: { index: untyped } })
+
+    def audit_props: () -> (untyped | { view: "resource_show", title: ::String, description: "Recorded change details.", details: ::Array[{ label: "Action", value: untyped } | { label: "Model", value: untyped } | { label: "Record", value: ::String } | { label: "User", value: untyped } | { label: "When", value: untyped } | { label: "Changes", value: untyped }], actions: { index: untyped, edit: nil, delete: nil } })
+
+    def imports_props: () -> { view: "operations", title: untyped, description: "Preview and import stock updates from a CSV file.", details: untyped, actions: untyped, recent_imports: untyped }
+
+    def shopify_props: () -> { view: "operations", title: "Shopify Integration", description: "Manage product, inventory, and webhook synchronization.", details: untyped, actions: ::Array[{ label: "Test connection", path: untyped, method: "post" } | { label: "Sync all", path: untyped, method: "post" } | { label: "Register webhooks", path: untyped, method: "post" }] }
+
+    def backups_props: () -> { view: "backups", title: "Backups", description: "Google Drive integration status and nightly backup files.", status: untyped, details: untyped, files: untyped, actions: untyped }
+
+    def backup_overview_props: () -> untyped
+
+    def deferred_backup_prop: (untyped key) -> untyped
+
+    def recurring_tasks_props: () -> { view: "recurring_tasks", title: "Recurring Tasks", description: "Review schedules and manually enqueue supported jobs.", recurring_tasks: untyped, actions: ::Array[untyped] }
+
+    def data_export_props: () -> { view: "operations", title: "Data Export", description: "Download the application data as an Excel workbook.", details: untyped, actions: ::Array[{ label: "Download Excel export", path: untyped, method: "post", full_reload: true }] }
+
+    def restocks_props: () -> { view: "operations", title: "Restock History", description: untyped, details: untyped, query: untyped, pagination: untyped, pagination_path: untyped, actions: ::Array[untyped] }
+
+    def receipt_template_props: () -> { view: "receipt_template_show", title: untyped, description: "Receipt layout and print preview.", details: untyped, preview_lines: untyped, actions: { index: untyped, edit: untyped, activate: untyped, delete: untyped } }
+
+    def operational_controller?: () -> untyped
+
+    def operational_props: () -> { view: "operations", title: untyped, description: "Administrative status and controls.", details: untyped, actions: untyped }
+
+    def operational_detail_rows: (untyped key, untyped value) -> untyped
+
+    def operational_actions: () -> untyped
+
+    def generic_props: () -> { view: "operations", title: untyped, description: untyped, details: untyped, actions: ::Array[untyped] }
+
+    def form_field_props: (untyped field, untyped record) -> untyped
+
+    def index_filters_prop: (untyped filter_config) -> (::Array[untyped] | untyped)
+
+    def report_result_data_prop: (untyped report) -> (nil | untyped)
+
+    def select_options: (untyped source) -> untyped
+
+    def model_options: (untyped scope, untyped display) -> untyped
+
+    def serializable_value: (untyped value, untyped type) -> untyped
+
+    def index_row: (untyped record, untyped columns, untyped config) -> { id: untyped, label: untyped, values: untyped, show_path: untyped, edit_path: untyped }
+
+    def fallback_columns: (untyped record) -> (::Array[untyped] | untyped)
+
+    def display_value: (untyped record, untyped key) -> untyped
+
+    def format_scalar: (untyped value, ?key: untyped?) -> (::String | untyped)
+
+    def presenter_assigns: () -> untyped
+
+    def format_time: (untyped value) -> (nil | untyped)
+
+    def human_label: (untyped record) -> (::String | untyped)
+
+    def record_label: (untyped record, ?untyped? config, ?singular: untyped?) -> untyped
+
+    def collection_path: (untyped config) -> untyped
+
+    def record_path: (untyped record, untyped config) -> untyped
+
+    def edit_resource_path: (untyped record, untyped config) -> untyped
+
+    def new_resource_path: (untyped config) -> untyped
+
+    def can_create?: (untyped config) -> untyped
+
+    def pagination_props: (untyped pagy) -> (nil | { page: untyped, pages: untyped, count: untyped, previous: untyped, next: untyped, limit: untyped, from: untyped, to: untyped })
+
+    def safe_query_params: () -> untyped
+
+    def safe_public_path: (untyped method_name) -> untyped
+
+    def safe_attributes: (untyped record, untyped keys) -> (nil | untyped)
+
+    def order_summary: (untyped order) -> { id: untyped, number: untyped, status: untyped, customer: untyped, total: untyped, line_count: untyped, created_at: untyped, path: untyped, register_path: untyped }
+
+    def order_props: (untyped order) -> (nil | { id: untyped, number: untyped, status: untyped, customer: untyped, created_by: untyped, notes: untyped, tax_exempt: untyped, subtotal: untyped, discount_total: untyped, tax_total: untyped, total: untyped, amount_paid: untyped, balance_due: untyped, balance_due_value: untyped, payment_complete: untyped, completed_at: untyped, lines: untyped, discounts: untyped, line_discounts: untyped, payments: untyped })
+
+    def order_line_props: (untyped line) -> { id: untyped, code: untyped, name: untyped, quantity: untyped, sellable_type: untyped, refundable_quantity: untyped, unit_price: untyped, discount: untyped, tax: untyped, total: untyped, discounts: untyped, update_path: untyped, delete_path: untyped }
+
+    def task_summary: (untyped task) -> { id: untyped, title: untyped, status: untyped, due_date: untyped, overdue: untyped, path: untyped }
+
+    def drawer_props: (untyped session) -> (nil | { id: untyped, opened_at: untyped, opened_by: untyped, opening_total: untyped, closed_at: untyped, closed_by: untyped, closing_total: untyped, discrepancy: untyped, notes: untyped, path: untyped })
+  end
+end

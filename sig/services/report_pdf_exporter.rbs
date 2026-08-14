@@ -1,0 +1,20 @@
+# Generates a PDF document for a completed report.
+#
+# Usage:
+#   pdf_data = ReportPdfExporter.generate(report)
+#
+class ReportPdfExporter
+  FONT_DIR: untyped
+
+  def self.generate: (Report report) -> String
+
+  private
+
+  def self.register_fonts: (untyped pdf) -> untyped
+
+  def self.render_summary: (untyped pdf, untyped summary) -> untyped
+
+  def self.render_chart: (untyped pdf, untyped chart_title, untyped chart_data, untyped chart_type) -> untyped
+
+  def self.render_table: (untyped pdf, untyped template, untyped table_data) -> untyped
+end

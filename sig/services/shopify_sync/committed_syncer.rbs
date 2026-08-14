@@ -1,0 +1,13 @@
+module ShopifySync
+  class CommittedSyncer < Base
+    @primary_location_id: String?
+
+    def call: (Product product, Integer delta) -> untyped?
+
+    private
+
+    def primary_location_id: () -> String?
+    def inventory_adjust_mutation: () -> String
+    def location_query: () -> String
+  end
+end

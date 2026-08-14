@@ -1,0 +1,34 @@
+# Generates an Excel (.xlsx) export of the application's business data.
+# Each table gets its own worksheet with column headers and all rows.
+#
+# Sensitive columns (like password_digest) and internal infrastructure tables
+# (Solid Queue, Active Storage, sessions, etc.) are excluded.
+#
+# Usage:
+#   xlsx_data = DatabaseExportService.generate
+#   # => String (binary xlsx content)
+#
+class DatabaseExportService
+  # Tables to export (order they appear as sheets)
+  EXPORT_TABLES: ::Array["users" | "customers" | "products" | "product_groups" | "services" | "categories" | "categorizations" | "suppliers" | "tax_codes" | "stores"]
+
+  # Columns to exclude from all tables (sensitive or internal)
+  EXCLUDED_COLUMNS: ::Array["password_digest"]
+
+  # Generates the Excel workbook and returns the binary content.
+  #
+  # @return [String] binary .xlsx content suitable for send_data
+  def self.generate: () -> String
+
+  private
+
+  def self.add_sheet: (untyped workbook, untyped table_name, header_style: untyped, body_style: untyped, date_style: untyped) -> (nil | untyped)
+
+  def self.model_for_table: (untyped table_name) -> untyped
+
+  def self.format_value: (untyped value) -> untyped
+
+  def self.timestamp_column?: (untyped column_name) -> untyped
+
+  def self.column_type: (untyped column_name) -> (:date | :string)
+end

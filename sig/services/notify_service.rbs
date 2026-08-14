@@ -1,0 +1,20 @@
+class NotifyService
+  @user: User
+  @title: String
+  @body: String?
+  @category: String?
+  @url: String?
+  @persistent: bool
+
+  def self.call: (user: User, title: String, ?body: String?, ?category: String?, ?url: String?, ?persistent: bool) -> untyped
+  def initialize: (user: User, title: String, body: String?, category: String?, url: String?, persistent: bool) -> void
+  def call: () -> untyped
+
+  private
+
+  def persist_notification: () -> Notification
+  def broadcast_action_cable: (Notification?) -> untyped
+  def send_web_push: () -> untyped?
+  def vapid_keys: () -> { subject: String, public_key: String, private_key: String }
+  def web_push_configured?: () -> bool
+end

@@ -29,7 +29,8 @@ module ShopifySync
           next unless product
 
           quantity = item["quantity"].to_i
-          new_stock = [ product.stock_level - quantity, 0 ].max
+          stock_level = product.stock_level or raise "Product stock level is missing"
+          new_stock = [ stock_level - quantity, 0 ].max
           product.update!(stock_level: new_stock)
 
           { code: product.code, name: product.name, quantity: quantity, stock_after: new_stock }
@@ -50,7 +51,8 @@ module ShopifySync
           next unless product
 
           quantity = item["quantity"].to_i
-          new_stock = [ product.stock_level - quantity, 0 ].max
+          stock_level = product.stock_level or raise "Product stock level is missing"
+          new_stock = [ stock_level - quantity, 0 ].max
           product.update!(stock_level: new_stock)
 
           Rails.logger.info(

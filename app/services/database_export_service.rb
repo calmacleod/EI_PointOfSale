@@ -59,7 +59,8 @@ class DatabaseExportService
         add_sheet(workbook, table_name, header_style: header_style, body_style: body_style, date_style: date_style)
       end
 
-      package.to_stream.read
+      stream = package.to_stream or raise "Could not serialize database export"
+      stream.read or raise "Could not read database export"
     end
 
     private

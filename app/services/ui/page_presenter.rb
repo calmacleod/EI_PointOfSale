@@ -235,11 +235,13 @@ module Ui
 
       def resource_show_props(config, record: nil)
         record ||= assigns[config[:record]]
+        # @type var detail_keys: Array[Symbol]
+        detail_keys = Array(config[:show])
         {
           view: "resource_show",
           title: record_label(record, config),
           description: config[:description],
-          details: Array(config[:show]).map { |key| { label: key.to_s.humanize, value: display_value(record, key) } },
+          details: detail_keys.map { |key| { label: key.to_s.humanize, value: display_value(record, key) } },
           actions: {
             index: collection_path(config),
             edit: edit_resource_path(record, config),
@@ -303,7 +305,9 @@ module Ui
       end
 
       def dashboard_props
-        metrics = Array(assigns[:visible_metrics]).map do |metric|
+        # @type var visible_metrics: Array[Hash[Symbol, untyped]]
+        visible_metrics = Array(assigns[:visible_metrics])
+        metrics = visible_metrics.map do |metric|
           value = metric[:format].to_s == "currency" ? h.number_to_currency(metric[:value].to_d) : h.number_with_delimiter(metric[:value].to_i)
           { key: metric[:key], label: metric[:label], description: metric[:description], value: value, path: safe_public_path(metric[:link_path]) }
         end
@@ -369,7 +373,9 @@ module Ui
         }
         case action_name
         when "index"
-          templates = Array(assigns[:templates]).map do |template|
+          # @type var report_templates: Array[ReportTemplate]
+          report_templates = Array(assigns[:templates])
+          templates = report_templates.map do |template|
             { key: template.key, title: template.title, description: template.description, path: controller.send(:new_report_path, template: template.key) }
           end
           resource_index_props(config, extra: { templates: templates })
@@ -385,13 +391,15 @@ module Ui
           }
         when "show"
           report = assigns[:report]
+          # @type var table_columns: Array[Hash[Symbol, untyped]]
+          table_columns = Array(report.template&.table_columns)
           {
             view: "report_show", title: report.title, description: report.template&.description,
             report: {
               id: report.id, status: report.status, report_type: report.report_type,
               parameters: report.parameters, result_data: report_result_data_prop(report), error_message: report.error_message,
               generated_by: human_label(report.generated_by), created_at: format_time(report.created_at), completed_at: format_time(report.completed_at),
-              table_columns: Array(report.template&.table_columns).map { |column| { key: column[:key].to_s, label: column[:label].to_s } },
+              table_columns: table_columns.map { |column| { key: column[:key].to_s, label: column[:label].to_s } },
               chart_type: report.template&.chart_type
             },
             actions: {
@@ -486,9 +494,10 @@ module Ui
           resource_index_props(config)
         when "session_detail"
           session = assigns[:session]
+          drawer = drawer_props(session) || {}
           {
             view: "resource_show", title: "Cash Drawer Session ##{session.id}", description: "Opening, closing, and terminal reconciliation details.",
-            details: drawer_props(session).map { |key, value| { label: key.to_s.humanize, value: value } },
+            details: drawer.map { |key, value| { label: key.to_s.humanize, value: value } },
             actions: { index: controller.send(:history_cash_drawer_path), edit: nil, delete: nil }
           }
         else generic_props
@@ -545,7 +554,9 @@ module Ui
       end
 
       def notifications_props
-        notifications = Array(assigns[:notifications]).map do |notification|
+        # @type var notification_records: Array[Notification]
+        notification_records = Array(assigns[:notifications])
+        notifications = notification_records.map do |notification|
           { id: notification.id, title: notification.title, body: notification.body, category: notification.category, read: notification.read_at.present?, at: format_time(notification.created_at), url: notification.url, path: controller.send(:notification_path, notification) }
         end
         { view: "notifications", title: "Notifications", notifications: notifications, unread_count: assigns[:unread_count].to_i, actions: { mark_all: controller.send(:mark_all_read_notifications_path), clear_all: controller.send(:clear_all_notifications_path) } }
@@ -560,6 +571,8 @@ module Ui
         return resource_index_props(config) if action_name == "index"
 
         certificate = assigns[:gift_certificate]
+        # @type var redemption_payments: Array[OrderPayment]
+        redemption_payments = Array(assigns[:redemptions])
         {
           view: "gift_certificate_show", title: certificate.code, description: "Gift certificate details and redemption history.",
           certificate: {
@@ -572,7 +585,7 @@ module Ui
             updated_at: format_time(certificate.updated_at)
           },
           store: safe_attributes(assigns[:store], %i[name phone email address_line1 address_line2 city province postal_code country]),
-          redemptions: Array(assigns[:redemptions]).map do |payment|
+          redemptions: redemption_payments.map do |payment|
             {
               order: payment.order.number, order_path: controller.send(:order_path, payment.order),
               amount: h.number_to_currency(payment.amount), received_by: human_label(payment.received_by),
@@ -644,10 +657,12 @@ module Ui
         if action_name == "preview" && data_import&.persisted?
           actions << { label: "Run import", path: controller.send(:execute_admin_import_path, data_import), method: "patch" }
         end
+        # @type var recent_import_records: Array[DataImport]
+        recent_import_records = Array(assigns[:recent_imports])
         {
           view: "operations", title: action_name == "preview" ? "Import Preview" : action_name == "show" ? "Import Status" : "Data Import",
           description: "Preview and import stock updates from a CSV file.", details: details, actions: actions,
-          recent_imports: Array(assigns[:recent_imports]).map do |item|
+          recent_imports: recent_import_records.map do |item|
             { id: item.id, file_name: item.file_name, status: item.status, created_at: format_time(item.created_at), path: controller.send(:admin_import_path, item) }
           end
         }
@@ -706,9 +721,11 @@ module Ui
             actions << { label: "Connect Google Drive", path: controller.send(:authorize_admin_backups_path), method: "get", full_reload: true }
           end
           files = [ [ "Database backups", overview[:db_backups] ], [ "Garage bucket backups", overview[:garage_backups] ] ].map do |label, records|
+            # @type var backup_files: Array[untyped]
+            backup_files = Array(records)
             {
               label: label,
-              items: Array(records).map do |file|
+              items: backup_files.map do |file|
                 {
                   name: file.name, created_at: format_time(file.created_time),
                   size: file.size ? h.number_to_human_size(file.size.to_i) : "—",
@@ -735,7 +752,9 @@ module Ui
       end
 
       def recurring_tasks_props
-        task_rows = Array(assigns[:tasks]).map do |entry|
+        # @type var recurring_entries: Array[Hash[Symbol, untyped]]
+        recurring_entries = Array(assigns[:tasks])
+        task_rows = recurring_entries.map do |entry|
           task = entry[:task]
           {
             key: task.key, schedule: task.schedule, class_name: task.class_name,
@@ -750,17 +769,21 @@ module Ui
       end
 
       def data_export_props
+        # @type var export_tables: Array[String]
+        export_tables = Array(assigns[:export_tables])
         {
           view: "operations", title: "Data Export", description: "Download the application data as an Excel workbook.",
-          details: Array(assigns[:export_tables]).map { |table| { label: "Table", value: table.to_s.titleize } },
+          details: export_tables.map { |table| { label: "Table", value: table.titleize } },
           actions: [ { label: "Download Excel export", path: controller.send(:admin_data_export_path), method: "post", full_reload: true } ]
         }
       end
 
       def restocks_props
+        # @type var restock_records: Array[Restock]
+        restock_records = Array(assigns[:restocks])
         {
           view: "operations", title: "Restock History", description: assigns[:product]&.name.to_s,
-          details: Array(assigns[:restocks]).map do |restock|
+          details: restock_records.map do |restock|
             {
               label: format_time(restock.created_at),
               value: "#{restock.quantity} units by #{human_label(restock.user)}#{restock.notes.present? ? " — #{restock.notes}" : ""}"

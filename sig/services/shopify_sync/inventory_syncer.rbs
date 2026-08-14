@@ -1,0 +1,16 @@
+module ShopifySync
+  class InventorySyncer < Base
+    @primary_location_id: String?
+
+    def call: (?Product? product) -> untyped
+
+    private
+
+    def sync_inventory_for: (Product product) -> untyped
+    def enable_tracking: (Product product) -> untyped
+    def inventory_item_update_mutation: () -> String
+    def primary_location_id: () -> String?
+    def inventory_adjust_mutation: () -> String
+    def location_query: () -> String
+  end
+end

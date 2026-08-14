@@ -1,0 +1,17 @@
+module ShopifySync
+  class Base
+    private
+
+    def shopify_session: () -> untyped
+
+    def with_shopify_session: () { (untyped) -> untyped } -> untyped
+
+    def graphql_client: () -> untyped
+
+    def extract_data!: (untyped response, untyped mutation_name) -> untyped
+
+    # Obtains an access token via the Client Credentials Grant.
+    # Tokens are cached for 23 hours (they expire after 24h).
+    def fetch_access_token: (untyped creds) -> untyped
+  end
+end

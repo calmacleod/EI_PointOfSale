@@ -1,0 +1,29 @@
+module Orders
+  class GenerateReceipt
+    @order: Order
+    @template: ReceiptTemplate?
+    @store: Store
+    @width: Integer
+
+    def self.call: (Order) -> Array[String]
+    def initialize: (Order) -> void
+    def call: () -> Array[String]
+
+    private
+
+    def header_lines: () -> Array[String]
+    def render_header_section: (String) -> Array[String]
+    def order_info_lines: () -> Array[String]
+    def date_time_line: () -> Array[String]
+    def cashier_line: () -> Array[String]
+    def line_item_lines: () -> Array[String]
+    def totals_lines: () -> Array[String]
+    def payment_lines: () -> Array[String]
+    def tax_exempt_lines: () -> Array[String]
+    def footer_lines: () -> Array[String]
+    def center: (String) -> String
+    def left_right: (String, String) -> String
+    def separator: () -> String
+    def format_money: (Numeric?) -> String
+  end
+end

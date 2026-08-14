@@ -42,7 +42,9 @@ module Orders
       end
 
       def load_line_discounts(lines)
-        return @line_discounts.reject(&:destroyed?).group_by(&:order_line_id) if @line_discounts
+        if (line_discounts = @line_discounts)
+          return line_discounts.reject(&:destroyed?).group_by(&:order_line_id)
+        end
 
         line_ids = lines.map(&:id)
         OrderLineDiscount.where(order_line_id: line_ids).to_a.group_by(&:order_line_id)
@@ -97,7 +99,7 @@ module Orders
           [ discount.value, subtotal ].min
         end
 
-        amount.round(2)
+        amount.round(2).to_d
       end
 
       def apply_line_discounts(lines, line_discounts_by_line)
@@ -119,7 +121,7 @@ module Orders
 
           # Update the line's total discount amount
           active_discounts = all_discounts.select { |discount| discount.excluded_quantity < line.quantity }
-          line.discount_amount = active_discounts.any? ? active_discounts.sum(&:calculated_amount) : 0
+          line.discount_amount = active_discounts.any? ? active_discounts.sum(&:calculated_amount) : 0.to_d
         end
 
         # Bulk update line discounts
@@ -134,7 +136,7 @@ module Orders
         applied_qty = line_discount.applied_quantity
         total_qty = line.quantity
 
-        return 0 if applied_qty <= 0 || total_qty <= 0
+        return 0.to_d if applied_qty <= 0 || total_qty <= 0
 
         amount = if line_discount.percentage?
           # Percentage applies to the discounted units' share of subtotal
@@ -148,11 +150,12 @@ module Orders
           (full_amount * applied_qty / total_qty).round(2)
         end
 
-        amount.round(2)
+        amount.round(2).to_d
       end
 
       def update_order_totals(lines, order_discounts, line_discounts_by_line)
-        @order.subtotal = lines.sum(&:subtotal_before_discount).round(2)
+        subtotal = lines.sum(&:subtotal_before_discount).round(2)
+        @order.subtotal = subtotal
 
         order_discount_total = order_discounts.sum(&:calculated_amount)
         lines_by_id = lines.index_by(&:id)
@@ -161,9 +164,11 @@ module Orders
           discounts.select { |discount| discount.excluded_quantity < line.quantity }.sum(&:calculated_amount)
         end
 
-        @order.discount_total = (order_discount_total + line_discount_total).round(2)
-        @order.tax_total = lines.sum(&:tax_amount).round(2)
-        @order.total = (@order.subtotal - @order.discount_total + @order.tax_total).round(2)
+        discount_total = (order_discount_total + line_discount_total).round(2)
+        tax_total = lines.sum(&:tax_amount).round(2)
+        @order.discount_total = discount_total
+        @order.tax_total = tax_total
+        @order.total = (subtotal - discount_total + tax_total).round(2)
       end
   end
 end

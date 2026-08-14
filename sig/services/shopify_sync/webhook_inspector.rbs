@@ -1,0 +1,9 @@
+module ShopifySync
+  # Fetches registered webhook subscriptions from the Shopify Admin API.
+  # Returns an array of hashes with :id, :topic, :callback_url, :created_at.
+  class WebhookInspector < Base
+    QUERY: String
+
+    def call: () -> Array[Hash[Symbol, untyped]]
+  end
+end

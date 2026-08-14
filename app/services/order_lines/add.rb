@@ -22,16 +22,14 @@ module OrderLines
       return error_result("Sellable is required") unless @sellable
       return error_result("Order cannot be modified") if @order.finalized?
 
-      result = nil
       Order.transaction do
         line, action = find_or_create_line
         apply_discounts_and_totals
         record_event(line, action)
         enqueue_committed_sync(line)
 
-        result = Result.new(success?: true, line:, action:)
+        Result.new(success?: true, line:, action:)
       end
-      result
     end
 
     private
@@ -80,9 +78,10 @@ module OrderLines
       end
 
       def enqueue_committed_sync(line)
-        return unless @sellable.is_a?(Product) && @sellable.sync_to_shopify?
+        sellable = @sellable
+        return unless sellable.is_a?(Product) && sellable.sync_to_shopify?
 
-        ShopifySync::SyncCommittedJob.perform_later(@sellable.id, @quantity)
+        ShopifySync::SyncCommittedJob.perform_later(sellable.id, @quantity)
       end
 
       def error_result(message)

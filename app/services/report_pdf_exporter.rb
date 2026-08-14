@@ -116,10 +116,10 @@ class ReportPdfExporter
           width: pdf.bounds.width,
           cell_style: { size: 9, padding: [ 4, 6, 4, 6 ] },
           row_colors: [ "F8F8F8", "FFFFFF" ]
-        ) do
-          row(0).font_style = :bold
-          row(0).background_color = "4472C4"
-          row(0).text_color = "FFFFFF"
+        ) do |table|
+          table.row(0).font_style = :bold
+          table.row(0).background_color = "4472C4"
+          table.row(0).text_color = "FFFFFF"
         end
       end
   end

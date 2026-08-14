@@ -1,0 +1,26 @@
+module Orders
+  class CalculateTotals
+    type line_discounts = Hash[Integer, Array[OrderLineDiscount]]
+
+    @order: Order
+    @lines: Array[OrderLine]?
+    @order_discounts: Array[OrderDiscount]?
+    @line_discounts: Array[OrderLineDiscount]?
+
+    def self.call: (Order, ?state: Discounts::AutoApply::Result?) -> Order
+    def initialize: (Order, ?state: Discounts::AutoApply::Result?) -> void
+    def call: () -> Order
+
+    private
+
+    def load_order_lines: () -> Array[OrderLine]
+    def load_order_discounts: () -> Array[OrderDiscount]
+    def load_line_discounts: (Array[OrderLine]) -> line_discounts
+    def recalculate_line_taxes: (Array[OrderLine]) -> untyped
+    def apply_order_discounts: (Array[OrderLine], Array[OrderDiscount]) -> untyped?
+    def calculate_order_discount_amount: (OrderDiscount, Array[OrderLine]) -> BigDecimal
+    def apply_line_discounts: (Array[OrderLine], line_discounts) -> untyped?
+    def calculate_line_discount_amount: (OrderLineDiscount, OrderLine) -> BigDecimal
+    def update_order_totals: (Array[OrderLine], Array[OrderDiscount], line_discounts) -> untyped
+  end
+end

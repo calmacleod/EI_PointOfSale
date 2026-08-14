@@ -32,7 +32,9 @@ module ShopifySync
         body = response.body
 
         if body["errors"].present?
-          messages = Array(body["errors"]).map { |e| e.is_a?(Hash) ? e["message"] : e.to_s }.join(", ")
+          errors = Array(body["errors"])
+          # @type var errors: Array[untyped]
+          messages = errors.map { |e| e.is_a?(Hash) ? e["message"] : e.to_s }.join(", ")
           raise "Shopify GraphQL error: #{messages}"
         end
 

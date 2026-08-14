@@ -1,0 +1,17 @@
+module ShopifySync
+  # Registers webhook subscriptions with Shopify via the Admin GraphQL API.
+  # Idempotent: Shopify deduplicates subscriptions by topic + callbackUrl.
+  class WebhookRegistrar < Base
+    TOPICS: Array[String]
+
+    MUTATION: String
+
+    def call: () -> Array[untyped]
+
+    private
+
+    def register: (untyped client, String topic) -> untyped
+
+    def app_url: () -> String
+  end
+end

@@ -1,0 +1,15 @@
+module ShopifySync
+  # Processes incoming Shopify webhooks.
+  # Currently handles orders/create to decrement local stock on in-store pickup.
+  class WebhookHandler < Base
+    def call: (topic: String, payload: Hash[String, untyped]) -> untyped
+
+    private
+
+    def handle_order_paid: (Hash[String, untyped] payload) -> untyped
+
+    def handle_order_created: (Hash[String, untyped] payload) -> untyped
+
+    def handle_product_updated: (Hash[String, untyped] payload) -> untyped?
+  end
+end

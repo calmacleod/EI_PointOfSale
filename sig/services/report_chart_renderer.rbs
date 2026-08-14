@@ -1,0 +1,38 @@
+# Renders a chart image (PNG binary) from a report's chart data using
+# headless Chrome and the real Chart.js library — producing output
+# identical to the in-browser chart.
+#
+# Accepts the same Chart.js-format data that the front-end uses:
+#   { labels: [...], datasets: [{ label: "...", data: [...] }] }
+#
+# Usage:
+#   png_data = ReportChartRenderer.render(chart_data, chart_type: "bar")
+#
+class ReportChartRenderer
+  self.@chart_js_source: untyped
+
+  CHART_JS_URL: "https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"
+
+  CHART_JS_CACHE: untyped
+
+  CANVAS_WIDTH: 900
+
+  CANVAS_HEIGHT: 400
+
+  SUPPORTED_CHART_TYPES: ::Array["bar" | "line" | "pie" | "doughnut"]
+
+  def self.render: (Hash[Symbol, untyped] chart_data, ?chart_type: String) -> String
+
+  private
+
+  def self.wait_for_chart: (untyped page, ?timeout: ::Integer) -> (nil | untyped)
+
+  def self.normalize_chart_type: (untyped chart_type) -> untyped
+
+  # Downloads Chart.js once and caches it locally in tmp/
+  def self.chart_js_source: () -> untyped
+
+  def self.has_stacked_datasets?: (untyped chart_data) -> (false | untyped)
+
+  def self.build_html: (untyped chart_data, untyped chart_type) -> ::String
+end

@@ -1,0 +1,18 @@
+# Generates an Excel (.xlsx) workbook for a completed report.
+#
+# The workbook contains:
+#   - A "Summary" sheet with report metadata and summary stats
+#   - A "Data" sheet with the full result table
+#
+# Usage:
+#   xlsx_data = ReportExcelExporter.generate(report)
+#
+class ReportExcelExporter
+  def self.generate: (Report report) -> String
+
+  private
+
+  def self.add_summary_sheet: (untyped workbook, untyped report, untyped template, untyped result, bold_style: untyped, body_style: untyped) -> untyped
+
+  def self.add_data_sheet: (untyped workbook, untyped template, untyped table_data, header_style: untyped, body_style: untyped) -> untyped
+end

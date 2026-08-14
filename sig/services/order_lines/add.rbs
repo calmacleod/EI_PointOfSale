@@ -1,0 +1,33 @@
+module OrderLines
+  type sellable = Product | Service | GiftCertificate
+
+  class Add
+    class Result
+      attr_reader success?: bool
+      attr_reader line: OrderLine?
+      attr_reader action: Symbol?
+      attr_reader error: String?
+
+      def initialize: (success?: bool, ?line: OrderLine?, ?action: Symbol?, ?error: String?) -> void
+    end
+
+    @order: Order
+    @sellable: sellable
+    @actor: User
+    @quantity: Integer
+    @increment_if_exists: bool
+
+    def self.call: (order: Order, sellable: sellable, actor: User, ?quantity: Integer, ?increment_if_exists: bool) -> Result
+    def initialize: (order: Order, sellable: sellable, actor: User, quantity: Integer, increment_if_exists: bool) -> void
+    def call: () -> Result
+
+    private
+
+    def find_or_create_line: () -> [OrderLine, Symbol]
+    def create_new_line: () -> OrderLine
+    def apply_discounts_and_totals: () -> Order
+    def record_event: (OrderLine, Symbol) -> OrderEvent
+    def enqueue_committed_sync: (OrderLine) -> untyped?
+    def error_result: (String) -> Result
+  end
+end

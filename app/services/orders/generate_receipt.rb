@@ -35,10 +35,11 @@ module Orders
     private
 
       def header_lines
-        return [] unless @template
+        template = @template
+        return [] unless template
 
         lines = []
-        @template.ordered_sections.each do |section|
+        template.ordered_sections.each do |section|
           lines.concat(render_header_section(section))
         end
         lines
@@ -47,25 +48,32 @@ module Orders
       # Renders a single named section for the actual receipt.
       # Sections that belong to order_info_lines are skipped here.
       def render_header_section(section)
+        template = @template
+        return [] unless template
+
         case section
         when "logo"
           [] # Logo is not represented in text output
         when "store_name"
-          return [] unless @template.show_store_name && @store.name.present?
-          [ center(@store.name.upcase) ]
+          store_name = @store.name
+          return [] unless template.show_store_name && store_name && store_name.present?
+          [ center(store_name.upcase) ]
         when "store_address"
-          return [] unless @template.show_store_address
+          return [] unless template.show_store_address
           @store.receipt_address_lines.map { |l| center(l) }
         when "store_phone"
-          return [] unless @template.show_store_phone && @store.phone.present?
-          [ center("Tel: #{@store.phone}") ]
+          store_phone = @store.phone
+          return [] unless template.show_store_phone && store_phone && store_phone.present?
+          [ center("Tel: #{store_phone}") ]
         when "store_email"
-          return [] unless @template.show_store_email && @store.email.present?
-          [ center(@store.email) ]
+          store_email = @store.email
+          return [] unless template.show_store_email && store_email && store_email.present?
+          [ center(store_email) ]
         when "header_text"
-          return [] unless @template.header_text.present?
+          header_text = template.header_text
+          return [] unless header_text && header_text.present?
           lines = [ "" ]
-          @template.header_text.each_line { |l| lines << center(l.chomp) }
+          header_text.each_line { |l| lines << center(l.chomp) }
           lines
         when "date_time", "cashier_name"
           [] # Rendered in order_info_lines to keep them grouped with order number
@@ -90,8 +98,8 @@ module Orders
           lines.concat(date_time_line)
         end
 
-        if @order.customer.present?
-          lines << left_right("Customer:", @order.customer.name)
+        if (customer = @order.customer)
+          lines << left_right("Customer:", customer.name.to_s)
         end
 
         lines
@@ -121,9 +129,9 @@ module Orders
             lines << left_right(name, price)
           else
             # First line: as much of the name as fits + right-aligned price
-            lines << left_right(name[0...available], price)
+            lines << left_right(name.slice(0...available) || "", price)
             # Remaining name wraps to subsequent lines (indented)
-            rest = name[available..]
+            rest = name.slice(available..) || ""
             rest.chars.each_slice(@width - 2).each do |chunk|
               lines << "  #{chunk.join}"
             end
@@ -138,7 +146,7 @@ module Orders
             lines << "  #{line.quantity} x #{format_money(line.unit_price)}"
           end
 
-          if line.discount_amount > 0
+          if (line.discount_amount || 0) > 0
             lines << left_right("  Discount", "-#{format_money(line.discount_amount)}")
           end
         end
@@ -149,7 +157,7 @@ module Orders
         lines = []
         lines << left_right("Subtotal:", format_money(@order.subtotal))
 
-        if @order.discount_total > 0
+        if (@order.discount_total || 0) > 0
           lines << left_right("Discount:", "-#{format_money(@order.discount_total)}")
         end
 
@@ -169,7 +177,8 @@ module Orders
             lines << left_right("  Change:", format_money(payment.change_given || 0))
           end
 
-          lines << left_right("  Ref:", payment.reference) if payment.reference.present?
+          reference = payment.reference
+          lines << left_right("  Ref:", reference) if reference && reference.present?
         end
         lines
       end
@@ -179,15 +188,17 @@ module Orders
 
         lines = [ "" ]
         lines << center("** TAX EXEMPT **")
-        lines << center("Status Card: #{@order.tax_exempt_number}") if @order.tax_exempt_number.present?
+        tax_exempt_number = @order.tax_exempt_number
+        lines << center("Status Card: #{tax_exempt_number}") if tax_exempt_number && tax_exempt_number.present?
         lines
       end
 
       def footer_lines
         lines = []
-        if @template&.footer_text.present?
+        template = @template
+        if template && (footer_text = template.footer_text) && footer_text.present?
           lines << ""
-          @template.footer_text.each_line { |l| lines << center(l.chomp) }
+          footer_text.each_line { |l| lines << center(l.chomp) }
         end
         lines
       end

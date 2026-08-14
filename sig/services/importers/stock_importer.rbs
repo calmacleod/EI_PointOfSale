@@ -1,0 +1,29 @@
+module Importers
+  class StockImporter
+    @data_import: DataImport
+
+    COLUMN_MAP: { "Stock_Code" => :code, "Product_Name" => :name, "Selling_Price" => :selling_price, "Purchase_Price" => :purchase_price, "Stock_Level" => :stock_level, "Reorder_Level" => :reorder_level, "Order2_Level" => :order_quantity, "OUnit_Cost" => :unit_cost, "Items_Unit" => :items_per_unit, "Supp_Ref" => :supplier_reference, "Addit_Info" => :notes }
+
+    attr_reader data_import: DataImport
+
+    def initialize: (DataImport data_import) -> void
+
+    # Returns a preview hash without persisting anything.
+    def preview: (String csv_content) -> { total_rows: Integer, categories: Array[String], category_count: Integer, suppliers: Array[String], supplier_count: Integer, duplicate_codes: Integer, blank_codes: Integer, sample_rows: Array[Hash[String, String?]] }
+
+    # Performs the full import, updating the data_import record with progress.
+    def execute: (String csv_content) -> DataImport
+
+    private
+
+    def parse_csv: (untyped content) -> untyped
+
+    def import_row: (untyped row, untyped supplier_map, untyped category_map, untyped tax_code_map) -> (nil | untyped)
+
+    def build_supplier_map: (untyped rows) -> untyped
+
+    def build_category_map: (untyped rows) -> untyped
+
+    def build_tax_code_map: () -> untyped
+  end
+end

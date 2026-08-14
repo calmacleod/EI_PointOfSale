@@ -1,0 +1,20 @@
+module Products
+  class RestockService
+    class Result
+      attr_reader success?: bool
+      attr_reader restock: Restock?
+      attr_reader errors: Array[String]
+
+      def initialize: (success?: bool, restock: Restock?, errors: Array[String]) -> void
+    end
+
+    @product: Product
+    @quantity: Integer
+    @user: User
+    @notes: String?
+
+    def self.call: (product: Product, quantity: Integer | String, user: User, ?notes: String?) -> Result
+    def initialize: (product: Product, quantity: Integer | String, user: User, ?notes: String?) -> void
+    def call: () -> Result
+  end
+end

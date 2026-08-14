@@ -1,0 +1,40 @@
+module Discounts
+  class AutoApply
+    class Result
+      attr_reader lines: Array[OrderLine]
+      attr_reader order_discounts: Array[OrderDiscount]
+      attr_reader line_discounts: Array[OrderLineDiscount]
+
+      def initialize: (lines: Array[OrderLine], order_discounts: Array[OrderDiscount], line_discounts: Array[OrderLineDiscount]) -> void
+    end
+
+    ORDER_DISCOUNT_TYPE_MAP: Hash[String, String]
+
+    @order: Order
+    @lines: Array[OrderLine]
+    @order_discounts: Array[OrderDiscount]
+    @line_discounts: Array[OrderLineDiscount]
+
+    def self.call: (Order) -> Result?
+    def initialize: (Order) -> void
+    def call: () -> Result?
+
+    private
+
+    def load_current_state: () -> void
+    def sync_customer_discount: (Array[OrderLine], Array[OrderDiscount], Array[OrderLineDiscount]) -> untyped
+    def sync_customer_per_item_discount: (Discount, Array[OrderLine], Array[OrderLineDiscount]) -> untyped
+    def create_customer_order_discount: (Discount) -> OrderDiscount
+    def sync_order_level_discounts: (Array[OrderDiscount]) -> untyped
+    def sync_line_level_discounts: (Array[OrderLine], Array[OrderLineDiscount]) -> untyped?
+    def find_applicable_order_level_discounts: () -> Hash[Integer, Discount]
+    def find_applicable_line_level_discounts: (Array[OrderLine]) -> Hash[Discount, Array[OrderLine]]
+    def find_matching_lines: (Discount, Array[OrderLine]) -> Array[OrderLine]
+    def line_denied?: (OrderLine, untyped) -> bool
+    def line_product_group_id: (OrderLine) -> Integer?
+    def build_discountable_set: (untyped) -> untyped
+    def create_order_level_discount: (Discount) -> OrderDiscount
+    def create_line_level_discount: (Discount, OrderLine) -> OrderLineDiscount
+    def restore_if_excluded: (OrderLineDiscount) -> nil
+  end
+end

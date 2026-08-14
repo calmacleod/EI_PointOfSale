@@ -40,7 +40,7 @@ module ShopifySync
       end
 
       def push_grouped_product(product)
-        group = product.product_group
+        group = product.product_group or raise "Product group is missing"
         siblings = group.products.where(sync_to_shopify: true).order(:id)
 
         with_shopify_session do
@@ -49,7 +49,8 @@ module ShopifySync
             productOptions: [ { name: "Title", values: siblings.map { |p| { name: p.name } } } ],
             variants: siblings.map { |p| variant_input(p, option_name: p.name) }
           }
-          input[:id] = group.shopify_product_id if group.shopify_product_id.present?
+          shopify_product_id = group.shopify_product_id
+          input[:id] = shopify_product_id if shopify_product_id && shopify_product_id.present?
 
           response = graphql_client.query(
             query: product_set_mutation,
@@ -75,7 +76,7 @@ module ShopifySync
           end
 
           image_product = siblings.detect { |s| s.images.attached? } || siblings.first
-          sync_image(shopify_product["id"], image_product)
+          sync_image(shopify_product["id"], image_product) if image_product
           siblings.each { |sib| sync_inventory(sib) }
         end
       end
@@ -87,7 +88,8 @@ module ShopifySync
           productOptions: [ { name: "Title", values: [ { name: "Default Title" } ] } ],
           variants: [ variant_input(product) ]
         }
-        input[:id] = product.shopify_product_id if product.shopify_product_id.present?
+        shopify_product_id = product.shopify_product_id
+        input[:id] = shopify_product_id if shopify_product_id && shopify_product_id.present?
         input
       end
 
@@ -99,7 +101,8 @@ module ShopifySync
           inventoryItem: { tracked: true },
           optionValues: [ { name: option_name || "Default Title", optionName: "Title" } ]
         }
-        v[:id] = product.shopify_variant_id if product.shopify_variant_id.present?
+        shopify_variant_id = product.shopify_variant_id
+        v[:id] = shopify_variant_id if shopify_variant_id && shopify_variant_id.present?
         v
       end
 
@@ -129,7 +132,7 @@ module ShopifySync
       def sync_image(shopify_product_id, product)
         return unless product.images.attached?
 
-        image = product.images.first
+        image = product.images.first or return
         image_url = image.url
 
         graphql_client.query(

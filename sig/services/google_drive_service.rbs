@@ -1,0 +1,76 @@
+# Uploads files to a Google Drive folder using OAuth 2.0 (personal accounts).
+#
+# Setup:
+#   1. Create OAuth client credentials in Google Cloud Console
+#   2. Set GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, and GOOGLE_DRIVE_BACKUP_FOLDER_ID
+#   3. Visit Admin > Backups and click "Connect Google Drive" to authorize
+#   4. The refresh token is stored in persistent storage
+#
+# Usage:
+#   GoogleDriveService.upload("/tmp/backup.sql.gz", content_type: "application/gzip")
+#
+class GoogleDriveService
+  self.@drive_service: untyped
+
+  SCOPE: "https://www.googleapis.com/auth/drive.file"
+
+  DEFAULT_TOKEN_PATH: untyped
+
+  class Error < StandardError
+  end
+
+  def self.token_path: () -> Pathname
+
+  # Uploads a local file to the configured Google Drive folder.
+  def self.upload: (String file_path, ?content_type: String, ?folder_id: String?) -> untyped
+
+  # Lists backup files in the configured Google Drive folder.
+  def self.list_files: (?prefix: String?, ?folder_id: String?) -> Array[untyped]
+
+  # Downloads a Drive file and returns a StringIO.
+  def self.download: (String file_id) -> StringIO
+
+  # Checks whether the Google Drive integration is configured and connected.
+  #
+  # @return [Hash] { configured: Boolean, connected: Boolean, error: String|nil, email: String|nil }
+  def self.check_credentials: () -> Hash[Symbol, untyped]
+
+  # Removes old backups, keeping the most recent N.
+  def self.prune: (prefix: String, ?keep: Integer, ?folder_id: String?) -> Integer
+
+  # Builds the Google OAuth authorization URL for the consent screen.
+  def self.authorization_url: (redirect_uri: String) -> String
+
+  # Exchanges an authorization code for tokens and stores the refresh token.
+  # After connecting, immediately triggers a database backup if none exists or
+  # the most recent one is older than BACKUP_STALENESS_THRESHOLD.
+  def self.exchange_code: (code: String, redirect_uri: String) -> true
+
+  # Removes the stored OAuth token (disconnect).
+  def self.disconnect!: () -> nil
+
+  # Whether OAuth client credentials are set.
+  def self.oauth_configured?: () -> bool
+
+  # Whether a refresh token is stored on disk.
+  def self.token_stored?: () -> bool
+
+  private
+
+  def self.drive_service: () -> untyped
+
+  def self.load_credentials: () -> untyped
+
+  def self.build_oauth_client: (?untyped? redirect_uri) -> untyped
+
+  def self.store_token: (untyped client) -> untyped
+
+  def self.validate_config!: () -> untyped
+
+  def self.reset!: () -> untyped
+
+  # Enqueues DatabaseBackupJob unless a recent backup already exists on Drive.
+  BACKUP_STALENESS_THRESHOLD: untyped
+
+  def self.trigger_backup_if_stale!: () -> untyped
+end
