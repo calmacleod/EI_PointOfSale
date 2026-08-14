@@ -51,7 +51,8 @@ module Orders
           next unless sellable.is_a?(Product)
 
           product = Product.lock.find(sellable.id)
-          product.update_column(:stock_level, product.stock_level - line.quantity)
+          stock_level = product.stock_level or raise "Product stock level is missing"
+          product.update_column(:stock_level, stock_level - line.quantity)
         end
       end
 
@@ -86,7 +87,7 @@ module Orders
           data: {
             total: @order.total.to_s,
             items_count: @order.order_lines.sum(:quantity),
-            payment_methods: @order.order_payments.map(&:display_method).uniq
+            payment_methods: @order.order_payments.map { |payment| payment.display_method }.uniq
           }
         )
       end

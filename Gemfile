@@ -89,6 +89,9 @@ group :development, :test do
   gem "brakeman", require: false              # Static analysis for security vulnerabilities [https://brakemanscanner.org/]
   gem "rubocop-rails-omakase", require: false # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "herb"                                  # HTML-aware ERB linting and tooling [https://github.com/marcoroth/herb]
+  gem "rbs", require: false                   # Ruby type signatures
+  gem "rbs_rails", require: false             # Rails-generated RBS signatures
+  gem "steep", require: false                 # Static type checking with RBS
   gem "test-prof"
 end
 

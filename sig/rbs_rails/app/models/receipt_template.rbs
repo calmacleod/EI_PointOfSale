@@ -1,0 +1,821 @@
+# resolve-type-names: false
+
+class ::ReceiptTemplate < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::ReceiptTemplate, ::ReceiptTemplate::ActiveRecord_Relation, ::Integer]
+
+  module ::ReceiptTemplate::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def active: () -> bool
+
+    def active=: (bool) -> bool
+
+    def active?: () -> bool
+
+    def active_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def active_change: () -> [ bool?, bool? ]
+
+    def active_will_change!: () -> void
+
+    def active_was: () -> bool?
+
+    def active_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def active_previous_change: () -> ::Array[bool?]?
+
+    def active_previously_was: () -> bool?
+
+    def active_before_last_save: () -> bool?
+
+    def active_change_to_be_saved: () -> ::Array[bool?]?
+
+    def active_in_database: () -> bool?
+
+    def saved_change_to_active: () -> ::Array[bool?]?
+
+    def saved_change_to_active?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_active?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_active!: () -> void
+
+    def clear_active_change: () -> void
+
+    def active_before_type_cast: () -> bool
+
+    def active_for_database: () -> bool
+
+    def chars_per_line: () -> ::Integer
+
+    def chars_per_line=: (::Integer) -> ::Integer
+
+    def chars_per_line?: () -> bool
+
+    def chars_per_line_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def chars_per_line_change: () -> [ ::Integer?, ::Integer? ]
+
+    def chars_per_line_will_change!: () -> void
+
+    def chars_per_line_was: () -> ::Integer?
+
+    def chars_per_line_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def chars_per_line_previous_change: () -> ::Array[::Integer?]?
+
+    def chars_per_line_previously_was: () -> ::Integer?
+
+    def chars_per_line_before_last_save: () -> ::Integer?
+
+    def chars_per_line_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def chars_per_line_in_database: () -> ::Integer?
+
+    def saved_change_to_chars_per_line: () -> ::Array[::Integer?]?
+
+    def saved_change_to_chars_per_line?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_chars_per_line?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_chars_per_line!: () -> void
+
+    def clear_chars_per_line_change: () -> void
+
+    def chars_per_line_before_type_cast: () -> ::Integer
+
+    def chars_per_line_for_database: () -> ::Integer
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def footer_text: () -> ::String?
+
+    def footer_text=: (::String?) -> ::String?
+
+    def footer_text?: () -> bool
+
+    def footer_text_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def footer_text_change: () -> [ ::String?, ::String? ]
+
+    def footer_text_will_change!: () -> void
+
+    def footer_text_was: () -> ::String?
+
+    def footer_text_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def footer_text_previous_change: () -> ::Array[::String?]?
+
+    def footer_text_previously_was: () -> ::String?
+
+    def footer_text_before_last_save: () -> ::String?
+
+    def footer_text_change_to_be_saved: () -> ::Array[::String?]?
+
+    def footer_text_in_database: () -> ::String?
+
+    def saved_change_to_footer_text: () -> ::Array[::String?]?
+
+    def saved_change_to_footer_text?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_footer_text?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_footer_text!: () -> void
+
+    def clear_footer_text_change: () -> void
+
+    def footer_text_before_type_cast: () -> ::String?
+
+    def footer_text_for_database: () -> ::String?
+
+    def header_text: () -> ::String?
+
+    def header_text=: (::String?) -> ::String?
+
+    def header_text?: () -> bool
+
+    def header_text_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def header_text_change: () -> [ ::String?, ::String? ]
+
+    def header_text_will_change!: () -> void
+
+    def header_text_was: () -> ::String?
+
+    def header_text_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def header_text_previous_change: () -> ::Array[::String?]?
+
+    def header_text_previously_was: () -> ::String?
+
+    def header_text_before_last_save: () -> ::String?
+
+    def header_text_change_to_be_saved: () -> ::Array[::String?]?
+
+    def header_text_in_database: () -> ::String?
+
+    def saved_change_to_header_text: () -> ::Array[::String?]?
+
+    def saved_change_to_header_text?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_header_text?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_header_text!: () -> void
+
+    def clear_header_text_change: () -> void
+
+    def header_text_before_type_cast: () -> ::String?
+
+    def header_text_for_database: () -> ::String?
+
+    def name: () -> ::String
+
+    def name=: (::String) -> ::String
+
+    def name?: () -> bool
+
+    def name_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def name_change: () -> [ ::String?, ::String? ]
+
+    def name_will_change!: () -> void
+
+    def name_was: () -> ::String?
+
+    def name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def name_previous_change: () -> ::Array[::String?]?
+
+    def name_previously_was: () -> ::String?
+
+    def name_before_last_save: () -> ::String?
+
+    def name_change_to_be_saved: () -> ::Array[::String?]?
+
+    def name_in_database: () -> ::String?
+
+    def saved_change_to_name: () -> ::Array[::String?]?
+
+    def saved_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_name!: () -> void
+
+    def clear_name_change: () -> void
+
+    def name_before_type_cast: () -> ::String
+
+    def name_for_database: () -> ::String
+
+    def paper_width_mm: () -> ::Integer
+
+    def paper_width_mm=: (::Integer) -> ::Integer
+
+    def paper_width_mm?: () -> bool
+
+    def paper_width_mm_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def paper_width_mm_change: () -> [ ::Integer?, ::Integer? ]
+
+    def paper_width_mm_will_change!: () -> void
+
+    def paper_width_mm_was: () -> ::Integer?
+
+    def paper_width_mm_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def paper_width_mm_previous_change: () -> ::Array[::Integer?]?
+
+    def paper_width_mm_previously_was: () -> ::Integer?
+
+    def paper_width_mm_before_last_save: () -> ::Integer?
+
+    def paper_width_mm_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def paper_width_mm_in_database: () -> ::Integer?
+
+    def saved_change_to_paper_width_mm: () -> ::Array[::Integer?]?
+
+    def saved_change_to_paper_width_mm?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_paper_width_mm?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_paper_width_mm!: () -> void
+
+    def clear_paper_width_mm_change: () -> void
+
+    def paper_width_mm_before_type_cast: () -> ::Integer
+
+    def paper_width_mm_for_database: () -> ::Integer
+
+    def show_cashier_name: () -> bool
+
+    def show_cashier_name=: (bool) -> bool
+
+    def show_cashier_name?: () -> bool
+
+    def show_cashier_name_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_cashier_name_change: () -> [ bool?, bool? ]
+
+    def show_cashier_name_will_change!: () -> void
+
+    def show_cashier_name_was: () -> bool?
+
+    def show_cashier_name_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_cashier_name_previous_change: () -> ::Array[bool?]?
+
+    def show_cashier_name_previously_was: () -> bool?
+
+    def show_cashier_name_before_last_save: () -> bool?
+
+    def show_cashier_name_change_to_be_saved: () -> ::Array[bool?]?
+
+    def show_cashier_name_in_database: () -> bool?
+
+    def saved_change_to_show_cashier_name: () -> ::Array[bool?]?
+
+    def saved_change_to_show_cashier_name?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_show_cashier_name?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_show_cashier_name!: () -> void
+
+    def clear_show_cashier_name_change: () -> void
+
+    def show_cashier_name_before_type_cast: () -> bool
+
+    def show_cashier_name_for_database: () -> bool
+
+    def show_date_time: () -> bool
+
+    def show_date_time=: (bool) -> bool
+
+    def show_date_time?: () -> bool
+
+    def show_date_time_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_date_time_change: () -> [ bool?, bool? ]
+
+    def show_date_time_will_change!: () -> void
+
+    def show_date_time_was: () -> bool?
+
+    def show_date_time_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_date_time_previous_change: () -> ::Array[bool?]?
+
+    def show_date_time_previously_was: () -> bool?
+
+    def show_date_time_before_last_save: () -> bool?
+
+    def show_date_time_change_to_be_saved: () -> ::Array[bool?]?
+
+    def show_date_time_in_database: () -> bool?
+
+    def saved_change_to_show_date_time: () -> ::Array[bool?]?
+
+    def saved_change_to_show_date_time?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_show_date_time?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_show_date_time!: () -> void
+
+    def clear_show_date_time_change: () -> void
+
+    def show_date_time_before_type_cast: () -> bool
+
+    def show_date_time_for_database: () -> bool
+
+    def show_logo: () -> bool
+
+    def show_logo=: (bool) -> bool
+
+    def show_logo?: () -> bool
+
+    def show_logo_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_logo_change: () -> [ bool?, bool? ]
+
+    def show_logo_will_change!: () -> void
+
+    def show_logo_was: () -> bool?
+
+    def show_logo_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_logo_previous_change: () -> ::Array[bool?]?
+
+    def show_logo_previously_was: () -> bool?
+
+    def show_logo_before_last_save: () -> bool?
+
+    def show_logo_change_to_be_saved: () -> ::Array[bool?]?
+
+    def show_logo_in_database: () -> bool?
+
+    def saved_change_to_show_logo: () -> ::Array[bool?]?
+
+    def saved_change_to_show_logo?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_show_logo?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_show_logo!: () -> void
+
+    def clear_show_logo_change: () -> void
+
+    def show_logo_before_type_cast: () -> bool
+
+    def show_logo_for_database: () -> bool
+
+    def show_store_address: () -> bool
+
+    def show_store_address=: (bool) -> bool
+
+    def show_store_address?: () -> bool
+
+    def show_store_address_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_store_address_change: () -> [ bool?, bool? ]
+
+    def show_store_address_will_change!: () -> void
+
+    def show_store_address_was: () -> bool?
+
+    def show_store_address_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_store_address_previous_change: () -> ::Array[bool?]?
+
+    def show_store_address_previously_was: () -> bool?
+
+    def show_store_address_before_last_save: () -> bool?
+
+    def show_store_address_change_to_be_saved: () -> ::Array[bool?]?
+
+    def show_store_address_in_database: () -> bool?
+
+    def saved_change_to_show_store_address: () -> ::Array[bool?]?
+
+    def saved_change_to_show_store_address?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_show_store_address?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_show_store_address!: () -> void
+
+    def clear_show_store_address_change: () -> void
+
+    def show_store_address_before_type_cast: () -> bool
+
+    def show_store_address_for_database: () -> bool
+
+    def show_store_email: () -> bool
+
+    def show_store_email=: (bool) -> bool
+
+    def show_store_email?: () -> bool
+
+    def show_store_email_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_store_email_change: () -> [ bool?, bool? ]
+
+    def show_store_email_will_change!: () -> void
+
+    def show_store_email_was: () -> bool?
+
+    def show_store_email_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_store_email_previous_change: () -> ::Array[bool?]?
+
+    def show_store_email_previously_was: () -> bool?
+
+    def show_store_email_before_last_save: () -> bool?
+
+    def show_store_email_change_to_be_saved: () -> ::Array[bool?]?
+
+    def show_store_email_in_database: () -> bool?
+
+    def saved_change_to_show_store_email: () -> ::Array[bool?]?
+
+    def saved_change_to_show_store_email?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_show_store_email?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_show_store_email!: () -> void
+
+    def clear_show_store_email_change: () -> void
+
+    def show_store_email_before_type_cast: () -> bool
+
+    def show_store_email_for_database: () -> bool
+
+    def show_store_name: () -> bool
+
+    def show_store_name=: (bool) -> bool
+
+    def show_store_name?: () -> bool
+
+    def show_store_name_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_store_name_change: () -> [ bool?, bool? ]
+
+    def show_store_name_will_change!: () -> void
+
+    def show_store_name_was: () -> bool?
+
+    def show_store_name_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_store_name_previous_change: () -> ::Array[bool?]?
+
+    def show_store_name_previously_was: () -> bool?
+
+    def show_store_name_before_last_save: () -> bool?
+
+    def show_store_name_change_to_be_saved: () -> ::Array[bool?]?
+
+    def show_store_name_in_database: () -> bool?
+
+    def saved_change_to_show_store_name: () -> ::Array[bool?]?
+
+    def saved_change_to_show_store_name?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_show_store_name?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_show_store_name!: () -> void
+
+    def clear_show_store_name_change: () -> void
+
+    def show_store_name_before_type_cast: () -> bool
+
+    def show_store_name_for_database: () -> bool
+
+    def show_store_phone: () -> bool
+
+    def show_store_phone=: (bool) -> bool
+
+    def show_store_phone?: () -> bool
+
+    def show_store_phone_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_store_phone_change: () -> [ bool?, bool? ]
+
+    def show_store_phone_will_change!: () -> void
+
+    def show_store_phone_was: () -> bool?
+
+    def show_store_phone_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def show_store_phone_previous_change: () -> ::Array[bool?]?
+
+    def show_store_phone_previously_was: () -> bool?
+
+    def show_store_phone_before_last_save: () -> bool?
+
+    def show_store_phone_change_to_be_saved: () -> ::Array[bool?]?
+
+    def show_store_phone_in_database: () -> bool?
+
+    def saved_change_to_show_store_phone: () -> ::Array[bool?]?
+
+    def saved_change_to_show_store_phone?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_show_store_phone?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_show_store_phone!: () -> void
+
+    def clear_show_store_phone_change: () -> void
+
+    def show_store_phone_before_type_cast: () -> bool
+
+    def show_store_phone_for_database: () -> bool
+
+    def trim_logo: () -> bool
+
+    def trim_logo=: (bool) -> bool
+
+    def trim_logo?: () -> bool
+
+    def trim_logo_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def trim_logo_change: () -> [ bool?, bool? ]
+
+    def trim_logo_will_change!: () -> void
+
+    def trim_logo_was: () -> bool?
+
+    def trim_logo_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def trim_logo_previous_change: () -> ::Array[bool?]?
+
+    def trim_logo_previously_was: () -> bool?
+
+    def trim_logo_before_last_save: () -> bool?
+
+    def trim_logo_change_to_be_saved: () -> ::Array[bool?]?
+
+    def trim_logo_in_database: () -> bool?
+
+    def saved_change_to_trim_logo: () -> ::Array[bool?]?
+
+    def saved_change_to_trim_logo?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_trim_logo?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_trim_logo!: () -> void
+
+    def clear_trim_logo_change: () -> void
+
+    def trim_logo_before_type_cast: () -> bool
+
+    def trim_logo_for_database: () -> bool
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+
+    def section_order: () -> untyped
+
+    def section_order=: (untyped) -> untyped
+
+    def section_order?: () -> bool
+
+    def section_order_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def section_order_change: () -> [ untyped, untyped ]
+
+    def section_order_will_change!: () -> void
+
+    def section_order_was: () -> untyped
+
+    def section_order_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def section_order_previous_change: () -> ::Array[untyped]?
+
+    def section_order_previously_was: () -> untyped
+
+    def section_order_before_last_save: () -> untyped
+
+    def section_order_change_to_be_saved: () -> ::Array[untyped]?
+
+    def section_order_in_database: () -> untyped
+
+    def saved_change_to_section_order: () -> ::Array[untyped]?
+
+    def saved_change_to_section_order?: (?from: untyped, ?to: untyped) -> bool
+
+    def will_save_change_to_section_order?: (?from: untyped, ?to: untyped) -> bool
+
+    def restore_section_order!: () -> void
+
+    def clear_section_order_change: () -> void
+
+    def section_order_before_type_cast: () -> untyped
+
+    def section_order_for_database: () -> untyped
+  end
+  include ::ReceiptTemplate::GeneratedAttributeMethods
+  module ::ReceiptTemplate::GeneratedAliasAttributeMethods
+    include ::ReceiptTemplate::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::ReceiptTemplate::GeneratedAliasAttributeMethods
+  def audits: () -> ::Audited::Audit::ActiveRecord_Associations_CollectionProxy
+  def audits=: (::Audited::Audit::ActiveRecord_Associations_CollectionProxy | ::Array[::Audited::Audit]) -> (::Audited::Audit::ActiveRecord_Associations_CollectionProxy | ::Array[::Audited::Audit])
+  def audit_ids: () -> ::Array[::Integer]
+  def audit_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+  module ::ReceiptTemplate::GeneratedAssociationMethods
+  end
+  include ::ReceiptTemplate::GeneratedAssociationMethods
+
+  def self.active: () -> ::ReceiptTemplate::ActiveRecord_Relation
+
+  module ::ReceiptTemplate::GeneratedRelationMethods
+    def active: () -> ::ReceiptTemplate::ActiveRecord_Relation
+  end
+
+  class ::ReceiptTemplate::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::ReceiptTemplate]
+    include ::ReceiptTemplate::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::ReceiptTemplate, ::Integer]
+  end
+
+  class ::ReceiptTemplate::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::ReceiptTemplate]
+    include ::ReceiptTemplate::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::ReceiptTemplate, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ReceiptTemplate
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ReceiptTemplate]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ReceiptTemplate
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ReceiptTemplate]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::ReceiptTemplate
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::ReceiptTemplate]
+    def reload: () -> ::Array[::ReceiptTemplate]
+
+    def replace: (::Array[::ReceiptTemplate]) -> void
+    def delete: (*::ReceiptTemplate | ::Integer) -> ::Array[::ReceiptTemplate]
+    def destroy: (*::ReceiptTemplate | ::Integer) -> ::Array[::ReceiptTemplate]
+    def <<: (*::ReceiptTemplate | ::Array[::ReceiptTemplate]) -> self
+    def prepend: (*::ReceiptTemplate | ::Array[::ReceiptTemplate]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Audited::Audit < ::ActiveRecord::Base
+end
+class ::Audited::Audit::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+module ::Audited
+end

@@ -1,0 +1,658 @@
+# resolve-type-names: false
+
+class ::CashDrawerSession < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::CashDrawerSession, ::CashDrawerSession::ActiveRecord_Relation, ::Integer]
+
+  module ::CashDrawerSession::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def closed_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def closed_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def closed_at?: () -> bool
+
+    def closed_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def closed_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def closed_at_will_change!: () -> void
+
+    def closed_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def closed_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def closed_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def closed_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def closed_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def closed_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def closed_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_closed_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_closed_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_closed_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_closed_at!: () -> void
+
+    def clear_closed_at_change: () -> void
+
+    def closed_at_before_type_cast: () -> ::Time?
+
+    def closed_at_for_database: () -> ::Time?
+
+    def closed_by_id: () -> ::Integer?
+
+    def closed_by_id=: (::Integer?) -> ::Integer?
+
+    def closed_by_id?: () -> bool
+
+    def closed_by_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def closed_by_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def closed_by_id_will_change!: () -> void
+
+    def closed_by_id_was: () -> ::Integer?
+
+    def closed_by_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def closed_by_id_previous_change: () -> ::Array[::Integer?]?
+
+    def closed_by_id_previously_was: () -> ::Integer?
+
+    def closed_by_id_before_last_save: () -> ::Integer?
+
+    def closed_by_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def closed_by_id_in_database: () -> ::Integer?
+
+    def saved_change_to_closed_by_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_closed_by_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_closed_by_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_closed_by_id!: () -> void
+
+    def clear_closed_by_id_change: () -> void
+
+    def closed_by_id_before_type_cast: () -> ::Integer?
+
+    def closed_by_id_for_database: () -> ::Integer?
+
+    def closing_counts: () -> untyped
+
+    def closing_counts=: (untyped) -> untyped
+
+    def closing_counts?: () -> bool
+
+    def closing_counts_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def closing_counts_change: () -> [ untyped, untyped ]
+
+    def closing_counts_will_change!: () -> void
+
+    def closing_counts_was: () -> untyped
+
+    def closing_counts_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def closing_counts_previous_change: () -> ::Array[untyped]?
+
+    def closing_counts_previously_was: () -> untyped
+
+    def closing_counts_before_last_save: () -> untyped
+
+    def closing_counts_change_to_be_saved: () -> ::Array[untyped]?
+
+    def closing_counts_in_database: () -> untyped
+
+    def saved_change_to_closing_counts: () -> ::Array[untyped]?
+
+    def saved_change_to_closing_counts?: (?from: untyped, ?to: untyped) -> bool
+
+    def will_save_change_to_closing_counts?: (?from: untyped, ?to: untyped) -> bool
+
+    def restore_closing_counts!: () -> void
+
+    def clear_closing_counts_change: () -> void
+
+    def closing_counts_before_type_cast: () -> untyped?
+
+    def closing_counts_for_database: () -> untyped?
+
+    def closing_total_cents: () -> ::Integer?
+
+    def closing_total_cents=: (::Integer?) -> ::Integer?
+
+    def closing_total_cents?: () -> bool
+
+    def closing_total_cents_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def closing_total_cents_change: () -> [ ::Integer?, ::Integer? ]
+
+    def closing_total_cents_will_change!: () -> void
+
+    def closing_total_cents_was: () -> ::Integer?
+
+    def closing_total_cents_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def closing_total_cents_previous_change: () -> ::Array[::Integer?]?
+
+    def closing_total_cents_previously_was: () -> ::Integer?
+
+    def closing_total_cents_before_last_save: () -> ::Integer?
+
+    def closing_total_cents_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def closing_total_cents_in_database: () -> ::Integer?
+
+    def saved_change_to_closing_total_cents: () -> ::Array[::Integer?]?
+
+    def saved_change_to_closing_total_cents?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_closing_total_cents?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_closing_total_cents!: () -> void
+
+    def clear_closing_total_cents_change: () -> void
+
+    def closing_total_cents_before_type_cast: () -> ::Integer?
+
+    def closing_total_cents_for_database: () -> ::Integer?
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def notes: () -> ::String?
+
+    def notes=: (::String?) -> ::String?
+
+    def notes?: () -> bool
+
+    def notes_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def notes_change: () -> [ ::String?, ::String? ]
+
+    def notes_will_change!: () -> void
+
+    def notes_was: () -> ::String?
+
+    def notes_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def notes_previous_change: () -> ::Array[::String?]?
+
+    def notes_previously_was: () -> ::String?
+
+    def notes_before_last_save: () -> ::String?
+
+    def notes_change_to_be_saved: () -> ::Array[::String?]?
+
+    def notes_in_database: () -> ::String?
+
+    def saved_change_to_notes: () -> ::Array[::String?]?
+
+    def saved_change_to_notes?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_notes?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_notes!: () -> void
+
+    def clear_notes_change: () -> void
+
+    def notes_before_type_cast: () -> ::String?
+
+    def notes_for_database: () -> ::String?
+
+    def opened_at: () -> ::ActiveSupport::TimeWithZone
+
+    def opened_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def opened_at?: () -> bool
+
+    def opened_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def opened_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def opened_at_will_change!: () -> void
+
+    def opened_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def opened_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def opened_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def opened_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def opened_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def opened_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def opened_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_opened_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_opened_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_opened_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_opened_at!: () -> void
+
+    def clear_opened_at_change: () -> void
+
+    def opened_at_before_type_cast: () -> ::Time
+
+    def opened_at_for_database: () -> ::Time
+
+    def opened_by_id: () -> ::Integer
+
+    def opened_by_id=: (::Integer) -> ::Integer
+
+    def opened_by_id?: () -> bool
+
+    def opened_by_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def opened_by_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def opened_by_id_will_change!: () -> void
+
+    def opened_by_id_was: () -> ::Integer?
+
+    def opened_by_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def opened_by_id_previous_change: () -> ::Array[::Integer?]?
+
+    def opened_by_id_previously_was: () -> ::Integer?
+
+    def opened_by_id_before_last_save: () -> ::Integer?
+
+    def opened_by_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def opened_by_id_in_database: () -> ::Integer?
+
+    def saved_change_to_opened_by_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_opened_by_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_opened_by_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_opened_by_id!: () -> void
+
+    def clear_opened_by_id_change: () -> void
+
+    def opened_by_id_before_type_cast: () -> ::Integer
+
+    def opened_by_id_for_database: () -> ::Integer
+
+    def opening_counts: () -> untyped
+
+    def opening_counts=: (untyped) -> untyped
+
+    def opening_counts?: () -> bool
+
+    def opening_counts_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def opening_counts_change: () -> [ untyped, untyped ]
+
+    def opening_counts_will_change!: () -> void
+
+    def opening_counts_was: () -> untyped
+
+    def opening_counts_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def opening_counts_previous_change: () -> ::Array[untyped]?
+
+    def opening_counts_previously_was: () -> untyped
+
+    def opening_counts_before_last_save: () -> untyped
+
+    def opening_counts_change_to_be_saved: () -> ::Array[untyped]?
+
+    def opening_counts_in_database: () -> untyped
+
+    def saved_change_to_opening_counts: () -> ::Array[untyped]?
+
+    def saved_change_to_opening_counts?: (?from: untyped, ?to: untyped) -> bool
+
+    def will_save_change_to_opening_counts?: (?from: untyped, ?to: untyped) -> bool
+
+    def restore_opening_counts!: () -> void
+
+    def clear_opening_counts_change: () -> void
+
+    def opening_counts_before_type_cast: () -> untyped
+
+    def opening_counts_for_database: () -> untyped
+
+    def opening_total_cents: () -> ::Integer
+
+    def opening_total_cents=: (::Integer) -> ::Integer
+
+    def opening_total_cents?: () -> bool
+
+    def opening_total_cents_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def opening_total_cents_change: () -> [ ::Integer?, ::Integer? ]
+
+    def opening_total_cents_will_change!: () -> void
+
+    def opening_total_cents_was: () -> ::Integer?
+
+    def opening_total_cents_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def opening_total_cents_previous_change: () -> ::Array[::Integer?]?
+
+    def opening_total_cents_previously_was: () -> ::Integer?
+
+    def opening_total_cents_before_last_save: () -> ::Integer?
+
+    def opening_total_cents_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def opening_total_cents_in_database: () -> ::Integer?
+
+    def saved_change_to_opening_total_cents: () -> ::Array[::Integer?]?
+
+    def saved_change_to_opening_total_cents?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_opening_total_cents?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_opening_total_cents!: () -> void
+
+    def clear_opening_total_cents_change: () -> void
+
+    def opening_total_cents_before_type_cast: () -> ::Integer
+
+    def opening_total_cents_for_database: () -> ::Integer
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+
+    def discrepancy_cents: () -> ::Integer?
+
+    def discrepancy_cents=: (::Integer?) -> ::Integer?
+
+    def discrepancy_cents?: () -> bool
+
+    def discrepancy_cents_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def discrepancy_cents_change: () -> [ ::Integer?, ::Integer? ]
+
+    def discrepancy_cents_will_change!: () -> void
+
+    def discrepancy_cents_was: () -> ::Integer?
+
+    def discrepancy_cents_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def discrepancy_cents_previous_change: () -> ::Array[::Integer?]?
+
+    def discrepancy_cents_previously_was: () -> ::Integer?
+
+    def discrepancy_cents_before_last_save: () -> ::Integer?
+
+    def discrepancy_cents_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def discrepancy_cents_in_database: () -> ::Integer?
+
+    def saved_change_to_discrepancy_cents: () -> ::Array[::Integer?]?
+
+    def saved_change_to_discrepancy_cents?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_discrepancy_cents?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_discrepancy_cents!: () -> void
+
+    def clear_discrepancy_cents_change: () -> void
+
+    def discrepancy_cents_before_type_cast: () -> ::Integer?
+
+    def discrepancy_cents_for_database: () -> ::Integer?
+  end
+  include ::CashDrawerSession::GeneratedAttributeMethods
+  module ::CashDrawerSession::GeneratedAliasAttributeMethods
+    include ::CashDrawerSession::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::CashDrawerSession::GeneratedAliasAttributeMethods
+  def audits: () -> ::Audited::Audit::ActiveRecord_Associations_CollectionProxy
+  def audits=: (::Audited::Audit::ActiveRecord_Associations_CollectionProxy | ::Array[::Audited::Audit]) -> (::Audited::Audit::ActiveRecord_Associations_CollectionProxy | ::Array[::Audited::Audit])
+  def audit_ids: () -> ::Array[::Integer]
+  def audit_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def orders: () -> ::Order::ActiveRecord_Associations_CollectionProxy
+  def orders=: (::Order::ActiveRecord_Associations_CollectionProxy | ::Array[::Order]) -> (::Order::ActiveRecord_Associations_CollectionProxy | ::Array[::Order])
+  def order_ids: () -> ::Array[::Integer]
+  def order_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+  def terminal_reconciliation: () -> ::TerminalReconciliation?
+  def terminal_reconciliation=: (::TerminalReconciliation?) -> ::TerminalReconciliation?
+  def build_terminal_reconciliation: (?untyped) -> ::TerminalReconciliation
+  def create_terminal_reconciliation: (?untyped) -> ::TerminalReconciliation
+  def create_terminal_reconciliation!: (?untyped) -> ::TerminalReconciliation
+  def reload_terminal_reconciliation: () -> ::TerminalReconciliation?
+  def opened_by: () -> ::User
+  def opened_by=: (::User?) -> ::User?
+  def reload_opened_by: () -> ::User?
+  def build_opened_by: (?untyped) -> ::User
+  def create_opened_by: (?untyped) -> ::User
+  def create_opened_by!: (?untyped) -> ::User
+  def closed_by: () -> ::User?
+  def closed_by=: (::User?) -> ::User?
+  def reload_closed_by: () -> ::User?
+  def build_closed_by: (?untyped) -> ::User
+  def create_closed_by: (?untyped) -> ::User
+  def create_closed_by!: (?untyped) -> ::User
+
+  module ::CashDrawerSession::GeneratedAssociationMethods
+  end
+  include ::CashDrawerSession::GeneratedAssociationMethods
+
+  def self.open: () -> ::CashDrawerSession::ActiveRecord_Relation
+  def self.closed: () -> ::CashDrawerSession::ActiveRecord_Relation
+  def self.recent: () -> ::CashDrawerSession::ActiveRecord_Relation
+
+  module ::CashDrawerSession::GeneratedRelationMethods
+    def open: () -> ::CashDrawerSession::ActiveRecord_Relation
+
+    def closed: () -> ::CashDrawerSession::ActiveRecord_Relation
+
+    def recent: () -> ::CashDrawerSession::ActiveRecord_Relation
+  end
+
+  class ::CashDrawerSession::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::CashDrawerSession]
+    include ::CashDrawerSession::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::CashDrawerSession, ::Integer]
+  end
+
+  class ::CashDrawerSession::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::CashDrawerSession]
+    include ::CashDrawerSession::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::CashDrawerSession, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::CashDrawerSession
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::CashDrawerSession]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::CashDrawerSession
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::CashDrawerSession]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::CashDrawerSession
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::CashDrawerSession]
+    def reload: () -> ::Array[::CashDrawerSession]
+
+    def replace: (::Array[::CashDrawerSession]) -> void
+    def delete: (*::CashDrawerSession | ::Integer) -> ::Array[::CashDrawerSession]
+    def destroy: (*::CashDrawerSession | ::Integer) -> ::Array[::CashDrawerSession]
+    def <<: (*::CashDrawerSession | ::Array[::CashDrawerSession]) -> self
+    def prepend: (*::CashDrawerSession | ::Array[::CashDrawerSession]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Audited::Audit < ::ActiveRecord::Base
+end
+class ::Audited::Audit::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Order < ::ApplicationRecord
+end
+class ::Order::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::TerminalReconciliation < ::ApplicationRecord
+end
+class ::User < ::ApplicationRecord
+end
+module ::Audited
+end

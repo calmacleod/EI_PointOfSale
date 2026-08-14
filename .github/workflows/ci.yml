@@ -36,6 +36,24 @@ jobs:
       
       - name: Scan for known security vulnerabilities in gems used
         run: bin/bundler-audit
+
+  typecheck:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+
+      - name: Install RBS collection
+        run: bundle exec rbs collection install
+
+      - name: Check order lifecycle services
+        run: bin/steep check
       
   lint:
     runs-on: ubuntu-latest

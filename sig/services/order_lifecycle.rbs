@@ -1,0 +1,71 @@
+module Orders
+  type event_data = Hash[Symbol | String, untyped]
+
+  class Hold
+    def self.call: (order: Order, actor: User) -> Order
+  end
+
+  class Cancel
+    def self.call: (order: Order, actor: User) -> Order
+  end
+
+  class Complete
+    class Result
+      attr_reader success?: bool
+      attr_reader order: Order
+      attr_reader errors: Array[String]
+
+      def initialize: (success?: bool, order: Order, errors: Array[String]) -> void
+    end
+
+    @order: Order
+    @actor: User
+    @errors: Array[String]
+
+    def self.call: (order: Order, actor: User) -> Result
+    def initialize: (order: Order, actor: User) -> void
+    def call: () -> Result
+
+    private
+
+    def validate!: () -> void
+    def failure: () -> Result
+    def adjust_stock_levels: () -> untyped
+    def activate_gift_certificates: () -> untyped
+    def finalize_order: () -> untyped
+    def enqueue_inventory_sync: () -> untyped
+    def record_event: () -> OrderEvent
+  end
+
+  class Resume
+    def self.call: (order: Order, actor: User) -> Order
+  end
+
+  class RecordEvent
+    def self.call: (order: Order, event_type: String, actor: User, ?data: event_data) -> OrderEvent
+  end
+end
+
+module ShopifySync
+  class SyncCommittedJob
+    def self.perform_later: (Integer, Integer) -> untyped
+  end
+
+  class SyncInventoryJob
+    def self.perform_later: (Integer) -> untyped
+  end
+end
+
+class CashDrawerSession
+  def self.current: () -> CashDrawerSession?
+end
+
+class Order
+  def amount_paid: () -> BigDecimal
+  def amount_remaining: () -> (BigDecimal | Integer)
+  def payment_complete?: () -> bool
+end
+
+class OrderPayment
+  def display_method: () -> String
+end

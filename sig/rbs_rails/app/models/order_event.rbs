@@ -1,0 +1,351 @@
+# resolve-type-names: false
+
+class ::OrderEvent < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::OrderEvent, ::OrderEvent::ActiveRecord_Relation, ::Integer]
+
+  module ::OrderEvent::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def actor_id: () -> ::Integer
+
+    def actor_id=: (::Integer) -> ::Integer
+
+    def actor_id?: () -> bool
+
+    def actor_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def actor_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def actor_id_will_change!: () -> void
+
+    def actor_id_was: () -> ::Integer?
+
+    def actor_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def actor_id_previous_change: () -> ::Array[::Integer?]?
+
+    def actor_id_previously_was: () -> ::Integer?
+
+    def actor_id_before_last_save: () -> ::Integer?
+
+    def actor_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def actor_id_in_database: () -> ::Integer?
+
+    def saved_change_to_actor_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_actor_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_actor_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_actor_id!: () -> void
+
+    def clear_actor_id_change: () -> void
+
+    def actor_id_before_type_cast: () -> ::Integer
+
+    def actor_id_for_database: () -> ::Integer
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def data: () -> untyped
+
+    def data=: (untyped) -> untyped
+
+    def data?: () -> bool
+
+    def data_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def data_change: () -> [ untyped, untyped ]
+
+    def data_will_change!: () -> void
+
+    def data_was: () -> untyped
+
+    def data_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def data_previous_change: () -> ::Array[untyped]?
+
+    def data_previously_was: () -> untyped
+
+    def data_before_last_save: () -> untyped
+
+    def data_change_to_be_saved: () -> ::Array[untyped]?
+
+    def data_in_database: () -> untyped
+
+    def saved_change_to_data: () -> ::Array[untyped]?
+
+    def saved_change_to_data?: (?from: untyped, ?to: untyped) -> bool
+
+    def will_save_change_to_data?: (?from: untyped, ?to: untyped) -> bool
+
+    def restore_data!: () -> void
+
+    def clear_data_change: () -> void
+
+    def data_before_type_cast: () -> untyped?
+
+    def data_for_database: () -> untyped?
+
+    def event_type: () -> ::String
+
+    def event_type=: (::String) -> ::String
+
+    def event_type?: () -> bool
+
+    def event_type_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def event_type_change: () -> [ ::String?, ::String? ]
+
+    def event_type_will_change!: () -> void
+
+    def event_type_was: () -> ::String?
+
+    def event_type_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def event_type_previous_change: () -> ::Array[::String?]?
+
+    def event_type_previously_was: () -> ::String?
+
+    def event_type_before_last_save: () -> ::String?
+
+    def event_type_change_to_be_saved: () -> ::Array[::String?]?
+
+    def event_type_in_database: () -> ::String?
+
+    def saved_change_to_event_type: () -> ::Array[::String?]?
+
+    def saved_change_to_event_type?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_event_type?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_event_type!: () -> void
+
+    def clear_event_type_change: () -> void
+
+    def event_type_before_type_cast: () -> ::String
+
+    def event_type_for_database: () -> ::String
+
+    def order_id: () -> ::Integer
+
+    def order_id=: (::Integer) -> ::Integer
+
+    def order_id?: () -> bool
+
+    def order_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def order_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def order_id_will_change!: () -> void
+
+    def order_id_was: () -> ::Integer?
+
+    def order_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def order_id_previous_change: () -> ::Array[::Integer?]?
+
+    def order_id_previously_was: () -> ::Integer?
+
+    def order_id_before_last_save: () -> ::Integer?
+
+    def order_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def order_id_in_database: () -> ::Integer?
+
+    def saved_change_to_order_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_order_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_order_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_order_id!: () -> void
+
+    def clear_order_id_change: () -> void
+
+    def order_id_before_type_cast: () -> ::Integer
+
+    def order_id_for_database: () -> ::Integer
+  end
+  include ::OrderEvent::GeneratedAttributeMethods
+  module ::OrderEvent::GeneratedAliasAttributeMethods
+    include ::OrderEvent::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::OrderEvent::GeneratedAliasAttributeMethods
+
+  def order: () -> ::Order
+  def order=: (::Order?) -> ::Order?
+  def reload_order: () -> ::Order?
+  def build_order: (?untyped) -> ::Order
+  def create_order: (?untyped) -> ::Order
+  def create_order!: (?untyped) -> ::Order
+  def actor: () -> ::User
+  def actor=: (::User?) -> ::User?
+  def reload_actor: () -> ::User?
+  def build_actor: (?untyped) -> ::User
+  def create_actor: (?untyped) -> ::User
+  def create_actor!: (?untyped) -> ::User
+
+  module ::OrderEvent::GeneratedAssociationMethods
+  end
+  include ::OrderEvent::GeneratedAssociationMethods
+
+  def self.chronological: () -> ::OrderEvent::ActiveRecord_Relation
+  def self.recent: () -> ::OrderEvent::ActiveRecord_Relation
+
+  module ::OrderEvent::GeneratedRelationMethods
+    def chronological: () -> ::OrderEvent::ActiveRecord_Relation
+
+    def recent: () -> ::OrderEvent::ActiveRecord_Relation
+  end
+
+  class ::OrderEvent::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::OrderEvent]
+    include ::OrderEvent::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::OrderEvent, ::Integer]
+  end
+
+  class ::OrderEvent::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::OrderEvent]
+    include ::OrderEvent::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::OrderEvent, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrderEvent
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrderEvent]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrderEvent
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrderEvent]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrderEvent
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrderEvent]
+    def reload: () -> ::Array[::OrderEvent]
+
+    def replace: (::Array[::OrderEvent]) -> void
+    def delete: (*::OrderEvent | ::Integer) -> ::Array[::OrderEvent]
+    def destroy: (*::OrderEvent | ::Integer) -> ::Array[::OrderEvent]
+    def <<: (*::OrderEvent | ::Array[::OrderEvent]) -> self
+    def prepend: (*::OrderEvent | ::Array[::OrderEvent]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Order < ::ApplicationRecord
+end
+class ::User < ::ApplicationRecord
+end

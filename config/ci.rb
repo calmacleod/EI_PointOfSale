@@ -4,6 +4,7 @@ CI.run do
   step "Setup", "bin/setup --skip-server --skip-docker --skip-seed"
 
   step "Style: Ruby", "bin/rubocop"
+  step "Types: Order lifecycle services", "bin/steep check"
   step "Style: ERB", "bundle exec herb analyze app"
   step "Style: ERB Lint", "npm run herb:lint"
   step "Style: Tailwind", "npm run tailwind:lint"

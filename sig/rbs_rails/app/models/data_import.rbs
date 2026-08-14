@@ -1,0 +1,643 @@
+# resolve-type-names: false
+
+class ::DataImport < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::DataImport, ::DataImport::ActiveRecord_Relation, ::Integer]
+
+  module ::DataImport::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def completed_at: () -> ::ActiveSupport::TimeWithZone?
+
+    def completed_at=: (::ActiveSupport::TimeWithZone?) -> ::ActiveSupport::TimeWithZone?
+
+    def completed_at?: () -> bool
+
+    def completed_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def completed_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def completed_at_will_change!: () -> void
+
+    def completed_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def completed_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def completed_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def completed_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def completed_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def completed_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def completed_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_completed_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_completed_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_completed_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_completed_at!: () -> void
+
+    def clear_completed_at_change: () -> void
+
+    def completed_at_before_type_cast: () -> ::Time?
+
+    def completed_at_for_database: () -> ::Time?
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def created_count: () -> ::Integer?
+
+    def created_count=: (::Integer?) -> ::Integer?
+
+    def created_count?: () -> bool
+
+    def created_count_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def created_count_change: () -> [ ::Integer?, ::Integer? ]
+
+    def created_count_will_change!: () -> void
+
+    def created_count_was: () -> ::Integer?
+
+    def created_count_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def created_count_previous_change: () -> ::Array[::Integer?]?
+
+    def created_count_previously_was: () -> ::Integer?
+
+    def created_count_before_last_save: () -> ::Integer?
+
+    def created_count_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def created_count_in_database: () -> ::Integer?
+
+    def saved_change_to_created_count: () -> ::Array[::Integer?]?
+
+    def saved_change_to_created_count?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_created_count?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_created_count!: () -> void
+
+    def clear_created_count_change: () -> void
+
+    def created_count_before_type_cast: () -> ::Integer?
+
+    def created_count_for_database: () -> ::Integer?
+
+    def error_count: () -> ::Integer?
+
+    def error_count=: (::Integer?) -> ::Integer?
+
+    def error_count?: () -> bool
+
+    def error_count_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def error_count_change: () -> [ ::Integer?, ::Integer? ]
+
+    def error_count_will_change!: () -> void
+
+    def error_count_was: () -> ::Integer?
+
+    def error_count_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def error_count_previous_change: () -> ::Array[::Integer?]?
+
+    def error_count_previously_was: () -> ::Integer?
+
+    def error_count_before_last_save: () -> ::Integer?
+
+    def error_count_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def error_count_in_database: () -> ::Integer?
+
+    def saved_change_to_error_count: () -> ::Array[::Integer?]?
+
+    def saved_change_to_error_count?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_error_count?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_error_count!: () -> void
+
+    def clear_error_count_change: () -> void
+
+    def error_count_before_type_cast: () -> ::Integer?
+
+    def error_count_for_database: () -> ::Integer?
+
+    def errors_log: () -> untyped
+
+    def errors_log=: (untyped) -> untyped
+
+    def errors_log?: () -> bool
+
+    def errors_log_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def errors_log_change: () -> [ untyped, untyped ]
+
+    def errors_log_will_change!: () -> void
+
+    def errors_log_was: () -> untyped
+
+    def errors_log_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def errors_log_previous_change: () -> ::Array[untyped]?
+
+    def errors_log_previously_was: () -> untyped
+
+    def errors_log_before_last_save: () -> untyped
+
+    def errors_log_change_to_be_saved: () -> ::Array[untyped]?
+
+    def errors_log_in_database: () -> untyped
+
+    def saved_change_to_errors_log: () -> ::Array[untyped]?
+
+    def saved_change_to_errors_log?: (?from: untyped, ?to: untyped) -> bool
+
+    def will_save_change_to_errors_log?: (?from: untyped, ?to: untyped) -> bool
+
+    def restore_errors_log!: () -> void
+
+    def clear_errors_log_change: () -> void
+
+    def errors_log_before_type_cast: () -> untyped?
+
+    def errors_log_for_database: () -> untyped?
+
+    def file_name: () -> ::String?
+
+    def file_name=: (::String?) -> ::String?
+
+    def file_name?: () -> bool
+
+    def file_name_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def file_name_change: () -> [ ::String?, ::String? ]
+
+    def file_name_will_change!: () -> void
+
+    def file_name_was: () -> ::String?
+
+    def file_name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def file_name_previous_change: () -> ::Array[::String?]?
+
+    def file_name_previously_was: () -> ::String?
+
+    def file_name_before_last_save: () -> ::String?
+
+    def file_name_change_to_be_saved: () -> ::Array[::String?]?
+
+    def file_name_in_database: () -> ::String?
+
+    def saved_change_to_file_name: () -> ::Array[::String?]?
+
+    def saved_change_to_file_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_file_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_file_name!: () -> void
+
+    def clear_file_name_change: () -> void
+
+    def file_name_before_type_cast: () -> ::String?
+
+    def file_name_for_database: () -> ::String?
+
+    def imported_by_id: () -> ::Integer?
+
+    def imported_by_id=: (::Integer?) -> ::Integer?
+
+    def imported_by_id?: () -> bool
+
+    def imported_by_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def imported_by_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def imported_by_id_will_change!: () -> void
+
+    def imported_by_id_was: () -> ::Integer?
+
+    def imported_by_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def imported_by_id_previous_change: () -> ::Array[::Integer?]?
+
+    def imported_by_id_previously_was: () -> ::Integer?
+
+    def imported_by_id_before_last_save: () -> ::Integer?
+
+    def imported_by_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def imported_by_id_in_database: () -> ::Integer?
+
+    def saved_change_to_imported_by_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_imported_by_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_imported_by_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_imported_by_id!: () -> void
+
+    def clear_imported_by_id_change: () -> void
+
+    def imported_by_id_before_type_cast: () -> ::Integer?
+
+    def imported_by_id_for_database: () -> ::Integer?
+
+    def processed_rows: () -> ::Integer?
+
+    def processed_rows=: (::Integer?) -> ::Integer?
+
+    def processed_rows?: () -> bool
+
+    def processed_rows_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def processed_rows_change: () -> [ ::Integer?, ::Integer? ]
+
+    def processed_rows_will_change!: () -> void
+
+    def processed_rows_was: () -> ::Integer?
+
+    def processed_rows_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def processed_rows_previous_change: () -> ::Array[::Integer?]?
+
+    def processed_rows_previously_was: () -> ::Integer?
+
+    def processed_rows_before_last_save: () -> ::Integer?
+
+    def processed_rows_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def processed_rows_in_database: () -> ::Integer?
+
+    def saved_change_to_processed_rows: () -> ::Array[::Integer?]?
+
+    def saved_change_to_processed_rows?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_processed_rows?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_processed_rows!: () -> void
+
+    def clear_processed_rows_change: () -> void
+
+    def processed_rows_before_type_cast: () -> ::Integer?
+
+    def processed_rows_for_database: () -> ::Integer?
+
+    def status: () -> ::String?
+
+    def status=: (::String?) -> ::String?
+
+    def status?: () -> bool
+
+    def status_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def status_change: () -> [ ::String?, ::String? ]
+
+    def status_will_change!: () -> void
+
+    def status_was: () -> ::String?
+
+    def status_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def status_previous_change: () -> ::Array[::String?]?
+
+    def status_previously_was: () -> ::String?
+
+    def status_before_last_save: () -> ::String?
+
+    def status_change_to_be_saved: () -> ::Array[::String?]?
+
+    def status_in_database: () -> ::String?
+
+    def saved_change_to_status: () -> ::Array[::String?]?
+
+    def saved_change_to_status?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_status?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_status!: () -> void
+
+    def clear_status_change: () -> void
+
+    def status_before_type_cast: () -> ::String?
+
+    def status_for_database: () -> ::String?
+
+    def total_rows: () -> ::Integer?
+
+    def total_rows=: (::Integer?) -> ::Integer?
+
+    def total_rows?: () -> bool
+
+    def total_rows_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def total_rows_change: () -> [ ::Integer?, ::Integer? ]
+
+    def total_rows_will_change!: () -> void
+
+    def total_rows_was: () -> ::Integer?
+
+    def total_rows_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def total_rows_previous_change: () -> ::Array[::Integer?]?
+
+    def total_rows_previously_was: () -> ::Integer?
+
+    def total_rows_before_last_save: () -> ::Integer?
+
+    def total_rows_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def total_rows_in_database: () -> ::Integer?
+
+    def saved_change_to_total_rows: () -> ::Array[::Integer?]?
+
+    def saved_change_to_total_rows?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_total_rows?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_total_rows!: () -> void
+
+    def clear_total_rows_change: () -> void
+
+    def total_rows_before_type_cast: () -> ::Integer?
+
+    def total_rows_for_database: () -> ::Integer?
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+
+    def updated_count: () -> ::Integer?
+
+    def updated_count=: (::Integer?) -> ::Integer?
+
+    def updated_count?: () -> bool
+
+    def updated_count_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def updated_count_change: () -> [ ::Integer?, ::Integer? ]
+
+    def updated_count_will_change!: () -> void
+
+    def updated_count_was: () -> ::Integer?
+
+    def updated_count_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def updated_count_previous_change: () -> ::Array[::Integer?]?
+
+    def updated_count_previously_was: () -> ::Integer?
+
+    def updated_count_before_last_save: () -> ::Integer?
+
+    def updated_count_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def updated_count_in_database: () -> ::Integer?
+
+    def saved_change_to_updated_count: () -> ::Array[::Integer?]?
+
+    def saved_change_to_updated_count?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_updated_count?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_updated_count!: () -> void
+
+    def clear_updated_count_change: () -> void
+
+    def updated_count_before_type_cast: () -> ::Integer?
+
+    def updated_count_for_database: () -> ::Integer?
+  end
+  include ::DataImport::GeneratedAttributeMethods
+  module ::DataImport::GeneratedAliasAttributeMethods
+    include ::DataImport::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::DataImport::GeneratedAliasAttributeMethods
+
+  def file_attachment: () -> ::ActiveStorage::Attachment?
+  def file_attachment=: (::ActiveStorage::Attachment?) -> ::ActiveStorage::Attachment?
+  def build_file_attachment: (?untyped) -> ::ActiveStorage::Attachment
+  def create_file_attachment: (?untyped) -> ::ActiveStorage::Attachment
+  def create_file_attachment!: (?untyped) -> ::ActiveStorage::Attachment
+  def reload_file_attachment: () -> ::ActiveStorage::Attachment?
+  def file_blob: () -> ::ActiveStorage::Blob?
+  def file_blob=: (::ActiveStorage::Blob?) -> ::ActiveStorage::Blob?
+  def build_file_blob: (?untyped) -> ::ActiveStorage::Blob
+  def create_file_blob: (?untyped) -> ::ActiveStorage::Blob
+  def create_file_blob!: (?untyped) -> ::ActiveStorage::Blob
+  def reload_file_blob: () -> ::ActiveStorage::Blob?
+  def imported_by: () -> ::User?
+  def imported_by=: (::User?) -> ::User?
+  def reload_imported_by: () -> ::User?
+  def build_imported_by: (?untyped) -> ::User
+  def create_imported_by: (?untyped) -> ::User
+  def create_imported_by!: (?untyped) -> ::User
+
+  module ::DataImport::GeneratedAssociationMethods
+    def file: () -> ::ActiveStorage::Attached::One
+
+    def file=: (::ActionDispatch::Http::UploadedFile) -> ::ActionDispatch::Http::UploadedFile
+             | (::Rack::Test::UploadedFile) -> ::Rack::Test::UploadedFile
+             | (::ActiveStorage::Blob) -> ::ActiveStorage::Blob
+             | (::String) -> ::String
+             | ({ io: ::IO, filename: ::String, content_type: ::String? }) -> { io: ::IO, filename: ::String, content_type: ::String? }
+             | (nil) -> nil
+  end
+  include ::DataImport::GeneratedAssociationMethods
+
+  def self.recent: () -> ::DataImport::ActiveRecord_Relation
+  def self.with_attached_file: () -> ::DataImport::ActiveRecord_Relation
+
+  module ::DataImport::GeneratedRelationMethods
+    def recent: () -> ::DataImport::ActiveRecord_Relation
+
+    def with_attached_file: () -> ::DataImport::ActiveRecord_Relation
+  end
+
+  class ::DataImport::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::DataImport]
+    include ::DataImport::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::DataImport, ::Integer]
+  end
+
+  class ::DataImport::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::DataImport]
+    include ::DataImport::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::DataImport, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::DataImport
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::DataImport]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::DataImport
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::DataImport]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::DataImport
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::DataImport]
+    def reload: () -> ::Array[::DataImport]
+
+    def replace: (::Array[::DataImport]) -> void
+    def delete: (*::DataImport | ::Integer) -> ::Array[::DataImport]
+    def destroy: (*::DataImport | ::Integer) -> ::Array[::DataImport]
+    def <<: (*::DataImport | ::Array[::DataImport]) -> self
+    def prepend: (*::DataImport | ::Array[::DataImport]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::User < ::ApplicationRecord
+end

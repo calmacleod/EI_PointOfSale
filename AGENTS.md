@@ -16,6 +16,7 @@ bin/rails test path/to/file:42   # Single test
 bin/rails test:system            # System/browser tests
 bin/rubocop                      # Lint
 bin/rubocop -a                   # Auto-fix safe violations
+bin/steep check                  # Type-check the adopted service-layer slice
 bin/ci                           # Full CI pipeline
 npm run herb:lint                # ERB lint (@herb-tools/linter)
 npm run tailwind:lint            # Tailwind class lint
@@ -65,6 +66,13 @@ env RAILS_ENV=test bin/rails db:seed:replant  # Reset test DB
 - Reusable screen components live under `app/javascript/pages/components/`
 - Tailwind utility classes and shared `ui-*` component classes are defined from the Vite entrypoint
 - Pagy remains server-owned and is serialized into Inertia pagination props
+
+## Ruby Type Checking
+
+- Steep checks only the service files listed in `Steepfile`; the rest of the Rails app remains unchecked Ruby
+- Application signatures live in `sig/services/`; Rails-generated model signatures live in `sig/rbs_rails/`
+- Run `bundle exec rbs_rails models` after schema or model macro changes, then run `bin/steep check`
+- Run `bundle exec rbs collection update` after changing Ruby dependencies
 
 ## Offline Lookup
 

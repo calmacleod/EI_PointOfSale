@@ -1,0 +1,768 @@
+# resolve-type-names: false
+
+class ::OrderLine < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::OrderLine, ::OrderLine::ActiveRecord_Relation, ::Integer]
+
+  module ::OrderLine::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def code: () -> ::String?
+
+    def code=: (::String?) -> ::String?
+
+    def code?: () -> bool
+
+    def code_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def code_change: () -> [ ::String?, ::String? ]
+
+    def code_will_change!: () -> void
+
+    def code_was: () -> ::String?
+
+    def code_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def code_previous_change: () -> ::Array[::String?]?
+
+    def code_previously_was: () -> ::String?
+
+    def code_before_last_save: () -> ::String?
+
+    def code_change_to_be_saved: () -> ::Array[::String?]?
+
+    def code_in_database: () -> ::String?
+
+    def saved_change_to_code: () -> ::Array[::String?]?
+
+    def saved_change_to_code?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_code?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_code!: () -> void
+
+    def clear_code_change: () -> void
+
+    def code_before_type_cast: () -> ::String?
+
+    def code_for_database: () -> ::String?
+
+    def created_at: () -> ::ActiveSupport::TimeWithZone
+
+    def created_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def created_at?: () -> bool
+
+    def created_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def created_at_will_change!: () -> void
+
+    def created_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def created_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def created_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def created_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_created_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_created_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_created_at!: () -> void
+
+    def clear_created_at_change: () -> void
+
+    def created_at_before_type_cast: () -> ::Time
+
+    def created_at_for_database: () -> ::Time
+
+    def discount_amount: () -> ::BigDecimal?
+
+    def discount_amount=: (::BigDecimal?) -> ::BigDecimal?
+
+    def discount_amount?: () -> bool
+
+    def discount_amount_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def discount_amount_change: () -> [ ::BigDecimal?, ::BigDecimal? ]
+
+    def discount_amount_will_change!: () -> void
+
+    def discount_amount_was: () -> ::BigDecimal?
+
+    def discount_amount_previously_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def discount_amount_previous_change: () -> ::Array[::BigDecimal?]?
+
+    def discount_amount_previously_was: () -> ::BigDecimal?
+
+    def discount_amount_before_last_save: () -> ::BigDecimal?
+
+    def discount_amount_change_to_be_saved: () -> ::Array[::BigDecimal?]?
+
+    def discount_amount_in_database: () -> ::BigDecimal?
+
+    def saved_change_to_discount_amount: () -> ::Array[::BigDecimal?]?
+
+    def saved_change_to_discount_amount?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def will_save_change_to_discount_amount?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def restore_discount_amount!: () -> void
+
+    def clear_discount_amount_change: () -> void
+
+    def discount_amount_before_type_cast: () -> ::BigDecimal?
+
+    def discount_amount_for_database: () -> ::BigDecimal?
+
+    def line_total: () -> ::BigDecimal
+
+    def line_total=: (::BigDecimal) -> ::BigDecimal
+
+    def line_total?: () -> bool
+
+    def line_total_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def line_total_change: () -> [ ::BigDecimal?, ::BigDecimal? ]
+
+    def line_total_will_change!: () -> void
+
+    def line_total_was: () -> ::BigDecimal?
+
+    def line_total_previously_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def line_total_previous_change: () -> ::Array[::BigDecimal?]?
+
+    def line_total_previously_was: () -> ::BigDecimal?
+
+    def line_total_before_last_save: () -> ::BigDecimal?
+
+    def line_total_change_to_be_saved: () -> ::Array[::BigDecimal?]?
+
+    def line_total_in_database: () -> ::BigDecimal?
+
+    def saved_change_to_line_total: () -> ::Array[::BigDecimal?]?
+
+    def saved_change_to_line_total?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def will_save_change_to_line_total?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def restore_line_total!: () -> void
+
+    def clear_line_total_change: () -> void
+
+    def line_total_before_type_cast: () -> ::BigDecimal
+
+    def line_total_for_database: () -> ::BigDecimal
+
+    def name: () -> ::String
+
+    def name=: (::String) -> ::String
+
+    def name?: () -> bool
+
+    def name_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def name_change: () -> [ ::String?, ::String? ]
+
+    def name_will_change!: () -> void
+
+    def name_was: () -> ::String?
+
+    def name_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def name_previous_change: () -> ::Array[::String?]?
+
+    def name_previously_was: () -> ::String?
+
+    def name_before_last_save: () -> ::String?
+
+    def name_change_to_be_saved: () -> ::Array[::String?]?
+
+    def name_in_database: () -> ::String?
+
+    def saved_change_to_name: () -> ::Array[::String?]?
+
+    def saved_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_name?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_name!: () -> void
+
+    def clear_name_change: () -> void
+
+    def name_before_type_cast: () -> ::String
+
+    def name_for_database: () -> ::String
+
+    def order_id: () -> ::Integer
+
+    def order_id=: (::Integer) -> ::Integer
+
+    def order_id?: () -> bool
+
+    def order_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def order_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def order_id_will_change!: () -> void
+
+    def order_id_was: () -> ::Integer?
+
+    def order_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def order_id_previous_change: () -> ::Array[::Integer?]?
+
+    def order_id_previously_was: () -> ::Integer?
+
+    def order_id_before_last_save: () -> ::Integer?
+
+    def order_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def order_id_in_database: () -> ::Integer?
+
+    def saved_change_to_order_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_order_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_order_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_order_id!: () -> void
+
+    def clear_order_id_change: () -> void
+
+    def order_id_before_type_cast: () -> ::Integer
+
+    def order_id_for_database: () -> ::Integer
+
+    def position: () -> ::Integer?
+
+    def position=: (::Integer?) -> ::Integer?
+
+    def position?: () -> bool
+
+    def position_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def position_change: () -> [ ::Integer?, ::Integer? ]
+
+    def position_will_change!: () -> void
+
+    def position_was: () -> ::Integer?
+
+    def position_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def position_previous_change: () -> ::Array[::Integer?]?
+
+    def position_previously_was: () -> ::Integer?
+
+    def position_before_last_save: () -> ::Integer?
+
+    def position_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def position_in_database: () -> ::Integer?
+
+    def saved_change_to_position: () -> ::Array[::Integer?]?
+
+    def saved_change_to_position?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_position?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_position!: () -> void
+
+    def clear_position_change: () -> void
+
+    def position_before_type_cast: () -> ::Integer?
+
+    def position_for_database: () -> ::Integer?
+
+    def quantity: () -> ::Integer
+
+    def quantity=: (::Integer) -> ::Integer
+
+    def quantity?: () -> bool
+
+    def quantity_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def quantity_change: () -> [ ::Integer?, ::Integer? ]
+
+    def quantity_will_change!: () -> void
+
+    def quantity_was: () -> ::Integer?
+
+    def quantity_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def quantity_previous_change: () -> ::Array[::Integer?]?
+
+    def quantity_previously_was: () -> ::Integer?
+
+    def quantity_before_last_save: () -> ::Integer?
+
+    def quantity_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def quantity_in_database: () -> ::Integer?
+
+    def saved_change_to_quantity: () -> ::Array[::Integer?]?
+
+    def saved_change_to_quantity?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_quantity?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_quantity!: () -> void
+
+    def clear_quantity_change: () -> void
+
+    def quantity_before_type_cast: () -> ::Integer
+
+    def quantity_for_database: () -> ::Integer
+
+    def sellable_id: () -> ::Integer
+
+    def sellable_id=: (::Integer) -> ::Integer
+
+    def sellable_id?: () -> bool
+
+    def sellable_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def sellable_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def sellable_id_will_change!: () -> void
+
+    def sellable_id_was: () -> ::Integer?
+
+    def sellable_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def sellable_id_previous_change: () -> ::Array[::Integer?]?
+
+    def sellable_id_previously_was: () -> ::Integer?
+
+    def sellable_id_before_last_save: () -> ::Integer?
+
+    def sellable_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def sellable_id_in_database: () -> ::Integer?
+
+    def saved_change_to_sellable_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_sellable_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_sellable_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_sellable_id!: () -> void
+
+    def clear_sellable_id_change: () -> void
+
+    def sellable_id_before_type_cast: () -> ::Integer
+
+    def sellable_id_for_database: () -> ::Integer
+
+    def sellable_type: () -> ::String
+
+    def sellable_type=: (::String) -> ::String
+
+    def sellable_type?: () -> bool
+
+    def sellable_type_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def sellable_type_change: () -> [ ::String?, ::String? ]
+
+    def sellable_type_will_change!: () -> void
+
+    def sellable_type_was: () -> ::String?
+
+    def sellable_type_previously_changed?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def sellable_type_previous_change: () -> ::Array[::String?]?
+
+    def sellable_type_previously_was: () -> ::String?
+
+    def sellable_type_before_last_save: () -> ::String?
+
+    def sellable_type_change_to_be_saved: () -> ::Array[::String?]?
+
+    def sellable_type_in_database: () -> ::String?
+
+    def saved_change_to_sellable_type: () -> ::Array[::String?]?
+
+    def saved_change_to_sellable_type?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def will_save_change_to_sellable_type?: (?from: ::String?, ?to: ::String?) -> bool
+
+    def restore_sellable_type!: () -> void
+
+    def clear_sellable_type_change: () -> void
+
+    def sellable_type_before_type_cast: () -> ::String
+
+    def sellable_type_for_database: () -> ::String
+
+    def tax_amount: () -> ::BigDecimal?
+
+    def tax_amount=: (::BigDecimal?) -> ::BigDecimal?
+
+    def tax_amount?: () -> bool
+
+    def tax_amount_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def tax_amount_change: () -> [ ::BigDecimal?, ::BigDecimal? ]
+
+    def tax_amount_will_change!: () -> void
+
+    def tax_amount_was: () -> ::BigDecimal?
+
+    def tax_amount_previously_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def tax_amount_previous_change: () -> ::Array[::BigDecimal?]?
+
+    def tax_amount_previously_was: () -> ::BigDecimal?
+
+    def tax_amount_before_last_save: () -> ::BigDecimal?
+
+    def tax_amount_change_to_be_saved: () -> ::Array[::BigDecimal?]?
+
+    def tax_amount_in_database: () -> ::BigDecimal?
+
+    def saved_change_to_tax_amount: () -> ::Array[::BigDecimal?]?
+
+    def saved_change_to_tax_amount?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def will_save_change_to_tax_amount?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def restore_tax_amount!: () -> void
+
+    def clear_tax_amount_change: () -> void
+
+    def tax_amount_before_type_cast: () -> ::BigDecimal?
+
+    def tax_amount_for_database: () -> ::BigDecimal?
+
+    def tax_code_id: () -> ::Integer?
+
+    def tax_code_id=: (::Integer?) -> ::Integer?
+
+    def tax_code_id?: () -> bool
+
+    def tax_code_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def tax_code_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def tax_code_id_will_change!: () -> void
+
+    def tax_code_id_was: () -> ::Integer?
+
+    def tax_code_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def tax_code_id_previous_change: () -> ::Array[::Integer?]?
+
+    def tax_code_id_previously_was: () -> ::Integer?
+
+    def tax_code_id_before_last_save: () -> ::Integer?
+
+    def tax_code_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def tax_code_id_in_database: () -> ::Integer?
+
+    def saved_change_to_tax_code_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_tax_code_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_tax_code_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_tax_code_id!: () -> void
+
+    def clear_tax_code_id_change: () -> void
+
+    def tax_code_id_before_type_cast: () -> ::Integer?
+
+    def tax_code_id_for_database: () -> ::Integer?
+
+    def tax_rate: () -> ::BigDecimal?
+
+    def tax_rate=: (::BigDecimal?) -> ::BigDecimal?
+
+    def tax_rate?: () -> bool
+
+    def tax_rate_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def tax_rate_change: () -> [ ::BigDecimal?, ::BigDecimal? ]
+
+    def tax_rate_will_change!: () -> void
+
+    def tax_rate_was: () -> ::BigDecimal?
+
+    def tax_rate_previously_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def tax_rate_previous_change: () -> ::Array[::BigDecimal?]?
+
+    def tax_rate_previously_was: () -> ::BigDecimal?
+
+    def tax_rate_before_last_save: () -> ::BigDecimal?
+
+    def tax_rate_change_to_be_saved: () -> ::Array[::BigDecimal?]?
+
+    def tax_rate_in_database: () -> ::BigDecimal?
+
+    def saved_change_to_tax_rate: () -> ::Array[::BigDecimal?]?
+
+    def saved_change_to_tax_rate?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def will_save_change_to_tax_rate?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def restore_tax_rate!: () -> void
+
+    def clear_tax_rate_change: () -> void
+
+    def tax_rate_before_type_cast: () -> ::BigDecimal?
+
+    def tax_rate_for_database: () -> ::BigDecimal?
+
+    def unit_price: () -> ::BigDecimal
+
+    def unit_price=: (::BigDecimal) -> ::BigDecimal
+
+    def unit_price?: () -> bool
+
+    def unit_price_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def unit_price_change: () -> [ ::BigDecimal?, ::BigDecimal? ]
+
+    def unit_price_will_change!: () -> void
+
+    def unit_price_was: () -> ::BigDecimal?
+
+    def unit_price_previously_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def unit_price_previous_change: () -> ::Array[::BigDecimal?]?
+
+    def unit_price_previously_was: () -> ::BigDecimal?
+
+    def unit_price_before_last_save: () -> ::BigDecimal?
+
+    def unit_price_change_to_be_saved: () -> ::Array[::BigDecimal?]?
+
+    def unit_price_in_database: () -> ::BigDecimal?
+
+    def saved_change_to_unit_price: () -> ::Array[::BigDecimal?]?
+
+    def saved_change_to_unit_price?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def will_save_change_to_unit_price?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def restore_unit_price!: () -> void
+
+    def clear_unit_price_change: () -> void
+
+    def unit_price_before_type_cast: () -> ::BigDecimal
+
+    def unit_price_for_database: () -> ::BigDecimal
+
+    def updated_at: () -> ::ActiveSupport::TimeWithZone
+
+    def updated_at=: (::ActiveSupport::TimeWithZone) -> ::ActiveSupport::TimeWithZone
+
+    def updated_at?: () -> bool
+
+    def updated_at_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_change: () -> [ ::ActiveSupport::TimeWithZone?, ::ActiveSupport::TimeWithZone? ]
+
+    def updated_at_will_change!: () -> void
+
+    def updated_at_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_previously_changed?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def updated_at_previous_change: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_previously_was: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_before_last_save: () -> ::ActiveSupport::TimeWithZone?
+
+    def updated_at_change_to_be_saved: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def updated_at_in_database: () -> ::ActiveSupport::TimeWithZone?
+
+    def saved_change_to_updated_at: () -> ::Array[::ActiveSupport::TimeWithZone?]?
+
+    def saved_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def will_save_change_to_updated_at?: (?from: ::ActiveSupport::TimeWithZone?, ?to: ::ActiveSupport::TimeWithZone?) -> bool
+
+    def restore_updated_at!: () -> void
+
+    def clear_updated_at_change: () -> void
+
+    def updated_at_before_type_cast: () -> ::Time
+
+    def updated_at_for_database: () -> ::Time
+  end
+  include ::OrderLine::GeneratedAttributeMethods
+  module ::OrderLine::GeneratedAliasAttributeMethods
+    include ::OrderLine::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::OrderLine::GeneratedAliasAttributeMethods
+  def order_line_discounts: () -> ::OrderLineDiscount::ActiveRecord_Associations_CollectionProxy
+  def order_line_discounts=: (::OrderLineDiscount::ActiveRecord_Associations_CollectionProxy | ::Array[::OrderLineDiscount]) -> (::OrderLineDiscount::ActiveRecord_Associations_CollectionProxy | ::Array[::OrderLineDiscount])
+  def order_line_discount_ids: () -> ::Array[::Integer]
+  def order_line_discount_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def active_discounts: () -> ::OrderLineDiscount::ActiveRecord_Associations_CollectionProxy
+  def active_discounts=: (::OrderLineDiscount::ActiveRecord_Associations_CollectionProxy | ::Array[::OrderLineDiscount]) -> (::OrderLineDiscount::ActiveRecord_Associations_CollectionProxy | ::Array[::OrderLineDiscount])
+  def active_discount_ids: () -> ::Array[::Integer]
+  def active_discount_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+  def refund_lines: () -> ::RefundLine::ActiveRecord_Associations_CollectionProxy
+  def refund_lines=: (::RefundLine::ActiveRecord_Associations_CollectionProxy | ::Array[::RefundLine]) -> (::RefundLine::ActiveRecord_Associations_CollectionProxy | ::Array[::RefundLine])
+  def refund_line_ids: () -> ::Array[::Integer]
+  def refund_line_ids=: (::Array[::Integer]) -> ::Array[::Integer]
+
+  def order: () -> ::Order
+  def order=: (::Order?) -> ::Order?
+  def reload_order: () -> ::Order?
+  def build_order: (?untyped) -> ::Order
+  def create_order: (?untyped) -> ::Order
+  def create_order!: (?untyped) -> ::Order
+  def sellable: () -> untyped
+  def sellable=: (untyped?) -> untyped?
+  def reload_sellable: () -> untyped?
+  def tax_code: () -> ::TaxCode?
+  def tax_code=: (::TaxCode?) -> ::TaxCode?
+  def reload_tax_code: () -> ::TaxCode?
+  def build_tax_code: (?untyped) -> ::TaxCode
+  def create_tax_code: (?untyped) -> ::TaxCode
+  def create_tax_code!: (?untyped) -> ::TaxCode
+
+  module ::OrderLine::GeneratedAssociationMethods
+  end
+  include ::OrderLine::GeneratedAssociationMethods
+
+  module ::OrderLine::GeneratedRelationMethods
+  end
+
+  class ::OrderLine::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::OrderLine]
+    include ::OrderLine::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::OrderLine, ::Integer]
+  end
+
+  class ::OrderLine::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::OrderLine]
+    include ::OrderLine::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::OrderLine, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrderLine
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrderLine]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrderLine
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrderLine]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::OrderLine
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::OrderLine]
+    def reload: () -> ::Array[::OrderLine]
+
+    def replace: (::Array[::OrderLine]) -> void
+    def delete: (*::OrderLine | ::Integer) -> ::Array[::OrderLine]
+    def destroy: (*::OrderLine | ::Integer) -> ::Array[::OrderLine]
+    def <<: (*::OrderLine | ::Array[::OrderLine]) -> self
+    def prepend: (*::OrderLine | ::Array[::OrderLine]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::OrderLineDiscount < ::ApplicationRecord
+end
+class ::OrderLineDiscount::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::RefundLine < ::ApplicationRecord
+end
+class ::RefundLine::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+end
+class ::Order < ::ApplicationRecord
+end
+class ::TaxCode < ::ApplicationRecord
+end

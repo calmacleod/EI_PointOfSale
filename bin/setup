@@ -58,6 +58,7 @@ FileUtils.chdir APP_ROOT do
   # == Step 5: Install Ruby dependencies ==
   puts "\n== Installing dependencies =="
   system("bundle check") || system!("bundle install")
+  system!("bundle exec rbs collection install")
 
   # == Step 6: Node.js + npm dependencies ==
   puts "\n== Checking Node.js =="

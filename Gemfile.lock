@@ -172,6 +172,7 @@ GEM
     ffi (1.17.4-arm64-darwin)
     ffi (1.17.4-x86_64-linux-gnu)
     ffi (1.17.4-x86_64-linux-musl)
+    fileutils (1.8.0)
     fugit (1.12.1)
       et-orbi (~> 1.4)
       raabro (~> 1.4)
@@ -429,6 +430,10 @@ GEM
       logger
       prism (>= 1.6.0)
       tsort
+    rbs_rails (0.13.1)
+      parser
+      prism
+      rbs (>= 1)
     rdoc (8.0.0)
       erb
       prism (>= 1.6.0)
@@ -534,8 +539,27 @@ GEM
       net-ssh (>= 2.8.0)
       ostruct
     stackprof (0.2.28)
+    steep (2.0.0)
+      concurrent-ruby (>= 1.1.10)
+      csv (>= 3.0.9)
+      fileutils (>= 1.1.0)
+      json (>= 2.1.0)
+      language_server-protocol (>= 3.17.0.4, < 4.0)
+      listen (~> 3.0)
+      logger (>= 1.3.0)
+      parser (>= 3.2)
+      prism (>= 0.25.0)
+      rainbow (>= 2.2.2, < 4.0)
+      rbs (~> 4.0)
+      securerandom (>= 0.1)
+      strscan (>= 1.0.0)
+      terminal-table (>= 2, < 5)
+      uri (>= 0.12.0)
     stimulus-rails (1.3.4)
       railties (>= 6.0.0)
+    strscan (3.1.8)
+    terminal-table (4.0.0)
+      unicode-display_width (>= 1.1.1, < 4)
     test-prof (1.6.1)
     thor (1.5.0)
     thruster (0.1.20)
@@ -638,6 +662,8 @@ DEPENDENCIES
   puma (>= 5.0)
   rack-mini-profiler
   rails (~> 8.1.2)
+  rbs
+  rbs_rails
   rubocop-rails-omakase
   selenium-webdriver
   sentry-rails
@@ -648,6 +674,7 @@ DEPENDENCIES
   solid_queue
   sprig (~> 0.3.1)
   stackprof
+  steep
   test-prof
   thruster
   tzinfo-data
@@ -719,6 +746,7 @@ CHECKSUMS
   ffi (1.17.4-arm64-darwin) sha256=19071aaf1419251b0a46852abf960e77330a3b334d13a4ab51d58b31a937001b
   ffi (1.17.4-x86_64-linux-gnu) sha256=9d3db14c2eae074b382fa9c083fe95aec6e0a1451da249eab096c34002bc752d
   ffi (1.17.4-x86_64-linux-musl) sha256=3fdf9888483de005f8ef8d1cf2d3b20d86626af206cbf780f6a6a12439a9c49e
+  fileutils (1.8.0) sha256=8c6b1df54e2540bdb2f39258f08af78853aa70bad52b4d394bbc6424593c6e02
   fugit (1.12.1) sha256=5898f478ede9b415f0804e42b8f3fd53f814bd85eebffceebdbc34e1107aaf68
   globalid (1.4.0) sha256=037f12fbf1d9d7a014d501c2d5c77356fd4ddd96d7a7991d6700bba96706f427
   google-apis-core (1.0.2) sha256=ba4579aaadc902d6cc7bc8db88f566ab00f5e31ea87ab41e9f9a032c470f2629
@@ -826,6 +854,7 @@ CHECKSUMS
   rb-fsevent (0.11.2) sha256=43900b972e7301d6570f64b850a5aa67833ee7d87b458ee92805d56b7318aefe
   rb-inotify (0.11.1) sha256=a0a700441239b0ff18eb65e3866236cd78613d6b9f78fea1f9ac47a85e47be6e
   rbs (4.1.3) sha256=0c4474a9751cdc14364bfad0b3e53678323bbdc2c31683b0445932867dbab8c4
+  rbs_rails (0.13.1) sha256=fc83e1f194a4e7fe46e8655e2771c3a00dd829124ae71f9b696cc151b085507e
   rdoc (8.0.0) sha256=03bf8c08a9639658855a0cfd77c0abca8325c227693f7f33f82957811348c469
   regexp_parser (2.12.0) sha256=35a916a1d63190ab5c9009457136ae5f3c0c7512d60291d0d1378ba18ce08ebb
   reline (0.7.0) sha256=5b012d8e55dbf9d450f12bde2cf7d15ff546ae80b3f8f3b30e570d431815583d
@@ -854,7 +883,10 @@ CHECKSUMS
   sprig (0.3.1) sha256=b9daf12183bd1745dba8d6f0e0f74761d93ef928309dda83932ab28583faa848
   sshkit (1.25.0) sha256=c8c6543cdb60f91f1d277306d585dd11b6a064cb44eab0972827e4311ff96744
   stackprof (0.2.28) sha256=4ec2ace02f386012b40ca20ef80c030ad711831f59511da12e83b34efb0f9a04
+  steep (2.0.0) sha256=6eb0ecc09637bbb54f0a5f2cf63daea6d3208ccace64b4f1107d976333605c30
   stimulus-rails (1.3.4) sha256=765676ffa1f33af64ce026d26b48e8ffb2e0b94e0f50e9119e11d6107d67cb06
+  strscan (3.1.8) sha256=aae2db611a225559f21ffbb71765c9a4e60fd262534a9ea84f4f11c7f32f679e
+  terminal-table (4.0.0) sha256=f504793203f8251b2ea7c7068333053f0beeea26093ec9962e62ea79f94301d2
   test-prof (1.6.1) sha256=0332d9c39a7c118ed942b2db582f055d9f24964d150004ec6b964d2fa262499e
   thor (1.5.0) sha256=e3a9e55fe857e44859ce104a84675ab6e8cd59c650a49106a05f55f136425e73
   thruster (0.1.20) sha256=c05f2fbcae527bbe093a6e6d84fb12d9d680617e7c162325d9b97e8e9d4b5201

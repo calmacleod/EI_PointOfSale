@@ -31,6 +31,7 @@
 /public/assets
 /public/vite*
 /node_modules
+/.gem_rbs_collection
 
 # Ignore key files for decrypting credentials and more.
 /config/*.key

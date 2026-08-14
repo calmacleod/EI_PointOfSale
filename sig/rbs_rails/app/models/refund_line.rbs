@@ -1,0 +1,345 @@
+# resolve-type-names: false
+
+class ::RefundLine < ::ApplicationRecord
+  extend ::ActiveRecord::Base::ClassMethods[::RefundLine, ::RefundLine::ActiveRecord_Relation, ::Integer]
+
+  module ::RefundLine::GeneratedAttributeMethods
+    def id: () -> ::Integer
+
+    def id=: (::Integer) -> ::Integer
+
+    def id?: () -> bool
+
+    def id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def id_will_change!: () -> void
+
+    def id_was: () -> ::Integer?
+
+    def id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def id_previous_change: () -> ::Array[::Integer?]?
+
+    def id_previously_was: () -> ::Integer?
+
+    def id_before_last_save: () -> ::Integer?
+
+    def id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def id_in_database: () -> ::Integer?
+
+    def saved_change_to_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_id!: () -> void
+
+    def clear_id_change: () -> void
+
+    def id_before_type_cast: () -> ::Integer
+
+    def id_for_database: () -> ::Integer
+
+    def amount: () -> ::BigDecimal
+
+    def amount=: (::BigDecimal) -> ::BigDecimal
+
+    def amount?: () -> bool
+
+    def amount_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def amount_change: () -> [ ::BigDecimal?, ::BigDecimal? ]
+
+    def amount_will_change!: () -> void
+
+    def amount_was: () -> ::BigDecimal?
+
+    def amount_previously_changed?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def amount_previous_change: () -> ::Array[::BigDecimal?]?
+
+    def amount_previously_was: () -> ::BigDecimal?
+
+    def amount_before_last_save: () -> ::BigDecimal?
+
+    def amount_change_to_be_saved: () -> ::Array[::BigDecimal?]?
+
+    def amount_in_database: () -> ::BigDecimal?
+
+    def saved_change_to_amount: () -> ::Array[::BigDecimal?]?
+
+    def saved_change_to_amount?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def will_save_change_to_amount?: (?from: ::BigDecimal?, ?to: ::BigDecimal?) -> bool
+
+    def restore_amount!: () -> void
+
+    def clear_amount_change: () -> void
+
+    def amount_before_type_cast: () -> ::BigDecimal
+
+    def amount_for_database: () -> ::BigDecimal
+
+    def order_line_id: () -> ::Integer
+
+    def order_line_id=: (::Integer) -> ::Integer
+
+    def order_line_id?: () -> bool
+
+    def order_line_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def order_line_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def order_line_id_will_change!: () -> void
+
+    def order_line_id_was: () -> ::Integer?
+
+    def order_line_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def order_line_id_previous_change: () -> ::Array[::Integer?]?
+
+    def order_line_id_previously_was: () -> ::Integer?
+
+    def order_line_id_before_last_save: () -> ::Integer?
+
+    def order_line_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def order_line_id_in_database: () -> ::Integer?
+
+    def saved_change_to_order_line_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_order_line_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_order_line_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_order_line_id!: () -> void
+
+    def clear_order_line_id_change: () -> void
+
+    def order_line_id_before_type_cast: () -> ::Integer
+
+    def order_line_id_for_database: () -> ::Integer
+
+    def quantity: () -> ::Integer
+
+    def quantity=: (::Integer) -> ::Integer
+
+    def quantity?: () -> bool
+
+    def quantity_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def quantity_change: () -> [ ::Integer?, ::Integer? ]
+
+    def quantity_will_change!: () -> void
+
+    def quantity_was: () -> ::Integer?
+
+    def quantity_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def quantity_previous_change: () -> ::Array[::Integer?]?
+
+    def quantity_previously_was: () -> ::Integer?
+
+    def quantity_before_last_save: () -> ::Integer?
+
+    def quantity_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def quantity_in_database: () -> ::Integer?
+
+    def saved_change_to_quantity: () -> ::Array[::Integer?]?
+
+    def saved_change_to_quantity?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_quantity?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_quantity!: () -> void
+
+    def clear_quantity_change: () -> void
+
+    def quantity_before_type_cast: () -> ::Integer
+
+    def quantity_for_database: () -> ::Integer
+
+    def refund_id: () -> ::Integer
+
+    def refund_id=: (::Integer) -> ::Integer
+
+    def refund_id?: () -> bool
+
+    def refund_id_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def refund_id_change: () -> [ ::Integer?, ::Integer? ]
+
+    def refund_id_will_change!: () -> void
+
+    def refund_id_was: () -> ::Integer?
+
+    def refund_id_previously_changed?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def refund_id_previous_change: () -> ::Array[::Integer?]?
+
+    def refund_id_previously_was: () -> ::Integer?
+
+    def refund_id_before_last_save: () -> ::Integer?
+
+    def refund_id_change_to_be_saved: () -> ::Array[::Integer?]?
+
+    def refund_id_in_database: () -> ::Integer?
+
+    def saved_change_to_refund_id: () -> ::Array[::Integer?]?
+
+    def saved_change_to_refund_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def will_save_change_to_refund_id?: (?from: ::Integer?, ?to: ::Integer?) -> bool
+
+    def restore_refund_id!: () -> void
+
+    def clear_refund_id_change: () -> void
+
+    def refund_id_before_type_cast: () -> ::Integer
+
+    def refund_id_for_database: () -> ::Integer
+
+    def restock: () -> bool
+
+    def restock=: (bool) -> bool
+
+    def restock?: () -> bool
+
+    def restock_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def restock_change: () -> [ bool?, bool? ]
+
+    def restock_will_change!: () -> void
+
+    def restock_was: () -> bool?
+
+    def restock_previously_changed?: (?from: bool?, ?to: bool?) -> bool
+
+    def restock_previous_change: () -> ::Array[bool?]?
+
+    def restock_previously_was: () -> bool?
+
+    def restock_before_last_save: () -> bool?
+
+    def restock_change_to_be_saved: () -> ::Array[bool?]?
+
+    def restock_in_database: () -> bool?
+
+    def saved_change_to_restock: () -> ::Array[bool?]?
+
+    def saved_change_to_restock?: (?from: bool?, ?to: bool?) -> bool
+
+    def will_save_change_to_restock?: (?from: bool?, ?to: bool?) -> bool
+
+    def restore_restock!: () -> void
+
+    def clear_restock_change: () -> void
+
+    def restock_before_type_cast: () -> bool
+
+    def restock_for_database: () -> bool
+  end
+  include ::RefundLine::GeneratedAttributeMethods
+  module ::RefundLine::GeneratedAliasAttributeMethods
+    include ::RefundLine::GeneratedAttributeMethods
+
+    alias id_value id
+
+    alias id_value= id=
+
+    alias id_value? id?
+
+    alias id_value_changed? id_changed?
+
+    alias id_value_change id_change
+
+    alias id_value_will_change! id_will_change!
+
+    alias id_value_was id_was
+
+    alias id_value_previously_changed? id_previously_changed?
+
+    alias id_value_previous_change id_previous_change
+
+    alias id_value_previously_was id_previously_was
+
+    alias id_value_before_last_save id_before_last_save
+
+    alias id_value_change_to_be_saved id_change_to_be_saved
+
+    alias id_value_in_database id_in_database
+
+    alias saved_change_to_id_value saved_change_to_id
+
+    alias saved_change_to_id_value? saved_change_to_id?
+
+    alias will_save_change_to_id_value? will_save_change_to_id?
+
+    alias restore_id_value! restore_id!
+
+    alias clear_id_value_change clear_id_change
+
+    alias id_value_before_type_cast id_before_type_cast
+
+    alias id_value_for_database id_for_database
+  end
+  include ::RefundLine::GeneratedAliasAttributeMethods
+
+  def refund: () -> ::Refund
+  def refund=: (::Refund?) -> ::Refund?
+  def reload_refund: () -> ::Refund?
+  def build_refund: (?untyped) -> ::Refund
+  def create_refund: (?untyped) -> ::Refund
+  def create_refund!: (?untyped) -> ::Refund
+  def order_line: () -> ::OrderLine
+  def order_line=: (::OrderLine?) -> ::OrderLine?
+  def reload_order_line: () -> ::OrderLine?
+  def build_order_line: (?untyped) -> ::OrderLine
+  def create_order_line: (?untyped) -> ::OrderLine
+  def create_order_line!: (?untyped) -> ::OrderLine
+
+  module ::RefundLine::GeneratedAssociationMethods
+  end
+  include ::RefundLine::GeneratedAssociationMethods
+
+  module ::RefundLine::GeneratedRelationMethods
+  end
+
+  class ::RefundLine::ActiveRecord_Relation < ::ActiveRecord::Relation
+    include ::Enumerable[::RefundLine]
+    include ::RefundLine::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::RefundLine, ::Integer]
+  end
+
+  class ::RefundLine::ActiveRecord_Associations_CollectionProxy < ::ActiveRecord::Associations::CollectionProxy
+    include ::Enumerable[::RefundLine]
+    include ::RefundLine::GeneratedRelationMethods
+    include ::ActiveRecord::Relation::Methods[::RefundLine, ::Integer]
+
+    def build: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::RefundLine
+             | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::RefundLine]
+    def create: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::RefundLine
+              | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::RefundLine]
+    def create!: (?::ActiveRecord::Associations::CollectionProxy::_EachPair attributes) ?{ () -> untyped } -> ::RefundLine
+               | (::Array[::ActiveRecord::Associations::CollectionProxy::_EachPair] attributes) ?{ () -> untyped } -> ::Array[::RefundLine]
+    def reload: () -> ::Array[::RefundLine]
+
+    def replace: (::Array[::RefundLine]) -> void
+    def delete: (*::RefundLine | ::Integer) -> ::Array[::RefundLine]
+    def destroy: (*::RefundLine | ::Integer) -> ::Array[::RefundLine]
+    def <<: (*::RefundLine | ::Array[::RefundLine]) -> self
+    def prepend: (*::RefundLine | ::Array[::RefundLine]) -> self
+  end
+end
+
+class ::ApplicationRecord < ::ActiveRecord::Base
+end
+class ::Refund < ::ApplicationRecord
+end
+class ::OrderLine < ::ApplicationRecord
+end
