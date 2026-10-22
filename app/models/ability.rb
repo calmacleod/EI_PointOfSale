@@ -6,6 +6,7 @@ class Ability
 
     # All authenticated users can manage their own notifications, push subscriptions, and saved queries.
     if user.persisted?
+      can :read, :help
       can :manage, Notification, user_id: user.id
       can :manage, PushSubscription, user_id: user.id
       can :manage, SavedQuery, user_id: user.id

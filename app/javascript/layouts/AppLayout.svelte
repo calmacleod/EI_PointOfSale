@@ -3,6 +3,8 @@
   import { createConsumer } from "@rails/actioncable"
   import { onMount } from "svelte"
   import Bell from "@lucide/svelte/icons/bell"
+  import BookOpen from "@lucide/svelte/icons/book-open"
+  import CircleHelp from "@lucide/svelte/icons/circle-help"
   import Boxes from "@lucide/svelte/icons/boxes"
   import CircleDollarSign from "@lucide/svelte/icons/circle-dollar-sign"
   import ClipboardList from "@lucide/svelte/icons/clipboard-list"
@@ -61,6 +63,7 @@
     { label: "Cash drawer", href: paths.cash_drawer, icon: CircleDollarSign },
     { label: "Store tasks", href: paths.store_tasks, icon: ClipboardList },
     { label: "Reports", href: paths.reports, icon: FileChartColumn },
+    { label: "Help guide", href: paths.help, icon: BookOpen },
   ].filter((item) => item.href)
 
   onMount(() => {
@@ -248,6 +251,11 @@
   }
 
   function keyboard(event) {
+    if (event.key === "F1" && online && authenticated) {
+      event.preventDefault()
+      router.visit(pageProps.help?.context || paths.help)
+      return
+    }
     const modifier = event.metaKey || event.ctrlKey
     if (modifier && event.key.toLowerCase() === "k") {
       event.preventDefault()
@@ -323,6 +331,7 @@
         <Search /><span>Search products, orders, customers…</span><kbd>⌘K</kbd>
       </button>
       <div class="c-actions">
+        {#if online && pageProps.help}<Link href={pageProps.help.context} class="c-btn" aria-label="Help for this screen" title="Help for this screen (F1)"><CircleHelp size={16} /><span>Help</span></Link>{/if}
         <span class="c-live"><span class={`c-dot ${online ? "c-dot-ok" : "c-dot-bad"}`}></span>{online ? "Online" : "Offline"} · <strong>{auth.store_name || "Store"}</strong></span>
         {#if commandAction?.href}<Link href={commandAction.href} class="c-btn c-btn-primary">{commandAction.label}{#if commandAction.key}<kbd>{commandAction.key}</kbd>{/if}</Link>
         {:else if commandAction?.form}<button form={commandAction.form} class="c-btn c-btn-primary" type="submit">{commandAction.label}{#if commandAction.key}<kbd>{commandAction.key}</kbd>{/if}</button>

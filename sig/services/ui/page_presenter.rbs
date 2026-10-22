@@ -34,6 +34,8 @@ module Ui
 
     def h: () -> untyped
 
+    def help_props: () -> untyped
+
     def resource_props: (untyped config) -> untyped
 
     def resource_index_props: (untyped config, ?extra: ::Hash[untyped, untyped]) -> untyped

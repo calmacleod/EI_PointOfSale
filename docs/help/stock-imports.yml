@@ -1,0 +1,29 @@
+title: Catalog and stock imports
+summary: Understand the administrator CSV format, matching behavior, and import results.
+category: Administration
+position: 21
+audience: admin
+feature: admin_imports
+keywords: CSV import Stock_Code Product_Name Selling_Price Stock_Level duplicate pending processing failed
+related: [inventory, products, shopify, backups-and-exports]
+sections:
+  - id: choose-workflow
+    title: Choose the correct import workflow
+    paragraphs:
+      - Administrative Stock imports can create or update catalog products using the stock-system CSV format. Inventory's Upload and restock instead adds positive quantities to existing products using code and quantity columns.
+      - Do not use a catalog file as a restock file or assume that an imported Stock_Level is an addition. Catalog stock levels replace that field on the matched product.
+  - id: format
+    title: Prepare the catalog CSV
+    bullets:
+      - Stock_Code identifies the product. Product_Name supplies the name.
+      - Selling_Price, Purchase_Price, Stock_Level, and Reorder_Level map to the corresponding product fields.
+      - Supplier and Stock_Cat provide supplier and category information. Tax_Applied is used for tax-code matching.
+      - Additional supported columns include Order2_Level, OUnit_Cost, Items_Unit, Supp_Ref, Addit_Info, and Date_Added.
+    paragraphs:
+      - Blank stock codes are skipped. If the same stock code occurs more than once in a file, the last occurrence is used. Existing products are matched by their stored code.
+  - id: run
+    title: Submit and review an import
+    paragraphs:
+      - Check the file before uploading. Submitting from the current upload screen can start background processing immediately; do not rely on the button label alone as a guarantee that nothing will change.
+      - Open the import status to review processed rows, created and updated counts, and errors. Pending means the work has not yet finished; a completed import can still have row errors.
+      - Confirm a sample of product prices, stock levels, and assignments afterward. Do not repeatedly upload the same file just because background processing has not finished yet.

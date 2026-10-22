@@ -1,0 +1,31 @@
+title: Gift certificates
+summary: Issue a certificate, take it as payment, and understand activation and balance changes.
+category: Daily work
+position: 5
+feature: register
+keywords: gift card voucher certificate balance redeem reference pending active exhausted voided
+related: [register, payments, orders-and-refunds]
+sections:
+  - id: issue
+    title: Sell a gift certificate
+    steps:
+      - In a draft register order, expand Issue gift certificate under Order options.
+      - Enter the amount and, if needed, the customer ID. Add the certificate to the order.
+      - Take payment for the order and complete the sale.
+    paragraphs:
+      - A new certificate is pending until its sale is completed. Completion activates it for use as payment. Gift-certificate lines are not taxed or discounted.
+      - Removing a pending certificate line or cancelling its sale voids the pending certificate.
+  - id: redeem
+    title: Take a certificate as payment
+    steps:
+      - Choose Gift under Tender on the customer's order.
+      - Enter the amount to apply and put the certificate code in Reference.
+      - Choose Take payment. Pay any remaining balance with another tender, then complete the sale.
+    paragraphs:
+      - The certificate must be active and have enough balance for the amount entered. Its balance decreases when the payment is recorded, even while the order is still a draft.
+      - Removing that gift-certificate payment from the draft restores the balance. If you are abandoning a draft with a gift payment, remove the payment and check the balance before voiding the order.
+  - id: statuses
+    title: Check status and remaining balance
+    paragraphs:
+      - Administrators can browse Gift certificates to inspect the code, original amount, remaining balance, status, and redemptions.
+      - Pending certificates cannot be redeemed. Active certificates with a positive balance can be used. A certificate becomes exhausted when its balance reaches zero; voided certificates cannot be redeemed.

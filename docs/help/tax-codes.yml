@@ -1,0 +1,25 @@
+title: Tax codes and customer overrides
+summary: Understand where line tax comes from and how tax-code settings affect a sale.
+category: Catalog and stock
+position: 12
+feature: admin_tax_codes
+keywords: HST GST exempt exemption tax rate customer override recalculation
+related: [products, services, customers, discounts]
+sections:
+  - id: line-tax
+    title: Where a line's tax comes from
+    paragraphs:
+      - Products and services can have a tax code. The code's rate is used when the item is added to a sale.
+      - If the assigned customer has a tax-code override, that code takes precedence for eligible product and service lines. Removing the customer returns those lines to their product or service tax code.
+      - Gift certificates being sold are not taxed. Tax and totals are recalculated as supported cart changes are saved; always review the displayed tax before taking payment.
+  - id: maintain
+    title: Maintain tax codes
+    paragraphs:
+      - Administrators manage tax codes under Administration. Codes have a name, rate, and optional province and exemption information.
+      - Rates are stored as decimal fractions. For example, a rate of 0.13 represents 13 percent; 0 represents an exempt or zero-rate code.
+      - Check product, service, and customer assignments when a line uses an unexpected rate. A label alone does not determine the amount; the configured rate and applicable override do.
+  - id: check-totals
+    title: Check the result before payment
+    paragraphs:
+      - Discounts and tax are recalculated together. A change to eligible discounts can also change the tax total.
+      - Completed sales retain their recorded amounts. Updating a tax code is not a way to correct a past completed sale; have an administrator review the appropriate order workflow.

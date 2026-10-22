@@ -1,0 +1,25 @@
+title: Services
+summary: Maintain service prices and tax codes, and add services to sales.
+category: Catalog and stock
+position: 8
+feature: services
+keywords: service labour labor refill consultation price code description tax
+related: [register, products, tax-codes]
+sections:
+  - id: use-services
+    title: Add a service to an order
+    paragraphs:
+      - Services are sellable items such as refills, work, or appointments. They appear alongside products in the register's item search.
+      - Enter a service code and press Enter, or search its name and choose a result. A service without a code can still be selected from the results.
+      - Scanning or selecting the same service again increases its quantity on the order. Service lines can receive applicable discounts and tax.
+  - id: maintain-services
+    title: Maintain the service catalog
+    paragraphs:
+      - Staff can browse services. Administrators can create, edit, and remove them from active use.
+      - A service requires a name and a non-negative price. Its code is optional. Add a description and tax code where appropriate.
+      - A service's price is saved onto a sale line when it is added. Later changes to the service do not rewrite existing sale lines.
+  - id: stock
+    title: Services do not reduce product stock
+    paragraphs:
+      - Completing a service sale does not deduct units from product inventory. If the work also includes a stock item, add that product as its own order line.
+      - Removing a service from active use prevents it appearing in normal new-sale lookup while preserving the information already saved on orders.

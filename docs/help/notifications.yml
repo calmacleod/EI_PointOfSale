@@ -1,0 +1,20 @@
+title: Notifications
+summary: Read app updates, follow their links, and manage your notification list.
+category: Daily work
+position: 15
+feature: notifications
+keywords: notification bell unread toast read mark clear report task background
+related: [reports, store-tasks, getting-started]
+sections:
+  - id: receive
+    title: Receive and open updates
+    paragraphs:
+      - Notifications can report completed background work or draw attention to store tasks. New updates may appear as a brief message while you are using the app.
+      - The notification bell shows the unread count. Open Notifications to review persistent updates and follow any supplied link to the relevant record.
+      - If an update has not arrived, check the underlying report or task. A queued background action is not the same as a completed action.
+  - id: manage
+    title: Manage your list
+    paragraphs:
+      - Mark notifications read to clear their unread state. Mark all read applies to your notification list.
+      - Removing a notification or clearing the list removes the notification, not the report, task, or other record it refers to.
+      - Notification lists belong to individual users. Reading your own notifications does not clear another staff member's list.

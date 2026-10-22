@@ -1,0 +1,31 @@
+title: Discounts
+summary: Understand automatic discounts, apply a manual discount, and control eligible units.
+category: Daily work
+position: 11
+feature: register
+keywords: promotion percentage fixed total per item member eligibility excluded units quantity
+related: [register, customers, gift-certificates, tax-codes]
+sections:
+  - id: types
+    title: Know which kind of discount you are using
+    bullets:
+      - A percentage discount is calculated from the eligible amount.
+      - A fixed total discount removes a set amount, within the eligible subtotal.
+      - A fixed per-item discount applies an amount per unit.
+    paragraphs:
+      - Order discounts and line discounts are shown separately. Multiple discounts can be present, so check the discount total and final balance instead of assuming only one applies.
+      - Gift certificates being sold are excluded from discounts. Their face value remains the amount being issued.
+  - id: manual
+    title: Apply or remove a manual discount
+    steps:
+      - In a draft register order, expand Add discount.
+      - Enter a clear discount name, choose the type, and enter its value.
+      - Choose Apply discount and review the updated totals.
+      - Use the discount's remove button if it was entered incorrectly.
+  - id: automatic
+    title: Understand automatic and customer discounts
+    paragraphs:
+      - Automatic promotions are recalculated as the cart changes. Store promotions can have active dates and item eligibility rules. Administrators maintain these rules under Discounts.
+      - Assigning a customer can add that customer's configured discount. Removing the customer removes customer-specific automatic discounts and recalculates totals.
+      - An automatic line discount can show an apply quantity beside the item. Set it to the number of units that should receive the discount. Excluded units stay excluded when automatic discounts are checked again.
+      - A product or product group can be excluded from a per-item discount. If an expected promotion is missing, check the item rules and customer assignment with an administrator.

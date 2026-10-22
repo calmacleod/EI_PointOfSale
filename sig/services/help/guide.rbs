@@ -1,0 +1,12 @@
+module Help
+  class Guide
+    TOPICS: Hash[String, String]
+    FEATURE_PATHS: Hash[String, Symbol]
+    @guides: Array[untyped]?
+
+    def self.all: () -> Array[untyped]
+    def self.visible_to: (untyped user) -> Array[untyped]
+    def self.topic_for: (String controller_path) -> String
+    def self.load_guides: () -> Array[untyped]
+  end
+end

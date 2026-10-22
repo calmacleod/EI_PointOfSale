@@ -1,0 +1,29 @@
+title: Store tasks
+summary: Assign work, track progress, and understand overdue tasks.
+category: Daily work
+position: 14
+feature: store_tasks
+keywords: task assignment due date overdue blocked in progress done not started
+related: [notifications, getting-started]
+sections:
+  - id: create
+    title: Create and assign a task
+    steps:
+      - Open Store tasks and choose New task.
+      - Enter a clear title and add the work details in the body.
+      - Choose an assignee and due date where useful, then save.
+    paragraphs:
+      - Tasks can be left unassigned. Use list filters to find a person's work, a particular status, or tasks within a due-date range.
+  - id: progress
+    title: Keep task status current
+    bullets:
+      - Not started means the work has not begun.
+      - In progress means someone is working on it.
+      - Blocked means progress needs something else first; explain the blocker in the task details.
+      - Done means the work is complete.
+  - id: overdue
+    title: Understand overdue behavior
+    paragraphs:
+      - A task is overdue when it is not done and its due date is before today. A task due today is not yet overdue.
+      - The app has scheduled overdue-task notifications. A reminder does not mark a task done or change its due date; update the task itself when the work changes.
+      - Delete a task only when the record is no longer needed. Marking it done preserves it as completed work.

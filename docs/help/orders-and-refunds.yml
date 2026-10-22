@@ -1,0 +1,36 @@
+title: Orders, holds, and refunds
+summary: Find past sales, resume held orders, and understand cancellations and returns.
+category: Daily work
+position: 4
+feature: orders
+keywords: history completed cancelled void held resume refund partial restock receipt return
+related: [register, payments, gift-certificates, cash-drawer]
+sections:
+  - id: find-orders
+    title: Find an order
+    paragraphs:
+      - Orders shows order history with status, customer, total, cashier, and dates. Use search, filters, and sortable columns to narrow the list. Drafts are managed through Register rather than the normal order-history list.
+      - Open an order to review its lines, payments, discounts, and receipt. Active orders can be opened in the register.
+  - id: statuses
+    title: Understand the order status
+    bullets:
+      - Draft means the sale is being built and can still be changed.
+      - Held means the order has been saved for later. Resume it to return it to draft status.
+      - Completed means the sale is finalized and product stock has been reduced.
+      - Cancelled means a draft or held order was cancelled. It is different from refunding a completed sale.
+      - Partially refunded and Refunded describe returns recorded against completed sales.
+  - id: refund
+    title: Record a return
+    paragraphs:
+      - Refunds require an administrator. A completed or partially refunded order can be refunded for quantities that have not already been returned.
+    steps:
+      - Open the original order and choose Refund.
+      - Select the items and quantities being returned. Add a reason where appropriate.
+      - Choose restock only for items that should go back into product stock.
+      - Review the refund and confirm. The order becomes partially refunded or refunded as appropriate.
+    note: Recording a refund calculates the return and optional stock movement. It does not itself send money to a payment terminal or hand cash to the customer. Process the actual repayment separately.
+  - id: receipt
+    title: Review and print receipts
+    paragraphs:
+      - Open Receipt from an order and use Print receipt to open the browser print dialog. Check your printer and paper settings there.
+      - Receipt layout and store details are configured by an administrator. Changing the current catalog price does not rewrite the item price saved on a past order.

@@ -1,0 +1,29 @@
+title: Receiving inventory
+summary: Add received stock, import a restock CSV, and check stock movements.
+category: Catalog and stock
+position: 9
+feature: inventory
+keywords: receive stock restock quantity CSV delivery import on hand reorder
+related: [products, stock-imports, orders-and-refunds, shopify]
+sections:
+  - id: receive
+    title: Receive a delivery
+    steps:
+      - Open Inventory and scan or enter the code of an existing product.
+      - Enter the positive quantity received, adding notes if needed.
+      - Add any other products in the delivery and review the quantities.
+      - Choose Commit restock and check the result.
+    paragraphs:
+      - Restock quantities are additions to the existing stock level. Enter 5 to add five units, rather than entering the desired final stock balance.
+      - A restock records who received it and the quantity. Product restock history can be used to review previous receipts.
+  - id: csv
+    title: Import a restock CSV
+    paragraphs:
+      - Inventory's CSV import adds stock to existing products. Use columns named code, quantity, and optionally notes. Product codes must already exist and quantities must be positive.
+      - Rows with missing codes, unknown products, or non-positive quantities are skipped. Check the file and resulting stock levels rather than assuming every row was applied.
+    note: Upload and restock commits the valid stock movements immediately. Importing the same delivery again adds the stock again.
+  - id: catalog-versus-restock
+    title: Restocking is different from importing a catalog
+    paragraphs:
+      - Inventory restock receives units for existing products. The administrator's Stock imports feature can create or update catalog records and can set stock levels from a different CSV format.
+      - Completing a product sale reduces stock. Refunds restore stock only when the refund's restock option is selected. Shopify synchronization, where configured, runs separately in the background.

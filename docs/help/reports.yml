@@ -1,0 +1,32 @@
+title: Reports
+summary: Generate a report, understand its status, and export the completed result.
+category: Daily work
+position: 13
+feature: reports
+keywords: report PDF Excel export chart pending processing completed failed snapshot sales
+related: [cash-drawer, orders-and-refunds, inventory, notifications]
+sections:
+  - id: generate
+    title: Generate and open a report
+    paragraphs:
+      - Staff can browse and export available reports. Administrators can generate and delete reports.
+    steps:
+      - Open Reports and choose an available report template.
+      - Enter the template's requested date range or other parameters.
+      - Submit the report and wait for generation to finish.
+      - Open the completed report to review its summary, chart, and table.
+  - id: statuses
+    title: Understand report status
+    bullets:
+      - Pending means the report has been queued.
+      - Processing means generation has started.
+      - Completed means the stored result is ready to view and export.
+      - Failed means generation did not finish successfully; review the result screen and ask an administrator to investigate.
+    paragraphs:
+      - A report is a saved result generated for its selected parameters. It does not continuously update as new sales arrive. Generate a new report when you need a newer snapshot.
+      - Check the report type, dates, and generation time before comparing results. Dashboard metrics can have a different refresh time from a generated report.
+  - id: export
+    title: Export and retain the result
+    paragraphs:
+      - Completed reports offer PDF and Excel downloads. Pending, processing, or failed reports cannot be exported as completed results.
+      - Deleting a report removes that generated record; it does not delete the sales or inventory records used to build it. Keep an exported copy if you need to retain the result outside the app.

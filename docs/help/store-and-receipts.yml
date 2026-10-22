@@ -1,0 +1,29 @@
+title: Store settings and receipt templates
+summary: Configure store identity, appearance, and printed receipt formatting.
+category: Administration
+position: 20
+audience: admin
+feature: admin_store
+keywords: store branding logo address phone email accent receipt print template paper width activate
+related: [orders-and-refunds, administration, accounts-and-access]
+sections:
+  - id: store
+    title: Maintain store details
+    paragraphs:
+      - Open Store under Administration to update the store name, contact information, address, logo, and accent color. Save the form after reviewing the details.
+      - Store branding is shared across the application. Theme and font-size preferences on Profile are separate, per-user choices.
+  - id: template
+    title: Configure a receipt template
+    steps:
+      - Open Receipt templates and create or edit a template.
+      - Choose the paper width and the store, cashier, and date details to show.
+      - Set header and footer text and review the preview.
+      - Activate the template that should be used for receipts.
+    paragraphs:
+      - Saving a template and making it active are separate actions. Check which template is active before testing a receipt.
+      - Logo settings and paper width affect the result. Print an actual sample on the intended printer rather than relying only on the on-screen preview.
+  - id: printing
+    title: Print an order receipt
+    paragraphs:
+      - Open an order's Receipt view and choose Print receipt. The browser's print dialog controls the destination printer and its paper settings.
+      - Changing receipt formatting does not edit the sale amounts on the order. Correct sale data through the appropriate order workflow.

@@ -132,6 +132,7 @@ module Ui
       return auth_props if controller_path == "sessions" || controller_path == "passwords"
       return dashboard_props if controller_path == "dashboard"
       return register_props if controller_path == "register"
+      return help_props if controller_path == "help"
       return offline_props if controller_path == "offline"
       return reports_props if controller_path == "reports"
       return orders_props if controller_path == "orders"
@@ -177,6 +178,29 @@ module Ui
 
       def h
         controller.helpers
+      end
+
+      def help_props
+        # @type var guides: Array[untyped]
+        guides = Array(assigns[:guides])
+        article = assigns[:guide]
+        feature = article && article["feature"]
+        feature_path = Help::Guide::FEATURE_PATHS[feature]
+        feature_path = nil if feature.to_s.start_with?("admin_") && !controller.send(:current_user).is_a?(Admin)
+        {
+          view: "help", title: article ? article.fetch("title") : "Help guide",
+          description: "Practical guides to using EI Point of Sale.",
+          guides: guides.map do |guide|
+            {
+              slug: guide.fetch("slug"), title: guide.fetch("title"), summary: guide.fetch("summary"),
+              category: guide.fetch("category"), audience: guide.fetch("audience", "everyone"),
+              path: controller.send(:help_article_path, guide.fetch("slug")),
+              search_text: [ guide.fetch("title"), guide.fetch("summary"), guide["keywords"], guide.fetch("sections").map(&:values) ].flatten.join(" ")
+            }
+          end,
+          article: article && article.slice("slug", "title", "summary", "category", "audience", "sections", "related"),
+          actions: { index: controller.send(:help_path), feature: feature_path && controller.send(feature_path) }
+        }
       end
 
       def resource_props(config)

@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   end
 
   get "search", to: "search#index", as: :search
+  get "help", to: "help#index", as: :help
+  get "help/:id", to: "help#show", as: :help_article
 
   resource :session
   resources :passwords, param: :token

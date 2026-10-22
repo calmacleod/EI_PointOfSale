@@ -1,0 +1,39 @@
+title: Using the register
+summary: Scan items, search by name, manage the cart, and finish a sale.
+category: Daily work
+position: 2
+feature: register
+keywords: barcode SKU lookup scan cart quantity pending reviewed saving F2 F4 F8 F12
+related: [payments, customers, discounts, orders-and-refunds, gift-certificates]
+sections:
+  - id: scan-and-search
+    title: Scan a code or search for an item
+    steps:
+      - Scan into the input below Line items, or enter a product or service code and press Enter.
+      - To search by name, type at least two characters. Choose a matching product or service with a click, or use the arrow keys and Enter.
+      - Check the item and quantity in the cart. Scanning the same item again increases its quantity.
+    paragraphs:
+      - Code submissions require an exact code match, ignoring letter case. Name searches show matching products and services, with exact codes first. You can choose a service even if it has no code.
+      - An Adding item row appears while a scan is saved. You can keep scanning; items save in sequence. Other page actions are blocked while scans are pending. Payment and completion wait until the pending items finish.
+      - Repeated searches can appear immediately from a short-lived cache. The app reads the current item price and calculates totals when the item is added.
+  - id: edit-the-cart
+    title: Check and change the cart
+    bullets:
+      - Change the quantity beside a line to save the new quantity and recalculate totals.
+      - Use the remove button on a line to remove it from the draft.
+      - Find customer assigns a customer to the order. Check any alert and the resulting tax and discounts.
+      - Enter notes and choose Save notes. Review the totals again after changing items or discounts.
+    note: If a scan could not be confirmed, check the cart before scanning it again. A lost response can leave an item saved. Reviewed dismisses the warning; it does not add or remove an item.
+  - id: hold-or-complete
+    title: Hold, switch, complete, or void
+    paragraphs:
+      - New order opens another draft. The buttons under Orders open switch between drafts. Held orders are available through the held-order link; resume a held order before editing it.
+      - Complete becomes available when the order has items and payment is settled. Confirming completion finalizes the sale and updates stock. Use an administrator's refund workflow to handle a completed sale that needs returning.
+      - Void order cancels the draft after confirmation. Review any recorded payments first; cancelling here does not itself return money through a card terminal.
+  - id: shortcuts
+    title: Register shortcuts
+    bullets:
+      - F2 starts a new order. F3 opens held orders where that action is available.
+      - F4 selects cash, F5 debit, F6 credit, and F7 gift certificate.
+      - F8 holds the current draft. F12 opens completion when the order is ready.
+      - Command+K or Ctrl+K opens global search. F1 opens help for the current screen.

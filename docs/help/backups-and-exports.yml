@@ -1,0 +1,26 @@
+title: Backups and data exports
+summary: View available backup files and download an application-data workbook.
+category: Administration
+position: 23
+audience: admin
+feature: admin_backups
+keywords: backup Google Drive connect disconnect download export Excel workbook database files restore
+related: [administration, reports, stock-imports]
+sections:
+  - id: backups
+    title: View and download backups
+    paragraphs:
+      - Open Backups under Administration to check the Google Drive connection and available database and object-storage backup files.
+      - Use the connection action to authorize the configured Google account where needed. Once connected, inspect the filename, date, and size before downloading a backup.
+      - Backup lists can take time to load because they are retrieved from the connected storage service. A connection or listing error is not proof that no backup exists.
+  - id: export
+    title: Export application data
+    paragraphs:
+      - Data export downloads an Excel workbook containing the supported application datasets. It is separate from an individual report's PDF or Excel export.
+      - Use a report when you need a particular analysis and parameter range. Use Data export when you need the available underlying application tables in a workbook.
+      - Exports can contain customer and business information. Save them in the location your store uses for that information.
+  - id: restore
+    title: Understand what these screens do
+    paragraphs:
+      - Downloading a backup or exporting data does not change the live records. Disconnecting Google Drive removes the application's stored authorization; it does not restore a database.
+      - There is no database-restore action on the Backups screen. Have the person responsible for the application review and perform a restore when one is needed.

@@ -1,0 +1,28 @@
+title: Getting started
+summary: Find your way around, start a sale, and understand what is saved.
+category: Daily work
+position: 1
+feature: dashboard
+keywords: dashboard first sale start navigation overview keyboard
+related: [register, cash-drawer, search-and-filters, accounts-and-access]
+sections:
+  - id: find-your-way
+    title: Find your way around
+    paragraphs:
+      - Use the left navigation to open the Register, Orders, Products, Services, Customers, Inventory, Cash drawer, Store tasks, and Reports. Your account determines which editing and administration actions are available.
+      - The dashboard is an overview. Its metrics are refreshed periodically, so check the update time before comparing them with a sale you have just completed.
+      - Open Help guide for all documents. Help for this screen opens the document for the feature you are using. Search the guide for a task, button name, or behavior.
+  - id: first-sale
+    title: Make your first sale
+    steps:
+      - Open Cash drawer and enter the opening cash count if you are starting a till session.
+      - Open Register and scan an item code, or type part of an item name and choose a result.
+      - Assign a customer if needed, then check quantities, discounts, and tax.
+      - Record the payment under Tender. Confirm any terminal payment separately before recording it here.
+      - Choose Complete and confirm. Review or print the receipt from the completed order.
+  - id: saved-and-completed
+    title: Saved is different from completed
+    paragraphs:
+      - Adding an item saves a draft order. A draft can still be changed. Holding it saves the order for later; it does not finish the sale.
+      - Completion finalizes the sale and reduces product stock. Orders are shared across the store, so another staff member can open a draft or held order.
+    note: Stay signed in and online for sales and changes. Offline lookup provides saved information only; it cannot complete a sale.

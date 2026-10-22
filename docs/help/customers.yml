@@ -1,0 +1,29 @@
+title: Customers
+summary: Find and assign a customer, understand alerts, and see how customer settings affect a sale.
+category: Catalog and stock
+position: 6
+feature: customers
+keywords: customer name membership member number email phone alert discount tax exempt
+related: [register, discounts, tax-codes, accounts-and-access]
+sections:
+  - id: find-and-assign
+    title: Find and assign a customer
+    steps:
+      - In Register, enter at least two characters in Find customer. Search by name, member number, email, or phone.
+      - Choose the matching customer and read any displayed alert.
+      - Check the order's tax, discounts, and total after assignment.
+    paragraphs:
+      - Searches match word prefixes and can also find similar customer names. Phone numbers can be entered without their stored punctuation.
+      - Customer assignment belongs to the current order. New orders start as quick sales unless a customer is assigned.
+  - id: customer-effects
+    title: What changes when a customer is assigned
+    paragraphs:
+      - A customer's configured discount can apply automatically. If the customer already has a tax-code override, that override is used for eligible product and service lines.
+      - Removing the customer recalculates the order and removes customer-specific automatic discounts. Product and service tax codes are used again where there is no customer override.
+      - Review the result after changing customers, especially if the order already contains items. A member number identifies the customer; it does not by itself grant a discount.
+  - id: maintain-records
+    title: Maintain customer records
+    paragraphs:
+      - Staff can browse customer records. Administrators can create, edit, and remove them from active use.
+      - Use the customer form for contact information, member number, address, active status, discount assignment, and register alerts. Keep alerts short and useful to the cashier.
+      - The customer list has active-status and other available filters. If a customer is missing from a filtered list, clear the filters before creating another record.

@@ -1,0 +1,28 @@
+title: Accounts and access
+summary: Update your profile, choose display preferences, and understand staff and administrator roles.
+category: Daily work
+position: 18
+feature: profile
+keywords: account user staff common admin permissions password theme light dark dim font profile
+related: [getting-started, administration]
+sections:
+  - id: profile
+    title: Update your own profile
+    paragraphs:
+      - Open Profile from the navigation to update your name, email, phone, and available display preferences. Save the form to apply your changes.
+      - Choose Light, Dark, or Dim for the theme and select a font size that is comfortable on your device. These are account preferences rather than changes to another person's account.
+      - To change your password, enter and confirm a new password. Leave the password fields blank when changing only other profile details.
+  - id: roles
+    title: Understand the two account roles
+    bullets:
+      - Staff accounts can use the register, manage shared active orders, receive inventory, manage store tasks, browse catalog and customer records, and view or export reports.
+      - Administrators also manage catalog and customer records, configuration, other user accounts, report generation, and refunds.
+    paragraphs:
+      - Some help documents and actions are shown only to administrators. If an editing, refund, or setup action is unavailable, ask an administrator rather than creating a second record as a workaround.
+      - Draft and held orders are shared store-wide, not private to the user who created them. Notifications and personal preferences belong to your account.
+      - Administrators manage staff accounts under Administration, then Users. Create an account with the person's name, email, role, and password, or open an existing user to edit their details. Check the role carefully before saving; an Admin account grants access to setup and refund actions.
+  - id: sign-in
+    title: Signing in and out
+    paragraphs:
+      - Use your own staff credentials so activity is associated with the correct person. The sign-in screen includes a password-reset option.
+      - Sign out when you have finished on a shared device. Offline lookup data is saved in browser storage, so follow your store's device-handling process as well as signing out.

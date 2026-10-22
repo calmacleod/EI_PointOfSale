@@ -1,0 +1,26 @@
+title: Shopify synchronization
+summary: Opt products into sync, check the connection, and understand background updates.
+category: Administration
+position: 22
+audience: admin
+feature: admin_shopify
+keywords: Shopify sync inventory committed webhook connection background products online
+related: [products, inventory, administration]
+sections:
+  - id: setup
+    title: Check the integration
+    paragraphs:
+      - Open Shopify under Administration to inspect configuration status, opted-in product count, the last synced time, and available webhook information.
+      - Test connection checks the configured shop. If credentials are missing, the application needs to be configured by the person responsible for deployment; this screen does not collect the shop's secrets.
+      - Register webhooks sets up supported incoming Shopify notifications. Review any reported connection or webhook error before relying on synchronization.
+  - id: products
+    title: Choose which products synchronize
+    paragraphs:
+      - A product's Sync to Shopify setting opts it into the product synchronization workflow. Saving an opted-in product can queue an update.
+      - Sync all queues updates for kept products that have opted in, along with inventory synchronization. It does not mean every product has finished syncing when the button returns.
+  - id: timing
+    title: Understand timing and stock
+    paragraphs:
+      - Synchronization is background work and can lag behind local changes. Check the last synced time and the actual product in Shopify when confirming an update.
+      - Product inventory and committed quantities have separate synchronization work. Adding or removing order items can affect committed stock, while completed sales affect on-hand stock.
+      - Review failures before retrying a bulk action. A successful connection test confirms access to the shop; it does not prove every queued product update has completed.

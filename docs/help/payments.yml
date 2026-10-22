@@ -1,0 +1,29 @@
+title: Taking payments
+summary: Record tenders, split a payment, handle cash rounding, and correct a draft payment.
+category: Daily work
+position: 3
+feature: register
+keywords: cash debit credit terminal card tendered change rounding split balance nickel
+related: [register, gift-certificates, cash-drawer, orders-and-refunds]
+sections:
+  - id: record-payment
+    title: Record a payment
+    steps:
+      - Check that all items have finished saving and the balance due is correct.
+      - Choose Cash, Debit, Credit, or Gift under Tender.
+      - Enter the amount being applied to the order. For cash, enter Tendered to calculate change. For a gift certificate, enter its code in Reference.
+      - Choose Take payment and check that the payment appears in the list.
+      - When the balance is settled, confirm Complete to finish the sale.
+    note: Debit and credit payments are records in this app. Recording a payment does not charge a card. Confirm the payment on your payment terminal before recording it here.
+  - id: split-and-round
+    title: Split payments and cash rounding
+    paragraphs:
+      - For a split payment, record the first method for part of the balance, then record the remaining balance with another method. Each tender appears separately.
+      - Cash amounts and cash tendered are rounded to the nearest five cents. A remaining difference smaller than three cents is treated as settled. Debit and credit amounts are not rounded this way.
+      - Amount is the portion applied to the sale. Tendered is the cash handed over. Change is calculated from tendered cash minus the cash payment amount.
+  - id: correct-payment
+    title: Correct a payment before completing
+    paragraphs:
+      - On a draft order, remove an incorrect payment from the payment list and record the correct one. Removing a gift-certificate payment restores that certificate's balance.
+      - Removing a payment record does not reverse a charge on an external terminal or physically return cash. Handle that return through your normal payment process.
+      - A settled balance alone does not complete the sale. The order remains a draft until completion is confirmed.

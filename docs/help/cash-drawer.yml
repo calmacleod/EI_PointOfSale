@@ -1,0 +1,32 @@
+title: Cash drawer and daily reconciliation
+summary: Open the till, count closing cash, and compare terminal totals.
+category: Daily work
+position: 10
+feature: cash_drawer
+keywords: till float opening closing count denominations discrepancy debit credit terminal reconcile session
+related: [payments, register, reports, orders-and-refunds]
+sections:
+  - id: open
+    title: Open a cash-drawer session
+    steps:
+      - Open Cash drawer and choose the opening action.
+      - Enter how many of each denomination are in the till and check the calculated opening total.
+      - Add any useful notes and confirm the opening.
+    paragraphs:
+      - Only one open session is expected at a time. Open the drawer before completing sales so those sales are attached to the current session.
+      - The opening count records the float. It is not a sale or a customer payment.
+  - id: close
+    title: Count and close the drawer
+    steps:
+      - Finish and review the sales belonging to the session.
+      - Choose Close and count the cash physically present by denomination.
+      - Confirm the closing count and review any discrepancy.
+    paragraphs:
+      - Expected closing cash is the opening float plus recorded cash payments on the session's orders. The discrepancy compares the physical closing count with that expected amount.
+      - Notes explain unusual movements; they do not themselves adjust the expected cash calculation. Check recorded tenders and your store's cash-handling records when investigating a difference.
+  - id: terminal
+    title: Reconcile the payment terminal
+    paragraphs:
+      - After closing cash, enter the actual debit and credit totals from the payment terminal. The app compares them with the expected electronic payments for that session.
+      - Closing and terminal reconciliation are separate steps. A session is complete when both are recorded. A closed session awaiting reconciliation appears as pending.
+      - Use cash-drawer history to review counts, staff, dates, and differences. Reconciliation records a comparison; it does not move money through the terminal.

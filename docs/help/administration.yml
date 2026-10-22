@@ -1,0 +1,25 @@
+title: Administration and background work
+summary: Find settings, inspect the audit log, and distinguish queued work from completed work.
+category: Administration
+position: 19
+audience: admin
+feature: admin_settings
+keywords: admin settings audit log recurring jobs background pending running failed completed
+related: [accounts-and-access, store-and-receipts, shopify, stock-imports, backups-and-exports]
+sections:
+  - id: settings
+    title: Find administrative tools
+    paragraphs:
+      - Administration brings together Store, Users, Tax codes, Suppliers, Discounts, Gift certificates, Receipt templates, Stock imports, Shopify, Backups, Audit log, Recurring tasks, and Data export.
+      - Staff accounts cannot use these administration screens. Use the separate feature guides for the workflows and behavior of each tool.
+  - id: audits
+    title: Inspect recorded changes
+    paragraphs:
+      - Audit log shows recorded changes to audited application records. Use its available filters and record details to investigate who changed a record and when.
+      - An audit entry describes a recorded change; the audit screen is not an undo action. Review the owning feature before making a correction.
+  - id: background
+    title: Understand background work
+    paragraphs:
+      - Reports, imports, synchronization, and scheduled maintenance can run after the initiating request finishes. A message saying queued or enqueued means the work was accepted, not that it has completed.
+      - Recurring tasks shows scheduled work, its last execution, and available status. A supported Run action queues a job. Command-based recurring tasks cannot be run manually from this screen.
+      - Check the resulting feature screen and its status after running work. Repeatedly queuing the same action can create repeated work; investigate a pending or failed job before submitting it again.

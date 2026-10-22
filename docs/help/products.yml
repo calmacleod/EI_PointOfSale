@@ -1,0 +1,25 @@
+title: Products
+summary: Look up stock and prices, maintain product details, and understand saved sale prices.
+category: Catalog and stock
+position: 7
+feature: products
+keywords: product SKU barcode price selling purchase supplier categories group Shopify stock reorder
+related: [inventory, services, tax-codes, stock-imports, shopify]
+sections:
+  - id: lookup
+    title: Look up a product
+    paragraphs:
+      - Open Products to search and filter the catalog. Open a product to inspect its code, price, stock level, supplier, tax code, and other details.
+      - Use Register's item search to add a product directly to a sale. Global search opens a record; it does not add that record to the cart.
+  - id: maintain
+    title: Create or edit a product
+    paragraphs:
+      - Administrators can create and edit products. A product needs a name and a unique code. Enter the selling price, stock level, and applicable tax code before using it for sales.
+      - Purchase price and unit-cost fields describe purchasing information; the selling price is the price used for a new sale line. Supplier, product group, categories, and supplier reference help organize the catalog.
+      - Sync to Shopify opts a product into the configured synchronization workflow. Saving a synced product can queue a background update.
+  - id: price-and-stock
+    title: Understand prices, stock, and removal
+    paragraphs:
+      - A sale line saves its item name, code, and unit price when added. Editing the catalog price does not rewrite existing sale lines or completed orders. Review an existing draft if a price has changed.
+      - Completing a sale reduces product stock. A refund increases stock only when restock is selected. Use Inventory when receiving stock so the receipt is recorded as a stock movement.
+      - Removing a product from active use excludes it from normal register lookup. It does not erase the item snapshots already saved on orders.

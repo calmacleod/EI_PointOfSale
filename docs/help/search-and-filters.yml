@@ -1,0 +1,29 @@
+title: Search, filters, and keyboard navigation
+summary: Find records, narrow and sort lists, and use the right search for the task.
+category: Daily work
+position: 17
+feature: dashboard
+keywords: global search command Ctrl keyboard filter sort columns pagination saved queries SKU
+related: [register, customers, products, reports]
+sections:
+  - id: choose-search
+    title: Choose the right search
+    paragraphs:
+      - Global search opens records around the app. Use the search button in the top bar, Command+K on a Mac, or Ctrl+K on other keyboards. Use arrow keys and Enter to open a result, or Escape to close it.
+      - The register's item input adds products and services to the current sale. Its Find customer field assigns a customer. These actions are different from opening a record through global search.
+      - Offline lookup searches the saved catalog on this browser instead of live records. Its last-sync time tells you how old that catalog may be.
+  - id: filters
+    title: Narrow a list
+    steps:
+      - Enter a term in the list's search field.
+      - Use Add filter to choose from the filters available for that list, such as status, supplier, customer, or dates.
+      - Clear filters you no longer need. More filters narrow the result together.
+      - Use the page controls to move through the matching records.
+    paragraphs:
+      - If a record seems missing, clear the search and filters before creating another one. An empty filtered result does not mean the record was deleted.
+  - id: columns
+    title: Read tables and change sorting
+    paragraphs:
+      - Different lists show different fields. Open a record to inspect details that are not displayed in its table row.
+      - Click a sortable column heading to change the ordering. Pagination applies to the current filtered and sorted result.
+      - On a list screen, press / when you are not typing in another field to focus its search. F2 opens the register or starts a new register order. F1 opens help for the screen.

@@ -1,0 +1,26 @@
+title: Offline lookup
+summary: Prepare saved lookup data, search without a connection, and return to online work.
+category: Daily work
+position: 16
+feature: offline
+keywords: offline connection unavailable sync full resync cached saved device browser read only
+related: [register, products, customers, services]
+sections:
+  - id: prepare
+    title: Prepare this device while online
+    paragraphs:
+      - Open Offline lookup while signed in and connected. The app prepares the offline page and saves product, service, customer, and tax-code data on this browser and device.
+      - Each collection shows a saved record count and last-sync time. Check those values before relying on the device during an outage.
+      - Saved lookup data is specific to this browser. A different device, a different browser, private browsing, or cleared browser storage may not have the same saved catalog.
+  - id: search
+    title: Work during an outage
+    paragraphs:
+      - When the live app cannot be reached, it can fall back to the prepared Offline lookup page. Choose Products, Services, Customers, or Tax codes and enter a query.
+      - The default product view shows up to 20 saved products. Search narrows the view; shown is the number currently displayed, while saved is the total stored on the device.
+    note: Offline lookup is read-only. You cannot add sale items, take payments, complete orders, restock, or change records while offline. Saved prices, stock, and customer details may be older than the live app.
+  - id: reconnect
+    title: Sync and return to the register
+    paragraphs:
+      - When the connection returns, Sync now refreshes saved changes. Full re-sync asks for confirmation before replacing the saved lookup data from the server.
+      - Wait for sync to finish and review any error. A failed sync leaves previously saved data available, but does not make it current.
+      - Choose Return to POS when online. Check current stock and prices in the live register before resuming sales.

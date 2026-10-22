@@ -7,6 +7,7 @@
   import RegisterPage from "./components/RegisterPage.svelte"
   import SpecialPage from "./components/SpecialPage.svelte"
   import OfflinePage from "./components/OfflinePage.svelte"
+  import HelpPage from "./components/HelpPage.svelte"
 
   export let view = "operations"
   export let title = ""
@@ -57,6 +58,8 @@
   export let sync_paths = null
   export let home_path = "/"
   export let allow_fake_offline = false
+  export let guides = []
+  export let article = null
 </script>
 
 <svelte:head><title>{title ? `${title} - EI Point of Sale` : "EI Point of Sale"}</title></svelte:head>
@@ -75,6 +78,8 @@
   <RegisterPage {order} {active_orders} {held_count} {actions} {flash} />
 {:else if view === "offline"}
   <OfflinePage {sync_paths} {home_path} {allow_fake_offline} />
+{:else if view === "help"}
+  <HelpPage {guides} {article} {actions} />
 {:else}
   <SpecialPage {view} {title} {description} {details} {actions} {cards} {form} {order} {events} {store} {receipt_lines} {action} {errors} {session} {pending_reconciliation} {recent_sessions} {denominations} {reconciliation} {report} {notifications} {unread_count} {certificate} {redemptions} {preview_lines} {files} {status} {recurring_tasks} {recent_imports} {query} {pagination} {pagination_path} />
 {/if}

@@ -23,7 +23,11 @@ class ApplicationController < ActionController::Base
         notice: flash[:notice],
         alert: flash[:alert]
       },
-      paths: inertia_paths
+      paths: inertia_paths,
+      help: {
+        index: help_path,
+        context: controller_path == "help" ? help_path : help_article_path(Help::Guide.topic_for(controller_path))
+      }
     }
   end
 
@@ -48,6 +52,7 @@ class ApplicationController < ActionController::Base
     def inertia_paths
       {
         root: root_path,
+        help: help_path,
         register: register_path,
         orders: orders_path,
         products: products_path,
