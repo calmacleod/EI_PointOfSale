@@ -1,6 +1,11 @@
 # Signatures for application and external APIs used by checked services but
 # defined outside the service-layer Steep target.
 
+# Rails forwards this Hash method through delegate_missing_to.
+class ActiveSupport::EncryptedConfiguration
+  def dig: (Symbol, *Symbol) -> untyped
+end
+
 module InertiaRails
   def self.defer: (?group: String, ?rescue: bool, ?once: bool, ?key: String, ?expires_in: untyped) { () -> untyped } -> untyped
 end

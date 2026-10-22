@@ -3,18 +3,18 @@ source "https://rubygems.org"
 ruby "~> 4.0.1"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.1.2"
+gem "rails", "~> 8.1.4"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use postgresql as the database for Active Record
-gem "pg", "~> 1.1"
+gem "pg", "~> 1.7"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 gem "jbuilder"
 
 # Server-driven Svelte application shell
-gem "inertia_rails", "~> 3.21"
+gem "inertia_rails", "~> 3.23"
 gem "vite_rails", "~> 3.11"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
@@ -38,7 +38,8 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.2"
+gem "ruby-vips", "~> 2.0"
 
 # S3-compatible storage (used with MinIO for local object storage)
 gem "aws-sdk-s3", require: false
@@ -64,22 +65,22 @@ gem "web-push"
 gem "dotenv", groups: [ :development, :test ]
 
 # Authorization
-gem "cancancan", "~> 3.6"
+gem "cancancan", "~> 3.7"
 
 # Soft delete
-gem "discard", "~> 1.4"
+gem "discard", "~> 2.0"
 
 # PostgreSQL full text search
 gem "pg_search"
 
 # Pagination
-gem "pagy", "~> 43.2"
+gem "pagy", "~> 43.8"
 
 # Audit trail for model changes
 gem "audited"
 
-gem "shopify_api", "~> 16.1"
-gem "newrelic_rpm", "~> 10.2"
+gem "shopify_api", "~> 16.3"
+gem "newrelic_rpm", "~> 10.9"
 gem "sentry-ruby"
 gem "sentry-rails"
 

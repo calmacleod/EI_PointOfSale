@@ -12,14 +12,15 @@ module Registers
 
     def self.items(raw_query)
       query = raw_query.to_s.strip.first(160)
-      results = item_matches(Product, "search_vector", :selling_price, query) + item_matches(Service, SERVICE_VECTOR, :price, query)
+      results = item_matches(Product, :selling_price, query) + item_matches(Service, :price, query)
 
       results.sort_by do |result|
         [ query.present? && result[:code].to_s.casecmp?(query) ? 0 : 1, -result[:rank], -result[:sales_count].to_i, result[:type], result[:id] ]
       end.first(LIMIT).map { |result| result.except(:rank, :sales_count) }
     end
 
-    def self.item_matches(model, vector, price_column, query)
+    def self.item_matches(model, price_column, query)
+      vector = model == Product ? "search_vector" : SERVICE_VECTOR
       scope = model.kept
       relevance = "0"
       if query.present?

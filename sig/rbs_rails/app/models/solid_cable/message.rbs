@@ -256,12 +256,12 @@ module ::SolidCable
     include ::SolidCable::Message::GeneratedAssociationMethods
 
     def self.trimmable: () -> ::SolidCable::Message::ActiveRecord_Relation
-    def self.broadcastable: (untyped channels, untyped last_id) -> ::SolidCable::Message::ActiveRecord_Relation
+    def self.broadcastable: (untyped channel_hashes, untyped last_id) -> ::SolidCable::Message::ActiveRecord_Relation
 
     module ::SolidCable::Message::GeneratedRelationMethods
       def trimmable: () -> ::SolidCable::Message::ActiveRecord_Relation
 
-      def broadcastable: (untyped channels, untyped last_id) -> ::SolidCable::Message::ActiveRecord_Relation
+      def broadcastable: (untyped channel_hashes, untyped last_id) -> ::SolidCable::Message::ActiveRecord_Relation
     end
 
     class ::SolidCable::Message::ActiveRecord_Relation < ::ActiveRecord::Relation

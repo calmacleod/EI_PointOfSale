@@ -6,7 +6,7 @@ module Registers
     PREFIX_QUERY: String
 
     def self.items: (untyped raw_query) -> untyped
-    def self.item_matches: (singleton(Product) | singleton(Service) model, String vector, Symbol price_column, String query) -> untyped
+    def self.item_matches: (singleton(Product) | singleton(Service) model, Symbol price_column, String query) -> untyped
     def self.customers: (untyped raw_query) -> untyped
   end
 end

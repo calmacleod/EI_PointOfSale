@@ -162,6 +162,11 @@ class StoreTest < ActiveSupport::TestCase
     )
     variant = store.logo_for_receipt(paper_width_mm: 80, trim: true)
     assert_not_nil variant
+    variant.processed.image.blob.open do |file|
+      image = Vips::Image.new_from_file(file.path)
+      assert_operator image.width, :<=, 384
+      assert_operator image.height, :<=, 384
+    end
   end
 
   test "logo_for_receipt with trim returns nil when no logo attached" do
@@ -183,6 +188,11 @@ class StoreTest < ActiveSupport::TestCase
     )
     variant = store.thermal_logo(paper_width_mm: 80)
     assert_not_nil variant
+    variant.processed.image.blob.open do |file|
+      image = Vips::Image.new_from_file(file.path)
+      assert_equal 1, image.bands
+      assert_operator image.width, :<=, 384
+    end
   end
 
   test "THERMAL_LOGO_WIDTHS has entries for both paper widths" do
