@@ -1,9 +1,9 @@
 title: Reports
-summary: Generate a report, understand its status, and export the completed result.
+summary: Find a business report, choose your own Excel columns, and reuse saved report settings.
 category: Daily work
 position: 13
 feature: reports
-keywords: report PDF Excel export chart pending processing completed failed snapshot sales
+keywords: report library custom bespoke PDF Excel export pivot columns date range pending processing completed failed snapshot sales
 related: [cash-drawer, orders-and-refunds, inventory, notifications]
 sections:
   - id: generate
@@ -11,17 +11,37 @@ sections:
     paragraphs:
       - Staff can browse and export available reports. Administrators can generate and delete reports.
     steps:
-      - Open Reports and choose an available report template.
-      - Enter the template's requested date range or other parameters.
-      - Submit the report and wait for generation to finish.
-      - Open the completed report to review its summary, chart, and table.
+      - Open Reports and use Find a report or Category to choose a report from the library.
+      - Use a date shortcut such as This month or Last month, or enter your own dates. Reports start with month-to-date dates where dates apply.
+      - Optionally enter a report name and select Generate report.
+      - The result page checks progress automatically. Review the completed summary, charts, and searchable detail table.
+      - Open Change settings / run again to reuse the settings and create a fresh result.
+  - id: custom
+    title: Make a custom Excel export
+    steps:
+      - Choose Custom Excel export from the library.
+      - Choose Sales, Refunds, Inventory, or Customers. Read the description to check what one row represents.
+      - Select the columns you need. Sales and Refunds use dates; Inventory and Customers are current snapshots.
+      - Give the report a useful name, generate it, and select Download Excel when it is ready.
+    paragraphs:
+      - In Excel, Data opens first. Use the table filters to narrow the list, SUM to total numeric columns, or Insert > PivotTable to group and summarize it. Codes and member numbers remain text so leading zeroes are preserved.
+      - Summary records the selected settings and generation time. Change settings / run again restores the saved choices for another run.
+  - id: definitions
+    title: Check what the amounts include
+    bullets:
+      - Sales summary shows receipts including tax and refunds issued during the selected period. Refunds for older sales appear in its separate Refunds table.
+      - Payment method breakdown shows original payments before refunds. Refund tender is not recorded.
+      - Top selling items is after item discounts and before order-level discounts or refunds; amounts exclude tax.
+      - Customer sales groups orders completed during the date range and deducts all refunds against those orders as of generation time.
+      - Tax on sales is before refund adjustments. It is not a net tax remittance calculation.
+      - Inventory reports reflect stock when generated, rather than historical stock for a past date.
   - id: statuses
     title: Understand report status
     bullets:
       - Pending means the report has been queued.
       - Processing means generation has started.
       - Completed means the stored result is ready to view and export.
-      - Failed means generation did not finish successfully; review the result screen and ask an administrator to investigate.
+      - Failed means generation did not finish successfully. An administrator can use Change settings / run again to retry; technical details are available on the result screen.
     paragraphs:
       - A report is a saved result generated for its selected parameters. It does not continuously update as new sales arrive. Generate a new report when you need a newer snapshot.
       - Check the report type, dates, and generation time before comparing results. Dashboard metrics can have a different refresh time from a generated report.
@@ -29,4 +49,6 @@ sections:
     title: Export and retain the result
     paragraphs:
       - Completed reports offer PDF and Excel downloads. Pending, processing, or failed reports cannot be exported as completed results.
+      - The browser shows up to 50 detail rows per page. Downloads include all rows saved in the report. Older reports may contain a note that only part of their detail was saved; generate them again to obtain the full detail.
+      - Held orders have their own table and worksheet and are excluded from completed-sale totals.
       - Deleting a report removes that generated record; it does not delete the sales or inventory records used to build it. Keep an exported copy if you need to retain the result outside the app.

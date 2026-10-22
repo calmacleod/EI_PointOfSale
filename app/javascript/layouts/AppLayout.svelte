@@ -231,7 +231,6 @@
     }
     if (props.view === "resource_form") return { label: props.form?.submit_label || "Save changes", form: "resource-form", key: "⌘S" }
     if (props.view === "resource_show" && props.actions?.edit) return { label: "Edit record", href: props.actions.edit }
-    if (props.view === "report_form") return { label: "Generate report", form: "report-form" }
     if (props.view === "report_show" && props.actions?.excel) return { label: "Export Excel", href: props.actions.excel }
     if (props.view === "receipt") return { label: "Print receipt", print: true }
     if (props.view === "gift_certificate_show") return { label: "Print certificate", print: true }

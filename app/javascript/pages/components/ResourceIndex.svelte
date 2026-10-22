@@ -14,7 +14,6 @@
   export let pagination = null
   export let actions = {}
   export let empty_message = "No records found."
-  export let templates = []
 
   let values = { ...query }
   let previousQuery = query
@@ -40,15 +39,6 @@
 </script>
 
 <section class="screen">
-  {#if templates.length}
-    <section class="p-region" style="flex:none">
-      <PanelHeader title="Report templates" count={templates.length} />
-      <div class="console-grid" style="grid-template-columns:repeat(3,minmax(0,1fr))">
-        {#each templates as template}<Link href={template.path} class="list-row"><span class="grow col"><strong>{template.title}</strong><span class="faint">{template.description}</span></span><span class="data">→</span></Link>{/each}
-      </div>
-    </section>
-  {/if}
-
   <form onsubmit={submit}>
     <div class="f-bar">
       <span class="p-title">Filter</span>

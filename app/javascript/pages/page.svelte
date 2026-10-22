@@ -8,6 +8,7 @@
   import SpecialPage from "./components/SpecialPage.svelte"
   import OfflinePage from "./components/OfflinePage.svelte"
   import HelpPage from "./components/HelpPage.svelte"
+  import ReportsPage from "./components/ReportsPage.svelte"
 
   export let view = "operations"
   export let title = ""
@@ -69,7 +70,7 @@
 {:else if view === "dashboard"}
   <DashboardPage {title} {description} {metrics} {metrics_last_updated} {drawer} {recent_orders} {tasks} {actions} />
 {:else if view === "resource_index"}
-  <ResourceIndex {title} {description} {columns} {rows} {filters} {query} {pagination} {actions} {can_create} {empty_message} {templates} />
+  <ResourceIndex {title} {description} {columns} {rows} {filters} {query} {pagination} {actions} {can_create} {empty_message} />
 {:else if view === "resource_form"}
   <ResourceForm {title} {description} {form} />
 {:else if view === "resource_show"}
@@ -80,6 +81,10 @@
   <OfflinePage {sync_paths} {home_path} {allow_fake_offline} />
 {:else if view === "help"}
   <HelpPage {guides} {article} {actions} />
+{:else if ["report_library", "report_form", "report_show"].includes(view)}
+  {#key `${view}-${report?.id || form?.report_type || "library"}`}
+    <ReportsPage {view} {title} {description} {templates} {columns} {rows} {filters} {query} {pagination} {can_create} {actions} {form} {report} />
+  {/key}
 {:else}
-  <SpecialPage {view} {title} {description} {details} {actions} {cards} {form} {order} {events} {store} {receipt_lines} {action} {errors} {session} {pending_reconciliation} {recent_sessions} {denominations} {reconciliation} {report} {notifications} {unread_count} {certificate} {redemptions} {preview_lines} {files} {status} {recurring_tasks} {recent_imports} {query} {pagination} {pagination_path} />
+  <SpecialPage {view} {title} {details} {actions} {cards} {order} {events} {store} {receipt_lines} {action} {errors} {session} {pending_reconciliation} {recent_sessions} {denominations} {reconciliation} {notifications} {unread_count} {certificate} {redemptions} {preview_lines} {files} {status} {recurring_tasks} {recent_imports} {query} {pagination} {pagination_path} />
 {/if}

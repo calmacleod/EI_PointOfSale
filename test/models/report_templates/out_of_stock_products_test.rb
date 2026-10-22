@@ -108,19 +108,10 @@ module ReportTemplates
       assert_nil result[:summary][:table_note]
     end
 
-    test "generate truncates table and adds note when over limit" do
-      original_limit = OutOfStockProducts::TABLE_LIMIT
-      OutOfStockProducts.send(:remove_const, :TABLE_LIMIT)
-      OutOfStockProducts.const_set(:TABLE_LIMIT, 1)
-
+    test "generate includes every matching product" do
       result = OutOfStockProducts.generate(scope: "out_of_stock")
-
-      assert_equal 1, result[:table].size
-      assert result[:summary][:total_products] > 1
-      assert_match(/Showing first 1 of/, result[:summary][:table_note])
-    ensure
-      OutOfStockProducts.send(:remove_const, :TABLE_LIMIT)
-      OutOfStockProducts.const_set(:TABLE_LIMIT, original_limit)
+      assert_equal Product.kept.where(stock_level: ..0).count, result[:table].size
+      assert_nil result[:summary][:table_note]
     end
   end
 end

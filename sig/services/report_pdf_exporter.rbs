@@ -16,5 +16,7 @@ class ReportPdfExporter
 
   def self.render_chart: (untyped pdf, untyped chart_title, untyped chart_data, untyped chart_type) -> untyped
 
-  def self.render_table: (untyped pdf, untyped template, untyped table_data) -> untyped
+  def self.render_table: (untyped pdf, untyped columns, untyped table_data) -> untyped
+
+  def self.format_cell: (untyped value, untyped type) -> String
 end

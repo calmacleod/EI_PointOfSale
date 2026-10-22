@@ -86,6 +86,63 @@ class ReportTemplate
     #   [{ key: :name, label: "Name" }, ...]
     def table_columns = raise(NotImplementedError)
 
+    def category
+      case key
+      when "out_of_stock_products", "inventory_valuation" then "Inventory"
+      when "customer_sales", "new_customers_by_date" then "Customers"
+      when "custom_export" then "Excel workspace"
+      else "Sales"
+      end
+    end
+
+    def output_columns(_params = {}) = table_columns
+
+    # Resolve defaults before enqueueing so a report run after midnight still
+    # uses the dates the user saw. Only declared parameters reach a template.
+    def default_parameters
+      parameters.to_h do |parameter|
+        value = case parameter[:key].to_s
+        when "start_date" then Date.current.beginning_of_month.iso8601
+        when "end_date" then Date.current.iso8601
+        else parameter[:default] || parameter[:options]&.first&.last || ""
+        end
+        [ parameter[:key].to_s, value ]
+      end
+    end
+
+    def normalize_parameters(values)
+      supplied = values.to_h.stringify_keys.slice(*parameters.map { |parameter| parameter[:key].to_s })
+      default_parameters.merge(supplied) { |_key, default, value| value == "" ? default : value }
+    end
+
+    def parameter_errors(values)
+      values = values.to_h.stringify_keys
+      errors = []
+      dates = {}
+      parameters.each do |parameter|
+        value = values[parameter[:key].to_s]
+        if parameter[:type] == :date
+          begin
+            raise ArgumentError unless value.is_a?(String) && value.match?(/\A\d{4}-\d{2}-\d{2}\z/)
+            dates[parameter[:key]] = Date.iso8601(value)
+          rescue ArgumentError
+            errors << "#{parameter[:label]} must be a valid date."
+          end
+        elsif parameter[:type] == :select
+          errors << "Choose a valid #{parameter[:label].downcase}." unless parameter[:options].any? { |option| option.last == value }
+        elsif parameter[:required] && value.blank?
+          errors << "#{parameter[:label]} is required."
+        end
+      end
+      if dates[:start_date] && dates[:end_date] && dates[:end_date] < dates[:start_date]
+        errors << "End date must be on or after start date."
+      end
+      if dates[:start_date] && dates[:end_date] && dates[:end_date] - dates[:start_date] > 3660
+        errors << "Choose a date range of ten years or less."
+      end
+      errors
+    end
+
     private
 
       def parse_report_date(value, default)

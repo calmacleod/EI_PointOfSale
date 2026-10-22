@@ -2,12 +2,11 @@
 
 module ReportTemplates
   class CustomerSales < ReportTemplate
-    TABLE_LIMIT = 500
     SALES_STATUSES = %i[completed partially_refunded refunded].freeze
 
     def self.key         = "customer_sales"
     def self.title       = "Customer sales"
-    def self.description = "Ranks customers by completed order count and net spend, including quick-sale activity."
+    def self.description = "Ranks customers by orders completed in the date range and spend including tax, less all refunds against those orders as of generation time."
 
     def self.parameters
       [
@@ -30,15 +29,15 @@ module ReportTemplates
 
     def self.table_columns
       [
-        { key: :rank,          label: "#" },
+        { key: :rank,          label: "#", type: :integer },
         { key: :customer,      label: "Customer" },
         { key: :member_number, label: "Member #" },
-        { key: :orders,        label: "Orders" },
-        { key: :gross_sales,   label: "Gross sales" },
-        { key: :refunds,       label: "Refunds" },
-        { key: :net_sales,     label: "Net sales" },
-        { key: :average_order, label: "Avg order" },
-        { key: :last_purchase, label: "Last purchase" }
+        { key: :orders,        label: "Orders", type: :integer },
+        { key: :gross_sales,   label: "Gross sales", type: :currency },
+        { key: :refunds,       label: "Refunds", type: :currency },
+        { key: :net_sales,     label: "Net sales", type: :currency },
+        { key: :average_order, label: "Avg order", type: :currency },
+        { key: :last_purchase, label: "Last purchase", type: :date }
       ]
     end
 
@@ -61,7 +60,7 @@ module ReportTemplates
             borderWidth: 1
           } ]
         },
-        table: rows.first(TABLE_LIMIT).map { |row| row.except(:net_amount, :gross_amount, :refund_amount) },
+        table: rows.map { |row| row.except(:net_amount, :gross_amount, :refund_amount) },
         summary: build_summary(rows, start_date, end_date)
       }
     end
@@ -120,7 +119,6 @@ module ReportTemplates
         average_order: format_currency(total_orders.positive? ? net_sales / total_orders : 0),
         top_customer: rows.first ? "#{rows.first[:customer]} (#{rows.first[:net_sales]})" : "None"
       }
-      summary[:table_note] = "Showing first #{TABLE_LIMIT} of #{rows.size} customers" if rows.size > TABLE_LIMIT
       summary
     end
     private_class_method :build_summary

@@ -10,11 +10,9 @@
 
   export let view
   export let title = ""
-  export let description = ""
   export let details = []
   export let actions = []
   export let cards = []
-  export let form = null
   export let order = null
   export let events = []
   export let store = null
@@ -26,7 +24,6 @@
   export let recent_sessions = []
   export let denominations = []
   export let reconciliation = null
-  export let report = null
   export let notifications = []
   export let unread_count = 0
   export let certificate = null
@@ -40,7 +37,6 @@
   export let pagination = null
   export let pagination_path = null
 
-  let reportValues = Object.fromEntries((form?.parameters || []).map((parameter) => [parameter.key, ""]))
   let inventoryCode = ""
   let inventoryItems = []
   let inventoryFile
@@ -50,7 +46,6 @@
   let uploadFile
   let refundLines = (order?.lines || []).map((line) => ({ selected: false, order_line_id: line.id, quantity: line.refundable_quantity ?? line.quantity, restock: line.sellable_type === "Product" }))
   let refundReason = ""
-  let showReportDelete = false
   let showRefundPrompt = false
 
   $: countTotal = denominations.reduce((sum, item) => sum + Number(counts[item.key] || 0) * item.value, 0)
@@ -78,8 +73,6 @@
     else router[item.method](item.path)
   }
 
-  function generateReport(event) { event.preventDefault(); router.post(form.action, { report: { report_type: form.report_type, parameters: reportValues } }) }
-  function removeReport() { showReportDelete = false; router.delete(actions.delete) }
   async function lookupInventory(event) {
     event.preventDefault()
     if (!inventoryCode.trim()) return
@@ -95,7 +88,6 @@
   function requestRefund(event) { event.preventDefault(); if (selectedRefunds.length) showRefundPrompt = true }
   function submitRefund() { showRefundPrompt = false; router.post(action, { refund_lines: refundLines.map((line) => ({ ...line, selected: line.selected ? "1" : "0", restock: line.restock ? "1" : "0" })), reason: refundReason }) }
   function submitOperationalUpload(event) { event.preventDefault(); if (uploadFile) router.post(actions[0].path, { file: uploadFile, preview: "1" }, { forceFormData: true }) }
-  function chartHeight(value, values) { const numbers = values.map((item) => Number(item || 0)); const maximum = Math.max(...numbers, 1); return `${Math.max(4, (Number(value || 0) / maximum) * 100)}%` }
 </script>
 
 <svelte:head><meta name="application-screen" content={title} /></svelte:head>
@@ -108,59 +100,6 @@
         {#each cards as card}<Link href={card.path} class="list-row" style="min-height:72px"><span class="grow col"><strong>{card.title}</strong><span class="faint">{card.description}</span></span><span class="data">→</span></Link>{/each}
       </div>
     </section>
-  </section>
-
-{:else if view === "report_form"}
-  <section class="screen">
-    {#if description}<p class="screen-description">{description}</p>{/if}
-    <form id="report-form" class="p-region" onsubmit={generateReport}>
-      <PanelHeader title="Report parameters" count={`${form.parameters.length} fields`} />
-      <div class="form-grid form-grid-2">
-        {#each form.parameters as parameter}
-          <div class="k-field"><label class="k-label" for={parameter.key}>{parameter.label}{#if parameter.required} <span class="k-req">*</span>{/if}</label>{#if parameter.type === "select"}<select class="k-input" id={parameter.key} required={parameter.required} bind:value={reportValues[parameter.key]}>{#each parameter.options || [] as option}<option value={Array.isArray(option) ? option[1] : option.value}>{Array.isArray(option) ? option[0] : option.label}</option>{/each}</select>{:else}<input class:k-input-data={parameter.type !== "text"} class="k-input" id={parameter.key} type={parameter.type === "integer" ? "number" : parameter.type} required={parameter.required} bind:value={reportValues[parameter.key]} />{/if}</div>
-        {/each}
-      </div>
-      <footer class="p-foot"><span>Generate the report from the command bar.</span></footer>
-    </form>
-  </section>
-
-{:else if view === "report_show"}
-  <section class="screen">
-    <div class={`n-bar n-${stateTone(report.status)}`}><StatusTag value={report.status} /><span>Generated {report.created_at}.</span><span class="n-bar-actions">{#if report.status === "completed"}<a href={actions.pdf} class="k-btn k-btn-xs">Export PDF</a>{/if}<Link href={actions.index} class="k-btn k-btn-xs k-btn-quiet">All reports</Link></span></div>
-    {#if ["pending", "processing"].includes(report.status)}<div class="n-bar n-live"><strong>{report.status === "pending" ? "Report queued." : "Report running."}</strong> Results will appear when processing finishes.</div>
-    {:else if report.status === "failed"}<div class="n-bar n-bad"><strong>Report generation failed.</strong> {report.error_message}</div>{/if}
-
-    {#if report.status === "completed"}
-      <Deferred data="report.result_data">
-        {#snippet fallback()}<div class="m-strip" style="grid-template-columns:minmax(0,1fr)"><div class="m-cell" aria-busy="true"><p class="m-label">Report results</p><p class="m-note">Loading the generated dataset…</p></div></div>{/snippet}
-        {#snippet rescue()}<div class="n-bar n-bad"><strong>Report results unavailable.</strong> Reload this page to retry.</div>{/snippet}
-        {#if report.result_data?.summary}<div class="m-strip" style={`grid-template-columns:repeat(${Math.min(Object.keys(report.result_data.summary).length,6)},minmax(0,1fr))`}>{#each Object.entries(report.result_data.summary) as [key, value]}<div class="m-cell"><p class="m-label">{key.replaceAll("_", " ")}</p><p class="m-value">{value}</p></div>{/each}</div>{/if}
-      </Deferred>
-    {/if}
-
-    <div class="p-split" style="grid-template-columns:minmax(0,1fr) 280px">
-      {#if report.status === "completed"}
-        <Deferred data="report.result_data">
-          {#snippet fallback()}<DeferredPanel title="Report detail" message="Loading chart and table data…" />{/snippet}
-          {#snippet rescue()}<section class="p-region"><EmptyState title="Results unavailable" body="Reload this page to retry the report data request." /></section>{/snippet}
-          <section class="p-region">
-            {#if report.result_data?.chart}
-              <PanelHeader title="Chart" count={`${report.result_data.chart.labels?.length || 0} points`} />
-              <div class="p-body" style="overflow:visible"><div class="chart-bars">{#each report.result_data.chart.labels || [] as label, index}<div class="chart-bar"><span class="chart-bar-value">{report.result_data.chart.datasets?.[0]?.data?.[index] ?? 0}</span><div class="chart-bar-fill" style={`height:${chartHeight(report.result_data.chart.datasets?.[0]?.data?.[index], report.result_data.chart.datasets?.[0]?.data || [])}`}></div><span class="chart-bar-label">{label}</span></div>{/each}</div></div>
-            {/if}
-            <PanelHeader title="Report detail" count={`${report.result_data?.table?.length || 0} records`} />
-            {#if report.result_data?.table?.length}<div class="t-wrap"><table class="t" style="min-width:780px"><thead><tr>{#each report.table_columns as column}<th>{column.label}</th>{/each}</tr></thead><tbody>{#each report.result_data.table as row}<tr data-state="idle">{#each report.table_columns as column}<td class:data={machineField(column.key, column.label)}>{displayValue(row[column.key])}</td>{/each}</tr>{/each}</tbody></table></div>{:else}<EmptyState title="No detail rows" body="This report completed without tabular results." />{/if}
-          </section>
-        </Deferred>
-      {:else}
-        <section class="p-region"><EmptyState title="Results not ready" body="Generated report data will appear here." /></section>
-      {/if}
-      <aside class="p-region">
-        <PanelHeader title="Parameters" />
-        <dl class="d-grid">{#each Object.entries(report.parameters || {}) as [key, value]}<div class="d-row"><dt>{key.replaceAll("_", " ")}</dt><dd class:data={machineField(key, key)}>{displayValue(value)}</dd></div>{/each}</dl>
-        <div class="p-body" style="margin-top:auto"><button class="k-btn k-btn-danger" type="button" onclick={() => (showReportDelete = true)}>Delete report</button></div>
-      </aside>
-    </div>
   </section>
 
 {:else if view === "gift_certificate_show"}
@@ -248,5 +187,4 @@
   </section>
 {/if}
 
-{#if showReportDelete}<ConfirmModal title="Delete this report?" message="The generated report and its export files will be removed. This cannot be undone." confirmLabel="Delete report" danger oncancel={() => (showReportDelete = false)} onconfirm={removeReport} />{/if}
 {#if showRefundPrompt}<ConfirmModal title="Process this refund?" message={`${selectedRefunds.length} line items will be refunded${selectedRefunds.filter((line) => line.restock).length ? ` and ${selectedRefunds.filter((line) => line.restock).length} stock movements will be restored` : ""}. The order and payment totals will be updated.`} confirmLabel="Process refund" danger oncancel={() => (showRefundPrompt = false)} onconfirm={submitRefund} />{/if}

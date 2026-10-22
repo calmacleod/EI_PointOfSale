@@ -4,7 +4,7 @@ module ReportTemplates
   class DiscountUsage < ReportTemplate
     def self.key         = "discount_usage"
     def self.title       = "Discount usage"
-    def self.description = "Shows discount usage over a date range with total reductions, daily breakdowns, and lists all orders using discounts. Held orders shown separately."
+    def self.description = "Shows discounts on sales completed in the date range, before refunds. Held orders are listed separately and excluded from totals."
 
     def self.parameters
       [
@@ -33,17 +33,16 @@ module ReportTemplates
     def self.table_columns
       [
         { key: :order_number,     label: "Order #" },
-        { key: :order_date,       label: "Date" },
+        { key: :order_date,       label: "Date", type: :datetime },
         { key: :customer_name,    label: "Customer" },
         { key: :discount_names,   label: "Discount(s)" },
-        { key: :discount_amount,  label: "Discount Amount" },
-        { key: :order_total,      label: "Order Total" }
+        { key: :discount_amount,  label: "Discount Amount", type: :currency },
+        { key: :order_total,      label: "Order Total", type: :currency }
       ]
     end
 
     def self.generate(params)
-      start_date = parse_date(params[:start_date], 30.days.ago.to_date)
-      end_date   = parse_date(params[:end_date],   Date.current)
+      start_date, end_date = report_date_range(params)
       discount_id = params[:discount_id].presence
 
       date_range = start_date.beginning_of_day..end_date.end_of_day
@@ -114,26 +113,17 @@ module ReportTemplates
 
     # ── Private helpers ────────────────────────────────────────────────
 
-    def self.parse_date(value, default)
-      return default if value.blank?
-
-      Date.parse(value.to_s)
-    rescue ArgumentError
-      default
-    end
-    private_class_method :parse_date
-
     def self.fetch_completed_orders(date_range, discount_id)
       # Get orders with order-level discounts
       order_discount_orders = Order.kept
-        .where(status: :completed)
+        .where(status: %i[completed partially_refunded refunded])
         .where(completed_at: date_range)
         .joins(:order_discounts)
         .distinct
 
       # Get orders with line-level discounts
       line_discount_orders = Order.kept
-        .where(status: :completed)
+        .where(status: %i[completed partially_refunded refunded])
         .where(completed_at: date_range)
         .joins(:order_line_discounts)
         .distinct
@@ -194,7 +184,7 @@ module ReportTemplates
     private_class_method :fetch_held_orders
 
     def self.build_daily_breakdown(orders, start_date, end_date)
-      all_dates = (start_date..end_date).map { |d| d.strftime("%b %d") }
+      all_dates = (start_date..end_date).map { |d| d.strftime("%Y-%m-%d") }
 
       # Initialize daily totals
       daily_amounts = Hash.new(0)
@@ -202,7 +192,7 @@ module ReportTemplates
       daily_counts = Hash.new(0)
 
       orders.each do |order|
-        date_key = order.completed_at.strftime("%b %d")
+        date_key = order.completed_at.strftime("%Y-%m-%d")
 
         # Calculate total discount for this order
         order_discount_total = order.order_discounts.sum(&:calculated_amount)
@@ -210,7 +200,7 @@ module ReportTemplates
         total_discount = order_discount_total + line_discount_total
 
         # Net order total (after discount)
-        net_order_total = order.total - total_discount
+        net_order_total = order.total
 
         daily_amounts[date_key] += total_discount
         daily_order_totals[date_key] += net_order_total
@@ -260,7 +250,7 @@ module ReportTemplates
         total_discount = order_discount_total + line_discount_total
 
         # Determine date field based on order status
-        order_date = if order.completed?
+        order_date = if order.completed_at.present?
           order.completed_at
         else
           order.created_at

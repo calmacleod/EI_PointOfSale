@@ -3,8 +3,10 @@
 class ReportsController < ApplicationController
   include Filterable
 
-  load_and_authorize_resource except: %i[index new create]
+  # Supply the lightweight show record before CanCan authorizes it. Loading
+  # through CanCan first would fetch the full result_data on every status poll.
   before_action :set_report, only: %i[show export_pdf export_excel destroy]
+  load_and_authorize_resource except: %i[index new create]
 
   def index
     authorize! :read, Report
@@ -34,7 +36,13 @@ class ReportsController < ApplicationController
   def new
     authorize! :create, Report
     @template = ReportTemplate.find(params[:template])
-    redirect_to reports_path, alert: "Unknown report template." unless @template
+    unless @template
+      redirect_to reports_path, alert: "Unknown report template."
+      return
+    end
+    source = Report.select(*Report.column_names.excluding("result_data")).find(params[:source]) if params[:source].present?
+    authorize! :read, source if source
+    @report = Report.new(title: source&.title, parameters: @template.normalize_parameters(source&.parameters || {}))
   end
 
   def create
@@ -48,7 +56,7 @@ class ReportsController < ApplicationController
 
     @report = Report.new(
       report_type: template.key,
-      title: "#{template.title} — #{Time.current.strftime('%b %d, %Y %l:%M %p')}",
+      title: report_params[:title].presence || template.title,
       parameters: report_params[:parameters]&.to_unsafe_h || {},
       generated_by: current_user
     )
@@ -110,7 +118,7 @@ class ReportsController < ApplicationController
     end
 
     def report_params
-      params.require(:report).permit(:report_type, parameters: {})
+      params.require(:report).permit(:report_type, :title, parameters: {})
     end
 
     def pdf_filename

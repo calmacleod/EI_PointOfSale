@@ -2,8 +2,6 @@
 
 module ReportTemplates
   class InventoryValuation < ReportTemplate
-    TABLE_LIMIT = 2_000
-
     def self.key         = "inventory_valuation"
     def self.title       = "Inventory valuation"
     def self.description = "Values current product inventory at cost and retail, grouped by supplier with reorder-risk indicators."
@@ -31,12 +29,12 @@ module ReportTemplates
         { key: :code,          label: "Code" },
         { key: :name,          label: "Product" },
         { key: :supplier,      label: "Supplier" },
-        { key: :stock_level,   label: "Stock" },
-        { key: :unit_cost,     label: "Unit cost" },
-        { key: :retail_price,  label: "Retail price" },
-        { key: :cost_value,    label: "Cost value" },
-        { key: :retail_value,  label: "Retail value" },
-        { key: :margin_value,  label: "Potential margin" }
+        { key: :stock_level,   label: "Stock", type: :integer },
+        { key: :unit_cost,     label: "Unit cost", type: :currency },
+        { key: :retail_price,  label: "Retail price", type: :currency },
+        { key: :cost_value,    label: "Cost value", type: :currency },
+        { key: :retail_value,  label: "Retail value", type: :currency },
+        { key: :margin_value,  label: "Potential margin", type: :currency }
       ]
     end
 
@@ -65,7 +63,7 @@ module ReportTemplates
             }
           ]
         },
-        table: rows.first(TABLE_LIMIT).map { |row| row.except(:cost_value_amount, :retail_value_amount, :margin_value_amount) },
+        table: rows.map { |row| row.except(:cost_value_amount, :retail_value_amount, :margin_value_amount) },
         summary: build_summary(rows)
       }
     end
@@ -133,7 +131,6 @@ module ReportTemplates
         retail_value: format_currency(rows.sum { |row| row[:retail_value_amount] }),
         potential_margin: format_currency(rows.sum { |row| row[:margin_value_amount] })
       }
-      summary[:table_note] = "Showing first #{TABLE_LIMIT} of #{rows.size} products" if rows.size > TABLE_LIMIT
       summary
     end
     private_class_method :build_summary

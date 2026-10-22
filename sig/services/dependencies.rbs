@@ -56,8 +56,10 @@ module ShopifyAPI
 end
 
 module Axlsx
+  def self.col_ref: (Integer) -> String
   class Workbook
     def styles: () -> untyped
+    def escape_formulas=: (bool) -> bool
   end
 end
 
@@ -98,10 +100,13 @@ class ReportTemplate
   def description: () -> String
   def chart_type: () -> String
   def table_columns: () -> Array[Hash[Symbol, untyped]]
+  def category: () -> String
+  def default_parameters: () -> untyped
 end
 
 class Report
   def template: () -> ReportTemplate
+  def result_columns: () -> Array[Hash[Symbol, untyped]]
 end
 
 class OrderLine
@@ -170,4 +175,10 @@ end
 class CashDrawerSession
   COIN_ROLLS: Hash[String, { value: Float, count: Integer, coin: String, label: String }]
   DENOMINATIONS: Hash[String, Float]
+end
+
+module ReportTemplates
+  class CustomExport < ReportTemplate
+    def self.datasets: () -> untyped
+  end
 end

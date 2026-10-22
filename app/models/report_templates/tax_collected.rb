@@ -5,8 +5,8 @@ module ReportTemplates
     SALES_STATUSES = %i[completed partially_refunded refunded].freeze
 
     def self.key         = "tax_collected"
-    def self.title       = "Tax collected"
-    def self.description = "Breaks completed sales down by tax code, taxable sales, exempt sales, and tax collected."
+    def self.title       = "Tax on sales (before refunds)"
+    def self.description = "Shows tax charged on sales completed in the date range, before refund adjustments. This is not a net tax remittance calculation."
 
     def self.parameters
       [
@@ -20,10 +20,10 @@ module ReportTemplates
     def self.table_columns
       [
         { key: :tax_code,      label: "Tax code" },
-        { key: :rate,          label: "Rate" },
-        { key: :line_count,    label: "Lines" },
-        { key: :taxable_sales, label: "Taxable sales" },
-        { key: :tax_collected, label: "Tax collected" }
+        { key: :rate,          label: "Rate", type: :percentage },
+        { key: :line_count,    label: "Lines", type: :integer },
+        { key: :taxable_sales, label: "Taxable sales", type: :currency },
+        { key: :tax_collected, label: "Tax collected", type: :currency }
       ]
     end
 

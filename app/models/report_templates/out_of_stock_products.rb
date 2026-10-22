@@ -28,20 +28,18 @@ module ReportTemplates
         { key: :code,             label: "Code" },
         { key: :name,             label: "Product" },
         { key: :supplier,         label: "Supplier" },
-        { key: :stock_level,      label: "Stock" },
-        { key: :reorder_level,    label: "Reorder level" },
-        { key: :selling_price,    label: "Price" }
+        { key: :stock_level,      label: "Stock", type: :integer },
+        { key: :reorder_level,    label: "Reorder level", type: :integer },
+        { key: :selling_price,    label: "Price", type: :currency }
       ]
     end
 
-    TABLE_LIMIT = 2_000
 
     def self.generate(params)
       products = fetch_products(params[:scope])
       total_count = products.size
 
-      table_products = products.first(TABLE_LIMIT)
-      table_data = table_products.map do |product|
+      table_data = products.map do |product|
         {
           code:          product.code,
           name:          product.name,
@@ -95,7 +93,6 @@ module ReportTemplates
         suppliers_affected: supplier_count,
         total_retail_value: format_price(products.sum(&:selling_price))
       }
-      summary[:table_note] = "Showing first #{TABLE_LIMIT} of #{total_count} products" if total_count > TABLE_LIMIT
       summary
     end
 

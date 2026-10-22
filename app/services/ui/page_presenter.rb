@@ -410,18 +410,36 @@ module Ui
           # @type var report_templates: Array[ReportTemplate]
           report_templates = Array(assigns[:templates])
           templates = report_templates.map do |template|
-            { key: template.key, title: template.title, description: template.description, path: controller.send(:new_report_path, template: template.key) }
+            { key: template.key, title: template.title, description: template.description, category: template.category, path: controller.send(:new_report_path, template: template.key) }
           end
-          resource_index_props(config, extra: { templates: templates })
+          props = resource_index_props(config, extra: { templates: templates }).merge(view: "report_library")
+          props[:rows].each do |row|
+            key = row[:values].key?(:report_type) ? :report_type : "report_type"
+            type = row[:values][key]
+            row[:values][key] = report_templates.find { |template| template.key == type }&.title || type.to_s.humanize
+          end
+          props
         when "new"
           template = assigns[:template]
+          today = Date.current
           {
             view: "report_form", title: template.title, description: template.description,
             form: {
               action: controller.send(:reports_path), report_type: template.key,
               parameters: template.parameters.map { |parameter| parameter.transform_values { |value| value.respond_to?(:to_json) ? value.as_json : value } },
+              values: assigns[:report]&.parameters || template.default_parameters,
+              title: assigns[:report]&.title || "",
+              datasets: template.key == "custom_export" ? ReportTemplates::CustomExport.datasets : [],
+              date_presets: [
+                { label: "Today", start_date: today, end_date: today },
+                { label: "Yesterday", start_date: today - 1, end_date: today - 1 },
+                { label: "This month", start_date: today.beginning_of_month, end_date: today },
+                { label: "Last month", start_date: today.prev_month.beginning_of_month, end_date: today.prev_month.end_of_month },
+                { label: "This year", start_date: today.beginning_of_year, end_date: today }
+              ],
               errors: Array(assigns[:report]&.errors&.full_messages)
-            }
+            },
+            actions: { index: controller.send(:reports_path) }
           }
         when "show"
           report = assigns[:report]
@@ -433,12 +451,15 @@ module Ui
               id: report.id, status: report.status, report_type: report.report_type,
               parameters: report.parameters, result_data: report_result_data_prop(report), error_message: report.error_message,
               generated_by: human_label(report.generated_by), created_at: format_time(report.created_at), completed_at: format_time(report.completed_at),
-              table_columns: table_columns.map { |column| { key: column[:key].to_s, label: column[:label].to_s } },
+              table_columns: table_columns,
               chart_type: report.template&.chart_type
             },
             actions: {
-              index: controller.send(:reports_path), pdf: controller.send(:export_pdf_report_path, report),
-              excel: controller.send(:export_excel_report_path, report), delete: controller.send(:report_path, report)
+              index: controller.send(:reports_path),
+              pdf: report.completed? ? controller.send(:export_pdf_report_path, report) : nil,
+              excel: report.completed? ? controller.send(:export_excel_report_path, report) : nil,
+              delete: controller.can?(:destroy, report) ? controller.send(:report_path, report) : nil,
+              rerun: controller.can?(:create, Report) && report.template ? controller.send(:new_report_path, template: report.report_type, source: report.id) : nil
             }
           }
         else generic_props

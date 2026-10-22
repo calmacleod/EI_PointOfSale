@@ -2,12 +2,11 @@
 
 module ReportTemplates
   class TopSellingItems < ReportTemplate
-    TABLE_LIMIT = 100
     SALES_STATUSES = %i[completed partially_refunded refunded].freeze
 
     def self.key         = "top_selling_items"
     def self.title       = "Top selling items"
-    def self.description = "Ranks products and services by quantity sold and net sales for completed orders in a date range."
+    def self.description = "Ranks items by sales excluding tax, after item discounts and before order discounts or refunds. Use Excel to explore the full list."
 
     def self.parameters
       [
@@ -32,14 +31,14 @@ module ReportTemplates
 
     def self.table_columns
       [
-        { key: :rank,          label: "#" },
+        { key: :rank,          label: "#", type: :integer },
         { key: :code,          label: "Code" },
         { key: :name,          label: "Item" },
         { key: :item_type,     label: "Type" },
-        { key: :quantity_sold, label: "Qty sold" },
-        { key: :net_sales,     label: "Net sales" },
-        { key: :tax,           label: "Tax" },
-        { key: :average_price, label: "Avg price" }
+        { key: :quantity_sold, label: "Qty sold", type: :integer },
+        { key: :net_sales,     label: "Net sales", type: :currency },
+        { key: :tax,           label: "Tax", type: :currency },
+        { key: :average_price, label: "Avg price", type: :currency }
       ]
     end
 
@@ -60,7 +59,7 @@ module ReportTemplates
             borderWidth: 1
           } ]
         },
-        table: rows.first(TABLE_LIMIT).map { |row| row.except(:net_sales_amount, :tax_amount, :quantity_amount) },
+        table: rows.map { |row| row.except(:net_sales_amount, :tax_amount, :quantity_amount) },
         summary: build_summary(rows, start_date, end_date)
       }
     end
@@ -114,7 +113,6 @@ module ReportTemplates
         tax: format_currency(rows.sum { |row| row[:tax_amount] }),
         top_item: top_item ? "#{top_item[:name]} (#{top_item[:net_sales]})" : "None"
       }
-      summary[:table_note] = "Showing first #{TABLE_LIMIT} of #{rows.size} items" if rows.size > TABLE_LIMIT
       summary
     end
     private_class_method :build_summary

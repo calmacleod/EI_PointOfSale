@@ -286,6 +286,18 @@ module ReportTemplates
                    result[:chart][:order_counts][:datasets].first[:data].size
     end
 
+    test "chart sale totals do not subtract discounts a second time" do
+      result = DiscountUsage.generate(start_date: 7.days.ago.to_date.iso8601, end_date: Date.current.iso8601)
+      totals = result[:chart][:discount_analysis][:datasets].first[:data]
+      assert_equal @completed_order.total + @completed_order_with_line_discount.total, totals.sum
+    end
+
+    test "refunded sales with discounts remain part of the original sales analysis" do
+      @completed_order.update!(status: :refunded)
+      result = DiscountUsage.generate(start_date: 1.year.ago.to_date.iso8601, end_date: Date.current.iso8601)
+      assert_includes result[:table].map { |row| row[:order_number] }, @completed_order.number
+    end
+
     test "generate includes both order-level and line-level discounts in totals" do
       result = DiscountUsage.generate(
         start_date: 7.days.ago.to_date.to_s,

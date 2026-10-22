@@ -6,7 +6,7 @@ module ReportTemplates
 
     def self.key         = "payment_method_breakdown"
     def self.title       = "Payment method breakdown"
-    def self.description = "Shows tender totals and transaction counts by payment method for completed sales in a date range."
+    def self.description = "Shows payments by method for sales completed in the date range. These are original payments before refunds; refund tender is not recorded."
 
     def self.parameters
       [
@@ -20,11 +20,11 @@ module ReportTemplates
     def self.table_columns
       [
         { key: :payment_method, label: "Payment method" },
-        { key: :payments,       label: "Payments" },
-        { key: :orders,         label: "Orders" },
-        { key: :total,          label: "Total" },
-        { key: :average,        label: "Average payment" },
-        { key: :share,          label: "Share" }
+        { key: :payments,       label: "Payments", type: :integer },
+        { key: :orders,         label: "Orders", type: :integer },
+        { key: :total,          label: "Total", type: :currency },
+        { key: :average,        label: "Average payment", type: :currency },
+        { key: :share,          label: "Share", type: :percentage }
       ]
     end
 

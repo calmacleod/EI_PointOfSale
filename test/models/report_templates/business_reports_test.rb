@@ -23,11 +23,49 @@ module ReportTemplates
 
       assert result[:chart][:labels].present?
       assert_equal 3, result[:chart][:datasets].size
-      assert result[:summary][:gross_sales].start_with?("$")
-      assert result[:summary][:net_sales].start_with?("$")
+      assert result[:summary][:gross_receipts_including_tax].start_with?("$")
+      assert result[:summary][:net_receipts_including_tax].start_with?("$")
 
       order_numbers = result[:table].map { |row| row[:order_number] }
       assert_includes order_numbers, orders(:completed_order).number
+    end
+
+    test "sales charts keep matching calendar days in different years separate" do
+      first = create_completed_order(number: "REPORT-YEAR-ONE", total: 10)
+      second = create_completed_order(number: "REPORT-YEAR-TWO", total: 20)
+      first.update_columns(completed_at: Time.zone.local(2024, 1, 1, 12))
+      second.update_columns(completed_at: Time.zone.local(2025, 1, 1, 12))
+      result = SalesSummary.generate(start_date: "2024-01-01", end_date: "2025-01-01")
+      assert_equal "2024-01-01", result[:chart][:labels].first
+      assert_equal "2025-01-01", result[:chart][:labels].last
+      assert_equal 10.to_d, result[:chart][:datasets].first[:data].first
+      assert_equal 20.to_d, result[:chart][:datasets].first[:data].last
+    end
+
+    test "sales summary lists refunds for older sales and supports negative daily receipts" do
+      order = create_completed_order(number: "REPORT-OLDER-REFUND")
+      order.update_columns(completed_at: 1.year.ago)
+      refund = Refund.create!(order: order, processed_by: users(:admin), refund_type: :partial, total: 5)
+      result = SalesSummary.generate(start_date: "#{Date.current}", end_date: "#{Date.current}")
+      refute_includes result[:table].map { |row| row[:order_number] }, order.number
+      assert_includes result[:additional_tables].first[:rows].map { |row| row[:refund_number] }, refund.refund_number
+      assert_equal "$-5.00", result[:summary][:net_receipts_including_tax]
+      assert_equal [ -5.to_d ], result[:chart][:datasets].first[:data]
+    end
+
+    test "top selling items includes all items beyond the old 100 row cap" do
+      order = create_completed_order(number: "REPORT-ALL-ITEMS")
+      OrderLine.insert_all!(101.times.map do |index|
+        {
+          order_id: order.id, sellable_type: "Product", sellable_id: products(:dragon_shield_red).id,
+          code: "REPORT-#{index}", name: "Report item #{index}", quantity: 1,
+          unit_price: 1, line_total: 1, tax_amount: 0, tax_rate: 0, position: index
+        }
+      end)
+      result = TopSellingItems.generate(start_date: @start_date, end_date: @end_date)
+      assert_equal 101, result[:table].count { |row| row[:code].start_with?("REPORT-") }
+      assert_equal 10, result[:chart][:labels].size
+      assert_nil result[:summary][:table_note]
     end
 
     test "payment method breakdown groups completed payments by tender type" do

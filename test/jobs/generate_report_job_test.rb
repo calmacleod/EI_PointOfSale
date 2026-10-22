@@ -30,6 +30,25 @@ class GenerateReportJobTest < ActiveJob::TestCase
     assert result[:chart].present?
     assert result[:table].is_a?(Array)
     assert result[:summary].is_a?(Hash)
+    assert_equal report.template.table_columns.as_json, report.result_data["columns"]
+  end
+
+  test "a notification failure does not change a completed report to failed" do
+    report = reports(:pending_report)
+    NotifyService.stub(:call, ->(**) { raise "Notification unavailable" }) do
+      assert_raises(RuntimeError) { GenerateReportJob.perform_now(report.id) }
+    end
+    assert report.reload.completed?
+    assert_nil report.error_message
+    assert_no_changes -> { report.reload.completed_at } do
+      GenerateReportJob.perform_now(report.id)
+    end
+  end
+
+  test "deleted queued reports are ignored" do
+    report = reports(:pending_report)
+    report.destroy!
+    assert_nothing_raised { GenerateReportJob.perform_now(report.id) }
   end
 
   test "marks report as failed on error" do

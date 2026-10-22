@@ -21,13 +21,12 @@ module ReportTemplates
         { key: :member_number, label: "Member #" },
         { key: :email,         label: "Email" },
         { key: :phone,         label: "Phone" },
-        { key: :registered_on, label: "Registered on" }
+        { key: :registered_on, label: "Registered on", type: :date }
       ]
     end
 
     def self.generate(params)
-      start_date = Date.parse(params[:start_date].to_s)
-      end_date   = Date.parse(params[:end_date].to_s)
+      start_date, end_date = report_date_range(params)
       date_range = start_date.beginning_of_day..end_date.end_of_day
 
       # Daily registration counts
