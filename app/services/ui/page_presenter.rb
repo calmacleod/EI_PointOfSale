@@ -158,6 +158,11 @@ module Ui
       generic_props
     end
 
+    # The scan endpoint returns just the current order, without another page visit.
+    def register_order
+      order_props(assigns[:order])
+    end
+
     private
 
       attr_reader :controller, :assigns, :params
@@ -344,13 +349,18 @@ module Ui
           view: "register",
           title: "Register",
           order: order_props(order),
-          active_orders: Array(assigns[:active_orders]).map { |active_order| order_summary(active_order) },
+          active_orders: Array(assigns[:active_orders]).map do |active_order|
+            # @type var active_order: untyped
+            line_counts = assigns[:active_order_line_counts]
+            order_summary(active_order, line_count: line_counts && line_counts.fetch(active_order.id, 0))
+          end,
           held_count: assigns[:held_count].to_i,
           actions: {
             register: controller.send(:register_path),
             new_order: controller.send(:new_order_register_path),
             held: controller.send(:held_orders_path),
             quick_lookup: controller.send(:quick_lookup_orders_path),
+            item_search: controller.send(:lookup_register_path),
             hold: controller.send(:hold_order_path, order),
             resume: controller.send(:resume_order_path, order),
             complete: controller.send(:complete_order_path, order),
@@ -1090,11 +1100,11 @@ module Ui
         keys.to_h { |key| [ key, record.public_send(key) ] }
       end
 
-      def order_summary(order)
+      def order_summary(order, line_count: nil)
         {
           id: order.id, number: order.number, status: order.status,
           customer: order.customer_name, total: h.number_to_currency(order.total),
-          line_count: order.order_lines.size, created_at: format_time(order.created_at),
+          line_count: line_count || order.order_lines.size, created_at: format_time(order.created_at),
           path: controller.send(:order_path, order), register_path: controller.send(:register_path, order_id: order.id)
         }
       end

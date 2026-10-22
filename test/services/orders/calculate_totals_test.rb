@@ -62,4 +62,23 @@ class Orders::CalculateTotalsTest < ActiveSupport::TestCase
     assert_equal 3.0, @order.discount_total
     assert @order.total < 33.88
   end
+
+  test "reusing discount state removes deleted customer discounts from taxable amounts" do
+    Discount.update_all(active: false)
+    customer = customers(:discount_customer)
+    @order.update!(customer: customer)
+    line = @order.order_lines.build(quantity: 1, position: 1)
+    line.snapshot_from_sellable!(@product)
+    line.save!
+    state = Discounts::AutoApply.call(@order)
+    Orders::CalculateTotals.call(@order, state:)
+    assert_operator @order.discount_total, :>, 0
+
+    @order.update!(customer: nil)
+    state = Discounts::AutoApply.call(@order)
+    Orders::CalculateTotals.call(@order, state:)
+    assert_equal 0, @order.discount_total
+    assert_equal 1.95, @order.tax_total
+    assert_equal 16.94, @order.total
+  end
 end

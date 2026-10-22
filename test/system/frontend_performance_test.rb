@@ -23,17 +23,26 @@ class FrontendPerformanceTest < ApplicationSystemTestCase
   test "adds register products without starting the progress bar" do
     visit register_path
     page.execute_script(<<~JAVASCRIPT)
+      document.documentElement.dataset.quickLookupProgress = "false"
       document.addEventListener("inertia:start", (event) => {
         if (event.detail.visit.url.pathname === "#{quick_lookup_orders_path}") {
-          document.documentElement.dataset.quickLookupProgress = String(event.detail.visit.showProgress)
+          document.documentElement.dataset.quickLookupProgress = "true"
         }
       })
+      const originalFetch = window.fetch.bind(window)
+      window.fetch = (url, options) => {
+        if (String(url).includes("#{quick_lookup_orders_path}") && options?.method === "POST") {
+          document.documentElement.dataset.quickLookupAccept = options.headers.Accept
+        }
+        return originalFetch(url, options)
+      }
     JAVASCRIPT
 
     fill_in "code", with: products(:dragon_shield_red).code
     click_button "Add"
 
     assert_selector "html[data-quick-lookup-progress='false']", wait: 5
+    assert_selector "html[data-quick-lookup-accept='application/json']", wait: 5
     assert_text products(:dragon_shield_red).name, wait: 5
     assert_no_selector "#nprogress"
   end

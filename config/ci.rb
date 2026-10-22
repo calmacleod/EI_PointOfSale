@@ -15,6 +15,7 @@ CI.run do
   step "Style: Svelte", "npm run lint:svelte"
 
   step "Tests: Rails", "bin/rails test"
+  step "Tests: JavaScript", "npm run test:javascript"
   step "Tests: System", "bin/rails test:system"
   step "Tests: Seeds", "env RAILS_ENV=test bin/rails db:seed:replant"
 

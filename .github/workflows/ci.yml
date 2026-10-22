@@ -147,6 +147,9 @@ jobs:
           # REDIS_URL: redis://localhost:6379/0
         run: bin/rails db:test:prepare test
 
+      - name: Run JavaScript tests
+        run: npm run test:javascript
+
   system-test:
     runs-on: ubuntu-latest
 

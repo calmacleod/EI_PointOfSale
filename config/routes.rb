@@ -65,6 +65,7 @@ Rails.application.routes.draw do
   resources :push_subscriptions, only: [ :create, :destroy ]
   resource :register, only: [ :show ], controller: "register" do
     post :new_order, on: :member
+    get :lookup, on: :member
   end
 
   resource :cash_drawer, only: [ :show ], controller: "cash_drawer" do

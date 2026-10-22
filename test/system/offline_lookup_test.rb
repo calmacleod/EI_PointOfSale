@@ -59,6 +59,13 @@ class OfflineLookupTest < ApplicationSystemTestCase
   private
 
     def reset_offline_browser_state
+      # Cookies reset between tests, but the offline catalog and sync timestamps
+      # otherwise retain records created by earlier browser tests on this origin.
+      page.driver.browser.execute_cdp(
+        "Storage.clearDataForOrigin",
+        origin: page.evaluate_script("window.location.origin"),
+        storageTypes: "indexeddb,local_storage"
+      )
       page.driver.browser.execute_async_script(<<~JAVASCRIPT)
         const done = arguments[0]
         Promise.all([

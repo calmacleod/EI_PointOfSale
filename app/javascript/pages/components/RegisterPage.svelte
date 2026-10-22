@@ -1,6 +1,7 @@
 <script>
   import { Link, router } from "@inertiajs/svelte"
   import { onMount } from "svelte"
+  import { createLiveSearch } from "../../lib/live-search.js"
   import ConfirmModal from "./ConfirmModal.svelte"
   import EmptyState from "./EmptyState.svelte"
   import PanelHeader from "./PanelHeader.svelte"
@@ -16,8 +17,11 @@
   let notes = order?.notes || ""
   let payment = freshPayment(order)
   let customerQuery = ""
-  let customers = []
-  let customerLoading = false
+  let customerSearch = { results: [], loading: false, error: "", searched: false }
+  let itemSearch = { results: [], loading: false, error: "", searched: false }
+  let itemSearchOpen = false
+  let activeItem = -1
+  let failedCodes = []
   let discount = { name: "", discount_type: "percentage", value: "" }
   let giftCertificate = { initial_amount: "", customer_id: "" }
   let showCancelPrompt = false
@@ -28,16 +32,28 @@
   let pendingCodes = []
   let addingCode = false
   let pendingCodeSequence = 0
-  let customerSearchTimer
-  let customerRequest
+  let customerLookup
+  let itemLookup
+  let mounted = false
 
   onMount(() => {
+    mounted = true
+    customerLookup = createLiveSearch({ url: actions.customer_search, onChange: (state) => (customerSearch = state) })
+    itemLookup = createLiveSearch({ url: actions.item_search, onChange: (state) => { itemSearch = state; activeItem = -1 } })
+    // Inertia visits cancel one another. Finish the scan queue before allowing a
+    // different order, payment, or cart edit to replace the current order state.
+    const stopNavigation = router.on("before", (event) => {
+      if (pendingCodes.length) event.preventDefault()
+    })
     const chooseFromKey = (event) => chooseTender(event.detail)
     window.addEventListener("console:tender", chooseFromKey)
+    document.getElementById("code")?.focus()
     return () => {
+      mounted = false
+      stopNavigation()
       window.removeEventListener("console:tender", chooseFromKey)
-      if (customerSearchTimer) window.clearTimeout(customerSearchTimer)
-      customerRequest?.abort()
+      customerLookup?.destroy()
+      itemLookup?.destroy()
     }
   })
 
@@ -47,7 +63,11 @@
     notes = order?.notes || ""
     payment = freshPayment(order)
     customerQuery = ""
-    customers = []
+    customerLookup?.search("")
+    itemLookup?.search("")
+    code = ""
+    itemSearchOpen = false
+    failedCodes = []
     codeQueue = []
     pendingCodes = []
     addingCode = false
@@ -60,7 +80,7 @@
     previousBalance = order?.balance_due_value
   }
 
-  $: canComplete = Boolean(order?.payment_complete && order?.lines?.length && order?.status === "draft")
+  $: canComplete = Boolean(order?.payment_complete && order?.lines?.length && order?.status === "draft" && !pendingCodes.length && !failedCodes.length)
   $: lineUnits = (order?.lines || []).reduce((sum, line) => sum + Number(line.quantity || 0), 0) + pendingCodes.length
 
   function freshPayment(currentOrder) {
@@ -74,33 +94,82 @@
 
   function addCode(event) {
     event.preventDefault()
+    if (itemSearchOpen && activeItem >= 0 && itemSearch.results[activeItem]) {
+      chooseItem(itemSearch.results[activeItem])
+      return
+    }
     const value = code.trim()
     if (!value || order.status !== "draft") return
+    enqueueCode({ code: value })
+  }
 
-    const pending = { id: ++pendingCodeSequence, code: value }
+  function chooseItem(item) {
+    enqueueCode({ code: item.code || item.name, sellable_id: item.id, sellable_type: item.type, name: item.name })
+    document.getElementById("code")?.focus()
+  }
+
+  function enqueueCode(item) {
+    const pending = { ...item, id: ++pendingCodeSequence, order_id: order.id }
     code = ""
+    itemLookup?.search("")
+    itemSearchOpen = false
     codeQueue = [...codeQueue, pending]
     pendingCodes = [...pendingCodes, pending]
     submitNextCode()
   }
 
-  function submitNextCode() {
+  async function submitNextCode() {
     if (addingCode || codeQueue.length === 0) return
 
     const [pending, ...remaining] = codeQueue
     codeQueue = remaining
     addingCode = true
-    router.post(actions.quick_lookup, { order_id: order.id, code: pending.code }, {
-      preserveScroll: true,
-      preserveState: true,
-      showProgress: false,
-      onFinish: () => {
+    let failureMessage = "Could not confirm this item was saved."
+    try {
+      const response = await fetch(actions.quick_lookup, {
+        method: "POST",
+        headers: { Accept: "application/json", "Content-Type": "application/json", "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content || "" },
+        body: JSON.stringify({ order_id: pending.order_id, code: pending.code, sellable_id: pending.sellable_id, sellable_type: pending.sellable_type }),
+      })
+      const data = await response.json()
+      if (!response.ok || !data.order) {
+        failureMessage = data.error || "Could not add this item."
+        throw new Error(failureMessage)
+      }
+      if (!mounted || order.id !== pending.order_id) return
+      order = data.order
+      active_orders = active_orders.map((tab) => tab.id === order.id ? { ...tab, line_count: order.lines.length } : tab)
+      flash = {}
+      router.flushAll()
+      // Keep Inertia's history snapshot in sync so Back restores the saved cart.
+      await new Promise((resolve) => router.replace({
+        props: (props) => ({ ...props, order: data.order, active_orders, flash: {} }),
+        preserveState: true,
+        preserveScroll: true,
+        onFinish: resolve,
+      }))
+    } catch (_error) {
+      if (!mounted) return
+      // Never automatically retry a write: a lost response might have committed.
+      failedCodes = [...failedCodes, { ...pending, error: failureMessage }]
+    } finally {
+      if (mounted) {
         pendingCodes = pendingCodes.filter((item) => item.id !== pending.id)
         addingCode = false
-        window.setTimeout(() => document.getElementById("code")?.focus(), 0)
         submitNextCode()
-      },
-    })
+      }
+    }
+  }
+
+  function searchItems() { itemSearchOpen = true; itemLookup?.search(code) }
+  function itemKeyboard(event) {
+    if (event.key === "Escape") { itemSearchOpen = false; activeItem = -1 }
+    if (["ArrowDown", "ArrowUp"].includes(event.key) && itemSearch.results.length) {
+      event.preventDefault()
+      itemSearchOpen = true
+      activeItem = Math.max(0, Math.min(itemSearch.results.length - 1, activeItem + (event.key === "ArrowDown" ? 1 : -1)))
+      document.getElementById(`register-item-${activeItem}`)?.scrollIntoView({ block: "nearest" })
+    }
   }
 
   function updateQuantity(line, quantity) {
@@ -132,27 +201,8 @@
     event.preventDefault()
     router.post(actions.gift_certificate, { gift_certificate: giftCertificate }, { preserveScroll: true, onSuccess: () => (giftCertificate = { initial_amount: "", customer_id: "" }) })
   }
-  function queueCustomerSearch() {
-    if (customerSearchTimer) window.clearTimeout(customerSearchTimer)
-    customerRequest?.abort()
-    const query = customerQuery.trim()
-    if (query.length < 2) { customers = []; customerLoading = false; return }
-    customerSearchTimer = window.setTimeout(() => searchCustomers(query), 150)
-  }
-  async function searchCustomers(query) {
-    const request = new AbortController()
-    customerRequest = request
-    customerLoading = true
-    try {
-      const response = await fetch(`${actions.customer_search}?q=${encodeURIComponent(query)}&format=json`, { headers: { Accept: "application/json" }, signal: request.signal })
-      if (customerQuery.trim() === query) customers = (await response.json()).results || []
-    } catch (error) {
-      if (error.name !== "AbortError") customers = []
-    } finally {
-      if (customerRequest === request) { customerLoading = false; customerRequest = undefined }
-    }
-  }
-  function assignCustomer(customer) { customerRequest?.abort(); router.patch(actions.assign_customer, { customer_id: customer.id }); customers = []; customerQuery = "" }
+  function queueCustomerSearch() { customerLookup?.search(customerQuery) }
+  function assignCustomer(customer) { customerLookup?.search(""); router.patch(actions.assign_customer, { customer_id: customer.id }); customerQuery = "" }
 </script>
 
 <section class="screen" data-density="roomy">
@@ -185,16 +235,33 @@
                 </tr>
               {/each}
               {#each pendingCodes as pending (pending.id)}
-                <tr data-state="live" data-testid="pending-register-code"><td class="wrap"><strong>Adding item…</strong><span class="t-sub data">{pending.code}</span></td><td class="c data">1</td><td class="r faint">—</td><td class="r faint">—</td><td class="r faint">—</td><td></td></tr>
+                <tr data-state="live" data-testid="pending-register-code"><td class="wrap"><strong>{pending.name || "Adding item…"}</strong><span class="t-sub data">{pending.code}</span></td><td class="c data">1</td><td class="r faint">—</td><td class="r faint">—</td><td class="r faint">—</td><td></td></tr>
               {/each}
             </tbody>
           </table>
-        {:else}<EmptyState title="No items yet" body="Scan a barcode or type a product or service code to begin." />{/if}
+        {:else}<EmptyState title="No items yet" body="Scan a barcode or search for a product or service below." />{/if}
       </div>
-      {#if flash.alert || flash.notice}<div id="lookup_flash" class={`n-bar ${flash.alert ? "n-bad" : "n-ok"}`}>{flash.alert || flash.notice}</div>{/if}
+      <div id="lookup_flash">
+        {#each failedCodes as failed (failed.id)}
+          <div class="n-bar n-bad" role="alert"><span><strong>{failed.code}</strong>: {failed.error} Check the order before rescanning.</span><button class="k-btn k-btn-xs push" type="button" onclick={() => (failedCodes = failedCodes.filter((item) => item.id !== failed.id))}>Reviewed</button></div>
+        {/each}
+        {#if flash.alert || flash.notice}<div class={`n-bar ${flash.alert ? "n-bad" : "n-ok"}`}>{flash.alert || flash.notice}</div>{/if}
+      </div>
+      {#if pendingCodes.length}<div class="n-bar n-info" role="status">Saving {pendingCodes.length} {pendingCodes.length === 1 ? "item" : "items"}… You can keep scanning.</div>{/if}
+      {#if itemSearchOpen && code.trim().length >= 2}
+        <div id="register-item-results" class="register-lookup-results" role="listbox" aria-label="Matching products and services" aria-busy={itemSearch.loading}>
+          {#each itemSearch.results as item, index (`${item.type}-${item.id}`)}
+            <button id={`register-item-${index}`} class="list-row" style="width:100%" type="button" role="option" aria-selected={index === activeItem} onclick={() => chooseItem(item)}>
+              <span class="s-tag">{item.type}</span><span class="grow col"><strong>{item.name}</strong><span class="faint data">{item.code || "No code"}</span></span><strong class="data">${Number(item.price).toFixed(2)}</strong>
+            </button>
+          {:else}
+            <p class="k-hint" role="status" style="padding:var(--space-2) var(--space-3)">{itemSearch.error || (itemSearch.loading ? "Searching…" : "No matching products or services.")}</p>
+          {/each}
+        </div>
+      {/if}
       <form class="k-scan" onsubmit={addCode}>
-        <label class="sr-only" for="code">Scan barcode or enter product or service code</label>
-        <input id="code" name="code" class="k-input" placeholder="Scan or type code…" disabled={order.status !== "draft"} bind:value={code} />
+        <label class="sr-only" for="code">Scan barcode or search products and services</label>
+        <input id="code" name="code" class="k-input" placeholder="Scan barcode, type code or item name…" role="combobox" aria-autocomplete="list" aria-expanded={itemSearchOpen && code.trim().length >= 2} aria-controls="register-item-results" aria-activedescendant={activeItem >= 0 ? `register-item-${activeItem}` : undefined} autocomplete="off" disabled={order.status !== "draft"} bind:value={code} oninput={searchItems} onfocus={searchItems} onkeydown={itemKeyboard} />
         <button class="k-btn k-btn-primary" style="height:36px" type="submit" disabled={order.status !== "draft"}>Add <kbd>↵</kbd></button>
       </form>
     </section>
@@ -224,7 +291,7 @@
               <div class="row"><label class="k-label" for="payment-amount">Amount</label><input id="payment-amount" class="k-input k-input-data" type="number" min="0" step="0.01" required bind:value={payment.amount} /></div>
               {#if payment.payment_method === "cash"}<div class="row"><label class="k-label" for="payment-tendered">Tendered</label><input id="payment-tendered" class="k-input k-input-data" type="number" min="0" step="0.01" bind:value={payment.amount_tendered} /></div>{/if}
               {#if ["gift_certificate", "other"].includes(payment.payment_method)}<div class="row"><label class="k-label" for="payment-reference">Reference</label><input id="payment-reference" class="k-input k-input-data" bind:value={payment.reference} /></div>{/if}
-              <button class="k-btn k-btn-primary k-btn-block" type="submit">Take payment</button>
+              <button class="k-btn k-btn-primary k-btn-block" type="submit" disabled={pendingCodes.length > 0 || failedCodes.length > 0}>Take payment</button>
             </form>
           </div>
         {/if}
@@ -235,7 +302,7 @@
         <PanelHeader title="Customer" count={order.customer ? "Assigned" : "Quick sale"}>{#if order.customer && order.status === "draft"}<button class="k-btn k-btn-xs k-btn-danger" type="button" onclick={() => router.delete(actions.remove_customer)}>Remove</button>{/if}</PanelHeader>
         <div class="p-body" style="overflow:visible">
           {#if order.customer}<strong>{order.customer.name}</strong>{#if order.customer.alert}<div class="n-bar n-warn" style="margin:var(--space-2) calc(var(--space-3) * -1) calc(var(--space-3) * -1)">{order.customer.alert}</div>{/if}
-          {:else if order.status === "draft"}<div class="k-field"><label class="k-label" for="customer-search">Find customer</label><input id="customer-search" class="k-input" placeholder="Name, email, or phone…" bind:value={customerQuery} oninput={queueCustomerSearch} /></div>{#if customerLoading}<p class="k-hint">Searching live customers…</p>{/if}{#each customers as customer (customer.id)}<button class="list-row" style="width:100%" type="button" onclick={() => assignCustomer(customer)}><strong>{customer.name}</strong><span class="faint push">{customer.phone || customer.email}</span></button>{/each}
+          {:else if order.status === "draft"}<div class="k-field"><label class="k-label" for="customer-search">Find customer</label><input id="customer-search" class="k-input" placeholder="Name, member number, email, or phone…" autocomplete="off" bind:value={customerQuery} oninput={queueCustomerSearch} /></div>{#if customerSearch.loading || customerSearch.error}<p class="k-hint" role="status">{customerSearch.error || "Searching live customers…"}</p>{/if}{#each customerSearch.results as customer (customer.id)}<button class="list-row" style="width:100%" type="button" disabled={pendingCodes.length > 0} onclick={() => assignCustomer(customer)}><strong>{customer.name}</strong><span class="faint push">{customer.phone || customer.email}</span></button>{:else}{#if customerSearch.searched && !customerSearch.error}<p class="k-hint" role="status">No matching customers.</p>{/if}{/each}
           {:else}<span class="faint">Quick sale</span>{/if}
         </div>
         </section>
@@ -266,3 +333,8 @@
 
 {#if showCompletePrompt}<ConfirmModal id="complete_prompt_modal" title={`Complete ${order.number}?`} message={`Payment is complete. ${order.lines.length} line items will be finalized and inventory will be updated.`} confirmLabel="Complete order" oncancel={() => (showCompletePrompt = false)} onconfirm={completeOrder} />{/if}
 {#if showCancelPrompt}<ConfirmModal id="void_prompt_modal" title={`Void ${order.number}?`} message={`${order.lines.length} line items, ${order.payments.length} payments, and ${order.discounts.length + order.line_discounts.length} discounts will be reversed. This cannot be undone.`} confirmLabel="Void order" danger oncancel={() => (showCancelPrompt = false)} onconfirm={cancelOrder} />{/if}
+
+<style>
+  .register-lookup-results { flex-shrink: 0; max-height: 260px; overflow-y: auto; border-top: 1px solid var(--color-border); }
+  .register-lookup-results [aria-selected="true"] { background: var(--color-surface-alt); outline: 2px solid var(--color-border); outline-offset: -2px; }
+</style>

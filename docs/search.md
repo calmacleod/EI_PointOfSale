@@ -61,6 +61,36 @@ TaxCode.search("GST")
 
 ## Index maintenance
 
+### Register lookups
+
+The register uses `Registers::Lookup` against the live product, service, and customer tables. This avoids waiting for asynchronous multisearch indexing after catalog changes.
+
+- `GET /register/lookup?q=...` returns up to 12 compact product/service matches, with exact codes first, followed by word-prefix relevance and sales popularity. Cashiers can choose a result with the arrow keys and Enter or click it; services without codes are supported.
+- `GET /customers/search?q=...` uses indexed full-text prefix matching plus indexed customer-name typo matching. Phone numbers are also indexed without punctuation.
+- The input debounce is 75 ms. Repeated queries use a per-component memory cache for 30 seconds, capped at 50 entries. Superseded requests are aborted and guarded against late responses. The global palette uses the same behavior, and its cache resets when the signed-in user changes.
+- `POST /orders/quick_lookup` accepts JSON and returns the saved cart directly, avoiding the former redirect and register GET. Barcode submissions remain exact-code lookups. Result selections submit a whitelisted type and ID; prices and totals are always read and calculated on the server.
+- Scans are queued, show an immediate pending row, and save in order. Other Inertia visits are blocked until pending scans finish. Unconfirmed writes are displayed for review and never automatically retried. The saved cart replaces the Inertia history snapshot and invalidates prefetched pages.
+- Register tabs use grouped line counts instead of instantiating lines from every open order. Tax codes and line-discount parents are loaded in bulk, and cart edits reuse the discount calculation state.
+
+Migration `20261022180000` adds concurrent partial indexes for kept records: `(lower(code), id)` on products/services, full-text expression indexes on services/customers, and a customer-name trigram index. The `id` column lets exact barcode lookup retain its first-by-ID ordering without scanning unrelated rows. Apply this migration before deploying the lookup changes. No multisearch rebuild is required.
+
+#### Local performance check
+
+Run `RAILS_ENV=test bin/rails runner script/benchmark_register.rb` after migrating the test database. The script rejects other environments, inserts synthetic data inside a transaction, warms each query three times, measures 20 uncached calls, prints query plans, and rolls back its data. Run it separately from the test suite, which may recreate the test database.
+
+On October 22, 2026, with 20,001 synthetic customers, 20,001 products, and 2,000 services, one local run measured:
+
+| Lookup | Median | p95 |
+| --- | ---: | ---: |
+| Previous customer query (`Customer.kept.search`) | 137.40 ms | 149.93 ms |
+| Indexed customer query | 1.66 ms | 5.14 ms |
+| Register product/service search | 2.96 ms | 7.64 ms |
+| Exact barcode lookup | 0.55 ms | 2.97 ms |
+
+These are warm local service/query timings for a selective match, excluding HTTP, debounce, browser rendering, and production network latency. Broad prefixes match more rows. Query plans confirmed the customer search indexes and the barcode index were used.
+
+Regression coverage includes query counts for distinct-product carts and unrelated order tabs, real query plans, stale-response/cache behavior (`npm run test:javascript`), rapid scans, keyboard selection, checkout totals, discount removal, and browser history restoration.
+
 ### Rebuild after schema or `:against` changes
 
 When you add/remove searchable models, change `:against` columns, or bulk-import data bypassing callbacks:

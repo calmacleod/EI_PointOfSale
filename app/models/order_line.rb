@@ -50,7 +50,7 @@ class OrderLine < ApplicationRecord
 
     if order_line_discounts.loaded?
       order_line_discounts
-        .select { |discount| discount.excluded_quantity < quantity }
+        .select { |discount| !discount.destroyed? && discount.excluded_quantity < quantity }
         .sum(&:calculated_amount)
     else
       active_discounts.sum(:calculated_amount)

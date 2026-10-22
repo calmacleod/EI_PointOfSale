@@ -105,11 +105,12 @@ module Discounts
         discount_items = discount.discount_items.to_a
         denied_set = build_discountable_set(discount_items.select { |item| item.denied? })
         allowed_lines = lines.reject { |line| line_denied?(line, denied_set) }
+        existing_by_line = existing_line_discounts.index_by(&:order_line_id)
 
         allowed_lines.each do |line|
           next unless line.persisted?
 
-          existing = existing_line_discounts.find { |ld| ld.order_line_id == line.id }
+          existing = existing_by_line[line.id]
 
           if existing
             restore_if_excluded(existing)
@@ -127,7 +128,7 @@ module Discounts
         end
 
         # Remove discounts for lines that are now denied
-        line_ids = allowed_lines.map(&:id)
+        line_ids = allowed_lines.map(&:id).to_set
         existing_line_discounts.each do |existing|
           unless line_ids.include?(existing.order_line_id) || existing.excluded?
             existing.destroy!
@@ -159,7 +160,8 @@ module Discounts
         to_remove = existing_discounts.reject do |od|
           applicable.key?(od.discount_id) || od.discount_id == customer_discount_id
         end
-        to_add = applicable.reject { |id, _| existing_discounts.any? { |od| od.discount_id == id } }
+        existing_discount_ids = existing_discounts.map(&:discount_id).to_set
+        to_add = applicable.reject { |id, _| existing_discount_ids.include?(id) }
 
         # Remove outdated order discounts
         to_remove.each(&:destroy)
@@ -181,12 +183,13 @@ module Discounts
 
         applicable_discounts.each do |discount, matching_lines|
           existing_for_discount = existing_by_discount[discount.id] || []
+          existing_by_line = existing_for_discount.index_by(&:order_line_id)
 
           matching_lines.each do |line|
             # Skip lines that have been destroyed since loading
             next unless line.persisted?
 
-            existing = existing_for_discount.find { |ld| ld.order_line_id == line.id }
+            existing = existing_by_line[line.id]
 
             if existing
               # Restore if it was excluded (user changed their mind)
@@ -199,7 +202,7 @@ module Discounts
 
           # Mark line discounts as removed if the line no longer qualifies
           # (e.g., line deleted or discount rules changed)
-          line_ids = matching_lines.map(&:id)
+          line_ids = matching_lines.map(&:id).to_set
           existing_for_discount.each do |existing|
             unless line_ids.include?(existing.order_line_id) || existing.excluded?
               existing.destroy!
@@ -209,7 +212,7 @@ module Discounts
 
         # Clean up line discounts for discounts that no longer apply to any lines
         # BUT exclude discounts associated with customers (handled separately by sync_customer_discount)
-        applicable_discount_ids = applicable_discounts.keys.map(&:id)
+        applicable_discount_ids = applicable_discounts.keys.map(&:id).to_set
         existing_line_discounts.each do |line_discount|
           next if applicable_discount_ids.include?(line_discount.source_discount_id)
           # Skip customer discounts - they are managed by sync_customer_discount

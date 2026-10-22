@@ -6,7 +6,7 @@ class RegisterController < ApplicationController
   REGISTER_INCLUDES = [
     :customer,
     :created_by,
-    { order_lines: [ :sellable, :order_line_discounts, :refund_lines ] },
+    { order_lines: [ :order_line_discounts, :refund_lines ] },
     :order_discounts,
     :order_payments
   ].freeze
@@ -26,9 +26,15 @@ class RegisterController < ApplicationController
     @active_orders = Order
       .where(status: :draft)
       .or(Order.where(id: @order.id, status: :held))
-      .includes(:customer, :order_lines)
+      .includes(:customer)
       .order(created_at: :desc)
+    @active_order_line_counts = OrderLine.where(order_id: @active_orders.select(:id)).group(:order_id).count
     @held_count = Order.held.count
+  end
+
+  def lookup
+    authorize! :show, :register
+    render json: { results: Registers::Lookup.items(params[:q]) }
   end
 
   def new_order

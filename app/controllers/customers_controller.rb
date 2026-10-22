@@ -66,7 +66,7 @@ class CustomersController < ApplicationController
     @query = params[:q].to_s.strip
 
     if @query.length >= 1
-      @customers = Customer.kept.search(@query)
+      @customers = Registers::Lookup.customers(@query)
 
       filter = params[:filter].to_s
       @customers = @customers.where(active: true) if filter == "active"

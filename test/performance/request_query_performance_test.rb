@@ -94,6 +94,51 @@ class RequestQueryPerformanceTest < ActionDispatch::IntegrationTest
     assert_equal 15, response.parsed_body.fetch("results").length
   end
 
+  test "register item lookup uses two catalog queries without loading associations" do
+    queries = assert_queries_at_most(4, label: "Register item lookup") do
+      get lookup_register_path, params: { q: "Dragon" }, as: :json
+    end
+    assert_response :success
+    assert_equal 2, queries.count { |sql| sql.include?('FROM "products"') || sql.include?('FROM "services"') }
+  end
+
+  test "scanning a cart of distinct products preloads sellable tax codes" do
+    order = orders(:draft_order)
+    24.times do |index|
+      product = Product.create!(code: "SCAN-PERF-#{index}", name: "Scan item #{index}", selling_price: 10, tax_code: tax_codes(:one))
+      add_order_line(order, product, index + 1)
+    end
+    queries = capture_sql_queries do
+      post quick_lookup_orders_path, params: { order_id: order.id, code: "SCAN-PERF-0" }, as: :json
+    end
+    assert_response :success
+    assert_operator queries.count { |sql| sql.include?('FROM "tax_codes"') }, :<=, 3,
+      "Tax code reads must stay bounded when every cart line is a different product"
+    assert_operator queries.size, :<=, 40
+  end
+
+  test "register tabs count unrelated order lines without loading them" do
+    other_order = Order.create!(created_by: @admin)
+    20.times { |index| add_order_line(other_order, products(:dragon_shield_red), index + 1) }
+    queries = capture_sql_queries { get register_path(order_id: orders(:draft_order).id) }
+    assert_response :success
+    tab = inertia_props.fetch("active_orders").find { |item| item.fetch("id") == other_order.id }
+    assert_equal 20, tab.fetch("line_count")
+    line_reads = queries.select { |sql| sql.include?('FROM "order_lines"') && !sql.include?("COUNT(") }
+    assert_equal 1, line_reads.size, line_reads.join("\n")
+  end
+
+  test "totals reuse preloaded line discounts instead of fetching each parent line" do
+    order = orders(:draft_order)
+    12.times do |index|
+      add_order_line(order, products(:dragon_shield_red), index + 1)
+      order.order_lines.last.order_line_discounts.create!(name: "Manual", discount_type: :percentage, value: 5)
+    end
+    queries = capture_sql_queries { Orders::CalculateTotals.call(order.reload) }
+    line_reads = queries.select { |sql| sql.include?('FROM "order_lines"') }
+    assert_equal 1, line_reads.size, line_reads.join("\n")
+  end
+
   private
 
     def add_order_line(order, product, position)

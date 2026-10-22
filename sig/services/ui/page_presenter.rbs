@@ -18,6 +18,8 @@ module Ui
 
     def call: () -> Hash[Symbol, untyped]
 
+    def register_order: () -> untyped
+
     private
 
     attr_reader controller: untyped
@@ -46,7 +48,7 @@ module Ui
 
     def dashboard_props: () -> { view: "dashboard", title: "Dashboard", description: untyped, metrics: untyped, metrics_last_updated: untyped, drawer: untyped, recent_orders: untyped, tasks: untyped, actions: { register: untyped, orders: untyped, tasks: untyped, cash_drawer: untyped, open_drawer: untyped, close_drawer: untyped }, section_titles: ::Array["Recent orders" | "Your tasks"] }
 
-    def register_props: () -> { view: "register", title: "Register", order: untyped, active_orders: untyped, held_count: untyped, actions: { register: untyped, new_order: untyped, held: untyped, quick_lookup: untyped, hold: untyped, resume: untyped, complete: untyped, cancel: untyped, update: untyped, assign_customer: untyped, remove_customer: untyped, customer_search: untyped, payment: untyped, discount: untyped, gift_certificate: untyped } }
+    def register_props: () -> { view: "register", title: "Register", order: untyped, active_orders: untyped, held_count: untyped, actions: { register: untyped, new_order: untyped, held: untyped, quick_lookup: untyped, item_search: untyped, hold: untyped, resume: untyped, complete: untyped, cancel: untyped, update: untyped, assign_customer: untyped, remove_customer: untyped, customer_search: untyped, payment: untyped, discount: untyped, gift_certificate: untyped } }
 
     def reports_props: () -> untyped
 
@@ -150,7 +152,7 @@ module Ui
 
     def safe_attributes: (untyped record, untyped keys) -> (nil | untyped)
 
-    def order_summary: (untyped order) -> { id: untyped, number: untyped, status: untyped, customer: untyped, total: untyped, line_count: untyped, created_at: untyped, path: untyped, register_path: untyped }
+    def order_summary: (untyped order, ?line_count: untyped) -> { id: untyped, number: untyped, status: untyped, customer: untyped, total: untyped, line_count: untyped, created_at: untyped, path: untyped, register_path: untyped }
 
     def order_props: (untyped order) -> (nil | { id: untyped, number: untyped, status: untyped, customer: untyped, created_by: untyped, notes: untyped, tax_exempt: untyped, subtotal: untyped, discount_total: untyped, tax_total: untyped, total: untyped, amount_paid: untyped, balance_due: untyped, balance_due_value: untyped, payment_complete: untyped, completed_at: untyped, lines: untyped, discounts: untyped, line_discounts: untyped, payments: untyped })
 

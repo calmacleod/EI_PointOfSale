@@ -127,6 +127,10 @@ class Product
   end
 end
 
+class Service
+  def self.kept: () -> Service::ActiveRecord_Relation
+end
+
 class TaxCode
   def self.kept: () -> TaxCode::ActiveRecord_Relation
 end

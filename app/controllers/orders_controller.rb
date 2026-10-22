@@ -123,8 +123,8 @@ class OrdersController < ApplicationController
   def assign_customer
     customer = Customer.find(params[:customer_id])
     @order.update!(customer: customer)
-    Discounts::AutoApply.call(@order)
-    Orders::CalculateTotals.call(@order)
+    state = Discounts::AutoApply.call(@order)
+    Orders::CalculateTotals.call(@order, state:)
     Orders::RecordEvent.call(
       order: @order, event_type: "customer_assigned", actor: current_user,
       data: { customer_name: customer.name, customer_id: customer.id }
@@ -135,8 +135,8 @@ class OrdersController < ApplicationController
 
   def remove_customer
     @order.update!(customer: nil)
-    Discounts::AutoApply.call(@order)
-    Orders::CalculateTotals.call(@order)
+    state = Discounts::AutoApply.call(@order)
+    Orders::CalculateTotals.call(@order, state:)
     Orders::RecordEvent.call(
       order: @order, event_type: "customer_removed", actor: current_user
     )
@@ -181,21 +181,44 @@ class OrdersController < ApplicationController
     code = params[:code].to_s.strip
     order_id = params[:order_id]
     order = Order.find(order_id)
+    authorize! :update, order
 
-    sellable = Product.find_by_exact_code(code) || Service.find_by_exact_code(code)
-
-    if sellable
-      OrderLines::Add.call(
-        order: order,
-        sellable: sellable,
-        actor: current_user,
-        quantity: 1,
-        increment_if_exists: true
-      )
-
-      redirect_to register_path(order_id: order.id)
+    sellable = if params[:sellable_id].present?
+      case params[:sellable_type]
+      when "Product" then Product.kept.find_by(id: params[:sellable_id])
+      when "Service" then Service.kept.find_by(id: params[:sellable_id])
+      end
     else
-      redirect_to register_path(order_id: order_id), alert: "No product or service found with code: #{code}"
+      Product.find_by_exact_code(code) || Service.find_by_exact_code(code)
+    end
+
+    error = order.with_lock do
+      if !order.draft?
+        "Only draft orders can be modified."
+      elsif sellable
+        result = OrderLines::Add.call(
+          order: order,
+          sellable: sellable,
+          actor: current_user,
+          quantity: 1,
+          increment_if_exists: true
+        )
+        result.error unless result.success?
+      else
+        "No product or service found with code: #{code}"
+      end
+    end
+
+    respond_to do |format|
+      format.html { redirect_to register_path(order_id: order.id), alert: error }
+      format.json do
+        if error
+          render json: { error: error }, status: :unprocessable_entity
+        else
+          @order = Order.includes(*RegisterController::REGISTER_INCLUDES).find(order.id)
+          render json: { order: Ui::PagePresenter.new(self).register_order }
+        end
+      end
     end
   end
 

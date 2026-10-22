@@ -42,16 +42,16 @@ module Orders
       end
 
       def load_line_discounts(lines)
-        if (line_discounts = @line_discounts)
-          return line_discounts.reject(&:destroyed?).group_by(&:order_line_id)
-        end
-
-        line_ids = lines.map(&:id)
-        OrderLineDiscount.where(order_line_id: line_ids).to_a.group_by(&:order_line_id)
+        discounts = @line_discounts || lines.flat_map { |line| line.order_line_discounts.to_a }
+        discounts.reject(&:destroyed?).group_by(&:order_line_id)
       end
 
       def recalculate_line_taxes(lines)
         customer_tax_code = @order.customer&.tax_code
+        unless customer_tax_code
+          taxable_sellables = lines.reject { |line| line.sellable_type == "GiftCertificate" }.filter_map(&:sellable)
+          ActiveRecord::Associations::Preloader.new(records: taxable_sellables, associations: :tax_code).call
+        end
 
         lines_to_update = []
 

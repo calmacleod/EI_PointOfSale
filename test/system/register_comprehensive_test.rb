@@ -494,7 +494,8 @@ class RegisterComprehensiveTest < ApplicationSystemTestCase
     initial_count = Order.draft.count
 
     click_button "New order"
-    assert_current_path register_path, wait: 5
+    assert_selector "[data-order-id]", count: initial_count + 1, wait: 5
+    assert_current_path register_path, ignore_query: true
 
     assert Order.draft.count > initial_count
   end

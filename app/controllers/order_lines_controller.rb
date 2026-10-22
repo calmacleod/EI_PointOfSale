@@ -25,8 +25,8 @@ class OrderLinesController < ApplicationController
     old_qty = @order_line.quantity
     new_qty = params[:order_line][:quantity].to_i
     @order_line.update!(quantity: new_qty)
-    Discounts::AutoApply.call(@order_line.order)
-    Orders::CalculateTotals.call(@order_line.order)
+    state = Discounts::AutoApply.call(@order_line.order)
+    Orders::CalculateTotals.call(@order_line.order, state:)
     enqueue_committed_sync(@order_line, new_qty - old_qty)
     Orders::RecordEvent.call(
       order: @order_line.order, event_type: "line_quantity_changed", actor: current_user,
@@ -45,8 +45,8 @@ class OrderLinesController < ApplicationController
     qty = @order_line.quantity
     @order_line.destroy!
     enqueue_committed_sync(@order_line, -qty)
-    Discounts::AutoApply.call(order)
-    Orders::CalculateTotals.call(order)
+    state = Discounts::AutoApply.call(order)
+    Orders::CalculateTotals.call(order, state:)
     Orders::RecordEvent.call(
       order: order, event_type: "line_removed", actor: current_user,
       data: { name: name }

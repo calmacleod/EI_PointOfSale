@@ -351,7 +351,7 @@
   </main>
 {/if}
 
-<CommandPalette open={searchOpen} onclose={() => (searchOpen = false)} />
+{#key auth.id}<CommandPalette open={searchOpen} onclose={() => (searchOpen = false)} />{/key}
 
 {#if toast}
   <div class="toast" style="position:fixed;right:var(--space-4);bottom:calc(var(--statusbar-height) + var(--space-4));z-index:70" role="status">

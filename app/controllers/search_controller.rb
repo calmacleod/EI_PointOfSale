@@ -17,7 +17,9 @@ class SearchController < ApplicationController
         exact_keys = exact.map { |r| [ r[:type], r[:record_id] ] }.to_set
         docs = PgSearch.multisearch(query)
         docs = docs.where(searchable_type: type_filter) if type_filter.present?
-        docs = docs.limit(limit)
+        docs = docs.limit(limit).preload(:searchable).to_a
+        products = docs.filter_map { |doc| doc.searchable if doc.searchable_type == "Product" }
+        ActiveRecord::Associations::Preloader.new(records: products, associations: :supplier).call
         fuzzy = docs.filter_map { |doc| search_result_for(doc) }
         fuzzy.reject! { |r| exact_keys.include?([ r[:type], r[:record_id] ]) }
         @results = exact + fuzzy.first(remaining)
@@ -108,7 +110,7 @@ class SearchController < ApplicationController
       results = []
 
       if type_filter.nil? || type_filter == "Product"
-        Product.kept.where("sales_count > 0").order(sales_count: :desc).limit(limit).each do |product|
+        Product.kept.includes(:supplier).where("sales_count > 0").order(sales_count: :desc).limit(limit).each do |product|
           results << { type: "Product", record: product }
         end
       end

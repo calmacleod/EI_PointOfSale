@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_06_151040) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_22_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -132,6 +132,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_151040) do
     t.string "status_card_number"
     t.bigint "tax_code_id"
     t.datetime "updated_at", null: false
+    t.index "lower((name)::text) gin_trgm_ops", name: "index_customers_on_name_trigram", where: "(discarded_at IS NULL)", using: :gin
+    t.index "to_tsvector('simple'::regconfig, (((((((((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(member_number, ''::character varying))::text) || ' '::text) || (COALESCE(email, ''::character varying))::text) || ' '::text) || (COALESCE(phone, ''::character varying))::text) || ' '::text) || regexp_replace((COALESCE(phone, ''::character varying))::text, '[^0-9]'::text, ''::text, 'g'::text)))", name: "index_customers_on_register_search", where: "(discarded_at IS NULL)", using: :gin
     t.index ["added_by_id"], name: "index_customers_on_added_by_id"
     t.index ["discarded_at"], name: "index_customers_on_discarded_at"
     t.index ["discarded_at"], name: "index_customers_on_discarded_at_null", where: "(discarded_at IS NULL)"
@@ -390,6 +392,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_151040) do
     t.bigint "tax_code_id"
     t.decimal "unit_cost", precision: 10, scale: 2
     t.datetime "updated_at", null: false
+    t.index "lower((code)::text), id", name: "index_products_on_kept_lower_code", where: "(discarded_at IS NULL)"
     t.index ["added_by_id"], name: "index_products_on_added_by_id"
     t.index ["code"], name: "index_products_on_code", unique: true
     t.index ["discarded_at", "code"], name: "index_products_on_discarded_at_and_code"
@@ -515,6 +518,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_06_151040) do
     t.integer "sales_count", default: 0, null: false
     t.bigint "tax_code_id"
     t.datetime "updated_at", null: false
+    t.index "lower((code)::text), id", name: "index_services_on_kept_lower_code", where: "(discarded_at IS NULL)"
+    t.index "to_tsvector('simple'::regconfig, (((((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(code, ''::character varying))::text) || ' '::text) || COALESCE(description, ''::text)))", name: "index_services_on_register_search", where: "(discarded_at IS NULL)", using: :gin
     t.index ["added_by_id"], name: "index_services_on_added_by_id"
     t.index ["code"], name: "index_services_on_code", unique: true
     t.index ["discarded_at"], name: "index_services_on_discarded_at"

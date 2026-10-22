@@ -1,5 +1,7 @@
 <script>
   import { router } from "@inertiajs/svelte"
+  import { onMount } from "svelte"
+  import { createLiveSearch } from "../../lib/live-search.js"
   import Search from "@lucide/svelte/icons/search"
 
   export let open = false
@@ -9,27 +11,33 @@
   let results = []
   let loading = false
   let activeIndex = 0
-  let timer
+  let lookup
+  let wasOpen = false
+  let error = ""
   let input
 
-  $: if (open) {
+  onMount(() => {
+    lookup = createLiveSearch({ url: "/search.json?limit=12", minLength: 0, onChange: (state) => {
+      results = state.results
+      loading = state.loading
+      error = state.error
+      activeIndex = 0
+    } })
+    return () => lookup.destroy()
+  })
+
+  $: if (open && !wasOpen) {
+    wasOpen = true
     window.setTimeout(() => input?.focus(), 0)
-    if (!query && !results.length) search()
+    search()
+  } else if (!open && wasOpen) {
+    wasOpen = false
+    lookup?.cancel()
+    query = ""
+    results = []
   }
 
-  async function search() {
-    if (timer) window.clearTimeout(timer)
-    timer = window.setTimeout(async () => {
-      loading = true
-      try {
-        const response = await fetch(`/search.json?q=${encodeURIComponent(query)}&limit=12`, { headers: { Accept: "application/json" } })
-        results = (await response.json()).results || []
-        activeIndex = 0
-      } finally {
-        loading = false
-      }
-    }, query ? 90 : 0)
-  }
+  function search() { lookup?.search(query) }
 
   function choose(result) {
     onclose()
@@ -66,7 +74,7 @@
             <kbd>↵</kbd>
           </button>
         {:else}
-          <div class="n-empty"><p class="n-empty-title">No results</p><p class="n-empty-body">Try a name, SKU, barcode, email, or order number.</p></div>
+          <div class="n-empty"><p class="n-empty-title">{error || "No results"}</p><p class="n-empty-body">Try a name, SKU, barcode, email, or order number.</p></div>
         {/each}
       {/if}
     </div>
