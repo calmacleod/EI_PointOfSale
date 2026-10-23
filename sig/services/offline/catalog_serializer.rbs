@@ -1,0 +1,10 @@
+module Offline
+  class CatalogSerializer
+    FIELDS: Hash[untyped, Array[Symbol]]
+    ASSOCIATIONS: Hash[untyped, Hash[Symbol, [untyped, Symbol]]]
+    JOINS: Hash[untyped, Array[Symbol]]
+
+    def self.rows: (untyped scope) -> Array[Hash[Symbol, untyped]]
+    def self.record: (Hash[Symbol, untyped] row) -> Hash[Symbol, untyped]
+  end
+end

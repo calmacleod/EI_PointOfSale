@@ -963,6 +963,46 @@ class ::Customer < ::ApplicationRecord
     def discount_id_before_type_cast: () -> ::Integer?
 
     def discount_id_for_database: () -> ::Integer?
+
+    def search_vector: () -> untyped
+
+    def search_vector=: (untyped) -> untyped
+
+    def search_vector?: () -> bool
+
+    def search_vector_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def search_vector_change: () -> [ untyped, untyped ]
+
+    def search_vector_will_change!: () -> void
+
+    def search_vector_was: () -> untyped
+
+    def search_vector_previously_changed?: (?from: untyped, ?to: untyped) -> bool
+
+    def search_vector_previous_change: () -> ::Array[untyped]?
+
+    def search_vector_previously_was: () -> untyped
+
+    def search_vector_before_last_save: () -> untyped
+
+    def search_vector_change_to_be_saved: () -> ::Array[untyped]?
+
+    def search_vector_in_database: () -> untyped
+
+    def saved_change_to_search_vector: () -> ::Array[untyped]?
+
+    def saved_change_to_search_vector?: (?from: untyped, ?to: untyped) -> bool
+
+    def will_save_change_to_search_vector?: (?from: untyped, ?to: untyped) -> bool
+
+    def restore_search_vector!: () -> void
+
+    def clear_search_vector_change: () -> void
+
+    def search_vector_before_type_cast: () -> untyped?
+
+    def search_vector_for_database: () -> untyped?
   end
   include ::Customer::GeneratedAttributeMethods
   module ::Customer::GeneratedAliasAttributeMethods

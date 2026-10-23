@@ -2,7 +2,7 @@
 
 ## Shell Setup
 
-- **mise** manages Ruby (4.0.1); **nvm** manages Node
+- **mise** manages Ruby (4.0.8); **nvm** manages Node
 - Prefix every command:
   - Ruby/Rails: `source ~/.zshrc && eval "$(mise activate zsh)" && <cmd>`
   - Node/npx:  `source ~/.zshrc && nvm use && <cmd>`
@@ -27,7 +27,7 @@ env RAILS_ENV=test bin/rails db:seed:replant  # Reset test DB
 
 ## Stack
 
-- **Ruby 4.0.1 / Rails 8.1** — Inertia Rails, Vite Ruby, Svelte 5, Tailwind
+- **Ruby 4.0.8 / Rails 8.1** — Inertia Rails, Vite Ruby, Svelte 5, Tailwind
 - **PostgreSQL** — multi-DB (primary, queue, cable, cache)
 - **Solid Queue / Solid Cache / Solid Cable**
 - **Minitest** (not RSpec), fixtures (not factories)

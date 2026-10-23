@@ -1,22 +1,22 @@
-#!/bin/sh
-# Warm up the Rails app after boot so the first real user requests are fast.
-# Fires after the healthcheck passes but before the proxy routes traffic here.
+#!/usr/bin/env ruby
+# Kamal runs this locally, after proxy routing switches to the booted app.
+# Warm the public login page, including HTML rendering; /up is only liveness.
+require "yaml"
+require "uri"
+require "open3"
 
-APP_HOST="localhost"
-APP_PORT="${KAMAL_CONTAINER_NAME:+$(docker inspect --format='{{(index (index .NetworkSettings.Ports "3000/tcp") 0).HostPort}}' "$KAMAL_CONTAINER_NAME" 2>/dev/null)}"
-APP_PORT="${APP_PORT:-3000}"
+app_url = ENV["KAMAL_WARMUP_URL"] || YAML.load_file(File.expand_path("../../config/deploy.yml", __dir__), aliases: true).dig("env", "clear", "APP_URL")
+uri = URI.parse(app_url.to_s)
+abort "Warm-up requires an absolute HTTP(S) APP_URL or KAMAL_WARMUP_URL" unless %w[http https].include?(uri.scheme) && uri.host
 
-echo "Warming up $KAMAL_SERVICE_NAME on $KAMAL_HOSTS (container port $APP_PORT)..."
-
-# Hit the app several times via its exposed port on the host to warm YJIT,
-# DB connection pool, and template cache before real traffic arrives.
-# /up        — exercises Rack middleware + DB ping
-# /session/new — exercises router, view rendering, asset helpers
-for i in $(seq 1 5); do
-  curl --silent --output /dev/null --max-time 10 \
-    "http://${APP_HOST}:${APP_PORT}/up" || true
-  curl --silent --output /dev/null --max-time 10 \
-    "http://${APP_HOST}:${APP_PORT}/session/new" || true
-done
-
-echo "Warm-up complete."
+puts "Warming #{ENV.fetch('KAMAL_SERVICE', 'application')} through #{uri.host} after deployment..."
+5.times do
+  %w[/up /session/new].each do |path|
+    url = URI.join(app_url, path).to_s
+    code, error, status = Open3.capture3("curl", "--silent", "--show-error", "--fail",
+      "--connect-timeout", "5", "--max-time", "15", "--retry", "2", "--retry-connrefused",
+      "--output", File::NULL, "--write-out", "%{http_code}", "--header", "Accept: text/html", url)
+    abort "Warm-up failed for #{path}: HTTP #{code.strip} #{error.strip}" unless status.success? && code.strip == "200"
+  end
+end
+puts "Warm-up complete (liveness and login HTML)."

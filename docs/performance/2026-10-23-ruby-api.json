@@ -1,0 +1,1236 @@
+{
+  "date": "2026-10-23",
+  "code_baseline": "2862d64eb9ca362cffabcac25efc4ab709d9ca06",
+  "ruby": "4.0.9",
+  "platform": "aarch64-linux",
+  "container_cpus": 2,
+  "container_memory_gib": 2,
+  "synthetic_rows": {
+    "products": 20000,
+    "customers": 20000,
+    "services": 2000
+  },
+  "method": "Sequential Rack integration requests; 3 fresh processes per mode in rotated order; medians of run medians; test environment with eager loading, memory cache, APM off and real PostgreSQL; no HTTP/TLS/browser/network timing. Each synthetic dataset is rolled back.",
+  "endpoints": {
+    "register_popular": {
+      "interpreter": {
+        "median_ms": 3.204,
+        "p95_ms": 4.951,
+        "cpu_ms_per_request": 2.078,
+        "allocated_objects_per_request": 2390,
+        "response_bytes": 1179,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          2.259,
+          3.204,
+          3.459
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 1.703,
+        "p95_ms": 2.413,
+        "cpu_ms_per_request": 0.787,
+        "allocated_objects_per_request": 2405,
+        "response_bytes": 1179,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          2.452,
+          1.703,
+          1.638
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 3.179,
+        "p95_ms": 4.619,
+        "cpu_ms_per_request": 1.952,
+        "allocated_objects_per_request": 2396,
+        "response_bytes": 1179,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          4.039,
+          3.179,
+          2.101
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "register_exact": {
+      "interpreter": {
+        "median_ms": 8.241,
+        "p95_ms": 11.672,
+        "cpu_ms_per_request": 2.747,
+        "allocated_objects_per_request": 2346,
+        "response_bytes": 200,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          3.003,
+          8.241,
+          11.666
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 6.024,
+        "p95_ms": 7.809,
+        "cpu_ms_per_request": 1.077,
+        "allocated_objects_per_request": 2367,
+        "response_bytes": 200,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          3.996,
+          6.024,
+          6.944
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 7.185,
+        "p95_ms": 10.214,
+        "cpu_ms_per_request": 2.374,
+        "allocated_objects_per_request": 2356,
+        "response_bytes": 200,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          7.185,
+          6.676,
+          8.921
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "register_search": {
+      "interpreter": {
+        "median_ms": 3.111,
+        "p95_ms": 4.633,
+        "cpu_ms_per_request": 2.014,
+        "allocated_objects_per_request": 2327,
+        "response_bytes": 105,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          2.369,
+          3.111,
+          3.478
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 1.782,
+        "p95_ms": 2.498,
+        "cpu_ms_per_request": 0.828,
+        "allocated_objects_per_request": 2348,
+        "response_bytes": 105,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          1.87,
+          1.72,
+          1.782
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 2.661,
+        "p95_ms": 3.905,
+        "cpu_ms_per_request": 1.589,
+        "allocated_objects_per_request": 2337,
+        "response_bytes": 105,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          2.661,
+          3.134,
+          2.273
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "register_broad_search": {
+      "interpreter": {
+        "median_ms": 21.465,
+        "p95_ms": 22.573,
+        "cpu_ms_per_request": 2.752,
+        "allocated_objects_per_request": 2790,
+        "response_bytes": 1179,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          16.901,
+          21.465,
+          27.359
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 21.794,
+        "p95_ms": 24.576,
+        "cpu_ms_per_request": 1.699,
+        "allocated_objects_per_request": 2811,
+        "response_bytes": 1179,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          15.681,
+          21.794,
+          23.697
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 22.747,
+        "p95_ms": 25.547,
+        "cpu_ms_per_request": 3.27,
+        "allocated_objects_per_request": 2800,
+        "response_bytes": 1179,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          21.18,
+          22.747,
+          26.381
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "customer_search": {
+      "interpreter": {
+        "median_ms": 2.55,
+        "p95_ms": 3.763,
+        "cpu_ms_per_request": 1.641,
+        "allocated_objects_per_request": 2232,
+        "response_bytes": 217,
+        "sql_count": 4,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          3.34,
+          2.256,
+          2.55
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 1.978,
+        "p95_ms": 2.707,
+        "cpu_ms_per_request": 0.994,
+        "allocated_objects_per_request": 2252,
+        "response_bytes": 217,
+        "sql_count": 4,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          1.717,
+          2.017,
+          1.978
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 2.79,
+        "p95_ms": 4.386,
+        "cpu_ms_per_request": 1.781,
+        "allocated_objects_per_request": 2239,
+        "response_bytes": 217,
+        "sql_count": 4,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          2.438,
+          2.79,
+          3.617
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "customer_broad_search": {
+      "interpreter": {
+        "median_ms": 246.336,
+        "p95_ms": 258.772,
+        "cpu_ms_per_request": 3.342,
+        "allocated_objects_per_request": 2560,
+        "response_bytes": 3106,
+        "sql_count": 4,
+        "instantiated_records": 18,
+        "run_medians_ms": [
+          241.795,
+          246.336,
+          255.2
+        ],
+        "warmup_per_run": 20,
+        "samples_per_run": 50
+      },
+      "yjit": {
+        "median_ms": 253.443,
+        "p95_ms": 263.495,
+        "cpu_ms_per_request": 2.204,
+        "allocated_objects_per_request": 2579,
+        "response_bytes": 3106,
+        "sql_count": 4,
+        "instantiated_records": 18,
+        "run_medians_ms": [
+          240.842,
+          253.443,
+          269.257
+        ],
+        "warmup_per_run": 20,
+        "samples_per_run": 50
+      },
+      "zjit": {
+        "median_ms": 253.213,
+        "p95_ms": 264.955,
+        "cpu_ms_per_request": 3.236,
+        "allocated_objects_per_request": 2567,
+        "response_bytes": 3106,
+        "sql_count": 4,
+        "instantiated_records": 18,
+        "run_medians_ms": [
+          253.213,
+          243.548,
+          262.073
+        ],
+        "warmup_per_run": 20,
+        "samples_per_run": 50
+      }
+    },
+    "inventory_lookup": {
+      "interpreter": {
+        "median_ms": 2.751,
+        "p95_ms": 3.204,
+        "cpu_ms_per_request": 1.807,
+        "allocated_objects_per_request": 2062,
+        "response_bytes": 134,
+        "sql_count": 4,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          2.751,
+          2.326,
+          2.768
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 1.958,
+        "p95_ms": 2.674,
+        "cpu_ms_per_request": 1.06,
+        "allocated_objects_per_request": 2077,
+        "response_bytes": 134,
+        "sql_count": 4,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          1.47,
+          1.981,
+          1.958
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 2.613,
+        "p95_ms": 3.821,
+        "cpu_ms_per_request": 1.659,
+        "allocated_objects_per_request": 2067,
+        "response_bytes": 134,
+        "sql_count": 4,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          1.985,
+          2.613,
+          3.241
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "global_search": {
+      "interpreter": {
+        "median_ms": 3.399,
+        "p95_ms": 4.549,
+        "cpu_ms_per_request": 2.162,
+        "allocated_objects_per_request": 2731,
+        "response_bytes": 158,
+        "sql_count": 6,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          3.399,
+          3.067,
+          4.277
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 2.473,
+        "p95_ms": 3.607,
+        "cpu_ms_per_request": 1.284,
+        "allocated_objects_per_request": 2763,
+        "response_bytes": 158,
+        "sql_count": 6,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          2.245,
+          2.473,
+          2.975
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 3.529,
+        "p95_ms": 5.308,
+        "cpu_ms_per_request": 2.37,
+        "allocated_objects_per_request": 2741,
+        "response_bytes": 158,
+        "sql_count": 6,
+        "instantiated_records": 4,
+        "run_medians_ms": [
+          2.778,
+          3.712,
+          3.529
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "product_page": {
+      "interpreter": {
+        "median_ms": 9.484,
+        "p95_ms": 11.804,
+        "cpu_ms_per_request": 7.958,
+        "allocated_objects_per_request": 13009,
+        "response_bytes": 9624,
+        "sql_count": 6,
+        "instantiated_records": 30,
+        "run_medians_ms": [
+          9.484,
+          7.935,
+          10.599
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 4.873,
+        "p95_ms": 6.809,
+        "cpu_ms_per_request": 3.67,
+        "allocated_objects_per_request": 13078,
+        "response_bytes": 9624,
+        "sql_count": 6,
+        "instantiated_records": 30,
+        "run_medians_ms": [
+          4.551,
+          4.873,
+          5.888
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 6.415,
+        "p95_ms": 8.173,
+        "cpu_ms_per_request": 5.294,
+        "allocated_objects_per_request": 13145,
+        "response_bytes": 9624,
+        "sql_count": 6,
+        "instantiated_records": 30,
+        "run_medians_ms": [
+          6.415,
+          6.368,
+          6.561
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "register_page": {
+      "interpreter": {
+        "median_ms": 11.476,
+        "p95_ms": 14.336,
+        "cpu_ms_per_request": 8.002,
+        "allocated_objects_per_request": 11904,
+        "response_bytes": 5862,
+        "sql_count": 13,
+        "instantiated_records": 18,
+        "run_medians_ms": [
+          11.56,
+          8.831,
+          11.476
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 7.588,
+        "p95_ms": 9.716,
+        "cpu_ms_per_request": 4.453,
+        "allocated_objects_per_request": 12058,
+        "response_bytes": 5889,
+        "sql_count": 13,
+        "instantiated_records": 18,
+        "run_medians_ms": [
+          9.331,
+          6.565,
+          7.588
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 8.804,
+        "p95_ms": 11.746,
+        "cpu_ms_per_request": 6.023,
+        "allocated_objects_per_request": 12144,
+        "response_bytes": 5862,
+        "sql_count": 13,
+        "instantiated_records": 18,
+        "run_medians_ms": [
+          7.916,
+          9.098,
+          8.804
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "products_delta": {
+      "interpreter": {
+        "median_ms": 6.213,
+        "p95_ms": 7.515,
+        "cpu_ms_per_request": 2.222,
+        "allocated_objects_per_request": 2250,
+        "response_bytes": 72,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          4.277,
+          6.213,
+          8.923
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 5.875,
+        "p95_ms": 7.282,
+        "cpu_ms_per_request": 1.389,
+        "allocated_objects_per_request": 2265,
+        "response_bytes": 72,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          3.881,
+          5.875,
+          7.02
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 5.986,
+        "p95_ms": 6.92,
+        "cpu_ms_per_request": 2.221,
+        "allocated_objects_per_request": 2255,
+        "response_bytes": 72,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          5.986,
+          5.409,
+          8.191
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "customers_delta": {
+      "interpreter": {
+        "median_ms": 3.993,
+        "p95_ms": 5.72,
+        "cpu_ms_per_request": 2.097,
+        "allocated_objects_per_request": 2145,
+        "response_bytes": 73,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          3.993,
+          3.806,
+          5.866
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "yjit": {
+        "median_ms": 3.473,
+        "p95_ms": 4.876,
+        "cpu_ms_per_request": 1.128,
+        "allocated_objects_per_request": 2160,
+        "response_bytes": 73,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          4.418,
+          3.031,
+          3.473
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      },
+      "zjit": {
+        "median_ms": 5.409,
+        "p95_ms": 6.717,
+        "cpu_ms_per_request": 2.095,
+        "allocated_objects_per_request": 2150,
+        "response_bytes": 73,
+        "sql_count": 4,
+        "instantiated_records": 2,
+        "run_medians_ms": [
+          5.749,
+          2.895,
+          5.409
+        ],
+        "warmup_per_run": 200,
+        "samples_per_run": 300
+      }
+    },
+    "products_full": {
+      "interpreter": {
+        "median_ms": 808.956,
+        "p95_ms": 855.874,
+        "cpu_ms_per_request": 777.461,
+        "allocated_objects_per_request": 1302566,
+        "response_bytes": 10255850,
+        "sql_count": 6,
+        "instantiated_records": 20005,
+        "run_medians_ms": [
+          782.194,
+          808.956,
+          813.404
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      },
+      "yjit": {
+        "median_ms": 435.765,
+        "p95_ms": 468.288,
+        "cpu_ms_per_request": 417.518,
+        "allocated_objects_per_request": 1302587,
+        "response_bytes": 10255850,
+        "sql_count": 6,
+        "instantiated_records": 20005,
+        "run_medians_ms": [
+          470.895,
+          399.628,
+          435.765
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      },
+      "zjit": {
+        "median_ms": 648.04,
+        "p95_ms": 704.408,
+        "cpu_ms_per_request": 636.368,
+        "allocated_objects_per_request": 1302567,
+        "response_bytes": 10255850,
+        "sql_count": 6,
+        "instantiated_records": 20005,
+        "run_medians_ms": [
+          642.371,
+          648.04,
+          668.7
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      }
+    },
+    "customers_full": {
+      "interpreter": {
+        "median_ms": 427.687,
+        "p95_ms": 454.868,
+        "cpu_ms_per_request": 421.809,
+        "allocated_objects_per_request": 921851,
+        "response_bytes": 7646741,
+        "sql_count": 3,
+        "instantiated_records": 20002,
+        "run_medians_ms": [
+          427.687,
+          421.681,
+          434.557
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      },
+      "yjit": {
+        "median_ms": 239.221,
+        "p95_ms": 257.364,
+        "cpu_ms_per_request": 235.224,
+        "allocated_objects_per_request": 921860,
+        "response_bytes": 7646741,
+        "sql_count": 3,
+        "instantiated_records": 20002,
+        "run_medians_ms": [
+          245.213,
+          239.221,
+          232.89
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      },
+      "zjit": {
+        "median_ms": 336.208,
+        "p95_ms": 386.97,
+        "cpu_ms_per_request": 330.421,
+        "allocated_objects_per_request": 921854,
+        "response_bytes": 7646741,
+        "sql_count": 3,
+        "instantiated_records": 20002,
+        "run_medians_ms": [
+          340.85,
+          333.248,
+          336.208
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      }
+    },
+    "services_full": {
+      "interpreter": {
+        "median_ms": 46.808,
+        "p95_ms": 61.411,
+        "cpu_ms_per_request": 46.688,
+        "allocated_objects_per_request": 108076,
+        "response_bytes": 481851,
+        "sql_count": 4,
+        "instantiated_records": 2003,
+        "run_medians_ms": [
+          47.308,
+          44.422,
+          46.808
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      },
+      "yjit": {
+        "median_ms": 24.53,
+        "p95_ms": 35.814,
+        "cpu_ms_per_request": 24.531,
+        "allocated_objects_per_request": 108091,
+        "response_bytes": 481851,
+        "sql_count": 4,
+        "instantiated_records": 2003,
+        "run_medians_ms": [
+          27.6,
+          24.53,
+          22.608
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      },
+      "zjit": {
+        "median_ms": 36.461,
+        "p95_ms": 48.841,
+        "cpu_ms_per_request": 35.7,
+        "allocated_objects_per_request": 108080,
+        "response_bytes": 481851,
+        "sql_count": 4,
+        "instantiated_records": 2003,
+        "run_medians_ms": [
+          37.848,
+          32.889,
+          36.461
+        ],
+        "warmup_per_run": 3,
+        "samples_per_run": 10
+      }
+    },
+    "scan_12_lines": {
+      "interpreter": {
+        "median_ms": 21.059,
+        "p95_ms": 25.033,
+        "cpu_ms_per_request": 13.737,
+        "allocated_objects_per_request": 16048,
+        "sql_count": 24,
+        "instantiated_records": 46,
+        "run_medians_ms": [
+          21.059,
+          19.889,
+          22.625
+        ],
+        "warmup_per_run": 100,
+        "samples_per_run": 200,
+        "rollback_each_request": true
+      },
+      "yjit": {
+        "median_ms": 12.165,
+        "p95_ms": 15.773,
+        "cpu_ms_per_request": 6.901,
+        "allocated_objects_per_request": 16335,
+        "sql_count": 24,
+        "instantiated_records": 46,
+        "run_medians_ms": [
+          12.412,
+          12.165,
+          11.585
+        ],
+        "warmup_per_run": 100,
+        "samples_per_run": 200,
+        "rollback_each_request": true
+      },
+      "zjit": {
+        "median_ms": 15.52,
+        "p95_ms": 21.257,
+        "cpu_ms_per_request": 9.932,
+        "allocated_objects_per_request": 16244,
+        "sql_count": 24,
+        "instantiated_records": 46,
+        "run_medians_ms": [
+          18.789,
+          15.52,
+          14.383
+        ],
+        "warmup_per_run": 100,
+        "samples_per_run": 200,
+        "rollback_each_request": true
+      }
+    }
+  },
+  "runtime": {
+    "interpreter": {
+      "ruby_descriptions": [
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +PRISM [aarch64-linux]",
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +PRISM [aarch64-linux]",
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +PRISM [aarch64-linux]"
+      ],
+      "jit_stats": [
+        null,
+        null,
+        null
+      ],
+      "max_sampled_rss_mb": [
+        474.8,
+        594.8,
+        475.2
+      ]
+    },
+    "yjit": {
+      "ruby_descriptions": [
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +YJIT +PRISM [aarch64-linux]",
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +YJIT +PRISM [aarch64-linux]",
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +YJIT +PRISM [aarch64-linux]"
+      ],
+      "jit_stats": [
+        {
+          "inline_code_size": 6665268,
+          "outlined_code_size": 2184340,
+          "freed_page_count": 0,
+          "freed_code_size": 0,
+          "live_page_count": 1144,
+          "code_region_size": 18743296,
+          "yjit_alloc_size": 27528599,
+          "context_data_bytes": 426018,
+          "context_cache_bytes": 131072,
+          "live_iseq_count": 69236,
+          "iseq_alloc_count": 90038,
+          "object_shape_count": 4101,
+          "yjit_active_ns": 61598588154,
+          "code_gc_count": 0,
+          "compiled_iseq_entry": 2321,
+          "cold_iseq_entry": 17,
+          "compiled_iseq_count": 4692,
+          "compiled_blockid_count": 51037,
+          "compiled_block_count": 81313,
+          "deleted_defer_block_count": 8529,
+          "exceptional_entry_escaped_env": 0,
+          "compiled_branch_count": 140938,
+          "compile_time_ns": 1096025163,
+          "compilation_failure": 0,
+          "max_inline_versions": 129,
+          "inline_block_count": 2002,
+          "num_contexts_encoded": 208836,
+          "context_cache_hits": 147321,
+          "invalidation_count": 1901,
+          "invalidate_method_lookup": 1023,
+          "invalidate_bop_redefined": 0,
+          "invalidate_ractor_spawn": 0,
+          "invalidate_constant_state_bump": 440,
+          "invalidate_constant_ic_fill": 382,
+          "invalidate_no_singleton_class": 29,
+          "invalidate_ep_escape": 27,
+          "invalidate_everything": 0
+        },
+        {
+          "inline_code_size": 6659388,
+          "outlined_code_size": 2275184,
+          "freed_page_count": 0,
+          "freed_code_size": 0,
+          "live_page_count": 1143,
+          "code_region_size": 18726912,
+          "yjit_alloc_size": 27511387,
+          "context_data_bytes": 426002,
+          "context_cache_bytes": 131072,
+          "live_iseq_count": 69236,
+          "iseq_alloc_count": 90038,
+          "object_shape_count": 4101,
+          "yjit_active_ns": 64979722876,
+          "code_gc_count": 0,
+          "compiled_iseq_entry": 2307,
+          "cold_iseq_entry": 18,
+          "compiled_iseq_count": 4690,
+          "compiled_blockid_count": 51035,
+          "compiled_block_count": 81250,
+          "deleted_defer_block_count": 8528,
+          "exceptional_entry_escaped_env": 0,
+          "compiled_branch_count": 140823,
+          "compile_time_ns": 1101471365,
+          "compilation_failure": 0,
+          "max_inline_versions": 129,
+          "inline_block_count": 2002,
+          "num_contexts_encoded": 208674,
+          "context_cache_hits": 147203,
+          "invalidation_count": 1901,
+          "invalidate_method_lookup": 1023,
+          "invalidate_bop_redefined": 0,
+          "invalidate_ractor_spawn": 0,
+          "invalidate_constant_state_bump": 440,
+          "invalidate_constant_ic_fill": 382,
+          "invalidate_no_singleton_class": 29,
+          "invalidate_ep_escape": 27,
+          "invalidate_everything": 0
+        },
+        {
+          "inline_code_size": 6655412,
+          "outlined_code_size": 1964672,
+          "freed_page_count": 0,
+          "freed_code_size": 0,
+          "live_page_count": 1141,
+          "code_region_size": 18694144,
+          "yjit_alloc_size": 27498387,
+          "context_data_bytes": 424877,
+          "context_cache_bytes": 131072,
+          "live_iseq_count": 69236,
+          "iseq_alloc_count": 90038,
+          "object_shape_count": 4101,
+          "yjit_active_ns": 69785945813,
+          "code_gc_count": 0,
+          "compiled_iseq_entry": 2310,
+          "cold_iseq_entry": 18,
+          "compiled_iseq_count": 4692,
+          "compiled_blockid_count": 51036,
+          "compiled_block_count": 81200,
+          "deleted_defer_block_count": 8524,
+          "exceptional_entry_escaped_env": 0,
+          "compiled_branch_count": 140715,
+          "compile_time_ns": 1123970970,
+          "compilation_failure": 0,
+          "max_inline_versions": 129,
+          "inline_block_count": 2002,
+          "num_contexts_encoded": 208501,
+          "context_cache_hits": 147213,
+          "invalidation_count": 1901,
+          "invalidate_method_lookup": 1023,
+          "invalidate_bop_redefined": 0,
+          "invalidate_ractor_spawn": 0,
+          "invalidate_constant_state_bump": 440,
+          "invalidate_constant_ic_fill": 382,
+          "invalidate_no_singleton_class": 29,
+          "invalidate_ep_escape": 27,
+          "invalidate_everything": 0
+        }
+      ],
+      "max_sampled_rss_mb": [
+        539.2,
+        535.9,
+        506.8
+      ]
+    },
+    "zjit": {
+      "ruby_descriptions": [
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +ZJIT +PRISM [aarch64-linux]",
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +ZJIT +PRISM [aarch64-linux]",
+        "ruby 4.0.9 (2026-10-23 revision 3e93b23afc) +ZJIT +PRISM [aarch64-linux]"
+      ],
+      "jit_stats": [
+        {
+          "compiled_iseq_count": 5001,
+          "failed_iseq_count": 0,
+          "compile_time_ns": 1165410712,
+          "profile_time_ns": 23518039,
+          "gc_time_ns": 57887167,
+          "invalidation_time_ns": 14275099,
+          "code_region_bytes": 11747328,
+          "zjit_alloc_bytes": 38750868,
+          "total_mem_bytes": 50498196
+        },
+        {
+          "compiled_iseq_count": 5002,
+          "failed_iseq_count": 0,
+          "compile_time_ns": 1115898261,
+          "profile_time_ns": 21254867,
+          "gc_time_ns": 65330381,
+          "invalidation_time_ns": 13995789,
+          "code_region_bytes": 11751424,
+          "zjit_alloc_bytes": 38755256,
+          "total_mem_bytes": 50506680
+        },
+        {
+          "compiled_iseq_count": 5003,
+          "failed_iseq_count": 0,
+          "compile_time_ns": 1062033395,
+          "profile_time_ns": 20841741,
+          "gc_time_ns": 47535562,
+          "invalidation_time_ns": 12621646,
+          "code_region_bytes": 11747328,
+          "zjit_alloc_bytes": 38754200,
+          "total_mem_bytes": 50501528
+        }
+      ],
+      "max_sampled_rss_mb": [
+        571.2,
+        546.3,
+        605.2
+      ]
+    }
+  },
+  "experiments": {
+    "customer_search_before": {
+      "median_ms": 232.55,
+      "p95_ms": 248.076,
+      "allocated_objects": 42
+    },
+    "customer_plan_before": [
+      "Limit  (cost=631.58..631.62 rows=15 width=36) (actual time=235.302..235.305 rows=15.00 loops=1)",
+      "  Buffers: shared hit=429",
+      "  InitPlan 1",
+      "    ->  Aggregate  (cost=0.02..0.28 rows=1 width=32) (actual time=0.003..0.004 rows=1.00 loops=1)",
+      "          ->  Function Scan on unnest word  (cost=0.00..0.01 rows=1 width=32) (actual time=0.002..0.002 rows=1.00 loops=1)",
+      "  InitPlan 2",
+      "    ->  Aggregate  (cost=0.02..0.28 rows=1 width=32) (actual time=0.010..0.010 rows=1.00 loops=1)",
+      "          ->  Function Scan on unnest word_1  (cost=0.00..0.01 rows=1 width=32) (actual time=0.005..0.005 rows=1.00 loops=1)",
+      "  ->  Sort  (cost=631.01..631.76 rows=299 width=36) (actual time=235.301..235.302 rows=15.00 loops=1)",
+      "        Sort Key: (ts_rank(to_tsvector('simple'::regconfig, (((((((((COALESCE(customers.name, ''::character varying))::text || ' '::text) || (COALESCE(customers.member_number, ''::character varying))::text) || ' '::text) || (COALESCE(customers.email, ''::character varying))::text) || ' '::text) || (COALESCE(customers.phone, ''::character varying))::text) || ' '::text) || regexp_replace((COALESCE(customers.phone, ''::character varying))::text, '[^0-9]'::text, ''::text, 'g'::text))), (InitPlan 1).col1)) DESC, (similarity(lower((customers.name)::text), 'audit'::text)) DESC, customers.name, customers.id",
+      "        Sort Method: top-N heapsort  Memory: 26kB",
+      "        Buffers: shared hit=429",
+      "        ->  Bitmap Heap Scan on customers  (cost=74.96..623.68 rows=299 width=36) (actual time=1.832..233.909 rows=20000.00 loops=1)",
+      "              Recheck Cond: (((to_tsvector('simple'::regconfig, (((((((((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(member_number, ''::character varying))::text) || ' '::text) || (COALESCE(email, ''::character varying))::text) || ' '::text) || (COALESCE(phone, ''::character varying))::text) || ' '::text) || regexp_replace((COALESCE(phone, ''::character varying))::text, '[^0-9]'::text, ''::text, 'g'::text))) @@ (InitPlan 2).col1) AND (discarded_at IS NULL)) OR ((lower((name)::text) % 'audit'::text) AND (discarded_at IS NULL)))",
+      "              Filter: ((to_tsvector('simple'::regconfig, (((((((((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(member_number, ''::character varying))::text) || ' '::text) || (COALESCE(email, ''::character varying))::text) || ' '::text) || (COALESCE(phone, ''::character varying))::text) || ' '::text) || regexp_replace((COALESCE(phone, ''::character varying))::text, '[^0-9]'::text, ''::text, 'g'::text))) @@ (InitPlan 2).col1) OR (lower((name)::text) % 'audit'::text))",
+      "              Heap Blocks: exact=384",
+      "              Buffers: shared hit=429",
+      "              ->  BitmapOr  (cost=74.96..74.96 rows=300 width=0) (actual time=1.794..1.794 rows=0.00 loops=1)",
+      "                    Buffers: shared hit=45",
+      "                    ->  Bitmap Index Scan on index_customers_on_register_search  (cost=0.00..17.59 rows=100 width=0) (actual time=0.544..0.544 rows=20000.00 loops=1)",
+      "                          Index Cond: (to_tsvector('simple'::regconfig, (((((((((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(member_number, ''::character varying))::text) || ' '::text) || (COALESCE(email, ''::character varying))::text) || ' '::text) || (COALESCE(phone, ''::character varying))::text) || ' '::text) || regexp_replace((COALESCE(phone, ''::character varying))::text, '[^0-9]'::text, ''::text, 'g'::text))) @@ (InitPlan 2).col1)",
+      "                          Index Searches: 1",
+      "                          Buffers: shared hit=8",
+      "                    ->  Bitmap Index Scan on index_customers_on_name_trigram  (cost=0.00..57.22 rows=200 width=0) (actual time=1.250..1.250 rows=19999.00 loops=1)",
+      "                          Index Cond: (lower((name)::text) % 'audit'::text)",
+      "                          Index Searches: 1",
+      "                          Buffers: shared hit=37",
+      "Planning:",
+      "  Buffers: shared hit=4",
+      "Planning Time: 0.137 ms",
+      "Execution Time: 235.403 ms"
+    ],
+    "customer_search_stored_vector": {
+      "median_ms": 27.267,
+      "p95_ms": 31.162,
+      "allocated_objects": 44
+    },
+    "customer_plan_stored_vector": [
+      "Limit  (cost=686.83..686.87 rows=15 width=36) (actual time=25.418..25.420 rows=15.00 loops=1)",
+      "  Buffers: shared hit=828",
+      "  InitPlan 1",
+      "    ->  Aggregate  (cost=0.02..0.28 rows=1 width=32) (actual time=0.004..0.004 rows=1.00 loops=1)",
+      "          ->  Function Scan on unnest word  (cost=0.00..0.01 rows=1 width=32) (actual time=0.002..0.002 rows=1.00 loops=1)",
+      "  InitPlan 2",
+      "    ->  Aggregate  (cost=0.02..0.28 rows=1 width=32) (actual time=0.005..0.005 rows=1.00 loops=1)",
+      "          ->  Function Scan on unnest word_1  (cost=0.00..0.01 rows=1 width=32) (actual time=0.002..0.002 rows=1.00 loops=1)",
+      "  ->  Sort  (cost=686.27..687.02 rows=299 width=36) (actual time=25.418..25.418 rows=15.00 loops=1)",
+      "        Sort Key: (ts_rank(customers.benchmark_search_vector, (InitPlan 1).col1)) DESC, (similarity(lower((customers.name)::text), 'audit'::text)) DESC, customers.name, customers.id",
+      "        Sort Method: top-N heapsort  Memory: 26kB",
+      "        Buffers: shared hit=828",
+      "        ->  Bitmap Heap Scan on customers  (cost=74.96..678.93 rows=299 width=36) (actual time=1.863..24.566 rows=20000.00 loops=1)",
+      "              Recheck Cond: (((benchmark_search_vector @@ (InitPlan 2).col1) AND (discarded_at IS NULL)) OR ((lower((name)::text) % 'audit'::text) AND (discarded_at IS NULL)))",
+      "              Filter: ((benchmark_search_vector @@ (InitPlan 2).col1) OR (lower((name)::text) % 'audit'::text))",
+      "              Heap Blocks: exact=783",
+      "              Buffers: shared hit=828",
+      "              ->  BitmapOr  (cost=74.96..74.96 rows=300 width=0) (actual time=1.824..1.825 rows=0.00 loops=1)",
+      "                    Buffers: shared hit=45",
+      "                    ->  Bitmap Index Scan on benchmark_customer_search  (cost=0.00..17.59 rows=100 width=0) (actual time=0.603..0.603 rows=20000.00 loops=1)",
+      "                          Index Cond: (benchmark_search_vector @@ (InitPlan 2).col1)",
+      "                          Index Searches: 1",
+      "                          Buffers: shared hit=8",
+      "                    ->  Bitmap Index Scan on index_customers_on_name_trigram  (cost=0.00..57.22 rows=200 width=0) (actual time=1.222..1.222 rows=19999.00 loops=1)",
+      "                          Index Cond: (lower((name)::text) % 'audit'::text)",
+      "                          Index Searches: 1",
+      "                          Buffers: shared hit=37",
+      "Planning:",
+      "  Buffers: shared hit=5",
+      "Planning Time: 0.077 ms",
+      "Execution Time: 25.467 ms"
+    ],
+    "products_delta_before": {
+      "median_ms": 2.349,
+      "p95_ms": 2.597,
+      "allocated_objects": 53
+    },
+    "products_delta_plan_before": [
+      "Seq Scan on products  (cost=0.00..875.00 rows=1 width=443) (actual time=1.314..1.314 rows=0.00 loops=1)",
+      "  Filter: ((discarded_at IS NULL) AND (updated_at > '2026-10-22 15:14:17.912439'::timestamp without time zone))",
+      "  Rows Removed by Filter: 20000",
+      "  Buffers: shared hit=625",
+      "Planning:",
+      "  Buffers: shared hit=1",
+      "Planning Time: 0.034 ms",
+      "Execution Time: 1.318 ms"
+    ],
+    "products_delta_indexed": {
+      "median_ms": 0.73,
+      "p95_ms": 2.205,
+      "allocated_objects": 53
+    },
+    "products_delta_plan_indexed": [
+      "Index Scan using benchmark_products_updated_at on products  (cost=0.29..4.30 rows=1 width=443) (actual time=0.006..0.006 rows=0.00 loops=1)",
+      "  Index Cond: (updated_at > '2026-10-22 15:14:17.912439'::timestamp without time zone)",
+      "  Filter: (discarded_at IS NULL)",
+      "  Index Searches: 1",
+      "  Buffers: shared hit=2",
+      "Planning:",
+      "  Buffers: shared hit=1",
+      "Planning Time: 0.031 ms",
+      "Execution Time: 0.011 ms"
+    ],
+    "customers_delta_before": {
+      "median_ms": 2.045,
+      "p95_ms": 2.258,
+      "allocated_objects": 49
+    },
+    "customers_delta_plan_before": [
+      "Seq Scan on customers  (cost=0.00..1082.00 rows=1 width=588) (actual time=0.845..0.845 rows=0.00 loops=1)",
+      "  Filter: ((discarded_at IS NULL) AND (updated_at > '2026-10-22 15:14:18.943162'::timestamp without time zone))",
+      "  Rows Removed by Filter: 20000",
+      "  Buffers: shared hit=832",
+      "Planning:",
+      "  Buffers: shared hit=3",
+      "Planning Time: 0.024 ms",
+      "Execution Time: 0.849 ms"
+    ],
+    "customers_delta_indexed": {
+      "median_ms": 0.678,
+      "p95_ms": 1.018,
+      "allocated_objects": 49
+    },
+    "customers_delta_plan_indexed": [
+      "Index Scan using benchmark_customers_updated_at on customers  (cost=0.29..4.30 rows=1 width=588) (actual time=0.006..0.006 rows=0.00 loops=1)",
+      "  Index Cond: (updated_at > '2026-10-22 15:14:18.943162'::timestamp without time zone)",
+      "  Filter: (discarded_at IS NULL)",
+      "  Index Searches: 1",
+      "  Buffers: shared hit=2",
+      "Planning:",
+      "  Buffers: shared hit=3",
+      "Planning Time: 0.027 ms",
+      "Execution Time: 0.013 ms"
+    ],
+    "products_response_equal": true,
+    "products_full_before": {
+      "path": "/api/v1/products/sync",
+      "method": "get",
+      "params": {},
+      "rollback_each_request": false,
+      "warmup": 3,
+      "samples": 10,
+      "first_request_ms": 458.746,
+      "median_ms": 396.418,
+      "p95_ms": 460.598,
+      "mean_ms": 405.589,
+      "cpu_ms_per_request": 391.616,
+      "allocated_objects_per_request": 1302582,
+      "gc_ms": 625,
+      "rss_mb": 567.1,
+      "response_bytes": 10255850,
+      "result_count": 20000,
+      "sql_count": 6,
+      "sql_ms": 17.619,
+      "instantiated_records": 20005,
+      "sql": [
+        {
+          "sql": "SELECT \"sessions\".* FROM \"sessions\" WHERE \"sessions\".\"id\" = $1 LIMIT $2",
+          "ms": 1.303
+        },
+        {
+          "sql": "SELECT \"users\".* FROM \"users\" WHERE \"users\".\"id\" = $1 LIMIT $2",
+          "ms": 0.388
+        },
+        {
+          "sql": "SELECT \"products\".\"id\", \"products\".\"code\", \"products\".\"name\", \"products\".\"selling_price\", \"products\".\"purchase_price\", \"products\".\"stock_level\", \"products\".\"reorder_level\", \"products\".\"order_quantity\", \"products\".\"unit_cost\", \"products\".\"items_per_unit\", \"products\".\"supplier_reference\", \"products\".\"notes\", \"products\".\"product_url\", \"products\".\"tax_code_id\", \"products\".\"supplier_id\", \"products\".\"product_group_id\", \"products\".\"sync_to_shopify\", \"products\".\"sales_count\", \"products\".\"last_restocked_at\", \"products\".\"created_at\", \"products\".\"updated_at\" FROM \"products\" WHERE \"products\".\"discarded_at\" IS NULL",
+          "ms": 14.105
+        },
+        {
+          "sql": "SELECT \"tax_codes\".* FROM \"tax_codes\" WHERE \"tax_codes\".\"id\" = $1",
+          "ms": 0.61
+        },
+        {
+          "sql": "SELECT \"suppliers\".* FROM \"suppliers\" WHERE \"suppliers\".\"id\" = $1",
+          "ms": 0.605
+        },
+        {
+          "sql": "SELECT \"product_groups\".* FROM \"product_groups\" WHERE \"product_groups\".\"id\" = $1",
+          "ms": 0.608
+        }
+      ]
+    },
+    "products_full_pluck_prototype": {
+      "path": "/api/v1/products/sync",
+      "method": "get",
+      "params": {},
+      "rollback_each_request": false,
+      "warmup": 3,
+      "samples": 10,
+      "first_request_ms": 244.281,
+      "median_ms": 246.135,
+      "p95_ms": 275.281,
+      "mean_ms": 245.264,
+      "cpu_ms_per_request": 229.923,
+      "allocated_objects_per_request": 1302058,
+      "gc_ms": 307,
+      "rss_mb": 575.6,
+      "response_bytes": 10255850,
+      "result_count": 20000,
+      "sql_count": 3,
+      "sql_ms": 16.63,
+      "instantiated_records": 2,
+      "sql": [
+        {
+          "sql": "SELECT \"sessions\".* FROM \"sessions\" WHERE \"sessions\".\"id\" = $1 LIMIT $2",
+          "ms": 0.587
+        },
+        {
+          "sql": "SELECT \"users\".* FROM \"users\" WHERE \"users\".\"id\" = $1 LIMIT $2",
+          "ms": 0.33
+        },
+        {
+          "sql": "SELECT \"products\".\"id\", \"products\".\"code\", \"products\".\"name\", \"products\".\"selling_price\", \"products\".\"purchase_price\", \"products\".\"stock_level\", \"products\".\"reorder_level\", \"products\".\"order_quantity\", \"products\".\"unit_cost\", \"products\".\"items_per_unit\", \"products\".\"supplier_reference\", \"products\".\"notes\", \"products\".\"product_url\", \"products\".\"sync_to_shopify\", \"products\".\"sales_count\", \"products\".\"last_restocked_at\", \"products\".\"created_at\", \"products\".\"updated_at\", \"tax_codes\".\"code\", \"tax_codes\".\"rate\", \"suppliers\".\"name\", \"product_groups\".\"name\" FROM \"products\" LEFT OUTER JOIN \"tax_codes\" ON \"tax_codes\".\"id\" = \"products\".\"tax_code_id\" LEFT OUTER JOIN \"suppliers\" ON \"suppliers\".\"id\" = \"products\".\"supplier_id\" LEFT OUTER JOIN \"product_groups\" ON \"product_groups\".\"id\" = \"products\".\"product_group_id\" WHERE \"products\".\"discarded_at\" IS NULL",
+          "ms": 15.713
+        }
+      ]
+    }
+  }
+}

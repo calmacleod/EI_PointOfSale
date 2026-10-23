@@ -1,5 +1,6 @@
 const DB_NAME = "ei_pos_offline"
-const DB_VERSION = 3
+const DB_VERSION = 4
+const SYNC_PAGE_SIZE = 500
 const REFRESH_INTERVAL_MS = 60 * 60 * 1000
 const REFRESHED_AT_KEY = "ei-pos-offline-catalog-refreshed-at"
 const CATALOG_EVENT = "ei-pos-offline-catalog"
@@ -20,6 +21,7 @@ export const COLLECTIONS = {
 
 let catalogSyncPromise = null
 let warmPromise = null
+const collectionSyncs = new Map()
 
 export function openOfflineDb() {
   return new Promise((resolve, reject) => {
@@ -61,9 +63,27 @@ export function openOfflineDb() {
       if (!db.objectStoreNames.contains("meta")) {
         db.createObjectStore("meta", { keyPath: "key" })
       }
+
+      for (const collection of Object.keys(COLLECTIONS)) {
+        if (!db.objectStoreNames.contains(`sync_${collection}`)) {
+          db.createObjectStore(`sync_${collection}`, { keyPath: "id" })
+        }
+      }
     }
 
-    request.onsuccess = () => resolve(request.result)
+    let blocked = false
+    request.onblocked = () => {
+      blocked = true
+      const error = new Error("Close other point-of-sale tabs, then try syncing again.")
+      error.name = "OfflineCatalogUpgradeBlocked"
+      reject(error)
+    }
+    request.onsuccess = () => {
+      const db = request.result
+      db.onversionchange = () => db.close()
+      if (blocked) db.close()
+      else resolve(db)
+    }
     request.onerror = () => reject(request.error)
   })
 }
@@ -71,7 +91,12 @@ export function openOfflineDb() {
 export async function loadOfflineRecords(collection, query = "") {
   assertCollection(collection)
   const db = await openOfflineDb()
-  const records = await getAll(db.transaction(collection, "readonly").objectStore(collection))
+  let records
+  try {
+    records = await getAll(db.transaction(collection, "readonly").objectStore(collection))
+  } finally {
+    db.close()
+  }
   const term = query.trim().toLowerCase()
 
   if (collection === "products") {
@@ -101,49 +126,117 @@ export async function loadOfflineRecords(collection, query = "") {
 
 export async function loadOfflineCatalogSummary() {
   const db = await openOfflineDb()
-
-  return Object.fromEntries(
-    await Promise.all(
-      Object.entries(COLLECTIONS).map(async ([collection, config]) => {
-        const count = await countRecords(db, collection)
-        const meta = await getRecord(db.transaction("meta", "readonly").objectStore("meta"), config.metaKey)
-        return [collection, { count, syncedAt: meta?.value || null }]
-      }),
-    ),
-  )
+  try {
+    return Object.fromEntries(
+      await Promise.all(
+        Object.entries(COLLECTIONS).map(async ([collection, config]) => {
+          const count = await countRecords(db, collection)
+          const meta = await getRecord(db.transaction("meta", "readonly").objectStore("meta"), config.metaKey)
+          return [collection, { count, syncedAt: meta?.value || null }]
+        }),
+      ),
+    )
+  } finally {
+    db.close()
+  }
 }
 
-export async function syncOfflineCollection(collection, paths = DEFAULT_SYNC_PATHS, { full = false } = {}) {
+export function syncOfflineCollection(collection, paths = DEFAULT_SYNC_PATHS, options = {}) {
   assertCollection(collection)
+  if (collectionSyncs.has(collection)) return collectionSyncs.get(collection)
+
+  const sync = () => performCollectionSync(collection, paths, options)
+  // Serialize staging/commit across tabs as well as within this module.
+  const promise = (globalThis.navigator?.locks
+    ? navigator.locks.request(`ei-pos-offline-sync-${collection}`, sync)
+    : sync()).finally(() => collectionSyncs.delete(collection))
+  collectionSyncs.set(collection, promise)
+  return promise
+}
+
+async function performCollectionSync(collection, paths, { full = false } = {}) {
   const db = await openOfflineDb()
-  const config = COLLECTIONS[collection]
-  const meta = await getRecord(db.transaction("meta", "readonly").objectStore("meta"), config.metaKey)
-  const url = new URL(paths[collection] || DEFAULT_SYNC_PATHS[collection], window.location.origin)
+  try {
+    const config = COLLECTIONS[collection]
+    const meta = await getRecord(db.transaction("meta", "readonly").objectStore("meta"), config.metaKey)
+    const replace = full || !meta?.value
+    const url = new URL(paths[collection] || DEFAULT_SYNC_PATHS[collection], window.location.origin)
+    url.searchParams.set("page_size", SYNC_PAGE_SIZE)
+    if (!replace) url.searchParams.set("since", meta.value)
 
-  if (!full && meta?.value) url.searchParams.set("since", meta.value)
+    const staging = `sync_${collection}`
+    const reset = db.transaction(staging, "readwrite")
+    reset.objectStore(staging).clear()
+    await transactionComplete(reset)
 
-  const response = await fetch(url, {
-    credentials: "same-origin",
-    headers: { Accept: "application/json" },
-  })
+    let syncedAt = null
+    let changed = 0
+    let deleted = 0
+    const cursors = new Set()
+    while (true) {
+      const response = await fetch(url, { credentials: "same-origin", headers: { Accept: "application/json" } })
+      if (!response.ok || response.redirected) {
+        throw new Error(`Could not sync ${config.label.toLowerCase()} (${response.status})`)
+      }
 
-  if (!response.ok || response.redirected) {
-    throw new Error(`Could not sync ${config.label.toLowerCase()} (${response.status})`)
+      const data = await response.json()
+      if (!Array.isArray(data[collection]) || !Array.isArray(data.deleted_ids) ||
+          !Number.isFinite(Date.parse(data.synced_at)) || (syncedAt && data.synced_at !== syncedAt) ||
+          (data.next_cursor != null && (typeof data.next_cursor !== "string" || !data.next_cursor || cursors.has(data.next_cursor)))) {
+        throw new Error(`Invalid ${config.label.toLowerCase()} sync page`)
+      }
+      syncedAt = data.synced_at
+      const transaction = db.transaction(staging, "readwrite")
+      const store = transaction.objectStore(staging)
+      for (const id of data.deleted_ids) store.put({ id, record: null })
+      for (const record of data[collection]) store.put({ id: record.id, record })
+      await transactionComplete(transaction)
+      changed += data[collection].length
+      deleted += data.deleted_ids.length
+      if (!data.next_cursor) break
+      cursors.add(data.next_cursor)
+      url.searchParams.set("cursor", data.next_cursor)
+    }
+
+    await commitStagedCollection(db, collection, config.metaKey, syncedAt, replace)
+    return { collection, changed, deleted, syncedAt }
+  } finally {
+    db.close()
   }
+}
 
-  const data = await response.json()
-  const records = Array.isArray(data[collection]) ? data[collection] : []
-  const deletedIds = Array.isArray(data.deleted_ids) ? data.deleted_ids : []
-  const transaction = db.transaction([collection, "meta"], "readwrite")
+function commitStagedCollection(db, collection, metaKey, syncedAt, replace) {
+  const staging = `sync_${collection}`
+  const transaction = db.transaction([collection, staging, "meta"], "readwrite")
   const store = transaction.objectStore(collection)
+  const staged = transaction.objectStore(staging)
+  const complete = transactionComplete(transaction)
+  if (replace) store.clear()
 
-  if (full) store.clear()
-  for (const id of deletedIds) store.delete(id)
-  for (const record of records) store.put(record)
-  transaction.objectStore("meta").put({ key: config.metaKey, value: data.synced_at })
-  await transactionComplete(transaction)
-
-  return { collection, changed: records.length, deleted: deletedIds.length, syncedAt: data.synced_at }
+  // Delete changed IDs first so reused/swapped unique product codes cannot
+  // collide with their old values. Both passes and the watermark are atomic;
+  // cursors avoid loading the entire staged catalog into JavaScript memory.
+  const removals = staged.openCursor()
+  removals.onsuccess = () => {
+    const cursor = removals.result
+    if (cursor) {
+      if (!replace) store.delete(cursor.key)
+      cursor.continue()
+      return
+    }
+    const additions = staged.openCursor()
+    additions.onsuccess = () => {
+      const cursor = additions.result
+      if (cursor) {
+        if (cursor.value.record) store.put(cursor.value.record)
+        cursor.continue()
+        return
+      }
+      transaction.objectStore("meta").put({ key: metaKey, value: syncedAt })
+      staged.clear()
+    }
+  }
+  return complete
 }
 
 export async function syncOfflineCatalog(paths = DEFAULT_SYNC_PATHS, options = {}) {

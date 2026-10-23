@@ -41,6 +41,24 @@ class Registers::LookupTest < ActiveSupport::TestCase
     end
   end
 
+  test "stored customer search vector refreshes after edits and preserves ranking tie breakers" do
+    first = Customer.create!(name: "Zebra Test", member_number: "ZX-123", phone: "(416) 555-0123", email: "zebra+shop@example.com")
+    second = Customer.create!(name: "Zebra Test", member_number: "ZX-124", phone: "(416) 555-0123", email: "zebra+shop@example.com")
+    assert_equal [ first.id, second.id ], Registers::Lookup.customers("Zebra Test").pluck(:id)
+    [ "ZX-123", "4165550123", "zebra+shop@example.com" ].each do |query|
+      assert_includes Registers::Lookup.customers(query).pluck(:id), first.id
+    end
+    first.update!(name: "Renamed customer", phone: "6479998888", member_number: "NEW987", email: "fresh@new.example")
+    assert_not_includes Registers::Lookup.customers("Zebra Test").pluck(:id), first.id
+    %w[Renamed 6479998888 NEW987 fresh@new.example].each do |query|
+      assert_includes Registers::Lookup.customers(query).pluck(:id), first.id
+    end
+    first.discard!
+    assert_not_includes Registers::Lookup.customers("NEW987").pluck(:id), first.id
+    first.undiscard!
+    assert_includes Registers::Lookup.customers("NEW987").pluck(:id), first.id
+  end
+
   test "lookup predicates can use their matching indexes" do
     connection = ActiveRecord::Base.connection
     connection.execute("SET LOCAL enable_seqscan = off")
@@ -50,12 +68,12 @@ class Registers::LookupTest < ActiveSupport::TestCase
     # With a handful of fixtures the kept-record btree is legitimately cheaper.
     # Use a realistic collection so the plan exercises the selective search indexes.
     Customer.insert_all!(2_000.times.map { |i| { name: "Unrelated person #{i}", email: "person#{i}@example.com" } })
-    connection.execute("SELECT gin_clean_pending_list('index_customers_on_register_search')")
+    connection.execute("SELECT gin_clean_pending_list('index_customers_on_search_vector')")
     connection.execute("SELECT gin_clean_pending_list('index_customers_on_name_trigram')")
     connection.execute("ANALYZE customers")
     customer_sql = Registers::Lookup.customers("Acme").limit(15).to_sql
     plan = connection.select_values("EXPLAIN #{customer_sql}").join("\n")
-    assert_includes plan, "index_customers_on_register_search"
+    assert_includes plan, "index_customers_on_search_vector"
     assert_includes plan, "index_customers_on_name_trigram"
   end
 end

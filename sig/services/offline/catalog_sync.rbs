@@ -1,0 +1,22 @@
+module Offline
+  class CatalogSync
+    PAGE_SIZE: Integer
+
+    class InvalidCursor < StandardError
+    end
+
+    @model: untyped
+    @since: untyped
+    @page_size: Integer?
+    @cursor: String?
+
+    def initialize: (untyped model, ?since: String?, ?page_size: (String | Integer)?, ?cursor: String?) -> void
+    def call: () -> Hash[String | Symbol, untyped]
+
+    private
+
+    def verifier: () -> untyped
+    def parse_time: (String?) -> untyped
+    def legacy_response: () -> Hash[String | Symbol, untyped]
+  end
+end

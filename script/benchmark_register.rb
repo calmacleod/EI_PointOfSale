@@ -21,7 +21,7 @@ ActiveRecord::Base.transaction do
   Service.insert_all!(2_000.times.map { |i| { name: "#{prefix} service #{i}", code: "#{prefix}-SVC-#{i}", price: 12 } })
   Product.insert_all!([ { name: needle, code: "#{prefix}-TARGET", selling_price: 10 } ])
   connection = ActiveRecord::Base.connection
-  %w[index_customers_on_register_search index_customers_on_name_trigram index_products_on_search_vector index_services_on_register_search].each do |index|
+  %w[index_customers_on_search_vector index_customers_on_name_trigram index_products_on_search_vector index_services_on_register_search].each do |index|
     connection.execute("SELECT gin_clean_pending_list('#{index}')")
   end
   %w[customers products services].each { |table| connection.execute("ANALYZE #{table}") }

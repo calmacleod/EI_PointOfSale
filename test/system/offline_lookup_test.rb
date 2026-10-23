@@ -72,6 +72,28 @@ class OfflineLookupTest < ApplicationSystemTestCase
     page.current_window.resize_to(1400, 1400)
   end
 
+  test "syncs every page of a large catalog and retains it offline" do
+    Product.insert_all!(501.times.map do |i|
+      { code: "PAGED-#{i}", name: "Paged product #{i}", selling_price: 1 }
+    end)
+    wait_for_service_worker
+    visit offline_path
+    assert_selector '[data-testid="offline-catalog"][data-ready="true"]', wait: 10
+    assert_text "20 shown · #{Product.kept.count} saved", wait: 10
+    click_button "Full re-sync"
+    click_button "Replace and sync"
+    assert_button "Sync now", disabled: false, wait: 10
+    assert_text "20 shown · #{Product.kept.count} saved"
+
+    emulate_network(offline: true)
+    page.driver.browser.navigate.refresh
+    assert_selector '[data-testid="offline-catalog"][data-ready="true"]', wait: 10
+    set_offline_search("PAGED-500")
+    assert_text "Paged product 500", wait: 10
+  ensure
+    emulate_network(offline: false)
+  end
+
   private
 
     def reset_offline_browser_state

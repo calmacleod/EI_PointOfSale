@@ -50,7 +50,7 @@
       loading = false
       if (await connectionAvailable()) await runSync(false)
       if (!cancelled) catalogReady = true
-    }).catch(() => { if (!cancelled) { loading = false; catalogReady = true } })
+    }).catch((error) => { if (!cancelled) { loading = false; catalogReady = true; syncError = syncFailureMessage(error) } })
     return () => {
       cancelled = true
       window.clearInterval(connectionTimer)
@@ -73,11 +73,12 @@
       if (!(await connectionAvailable())) throw new Error("offline")
       await syncOfflineCatalog(sync_paths || DEFAULT_SYNC_PATHS, { full })
       await loadState()
-    } catch (_error) {
+    } catch (error) {
       online = await connectionAvailable()
-      syncError = online ? "Sync failed. Try again." : "You are offline. Cached data is still available."
+      syncError = syncFailureMessage(error)
     } finally { syncing = false }
   }
+  function syncFailureMessage(error) { return error?.name === "OfflineCatalogUpgradeBlocked" ? error.message : online ? "Sync failed. Try again." : "You are offline. Cached data is still available." }
   function emptySummary() { return Object.fromEntries(Object.keys(COLLECTIONS).map((collection) => [collection, { count: 0, syncedAt: null }])) }
   function formatMoney(value) { return new Intl.NumberFormat("en-CA", { style: "currency", currency: "CAD" }).format(Number(value || 0)) }
   function formatRate(value) { return new Intl.NumberFormat("en-CA", { style: "percent", maximumFractionDigits: 3 }).format(Number(value || 0)) }

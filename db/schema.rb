@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_22_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_23_180100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -132,14 +132,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_180000) do
     t.string "status_card_number"
     t.bigint "tax_code_id"
     t.datetime "updated_at", null: false
+    t.virtual "search_vector", type: :tsvector, as: "to_tsvector('simple'::regconfig, (((((((((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(member_number, ''::character varying))::text) || ' '::text) || (COALESCE(email, ''::character varying))::text) || ' '::text) || (COALESCE(phone, ''::character varying))::text) || ' '::text) || regexp_replace((COALESCE(phone, ''::character varying))::text, '[^0-9]'::text, ''::text, 'g'::text)))", stored: true
     t.index "lower((name)::text) gin_trgm_ops", name: "index_customers_on_name_trigram", where: "(discarded_at IS NULL)", using: :gin
-    t.index "to_tsvector('simple'::regconfig, (((((((((COALESCE(name, ''::character varying))::text || ' '::text) || (COALESCE(member_number, ''::character varying))::text) || ' '::text) || (COALESCE(email, ''::character varying))::text) || ' '::text) || (COALESCE(phone, ''::character varying))::text) || ' '::text) || regexp_replace((COALESCE(phone, ''::character varying))::text, '[^0-9]'::text, ''::text, 'g'::text)))", name: "index_customers_on_register_search", where: "(discarded_at IS NULL)", using: :gin
     t.index ["added_by_id"], name: "index_customers_on_added_by_id"
     t.index ["discarded_at"], name: "index_customers_on_discarded_at"
     t.index ["discarded_at"], name: "index_customers_on_discarded_at_null", where: "(discarded_at IS NULL)"
     t.index ["discount_id"], name: "index_customers_on_discount_id"
     t.index ["member_number"], name: "index_customers_on_member_number", unique: true
+    t.index ["search_vector"], name: "index_customers_on_search_vector", where: "(discarded_at IS NULL)", using: :gin
     t.index ["tax_code_id"], name: "index_customers_on_tax_code_id"
+    t.index ["updated_at", "id"], name: "index_customers_on_updated_at_and_id"
   end
 
   create_table "dashboard_metrics", force: :cascade do |t|
@@ -408,6 +410,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_180000) do
     t.index ["shopify_variant_id"], name: "index_products_on_shopify_variant_id"
     t.index ["supplier_id"], name: "index_products_on_supplier_id"
     t.index ["tax_code_id"], name: "index_products_on_tax_code_id"
+    t.index ["updated_at", "id"], name: "index_products_on_updated_at_and_id"
   end
 
   create_table "push_subscriptions", force: :cascade do |t|
@@ -526,6 +529,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_180000) do
     t.index ["discarded_at"], name: "index_services_on_discarded_at_null", where: "(discarded_at IS NULL)"
     t.index ["sales_count"], name: "index_services_on_sales_count", order: :desc
     t.index ["tax_code_id"], name: "index_services_on_tax_code_id"
+    t.index ["updated_at", "id"], name: "index_services_on_updated_at_and_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -709,6 +713,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_22_180000) do
     t.index ["code"], name: "index_tax_codes_on_code", unique: true
     t.index ["discarded_at"], name: "index_tax_codes_on_discarded_at"
     t.index ["discarded_at"], name: "index_tax_codes_on_discarded_at_null", where: "(discarded_at IS NULL)"
+    t.index ["updated_at", "id"], name: "index_tax_codes_on_updated_at_and_id"
   end
 
   create_table "terminal_reconciliations", force: :cascade do |t|

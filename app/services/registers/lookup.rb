@@ -5,7 +5,7 @@ module Registers
   class Lookup
     LIMIT = 12
     SERVICE_VECTOR = "to_tsvector('simple', coalesce(name, '') || ' ' || coalesce(code, '') || ' ' || coalesce(description, ''))"
-    CUSTOMER_VECTOR = "to_tsvector('simple', coalesce(name, '') || ' ' || coalesce(member_number, '') || ' ' || coalesce(email, '') || ' ' || coalesce(phone, '') || ' ' || regexp_replace(coalesce(phone, ''), '[^0-9]', '', 'g'))"
+    CUSTOMER_VECTOR = "customers.search_vector"
     # Let PostgreSQL tokenize emails, hyphenated SKUs, and punctuation, then prefix
     # every lexeme. quote_literal keeps tsquery operators in user input harmless.
     PREFIX_QUERY = "(SELECT to_tsquery('simple', string_agg(quote_literal(word) || ':*', ' & ')) FROM unnest(tsvector_to_array(to_tsvector('simple', :query))) AS word)"
