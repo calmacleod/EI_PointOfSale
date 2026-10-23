@@ -2,6 +2,7 @@ module Orders
   class ProcessRefund
     type line_param = Hash[Symbol, untyped]
     type quantities = Hash[Integer, Integer]
+    type discount_allocations = Hash[Integer, BigDecimal]
 
     class Result
       attr_reader success?: bool
@@ -18,6 +19,7 @@ module Orders
     @errors: Array[String]
     @requested_quantities_by_line_id: quantities?
     @refunded_quantities_by_line_id: quantities?
+    @order_discount_allocations_by_line_id: discount_allocations?
 
     def self.call: (order: Order, actor: User, line_params: Array[line_param], ?reason: String?) -> Result
     def initialize: (order: Order, actor: User, line_params: Array[line_param], ?reason: String?) -> void
@@ -28,6 +30,8 @@ module Orders
     def validate!: () -> void
     def failure: () -> Result
     def create_refund: () -> Refund
+    def order_discount_allocations_by_line_id: () -> discount_allocations
+    def cumulative_refund_amount: (OrderLine, Integer, discount_allocations) -> BigDecimal
     def process_restock: (Refund) -> untyped
     def update_order_status: (Refund) -> untyped
     def record_event: (Refund) -> OrderEvent

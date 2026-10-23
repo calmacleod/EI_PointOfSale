@@ -60,7 +60,7 @@ module Orders
 
           # When no customer override, restore the sellable's original tax code
           effective_tax_code = customer_tax_code || line.sellable&.tax_code || line.tax_code
-          new_rate = effective_tax_code&.rate || 0
+          new_rate = @order.tax_exempt? ? BigDecimal("0") : (effective_tax_code&.rate || BigDecimal("0"))
 
           if line.tax_rate != new_rate || line.tax_code_id != effective_tax_code&.id
             line.tax_rate = new_rate

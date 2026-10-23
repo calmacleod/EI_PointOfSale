@@ -111,6 +111,7 @@ bin/ci
 |----------|-------------|
 | `RAILS_ENV` | Rails environment (development, test, production) |
 | `APP_URL` | Canonical app URL used for production links and password reset emails |
+| `STORE_TIME_ZONE` | IANA time zone used for store dates and report date boundaries (default: `America/Toronto`) |
 | `PGGSSENCMODE` | Set to `disable` for local PostgreSQL with Solid Queue |
 | `GARAGE_ACCESS_KEY` | Garage/S3 access key for object storage |
 | `GARAGE_SECRET_KEY` | Garage/S3 secret key for object storage |

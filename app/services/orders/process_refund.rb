@@ -19,18 +19,18 @@ module Orders
     end
 
     def call
-      validate!
-      return failure if @errors.any?
-
-      refund = @order.transaction do
-        created_refund = create_refund
-        process_restock(created_refund)
-        update_order_status(created_refund)
-        record_event(created_refund)
-        created_refund
+      @order.with_lock do
+        validate!
+        if @errors.any?
+          failure
+        else
+          refund = create_refund
+          process_restock(refund)
+          update_order_status(refund)
+          record_event(refund)
+          Result.new(success?: true, refund: refund, errors: [])
+        end
       end
-
-      Result.new(success?: true, refund: refund, errors: [])
     rescue => e
       Result.new(success?: false, refund: nil, errors: [ e.message ])
     end
@@ -51,15 +51,26 @@ module Orders
       end
 
       def create_refund
+        refunded_quantities = refunded_quantities_by_line_id.dup
+        discount_allocations = order_discount_allocations_by_line_id
+
         refund_lines_attrs = @line_params.map do |lp|
           order_line = @order.order_lines.find(lp[:order_line_id])
+          # @type var qty: Integer
           qty = lp[:quantity].to_i
-          amount = (order_line.line_total / order_line.quantity * qty).round(2)
+          previously_refunded_quantity = refunded_quantities.fetch(order_line.id, 0)
+          cumulative_quantity = previously_refunded_quantity + qty
+          amount = cumulative_refund_amount(order_line, cumulative_quantity, discount_allocations) -
+            cumulative_refund_amount(order_line, previously_refunded_quantity, discount_allocations)
+          refunded_quantities[order_line.id] = cumulative_quantity
 
           { order_line: order_line, quantity: qty, amount: amount, restock: lp[:restock] == true }
         end
 
         total = refund_lines_attrs.sum { |a| a[:amount] }
+        remaining_order_total = @order.total.to_d - @order.refunds.sum(:total).to_d
+        raise "Refund exceeds remaining refundable order total" if total > remaining_order_total
+
         full = fully_refunded_after?(requested_quantities_by_line_id)
 
         refund = Refund.create!(
@@ -75,6 +86,46 @@ module Orders
         end
 
         refund
+      end
+
+      def order_discount_allocations_by_line_id
+        @order_discount_allocations_by_line_id ||= begin
+          eligible_lines = @order.order_lines.to_a.reject { |line| line.sellable_type == "GiftCertificate" }
+          total_discount = @order.order_discounts.sum(&:calculated_amount).to_d
+          total_weight = eligible_lines.sum(&:subtotal_before_discount).to_d
+
+          if eligible_lines.empty? || total_discount.zero? || total_weight.zero?
+            {}
+          else
+            total_discount_cents = (total_discount * 100).round.to_i
+            allocated_cents = 0
+            fractional_allocations = []
+            allocations_by_line_id = {}
+
+            eligible_lines.each do |line|
+              raw_cents = BigDecimal(total_discount_cents.to_s) * line.subtotal_before_discount.to_d / total_weight
+              line_cents = raw_cents.floor
+              allocations_by_line_id[line.id] = line_cents
+              allocated_cents += line_cents
+              fractional_allocations << [ line, raw_cents - line_cents ]
+            end
+
+            remaining_cents = total_discount_cents - allocated_cents
+            fractional_allocations.sort_by { |line, fraction| [ -fraction, line.position, line.id ] }
+              .take(remaining_cents)
+              .each { |line, _fraction| allocations_by_line_id[line.id] += 1 }
+
+            allocations_by_line_id.transform_values { |cents| cents.to_d / 100 }
+          end
+        end
+      end
+
+      def cumulative_refund_amount(order_line, cumulative_quantity, discount_allocations)
+        line_amount = (order_line.line_total.to_d * cumulative_quantity / order_line.quantity).round(2)
+        allocated_discount = discount_allocations.fetch(order_line.id, 0.to_d)
+        discount_amount = (allocated_discount * cumulative_quantity / order_line.quantity).round(2)
+
+        line_amount - discount_amount
       end
 
       def process_restock(refund)

@@ -11,6 +11,7 @@ module AdminArea
 
     test "non-admin cannot access users" do
       user = users(:one)
+      user.update!(active: true)
       sign_in_as(user)
 
       get admin_users_path
@@ -25,6 +26,10 @@ module AdminArea
       patch admin_user_path(user), params: { user: { name: "Hacked" } }
       assert_redirected_to root_path
       assert_not_equal "Hacked", user.reload.name
+
+      patch admin_user_path(user), params: { user: { active: false } }
+      assert_redirected_to root_path
+      assert user.reload.active?
     end
 
     test "admin can view index and sees users" do
@@ -51,6 +56,47 @@ module AdminArea
 
       assert_response :success
       assert_includes response.body, user.email_address
+    end
+
+    test "admin user detail exposes deactivation but no unsupported remove action" do
+      admin = users(:admin)
+      user = users(:one)
+
+      sign_in_as(admin)
+
+      get admin_user_path(user)
+
+      assert_response :success
+      assert_equal admin_user_path(user), inertia_props.dig("actions", "deactivate")
+      assert_nil inertia_props.dig("actions", "delete")
+      assert_not_includes response.body, "Remove record"
+
+      get edit_admin_user_path(user)
+
+      assert_response :success
+      assert_nil inertia_props.dig("form", "delete_path")
+      assert_not_includes response.body, "Remove record"
+    end
+
+    test "admin can deactivate a user through the authorized update action" do
+      admin = users(:admin)
+      user = users(:one)
+      user.update!(active: true)
+
+      sign_in_as(admin)
+
+      patch admin_user_path(user), params: { user: { active: false } }
+
+      assert_redirected_to admin_users_path
+      assert_not user.reload.active?
+    end
+
+    test "user resources do not expose a destroy route" do
+      sign_in_as(users(:admin))
+
+      delete admin_user_path(users(:one))
+
+      assert_response :not_found
     end
 
     test "index date filter filters by created_at" do

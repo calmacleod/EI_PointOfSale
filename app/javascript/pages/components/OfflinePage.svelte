@@ -105,13 +105,12 @@
   {#if syncError}<div class="n-bar n-bad" role="alert">{syncError}</div>{/if}
   {#if confirmingFullSync}<div class="n-bar n-warn"><span><strong>Replace all saved lookup data?</strong> The current offline catalogue will be rebuilt from the server.</span><span class="n-bar-actions"><button class="k-btn k-btn-xs" type="button" onclick={() => (confirmingFullSync = false)}>Keep saved data</button><button class="k-btn k-btn-xs k-btn-danger-solid" type="button" disabled={syncing} onclick={() => runSync(true)}>Replace and sync</button></span></div>{/if}
 
-  <div class="f-bar">
-    <span class="p-title">Lookup</span>
-    <div class="k-seg" role="tablist" aria-label="Offline lookup categories">
+  <div class="f-bar offline-toolbar">
+    <div class="k-seg offline-tabs" role="tablist" aria-label="Offline lookup categories">
       {#each views as view}<button type="button" role="tab" aria-selected={activeView === view.value} data-testid={`offline-tab-${view.value}`} onclick={() => chooseView(view.value)}>{view.label} · {summary[view.value]?.count || 0}</button>{/each}
     </div>
-    <span class="p-title">Filter</span>
-    <input bind:this={searchInput} class="k-input k-input-sm" style="width:min(340px,42vw)" placeholder={`Search cached ${activeConfig.label.toLowerCase()}…`} oninput={handleSearch} data-testid="offline-search" />
+    <label class="offline-search"><span class="p-title">Search</span>
+    <input bind:this={searchInput} class="k-input k-input-sm" placeholder={`Search cached ${activeConfig.label.toLowerCase()}…`} oninput={handleSearch} data-testid="offline-search" /></label>
     <button type="button" class="k-btn k-btn-sm push" disabled={syncing || !online} onclick={() => runSync(false)}><RefreshCw />{syncing ? "Syncing…" : "Sync now"}</button>
     <button type="button" class="k-btn k-btn-sm k-btn-quiet" disabled={syncing || !online} onclick={() => (confirmingFullSync = true)}>Full re-sync</button>
   </div>
@@ -141,3 +140,14 @@
     {/if}
   </section>
 </section>
+
+<style>
+  .offline-toolbar { flex-wrap: wrap; overflow: visible; }
+  .offline-tabs { flex-wrap: wrap; }
+  .offline-search { display: flex; align-items: center; gap: var(--space-2); flex: 1; min-width: 240px; }
+  .offline-search input { min-width: 0; width: 100%; }
+  @media (max-width: 640px) {
+    .offline-tabs { width: 100%; }
+    .offline-search { flex-basis: 100%; }
+  }
+</style>

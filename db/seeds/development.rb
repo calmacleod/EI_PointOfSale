@@ -328,289 +328,344 @@ end
 # ── Orders ────────────────────────────────────────────────────────────
 puts "Seeding orders..."
 
+# These certificates must exist before the seeded gift-certificate payment is
+# created. Saving that payment performs the real balance decrement.
+puts "Seeding gift certificates..."
+
+admin = User.find_by!(email_address: "admin@example.com")
+alice = User.find_by(email_address: "alice@example.com") || admin
+acme  = Customer.find_by(member_number: "100001")
+jane  = Customer.find_by(member_number: "100002")
+
+gc_active = GiftCertificate.find_or_create_by!(code: "GC-DEMO0001") do |certificate|
+  certificate.status = :active
+  certificate.initial_amount = 100.00
+  certificate.remaining_balance = 100.00
+  certificate.customer = acme
+  certificate.issued_by = admin
+  certificate.activated_at = 1.week.ago
+end
+puts "  Available active GC #{gc_active.code} (current balance $#{gc_active.remaining_balance})"
+
+gc_full = GiftCertificate.find_or_create_by!(code: "GC-DEMO0002") do |certificate|
+  certificate.status = :active
+  certificate.initial_amount = 50.00
+  certificate.remaining_balance = 50.00
+  certificate.customer = jane
+  certificate.issued_by = alice
+  certificate.activated_at = 3.days.ago
+end
+puts "  Available active GC #{gc_full.code} ($#{gc_full.remaining_balance})"
+
+gc_exhausted = GiftCertificate.find_or_create_by!(code: "GC-DEMO0003") do |certificate|
+  certificate.status = :exhausted
+  certificate.initial_amount = 25.00
+  certificate.customer = acme
+  certificate.issued_by = admin
+  certificate.activated_at = 2.weeks.ago
+end
+# The model's create callback treats a zero balance as unset, so reapply the
+# intended exhausted state after creation and on subsequent seed runs.
+gc_exhausted.update!(remaining_balance: 0.00, status: :exhausted)
+puts "  Available exhausted GC #{gc_exhausted.code}"
+
+gc_voided = GiftCertificate.find_or_create_by!(code: "GC-DEMO0004") do |certificate|
+  certificate.status = :voided
+  certificate.initial_amount = 75.00
+  certificate.remaining_balance = 75.00
+  certificate.issued_by = admin
+  certificate.voided_at = 5.days.ago
+end
+puts "  Available voided GC #{gc_voided.code}"
+
 unless Order.exists?
-  admin = User.find_by!(email_address: "admin@example.com")
-  alice = User.find_by(email_address: "alice@example.com") || admin
-  bob   = User.find_by(email_address: "bob@example.com") || admin
+  Order.transaction do
+    admin = User.find_by!(email_address: "admin@example.com")
+    alice = User.find_by(email_address: "alice@example.com") || admin
+    bob   = User.find_by(email_address: "bob@example.com") || admin
 
-  # Products & Services for orders
-  sleeves_red   = Product.find_by(code: "DS-MAT-RED")
-  hockey_cards  = Product.find_by(code: "UD-2024-001")
-  dice_set      = Product.find_by(code: "DND-DICE-PREM")
-  mtg_booster   = Product.find_by(code: "MTG-DOM-BOX")
-  pokemon_etb   = Product.find_by(code: "PKM-SV-ETB")
-  playmat       = Product.find_by(code: "PLAYMAT-GENERIC")
-  puck          = Product.find_by(code: "NHL-PUCK-001")
-  comic         = Product.find_by(code: "ASM-001-REPRINT")
-  refill_svc    = Service.find_by(code: "SVC-REFILL-SM")
-  sleeve_svc    = Service.find_by(code: "SVC-SLEEVE")
+    # Products & Services for orders
+    sleeves_red   = Product.find_by(code: "DS-MAT-RED")
+    hockey_cards  = Product.find_by(code: "UD-2024-001")
+    dice_set      = Product.find_by(code: "DND-DICE-PREM")
+    mtg_booster   = Product.find_by(code: "MTG-DOM-BOX")
+    pokemon_etb   = Product.find_by(code: "PKM-SV-ETB")
+    playmat       = Product.find_by(code: "PLAYMAT-GENERIC")
+    puck          = Product.find_by(code: "NHL-PUCK-001")
+    comic         = Product.find_by(code: "ASM-001-REPRINT")
+    refill_svc    = Service.find_by(code: "SVC-REFILL-SM")
+    sleeve_svc    = Service.find_by(code: "SVC-SLEEVE")
 
-  jane     = Customer.find_by(member_number: "100002")
-  sarah    = Customer.find_by(member_number: "100004")
-  acme     = Customer.find_by(member_number: "100001")
+    jane     = Customer.find_by(member_number: "100002")
+    sarah    = Customer.find_by(member_number: "100004")
+    acme     = Customer.find_by(member_number: "100001")
 
-  # Update Jane Doe to have the status indian tax exemption (for demo)
-  exempt_tax = TaxCode.find_by(code: "EXEMPT_STATUS_INDIAN")
-  if jane && exempt_tax
-    jane.update!(tax_code: exempt_tax, status_card_number: "1234-5678-90")
-    puts "  Updated Jane Doe with status card and exempt tax code"
-  end
+    # Update Jane Doe to have the status indian tax exemption (for demo)
+    exempt_tax = TaxCode.find_by(code: "EXEMPT_STATUS_INDIAN")
+    if jane && exempt_tax
+      jane.update!(tax_code: exempt_tax, status_card_number: "1234-5678-90")
+      puts "  Updated Jane Doe with status card and exempt tax code"
+    end
 
-  # ── Completed order #1: Cash payment with change ────────────────────
-  order1 = Order.create!(created_by: admin, status: :draft)
-  OrderEvent.create!(order: order1, event_type: "created", actor: admin, created_at: 2.days.ago)
+    # ── Completed order #1: Cash payment with change ────────────────────
+    order1 = Order.create!(created_by: admin, status: :draft)
+    OrderEvent.create!(order: order1, event_type: "created", actor: admin, created_at: 2.days.ago)
 
-  if sleeves_red
-    line = order1.order_lines.build(quantity: 2)
-    line.snapshot_from_sellable!(sleeves_red)
-    line.position = 1
-    line.save!
-  end
+    if sleeves_red
+      line = order1.order_lines.build(quantity: 2)
+      line.snapshot_from_sellable!(sleeves_red)
+      line.position = 1
+      line.save!
+    end
 
-  if hockey_cards
-    line = order1.order_lines.build(quantity: 5)
-    line.snapshot_from_sellable!(hockey_cards)
-    line.position = 2
-    line.save!
-  end
+    if hockey_cards
+      line = order1.order_lines.build(quantity: 5)
+      line.snapshot_from_sellable!(hockey_cards)
+      line.position = 2
+      line.save!
+    end
 
-  Orders::CalculateTotals.call(order1)
+    Orders::CalculateTotals.call(order1)
 
-  order1.order_payments.create!(
-    payment_method: :cash,
-    amount: order1.total,
-    amount_tendered: 60.00,
-    change_given: (60.00 - order1.total).round(2),
-    received_by: admin
-  )
-  OrderEvent.create!(order: order1, event_type: "payment_added", actor: admin, data: { method: "Cash", amount: order1.total.to_s }, created_at: 2.days.ago)
-
-  order1.update!(status: :completed, completed_at: 2.days.ago)
-  OrderEvent.create!(order: order1, event_type: "completed", actor: admin, data: { total: order1.total.to_s }, created_at: 2.days.ago)
-  puts "  Created completed order #{order1.number} (cash with change)"
-
-  # ── Completed order #2: Debit payment, with a customer ──────────────
-  order2 = Order.create!(created_by: alice, status: :draft, customer: sarah)
-  OrderEvent.create!(order: order2, event_type: "created", actor: alice, created_at: 1.day.ago)
-
-  if dice_set
-    line = order2.order_lines.build(quantity: 1)
-    line.snapshot_from_sellable!(dice_set)
-    line.position = 1
-    line.save!
-  end
-
-  if playmat
-    line = order2.order_lines.build(quantity: 1)
-    line.snapshot_from_sellable!(playmat)
-    line.position = 2
-    line.save!
-  end
-
-  if refill_svc
-    line = order2.order_lines.build(quantity: 2)
-    line.snapshot_from_sellable!(refill_svc)
-    line.position = 3
-    line.save!
-  end
-
-  Orders::CalculateTotals.call(order2)
-
-  order2.order_payments.create!(
-    payment_method: :debit,
-    amount: order2.total,
-    received_by: alice,
-    reference: "****4521"
-  )
-  OrderEvent.create!(order: order2, event_type: "payment_added", actor: alice, data: { method: "Debit", amount: order2.total.to_s }, created_at: 1.day.ago)
-
-  order2.update!(status: :completed, completed_at: 1.day.ago)
-  OrderEvent.create!(order: order2, event_type: "completed", actor: alice, data: { total: order2.total.to_s }, created_at: 1.day.ago)
-  puts "  Created completed order #{order2.number} (debit, customer: #{sarah&.name})"
-
-  # ── Completed order #3: Customer with tax code override (Jane Doe — exempt) ──
-  order3 = Order.create!(created_by: bob, status: :draft, customer: jane)
-  OrderEvent.create!(order: order3, event_type: "created", actor: bob, created_at: 1.day.ago)
-  OrderEvent.create!(order: order3, event_type: "customer_assigned", actor: bob, data: { customer_name: jane&.name }, created_at: 1.day.ago)
-
-  if puck
-    line = order3.order_lines.build(quantity: 3)
-    line.snapshot_from_sellable!(puck, customer_tax_code: jane&.tax_code)
-    line.position = 1
-    line.save!
-  end
-
-  if comic
-    line = order3.order_lines.build(quantity: 1)
-    line.snapshot_from_sellable!(comic, customer_tax_code: jane&.tax_code)
-    line.position = 2
-    line.save!
-  end
-
-  Orders::CalculateTotals.call(order3)
-
-  order3.order_payments.create!(
-    payment_method: :credit,
-    amount: order3.total,
-    received_by: bob,
-    reference: "****9876"
-  )
-  OrderEvent.create!(order: order3, event_type: "payment_added", actor: bob, data: { method: "Credit", amount: order3.total.to_s }, created_at: 1.day.ago)
-
-  order3.update!(status: :completed, completed_at: 1.day.ago, tax_exempt_number: jane&.status_card_number)
-  OrderEvent.create!(order: order3, event_type: "completed", actor: bob, data: { total: order3.total.to_s }, created_at: 1.day.ago)
-  puts "  Created completed order #{order3.number} (tax exempt customer: #{jane&.name})"
-
-  # ── Completed order #4: With discount, multiple payment methods ─────
-  order4 = Order.create!(created_by: admin, status: :draft, customer: acme)
-  OrderEvent.create!(order: order4, event_type: "created", actor: admin, created_at: 6.hours.ago)
-
-  if mtg_booster
-    line = order4.order_lines.build(quantity: 1)
-    line.snapshot_from_sellable!(mtg_booster)
-    line.position = 1
-    line.save!
-  end
-
-  if pokemon_etb
-    line = order4.order_lines.build(quantity: 2)
-    line.snapshot_from_sellable!(pokemon_etb)
-    line.position = 2
-    line.save!
-  end
-
-  if sleeve_svc
-    line = order4.order_lines.build(quantity: 1)
-    line.snapshot_from_sellable!(sleeve_svc)
-    line.position = 3
-    line.save!
-  end
-
-  # Apply a 10% employee discount
-  discount = order4.order_discounts.create!(
-    name: "Employee Discount",
-    discount_type: :percentage,
-    value: 10,
-    scope: :all_items,
-    applied_by: admin
-  )
-  OrderEvent.create!(order: order4, event_type: "discount_applied", actor: admin, data: { name: "Employee Discount", value: "10%" }, created_at: 6.hours.ago)
-
-  Orders::CalculateTotals.call(order4)
-
-  # Split payment: gift certificate + debit
-  gift_amount = 50.00
-  remaining = order4.total - gift_amount
-
-  gc_payment = order4.order_payments.new(
-    payment_method: :gift_certificate,
-    amount: gift_amount,
-    received_by: admin,
-    reference: "GC-2026-0042"
-  )
-  gc_payment.save(validate: false)
-  order4.order_payments.create!(
-    payment_method: :debit,
-    amount: remaining,
-    received_by: admin,
-    reference: "****1234"
-  )
-
-  order4.update!(status: :completed, completed_at: 6.hours.ago)
-  OrderEvent.create!(order: order4, event_type: "completed", actor: admin, data: { total: order4.total.to_s }, created_at: 6.hours.ago)
-  puts "  Created completed order #{order4.number} (discount + split payment)"
-
-  # ── Held order ──────────────────────────────────────────────────────
-  order5 = Order.create!(created_by: alice, status: :draft)
-  OrderEvent.create!(order: order5, event_type: "created", actor: alice, created_at: 3.hours.ago)
-
-  if sleeves_red
-    line = order5.order_lines.build(quantity: 4)
-    line.snapshot_from_sellable!(sleeves_red)
-    line.position = 1
-    line.save!
-  end
-
-  if dice_set
-    line = order5.order_lines.build(quantity: 1)
-    line.snapshot_from_sellable!(dice_set)
-    line.position = 2
-    line.save!
-  end
-
-  Orders::CalculateTotals.call(order5)
-  order5.update!(status: :held, held_at: 3.hours.ago)
-  OrderEvent.create!(order: order5, event_type: "held", actor: alice, created_at: 3.hours.ago)
-  puts "  Created held order #{order5.number}"
-
-  # ── Draft order (in progress) ──────────────────────────────────────
-  order6 = Order.create!(created_by: bob, status: :draft)
-  OrderEvent.create!(order: order6, event_type: "created", actor: bob, created_at: 30.minutes.ago)
-
-  if hockey_cards
-    line = order6.order_lines.build(quantity: 3)
-    line.snapshot_from_sellable!(hockey_cards)
-    line.position = 1
-    line.save!
-  end
-
-  Orders::CalculateTotals.call(order6)
-  puts "  Created draft order #{order6.number}"
-
-  # ── Refunded order ─────────────────────────────────────────────────
-  order7 = Order.create!(created_by: admin, status: :draft)
-  OrderEvent.create!(order: order7, event_type: "created", actor: admin, created_at: 3.days.ago)
-
-  if playmat
-    line = order7.order_lines.build(quantity: 1)
-    line.snapshot_from_sellable!(playmat)
-    line.position = 1
-    line.save!
-  end
-
-  if puck
-    line = order7.order_lines.build(quantity: 2)
-    line.snapshot_from_sellable!(puck)
-    line.position = 2
-    line.save!
-  end
-
-  Orders::CalculateTotals.call(order7)
-
-  order7.order_payments.create!(
-    payment_method: :cash,
-    amount: order7.total,
-    amount_tendered: 60.00,
-    change_given: (60.00 - order7.total).round(2),
-    received_by: admin
-  )
-
-  order7.update!(status: :completed, completed_at: 3.days.ago)
-  OrderEvent.create!(order: order7, event_type: "completed", actor: admin, data: { total: order7.total.to_s }, created_at: 3.days.ago)
-
-  # Process a full refund
-  refund = Refund.create!(
-    order: order7,
-    refund_type: :full,
-    reason: "Customer changed their mind",
-    total: order7.total,
-    processed_by: admin
-  )
-
-  order7.order_lines.each do |ol|
-    refund.refund_lines.create!(
-      order_line: ol,
-      quantity: ol.quantity,
-      amount: ol.line_total,
-      restock: ol.sellable_type == "Product"
+    cash_tendered = order1.total + 10
+    order1.order_payments.create!(
+      payment_method: :cash,
+      amount: order1.total,
+      amount_tendered: cash_tendered,
+      change_given: (cash_tendered - order1.total).round(2),
+      received_by: admin
     )
+    OrderEvent.create!(order: order1, event_type: "payment_added", actor: admin, data: { method: "Cash", amount: order1.total.to_s }, created_at: 2.days.ago)
+
+    order1.update!(status: :completed, completed_at: 2.days.ago)
+    OrderEvent.create!(order: order1, event_type: "completed", actor: admin, data: { total: order1.total.to_s }, created_at: 2.days.ago)
+    puts "  Created completed order #{order1.number} (cash with change)"
+
+    # ── Completed order #2: Debit payment, with a customer ──────────────
+    order2 = Order.create!(created_by: alice, status: :draft, customer: sarah)
+    OrderEvent.create!(order: order2, event_type: "created", actor: alice, created_at: 1.day.ago)
+
+    if dice_set
+      line = order2.order_lines.build(quantity: 1)
+      line.snapshot_from_sellable!(dice_set)
+      line.position = 1
+      line.save!
+    end
+
+    if playmat
+      line = order2.order_lines.build(quantity: 1)
+      line.snapshot_from_sellable!(playmat)
+      line.position = 2
+      line.save!
+    end
+
+    if refill_svc
+      line = order2.order_lines.build(quantity: 2)
+      line.snapshot_from_sellable!(refill_svc)
+      line.position = 3
+      line.save!
+    end
+
+    Orders::CalculateTotals.call(order2)
+
+    order2.order_payments.create!(
+      payment_method: :debit,
+      amount: order2.total,
+      received_by: alice,
+      reference: "****4521"
+    )
+    OrderEvent.create!(order: order2, event_type: "payment_added", actor: alice, data: { method: "Debit", amount: order2.total.to_s }, created_at: 1.day.ago)
+
+    order2.update!(status: :completed, completed_at: 1.day.ago)
+    OrderEvent.create!(order: order2, event_type: "completed", actor: alice, data: { total: order2.total.to_s }, created_at: 1.day.ago)
+    puts "  Created completed order #{order2.number} (debit, customer: #{sarah&.name})"
+
+    # ── Completed order #3: Customer with tax code override (Jane Doe — exempt) ──
+    order3 = Order.create!(created_by: bob, status: :draft, customer: jane)
+    OrderEvent.create!(order: order3, event_type: "created", actor: bob, created_at: 1.day.ago)
+    OrderEvent.create!(order: order3, event_type: "customer_assigned", actor: bob, data: { customer_name: jane&.name }, created_at: 1.day.ago)
+
+    if puck
+      line = order3.order_lines.build(quantity: 3)
+      line.snapshot_from_sellable!(puck, customer_tax_code: jane&.tax_code)
+      line.position = 1
+      line.save!
+    end
+
+    if comic
+      line = order3.order_lines.build(quantity: 1)
+      line.snapshot_from_sellable!(comic, customer_tax_code: jane&.tax_code)
+      line.position = 2
+      line.save!
+    end
+
+    Orders::CalculateTotals.call(order3)
+
+    order3.order_payments.create!(
+      payment_method: :credit,
+      amount: order3.total,
+      received_by: bob,
+      reference: "****9876"
+    )
+    OrderEvent.create!(order: order3, event_type: "payment_added", actor: bob, data: { method: "Credit", amount: order3.total.to_s }, created_at: 1.day.ago)
+
+    order3.update!(status: :completed, completed_at: 1.day.ago, tax_exempt_number: jane&.status_card_number)
+    OrderEvent.create!(order: order3, event_type: "completed", actor: bob, data: { total: order3.total.to_s }, created_at: 1.day.ago)
+    puts "  Created completed order #{order3.number} (tax exempt customer: #{jane&.name})"
+
+    # ── Completed order #4: With discount, multiple payment methods ─────
+    order4 = Order.create!(created_by: admin, status: :draft, customer: acme)
+    OrderEvent.create!(order: order4, event_type: "created", actor: admin, created_at: 6.hours.ago)
+
+    if mtg_booster
+      line = order4.order_lines.build(quantity: 1)
+      line.snapshot_from_sellable!(mtg_booster)
+      line.position = 1
+      line.save!
+    end
+
+    if pokemon_etb
+      line = order4.order_lines.build(quantity: 2)
+      line.snapshot_from_sellable!(pokemon_etb)
+      line.position = 2
+      line.save!
+    end
+
+    if sleeve_svc
+      line = order4.order_lines.build(quantity: 1)
+      line.snapshot_from_sellable!(sleeve_svc)
+      line.position = 3
+      line.save!
+    end
+
+    # Apply a 10% employee discount
+    discount = order4.order_discounts.create!(
+      name: "Employee Discount",
+      discount_type: :percentage,
+      value: 10,
+      scope: :all_items,
+      applied_by: admin
+    )
+    OrderEvent.create!(order: order4, event_type: "discount_applied", actor: admin, data: { name: "Employee Discount", value: "10%" }, created_at: 6.hours.ago)
+
+    Orders::CalculateTotals.call(order4)
+
+    # Split payment: gift certificate + debit
+    gift_amount = 35.00
+    remaining = order4.total - gift_amount
+
+    order4.order_payments.create!(
+      payment_method: :gift_certificate,
+      amount: gift_amount,
+      gift_certificate: gc_active,
+      received_by: admin,
+      reference: gc_active.code
+    )
+    order4.order_payments.create!(
+      payment_method: :debit,
+      amount: remaining,
+      received_by: admin,
+      reference: "****1234"
+    )
+
+    order4.update!(status: :completed, completed_at: 6.hours.ago)
+    gc_active.update!(sold_on_order: order4)
+    OrderEvent.create!(order: order4, event_type: "completed", actor: admin, data: { total: order4.total.to_s }, created_at: 6.hours.ago)
+    puts "  Created completed order #{order4.number} (discount + split payment)"
+
+    # ── Held order ──────────────────────────────────────────────────────
+    order5 = Order.create!(created_by: alice, status: :draft)
+    OrderEvent.create!(order: order5, event_type: "created", actor: alice, created_at: 3.hours.ago)
+
+    if sleeves_red
+      line = order5.order_lines.build(quantity: 4)
+      line.snapshot_from_sellable!(sleeves_red)
+      line.position = 1
+      line.save!
+    end
+
+    if dice_set
+      line = order5.order_lines.build(quantity: 1)
+      line.snapshot_from_sellable!(dice_set)
+      line.position = 2
+      line.save!
+    end
+
+    Orders::CalculateTotals.call(order5)
+    order5.update!(status: :held, held_at: 3.hours.ago)
+    OrderEvent.create!(order: order5, event_type: "held", actor: alice, created_at: 3.hours.ago)
+    puts "  Created held order #{order5.number}"
+
+    # ── Draft order (in progress) ──────────────────────────────────────
+    order6 = Order.create!(created_by: bob, status: :draft)
+    OrderEvent.create!(order: order6, event_type: "created", actor: bob, created_at: 30.minutes.ago)
+
+    if hockey_cards
+      line = order6.order_lines.build(quantity: 3)
+      line.snapshot_from_sellable!(hockey_cards)
+      line.position = 1
+      line.save!
+    end
+
+    Orders::CalculateTotals.call(order6)
+    puts "  Created draft order #{order6.number}"
+
+    # ── Refunded order ─────────────────────────────────────────────────
+    order7 = Order.create!(created_by: admin, status: :draft)
+    OrderEvent.create!(order: order7, event_type: "created", actor: admin, created_at: 3.days.ago)
+
+    if playmat
+      line = order7.order_lines.build(quantity: 1)
+      line.snapshot_from_sellable!(playmat)
+      line.position = 1
+      line.save!
+    end
+
+    if puck
+      line = order7.order_lines.build(quantity: 2)
+      line.snapshot_from_sellable!(puck)
+      line.position = 2
+      line.save!
+    end
+
+    Orders::CalculateTotals.call(order7)
+
+    cash_tendered = order7.total + 10
+    order7.order_payments.create!(
+      payment_method: :cash,
+      amount: order7.total,
+      amount_tendered: cash_tendered,
+      change_given: (cash_tendered - order7.total).round(2),
+      received_by: admin
+    )
+
+    order7.update!(status: :completed, completed_at: 3.days.ago)
+    OrderEvent.create!(order: order7, event_type: "completed", actor: admin, data: { total: order7.total.to_s }, created_at: 3.days.ago)
+
+    # Process a full refund
+    refund = Refund.create!(
+      order: order7,
+      refund_type: :full,
+      reason: "Customer changed their mind",
+      total: order7.total,
+      processed_by: admin
+    )
+
+    order7.order_lines.each do |ol|
+      refund.refund_lines.create!(
+        order_line: ol,
+        quantity: ol.quantity,
+        amount: ol.line_total,
+        restock: ol.sellable_type == "Product"
+      )
+    end
+
+    order7.update_column(:status, Order.statuses[:refunded])
+    OrderEvent.create!(order: order7, event_type: "refund_processed", actor: admin, data: { refund_number: refund.refund_number, total: refund.total.to_s }, created_at: 2.days.ago)
+    puts "  Created refunded order #{order7.number}"
+
+    puts "  Created #{Order.count} orders total"
   end
-
-  order7.update_column(:status, Order.statuses[:refunded])
-  OrderEvent.create!(order: order7, event_type: "refund_processed", actor: admin, data: { refund_number: refund.refund_number, total: refund.total.to_s }, created_at: 2.days.ago)
-  puts "  Created refunded order #{order7.number}"
-
-  puts "  Created #{Order.count} orders total"
 end
 
 # ── Discounts ──────────────────────────────────────────────────────────
@@ -659,74 +714,4 @@ unless Discount.exists?
   puts "  Created \"Staff Discount\" (10% all items, inactive)"
 
   puts "  Created #{Discount.count} discounts total"
-end
-
-# ── Gift Certificates ─────────────────────────────────────────────
-puts "Seeding gift certificates..."
-
-unless GiftCertificate.exists?
-  admin = User.find_by!(email_address: "admin@example.com")
-  alice = User.find_by(email_address: "alice@example.com") || admin
-  acme  = Customer.find_by(member_number: "100001")
-  jane  = Customer.find_by(member_number: "100002")
-
-  # Active GC — was purchased by Acme Corp, has partial balance remaining.
-  # Use this code to test redemption in the POS: GC-DEMO0001
-  gc_active = GiftCertificate.create!(
-    code: "GC-DEMO0001",
-    status: :active,
-    initial_amount: 100.00,
-    remaining_balance: 65.00,
-    customer: acme,
-    issued_by: admin,
-    activated_at: 1.week.ago
-  )
-  puts "  Created active GC #{gc_active.code} ($65.00 remaining)"
-
-  # Active GC — assigned to Jane Doe, full balance. Use code: GC-DEMO0002
-  gc_full = GiftCertificate.create!(
-    code: "GC-DEMO0002",
-    status: :active,
-    initial_amount: 50.00,
-    remaining_balance: 50.00,
-    customer: jane,
-    issued_by: alice,
-    activated_at: 3.days.ago
-  )
-  puts "  Created active GC #{gc_full.code} ($50.00, full balance)"
-
-  # Exhausted GC — for testing rejection. Code: GC-DEMO0003
-  gc_exhausted = GiftCertificate.create!(
-    code: "GC-DEMO0003",
-    status: :exhausted,
-    initial_amount: 25.00,
-    remaining_balance: 0.00,
-    customer: acme,
-    issued_by: admin,
-    activated_at: 2.weeks.ago
-  )
-  puts "  Created exhausted GC #{gc_exhausted.code}"
-
-  # Voided GC — for testing invalid code rejection. Code: GC-DEMO0004
-  gc_voided = GiftCertificate.create!(
-    code: "GC-DEMO0004",
-    status: :voided,
-    initial_amount: 75.00,
-    remaining_balance: 75.00,
-    issued_by: admin,
-    voided_at: 5.days.ago
-  )
-  puts "  Created voided GC #{gc_voided.code}"
-
-  # Link gc_active to the historical order4 gift_certificate payment if it exists
-  completed_order_with_gc = Order.completed.joins(:order_payments)
-                                 .find_by(order_payments: { payment_method: OrderPayment.payment_methods[:gift_certificate] })
-  if completed_order_with_gc
-    gc_payment = completed_order_with_gc.order_payments.find_by(payment_method: :gift_certificate)
-    gc_payment&.update_columns(gift_certificate_id: gc_active.id, reference: gc_active.code)
-    gc_active.update_columns(sold_on_order_id: completed_order_with_gc.id)
-    puts "  Linked #{gc_active.code} to completed order #{completed_order_with_gc.number}"
-  end
-
-  puts "  Created #{GiftCertificate.count} gift certificates total"
 end

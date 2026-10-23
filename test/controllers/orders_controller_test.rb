@@ -137,9 +137,29 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "receipt timestamp uses the store timezone and identifies its offset" do
+    order = orders(:completed_order)
+    order.update_column(:completed_at, Time.utc(2026, 10, 23, 1))
+    Time.use_zone("America/Toronto") do
+      get receipt_order_path(order)
+      assert_equal "Oct 22, 2026 9:00 PM EDT", inertia_props.dig("order", "completed_at")
+    end
+  end
+
   test "GET /orders/:id/refund_form shows refund form (admin)" do
     get refund_form_order_path(orders(:completed_order))
     assert_response :success
+  end
+
+  test "exhausted refund form redirects with a clear explanation" do
+    order = orders(:completed_order)
+    line = order.order_lines.first
+    result = Orders::ProcessRefund.call(order: order, actor: users(:admin), line_params: [ { order_line_id: line.id, quantity: line.quantity, restock: false } ])
+    assert result.success?, result.errors.join(", ")
+
+    get refund_form_order_path(order)
+    assert_redirected_to order_path(order)
+    assert_equal "All items on this order have already been refunded.", flash[:alert]
   end
 
   test "PATCH /orders/:id/assign_customer assigns a customer" do
@@ -148,6 +168,24 @@ class OrdersControllerTest < ActionDispatch::IntegrationTest
     patch assign_customer_order_path(order), params: { customer_id: customer.id }
     assert_redirected_to register_path(order_id: order.id)
     assert_equal customer, order.reload.customer
+  end
+
+  test "changing order tax exemption recalculates existing lines and totals" do
+    order = orders(:draft_order)
+    OrderLines::Add.call(order: order, sellable: products(:nhl_puck), actor: users(:admin))
+    taxed_total = order.reload.total
+    assert_operator order.tax_total, :>, 0
+
+    patch order_path(order), params: { order: { tax_exempt: true } }
+    assert_redirected_to register_path(order_id: order.id)
+    assert_equal 0, order.reload.tax_total
+    assert_equal 0, order.order_lines.first.tax_amount
+    assert_equal order.subtotal - order.discount_total, order.total
+
+    patch order_path(order), params: { order: { tax_exempt: false } }
+    assert_redirected_to register_path(order_id: order.id)
+    assert_equal taxed_total, order.reload.total
+    assert_operator order.tax_total, :>, 0
   end
 
   test "DELETE /orders/:id/remove_customer removes the customer" do

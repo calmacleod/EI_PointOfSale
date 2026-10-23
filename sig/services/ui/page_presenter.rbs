@@ -42,7 +42,7 @@ module Ui
 
     def resource_form_props: (untyped config, ?record: untyped?, ?action: untyped?, ?root: untyped?, ?cancel: untyped?) -> { view: "resource_form", title: untyped, description: untyped, form: { root: untyped, method: untyped, action: untyped, cancel: untyped, submit_label: untyped, delete_path: untyped, fields: untyped, errors: untyped } }
 
-    def resource_show_props: (untyped config, ?record: untyped?) -> { view: "resource_show", title: untyped, description: untyped, details: untyped, actions: { index: untyped, edit: untyped, delete: untyped } }
+    def resource_show_props: (untyped config, ?record: untyped?) -> { view: "resource_show", title: untyped, description: untyped, details: untyped, actions: { index: untyped, edit: untyped, delete: untyped, deactivate: untyped, history: untyped } }
 
     def auth_props: () -> ({ view: "auth", title: "Sign in", description: "Use your staff account to open the point of sale.", form: { action: untyped, method: "post", root: nil, submit_label: "Sign in", fields: ::Array[{ key: "email_address", label: "Email address", type: "email", value: untyped, required: true, autocomplete: "username" } | { key: "password", label: "Password", type: "password", value: "", required: true, autocomplete: "current-password" }] }, secondary: { label: "Forgot your password?", path: untyped } } | { view: "auth", title: "Reset password", description: "We will send reset instructions if the account exists.", form: { action: untyped, method: "post", root: nil, submit_label: "Email reset instructions", fields: ::Array[{ key: "email_address", label: "Email address", type: "email", value: "", required: true, autocomplete: "username" }] }, secondary: { label: "Back to sign in", path: untyped } } | { view: "auth", title: "Choose a new password", description: "Enter and confirm the new password for this account.", form: { action: untyped, method: "put", root: nil, submit_label: "Save password", fields: ::Array[{ key: "password", label: "New password", type: "password", value: "", required: true, autocomplete: "new-password" } | { key: "password_confirmation", label: "Confirm password", type: "password", value: "", required: true, autocomplete: "new-password" }] } })
 
@@ -141,6 +141,8 @@ module Ui
     def record_path: (untyped record, untyped config) -> untyped
 
     def edit_resource_path: (untyped record, untyped config) -> untyped
+
+    def resource_action_allowed?: (Symbol action, untyped record) -> untyped
 
     def new_resource_path: (untyped config) -> untyped
 

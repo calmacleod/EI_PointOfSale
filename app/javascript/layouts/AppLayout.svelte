@@ -68,6 +68,10 @@
 
   onMount(() => {
     const stop = router.on("navigate", (event) => syncPage(event.detail.page))
+    const stopSuccess = router.on("success", (event) => {
+      flash = event.detail.page.props.flash || {}
+      scheduleDismiss()
+    })
     const syncConnection = async () => {
       const available = await connectionAvailable()
       connectionFailures = available ? 0 : connectionFailures + 1
@@ -87,6 +91,7 @@
 
     return () => {
       stop()
+      stopSuccess()
       if (dismissTimer) window.clearTimeout(dismissTimer)
       if (toastTimer) window.clearTimeout(toastTimer)
       if (connectionTimer) window.clearInterval(connectionTimer)
@@ -146,7 +151,7 @@
 
   function scheduleDismiss() {
     if (dismissTimer) window.clearTimeout(dismissTimer)
-    if (!flash.notice && !flash.alert) return
+    if (flash.alert || !flash.notice) return
     dismissTimer = window.setTimeout(() => (flash = {}), 4500)
   }
 
@@ -340,7 +345,7 @@
 
     <main class="app-content">
       {#if flash.notice}<div class="n-bar n-ok"><span>{flash.notice}</span><button class="k-btn k-btn-xs k-btn-quiet push" onclick={() => (flash = {})}>Dismiss</button></div>{/if}
-      {#if flash.alert}<div class="n-bar n-bad"><span>{flash.alert}</span><button class="k-btn k-btn-xs k-btn-quiet push" onclick={() => (flash = {})}>Dismiss</button></div>{/if}
+      {#if flash.alert}<div class="n-bar n-bad" role="alert"><span>{flash.alert}</span><button class="k-btn k-btn-xs k-btn-quiet push" onclick={() => (flash = {})}>Dismiss</button></div>{/if}
       <slot />
     </main>
 
@@ -354,7 +359,7 @@
 {:else}
   <main>
     {#if flash.notice}<div class="n-bar n-ok">{flash.notice}</div>{/if}
-    {#if flash.alert}<div class="n-bar n-bad">{flash.alert}</div>{/if}
+    {#if flash.alert}<div class="n-bar n-bad" role="alert">{flash.alert}</div>{/if}
     <slot />
   </main>
 {/if}

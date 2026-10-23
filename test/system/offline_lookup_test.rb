@@ -56,6 +56,22 @@ class OfflineLookupTest < ApplicationSystemTestCase
     emulate_network(offline: false)
   end
 
+  test "phone search and all categories are visible without horizontal scrolling" do
+    page.current_window.resize_to(390, 844)
+    visit offline_path
+    assert_selector '[data-testid="offline-catalog"][data-ready="true"]', wait: 10
+    controls = [ "offline-search", *%w[products services customers tax_codes].map { |type| "offline-tab-#{type}" } ]
+    controls.each do |control|
+      bounds = find("[data-testid='#{control}']").evaluate_script("this.getBoundingClientRect().toJSON()")
+      assert_operator bounds["left"], :>=, 0, "#{control} starts offscreen"
+      assert_operator bounds["right"], :<=, page.evaluate_script("window.innerWidth"), "#{control} ends offscreen"
+    end
+    set_offline_search(products(:nhl_puck).code)
+    assert_text products(:nhl_puck).name
+  ensure
+    page.current_window.resize_to(1400, 1400)
+  end
+
   private
 
     def reset_offline_browser_state

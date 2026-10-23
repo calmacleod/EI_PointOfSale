@@ -108,6 +108,22 @@ class CashDrawerControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "history shows currency and signed discrepancies matching session details" do
+    session = cash_drawer_sessions(:closed_session)
+    [ -450, 0, 450 ].each do |discrepancy|
+      session.update!(closing_total_cents: session.expected_closing_total_cents + discrepancy, discrepancy_cents: discrepancy)
+      get history_cash_drawer_path
+      row = inertia_props["rows"].find { |item| item["id"] == session.id }
+      assert_equal "$140.00", row.dig("values", "opening_total_cents")
+      assert_equal ActionController::Base.helpers.number_to_currency(session.closing_total), row.dig("values", "closing_total_cents")
+      assert_equal ActionController::Base.helpers.number_to_currency(discrepancy / 100.0), row.dig("values", "diff")
+      assert_equal session_detail_cash_drawer_path(session), row["show_path"]
+      get session_detail_cash_drawer_path(session)
+      detail = inertia_props["details"].find { |item| item["label"] == "Discrepancy" }
+      assert_equal row.dig("values", "diff"), detail["value"]
+    end
+  end
+
   # ── Session detail ─────────────────────────────────────────────────
 
   test "session_detail renders a specific session" do

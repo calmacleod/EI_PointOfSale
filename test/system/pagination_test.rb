@@ -38,4 +38,20 @@ class PaginationTest < ApplicationSystemTestCase
       assert_selector "[aria-current='page']", text: "1"
     end
   end
+
+  test "sorting and changing pages keeps row destinations current" do
+    visit products_path(q: "Pagination browser product")
+    within "#products_table" do
+      click_button "Product", exact: true
+      assert_current_path(/sort=name/)
+      click_button "Product", exact: false
+      assert_current_path(/dir=desc/)
+      click_link "Next"
+      assert_current_path(/page=2/)
+      link = first("tbody tr a")
+      destination = URI.parse(link[:href]).path
+      link.click
+      assert_current_path destination
+    end
+  end
 end

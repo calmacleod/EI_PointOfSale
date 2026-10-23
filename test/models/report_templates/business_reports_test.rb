@@ -42,6 +42,44 @@ module ReportTemplates
       assert_equal 20.to_d, result[:chart][:datasets].first[:data].last
     end
 
+    test "sales summary includes late evening orders in the selected store date only" do
+      Time.use_zone("America/Toronto") do
+        late_order = create_completed_order(number: "REPORT-LATE-EVENING")
+        late_order.update_columns(completed_at: Time.zone.local(2026, 10, 22, 23, 45))
+        next_day_order = create_completed_order(number: "REPORT-NEXT-DAY")
+        next_day_order.update_columns(completed_at: Time.zone.local(2026, 10, 23, 0, 5))
+
+        result = SalesSummary.generate(start_date: "2026-10-22", end_date: "2026-10-22")
+        order_numbers = result[:table].map { |row| row[:order_number] }
+
+        assert_includes order_numbers, late_order.number
+        refute_includes order_numbers, next_day_order.number
+        assert_equal [ "2026-10-22" ], result[:chart][:labels]
+      end
+    end
+
+    test "sales summary uses local day boundaries across the spring daylight saving change" do
+      Time.use_zone("America/Toronto") do
+        day_start = Date.new(2026, 3, 8).beginning_of_day
+        day_end = Date.new(2026, 3, 8).end_of_day
+        assert_equal(-5.hours, day_start.utc_offset.seconds)
+        assert_equal(-4.hours, day_end.utc_offset.seconds)
+        assert_in_delta 23.hours.to_i, (day_end - day_start).to_f + 0.000001, 0.001
+
+        late_order = create_completed_order(number: "REPORT-DST-EVENING")
+        late_order.update_columns(completed_at: Time.zone.local(2026, 3, 8, 23, 30))
+        next_day_order = create_completed_order(number: "REPORT-DST-NEXT-DAY")
+        next_day_order.update_columns(completed_at: Time.zone.local(2026, 3, 9, 0, 0))
+
+        result = SalesSummary.generate(start_date: "2026-03-08", end_date: "2026-03-08")
+        order_numbers = result[:table].map { |row| row[:order_number] }
+
+        assert_includes order_numbers, late_order.number
+        refute_includes order_numbers, next_day_order.number
+        assert_equal [ "2026-03-08" ], result[:chart][:labels]
+      end
+    end
+
     test "sales summary lists refunds for older sales and supports negative daily receipts" do
       order = create_completed_order(number: "REPORT-OLDER-REFUND")
       order.update_columns(completed_at: 1.year.ago)

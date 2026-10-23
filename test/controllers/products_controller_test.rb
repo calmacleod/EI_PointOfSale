@@ -29,6 +29,15 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, @product.code
     assert_includes response.body, @product.name
+    assert_equal product_restocks_path(@product), inertia_props.dig("actions", "history")
+  end
+
+  test "common users see stock history without unsupported edit or remove actions" do
+    sign_in_as(users(:one))
+    get product_path(@product)
+    assert_equal product_restocks_path(@product), inertia_props.dig("actions", "history")
+    assert_nil inertia_props.dig("actions", "edit")
+    assert_nil inertia_props.dig("actions", "delete")
   end
 
   test "new renders form" do

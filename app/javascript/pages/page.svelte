@@ -86,5 +86,7 @@
     <ReportsPage {view} {title} {description} {templates} {columns} {rows} {filters} {query} {pagination} {can_create} {actions} {form} {report} />
   {/key}
 {:else}
-  <SpecialPage {view} {title} {details} {actions} {cards} {order} {events} {store} {receipt_lines} {action} {errors} {session} {pending_reconciliation} {recent_sessions} {denominations} {reconciliation} {notifications} {unread_count} {certificate} {redemptions} {preview_lines} {files} {status} {recurring_tasks} {recent_imports} {query} {pagination} {pagination_path} />
+  {#key `${view}-${order?.id || session?.id || certificate?.code || action || ""}`}
+    <SpecialPage {view} {title} {details} {actions} {cards} {order} {events} {store} {receipt_lines} {action} {errors} {session} {pending_reconciliation} {recent_sessions} {denominations} {reconciliation} {notifications} {unread_count} {certificate} {redemptions} {preview_lines} {files} {status} {recurring_tasks} {recent_imports} {query} {pagination} {pagination_path} />
+  {/key}
 {/if}

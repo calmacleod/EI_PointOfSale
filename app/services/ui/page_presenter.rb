@@ -255,7 +255,7 @@ module Ui
             action: action || (persisted ? record_path(record, config) : collection_path(config)),
             cancel: cancel || (persisted ? record_path(record, config) : collection_path(config)),
             submit_label: persisted ? "Save changes" : "Create #{config[:singular].downcase}",
-            delete_path: persisted ? record_path(record, config) : nil,
+            delete_path: persisted && resource_action_allowed?(:destroy, record) ? record_path(record, config) : nil,
             fields: fields,
             errors: record&.errors&.full_messages || []
           }
@@ -273,8 +273,10 @@ module Ui
           details: detail_keys.map { |key| { label: key.to_s.humanize, value: display_value(record, key) } },
           actions: {
             index: collection_path(config),
-            edit: edit_resource_path(record, config),
-            delete: record_path(record, config)
+            edit: resource_action_allowed?(:update, record) ? edit_resource_path(record, config) : nil,
+            delete: resource_action_allowed?(:destroy, record) ? record_path(record, config) : nil,
+            deactivate: record.is_a?(User) && record.active? && resource_action_allowed?(:update, record) ? record_path(record, config) : nil,
+            history: record.is_a?(Product) && controller.send(:can?, :read, Restock) ? controller.send(:product_restocks_path, record) : nil
           }
         }
       end
@@ -847,7 +849,7 @@ module Ui
           query: safe_query_params,
           pagination: pagination_props(assigns[:pagy]),
           pagination_path: controller.send(:product_restocks_path, assigns[:product]),
-          actions: []
+          actions: [ { label: "Back to product", path: controller.send(:product_path, assigns[:product]), method: "get" } ]
         }
       end
 
@@ -1000,7 +1002,7 @@ module Ui
           label: record_label(record, config),
           values: columns.to_h { |column| [ column[:key], display_value(record, column[:key]) ] },
           show_path: record_path(record, config),
-          edit_path: edit_resource_path(record, config)
+          edit_path: resource_action_allowed?(:update, record) ? edit_resource_path(record, config) : nil
         }
       end
 
@@ -1019,7 +1021,10 @@ module Ui
         when :address
           %i[address_line1 address_line2 city province postal_code country].filter_map { |part| record.public_send(part).presence if record.respond_to?(part) }.join(", ")
         when :diff
-          record.respond_to?(:discrepancy_cents) ? h.number_to_currency(record.discrepancy_cents.to_i / 100.0) : nil
+          h.number_to_currency(record.discrepancy_cents / 100.0) if record.respond_to?(:discrepancy_cents) && record.discrepancy_cents
+        when :opening_total_cents, :closing_total_cents
+          cents = record.public_send(key)
+          h.number_to_currency(cents / 100.0) if cents
         when :record
           "#{record.auditable_type} ##{record.auditable_id}" if record.respond_to?(:auditable_type)
         when :user
@@ -1061,7 +1066,8 @@ module Ui
 
       def format_time(value)
         return nil unless value
-        value.respond_to?(:strftime) ? value.strftime("%b %-d, %Y %-l:%M %p") : value.to_s
+        return value.strftime("%b %-d, %Y") if value.instance_of?(Date)
+        value.respond_to?(:in_time_zone) ? value.in_time_zone.strftime("%b %-d, %Y %-l:%M %p %Z") : value.to_s
       end
 
       def human_label(record)
@@ -1095,6 +1101,7 @@ module Ui
       end
 
       def record_path(record, config)
+        return controller.send(:session_detail_cash_drawer_path, record) if record.is_a?(CashDrawerSession)
         config[:admin] ? controller.send(:polymorphic_path, [ :admin, record ]) : controller.send(:polymorphic_path, record)
       rescue ActionController::UrlGenerationError, NoMethodError
         controller.request.path
@@ -1105,6 +1112,10 @@ module Ui
         config[:admin] ? controller.send(:edit_polymorphic_path, [ :admin, record ]) : controller.send(:edit_polymorphic_path, record)
       rescue ActionController::UrlGenerationError, NoMethodError
         nil
+      end
+
+      def resource_action_allowed?(action, record)
+        controller.class.action_methods.include?(action.to_s) && controller.send(:can?, action, record)
       end
 
       def new_resource_path(config)

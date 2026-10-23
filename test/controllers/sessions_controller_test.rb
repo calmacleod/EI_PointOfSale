@@ -30,6 +30,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
 
     assert_redirected_to new_session_path
     assert_nil cookies[:session_id]
+    assert_equal "Try another email address or password.", flash[:alert]
   end
 
   test "destroy" do

@@ -7,8 +7,10 @@
   export let details = []
   export let actions = {}
   let showRemove = false
+  let showDeactivate = false
 
   function remove() { showRemove = false; router.delete(actions.delete) }
+  function deactivate() { showDeactivate = false; router.patch(actions.deactivate, { user: { active: false } }) }
 </script>
 
 <section class="screen">
@@ -24,6 +26,8 @@
       <div class="p-body col" style="gap:var(--space-2)">
         {#if actions.index}<Link href={actions.index} class="k-key">Back to list<span class="k-key-sub">All records</span></Link>{/if}
         {#if actions.edit}<Link href={actions.edit} class="k-key">Edit record<span class="k-key-sub">Command action</span></Link>{/if}
+        {#if actions.history}<Link href={actions.history} class="k-key">Stock history<span class="k-key-sub">Receipts and stock movements</span></Link>{/if}
+        {#if actions.deactivate}<button class="k-btn k-btn-danger" type="button" onclick={() => (showDeactivate = true)}>Deactivate account</button>{/if}
         {#if actions.delete}<button class="k-btn k-btn-danger" type="button" onclick={() => (showRemove = true)}>Remove record</button>{/if}
       </div>
     </aside>
@@ -31,3 +35,4 @@
 </section>
 
 {#if showRemove}<ConfirmModal title="Remove this record?" message="This record will be removed from active use. This cannot be undone." confirmLabel="Remove record" danger oncancel={() => (showRemove = false)} onconfirm={remove} />{/if}
+{#if showDeactivate}<ConfirmModal title="Deactivate this account?" message="This staff member will no longer be able to sign in. Their sales and audit history will be kept. You can reactivate the account by editing it." confirmLabel="Deactivate account" danger oncancel={() => (showDeactivate = false)} onconfirm={deactivate} />{/if}

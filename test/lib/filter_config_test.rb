@@ -173,8 +173,8 @@ class FilterConfigTest < ActiveSupport::TestCase
     sql = scope.to_sql
 
     assert_match(/created_at/, sql)
-    assert_match(/2025-01-01/, sql)
-    assert_match(/2025-12-31/, sql)
+    assert_includes sql, Time.zone.parse("2025-01-01").beginning_of_day.utc.to_fs(:db)
+    assert_includes sql, Time.zone.parse("2025-12-31").end_of_day.utc.to_fs(:db)
   end
 
   # --- JSON serialization ---

@@ -15,7 +15,15 @@
     event.preventDefault()
     processing = true
     const method = form.method || "post"
-    router[method](form.action, form.root ? { [form.root]: values } : values, { onFinish: () => (processing = false) })
+    router[method](form.action, form.root ? { [form.root]: values } : values, {
+      onSuccess: (nextPage) => {
+        if (nextPage.props.flash?.alert) {
+          values = Object.fromEntries(Object.entries(values).map(([key, value]) => [key, form.fields.some((field) => field.key === key && field.type === "password") ? "" : value]))
+          document.getElementById(form.fields.find((field) => field.type === "password")?.key)?.focus()
+        }
+      },
+      onFinish: () => (processing = false),
+    })
   }
 </script>
 

@@ -5,7 +5,7 @@
   export let path
   export let query = {}
 
-  $: visiblePages = pageWindow(pagination.page, pagination.pages)
+  $: visiblePages = pagination ? pageWindow(pagination.page, pagination.pages) : []
 
   function pageWindow(current, total) {
     if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1)
@@ -26,6 +26,7 @@
 </script>
 
 {#if pagination}
+  {#key `${path}-${JSON.stringify(query)}-${pagination.page}`}
   <footer class="p-foot" data-testid="pagination">
     <span>Rows <strong>{pagination.from || 0}–{pagination.to || 0}</strong> of <strong>{pagination.count}</strong></span>
     {#if pagination.pages > 1}
@@ -44,4 +45,5 @@
       </nav>
     {/if}
   </footer>
+  {/key}
 {/if}

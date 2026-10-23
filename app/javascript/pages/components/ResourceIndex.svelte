@@ -16,10 +16,10 @@
   export let empty_message = "No records found."
 
   let values = { ...query }
-  let previousQuery = query
+  let previousQuery = JSON.stringify(query)
   let showFilters = false
-  $: if (query !== previousQuery) {
-    previousQuery = query
+  $: if (JSON.stringify(query) !== previousQuery) {
+    previousQuery = JSON.stringify(query)
     values = { ...query }
   }
   $: activeFilters = Object.entries(values).filter(([key, value]) => !["q", "sort", "dir", "page"].includes(key) && value !== "" && value !== null && value !== undefined && (!Array.isArray(value) || value.length))
@@ -81,7 +81,7 @@
       <table class="t" style="min-width:900px">
         <thead><tr>{#each columns as column}<th class:r={numericField(column.key, column.label)} aria-sort={column.sortable && values.sort === column.key ? (values.dir === "asc" ? "ascending" : "descending") : undefined}><button class="t-sort" type="button" onclick={() => sort(column)}>{column.label}{#if column.sortable && values.sort === column.key} {values.dir === "asc" ? "↑" : "↓"}{/if}</button></th>{/each}<th class="r">Actions</th></tr></thead>
         <tbody>
-          {#each rows as row}
+          {#each rows as row (`${actions.index}-${row.id}`)}
             <tr data-state={rowTone(row)}>
               {#each columns as column}
                 <td class:data={machineField(column.key, column.label)} class:r={numericField(column.key, column.label)} class:wrap={column === columns[0]}>

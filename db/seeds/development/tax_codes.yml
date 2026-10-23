@@ -6,7 +6,7 @@ records:
     code: HST
     name: Ontario HST
     rate: 0.13
-    province_code: ON
+    province_code: "ON"
 
   - sprig_id: gst
     code: GST
@@ -22,5 +22,5 @@ records:
     code: EXEMPT_STATUS_INDIAN
     name: Status Indian exempt
     rate: 0
-    province_code: ON
+    province_code: "ON"
     exemption_type: status_indian

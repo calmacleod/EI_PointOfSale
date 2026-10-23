@@ -79,7 +79,12 @@ class OrdersController < ApplicationController
   end
 
   def update
-    if @order.update(order_params)
+    updated = @order.with_lock do
+      @order.update(order_params).tap do |saved|
+        Orders::CalculateTotals.call(@order) if saved && @order.saved_change_to_tax_exempt?
+      end
+    end
+    if updated
       redirect_to register_path(order_id: @order.id), notice: "Order updated."
     else
       @order.order_lines.includes(:sellable).order(:position)
@@ -152,6 +157,9 @@ class OrdersController < ApplicationController
 
   def refund_form
     authorize! :process_refund, @order
+    unless @order.order_lines.includes(:refund_lines).any? { |line| line.quantity > line.refund_lines.sum(&:quantity) }
+      redirect_to order_path(@order), alert: "All items on this order have already been refunded."
+    end
   end
 
   def process_refund
